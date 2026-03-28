@@ -9,6 +9,7 @@ import "./globals.css";
 import { baseUrl } from "lib/utils";
 import { TranslationProvider } from "lib/i18n/TranslationProvider";
 import { getDictionary } from "lib/i18n";
+import { GoKwikScript } from "lib/gokwik";
 
 const { SITE_NAME } = process.env;
 
@@ -50,6 +51,7 @@ export default async function RootLayout(props: {
             </main>
           </TranslationProvider>
         </CartProvider>
+        <GoKwikScript />
       </body>
     </html>
   );

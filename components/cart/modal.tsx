@@ -13,6 +13,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { createCartAndSetCookie, redirectToCheckout } from "./actions";
 import { useCart } from "./cart-context";
+import { useGoKwikCheckout } from "lib/gokwik";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { DeleteItemButton } from "./delete-item-button";
 import { EditItemQuantityButton } from "./edit-item-quantity-button";
@@ -25,6 +26,9 @@ type MerchandiseSearchParams = {
 export default function CartModal() {
   const { t } = useTranslation();
   const { cart, updateCartItem } = useCart();
+  const { isReady: gokwikReady, isError: gokwikError, isCheckingOut, triggerCheckout, useFallback } = useGoKwikCheckout({
+    cartId: cart?.id,
+  });
   const [isOpen, setIsOpen] = useState(false);
   const quantityRef = useRef(cart?.totalQuantity);
   const openCart = () => setIsOpen(true);
@@ -390,9 +394,27 @@ export default function CartModal() {
                       />
                     </div>
                   </div>
-                  <form action={redirectToCheckout}>
-                    <CheckoutButton />
-                  </form>
+                  {useFallback ? (
+                    <form action={redirectToCheckout}>
+                      <CheckoutButton />
+                    </form>
+                  ) : (
+                    <button
+                      onClick={triggerCheckout}
+                      disabled={!gokwikReady || isCheckingOut || !cart?.id}
+                      className={`block w-full rounded-full p-3 text-center text-sm font-medium text-white transition-opacity ${
+                        !gokwikReady || isCheckingOut || !cart?.id
+                          ? "cursor-not-allowed bg-blue-400 opacity-70"
+                          : "bg-blue-600 opacity-90 hover:opacity-100"
+                      }`}
+                    >
+                      {isCheckingOut
+                        ? t("cart.processing")
+                        : !gokwikReady
+                          ? t("cart.loading_checkout")
+                          : t("cart.proceed_to_checkout")}
+                    </button>
+                  )}
                 </div>
               )}
             </Dialog.Panel>

@@ -30,6 +30,10 @@
   "cart.custom_setup": "Custom Setup",
   "cart.bundle_items": "items",
   "cart.remove_bundle": "Remove entire setup",
+  "cart.processing": "Processing...",
+  "cart.loading_checkout": "Loading checkout...",
+  "cart.proceed_to_checkout": "Proceed to Checkout",
+  "cart.checkout_fallback": "Checkout (alternative)",
 
   "product.add_to_cart": "Add To Cart",
   "product.out_of_stock": "Out Of Stock",

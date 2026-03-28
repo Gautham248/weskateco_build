@@ -30,6 +30,10 @@
   "cart.custom_setup": "कस्टम सेटअप",
   "cart.bundle_items": "आइटम",
   "cart.remove_bundle": "पूरा सेटअप हटाएं",
+  "cart.processing": "प्रोसेसिंग...",
+  "cart.loading_checkout": "चेकआउट लोड हो रहा है...",
+  "cart.proceed_to_checkout": "चेकआउट करें",
+  "cart.checkout_fallback": "चेकआउट (वैकल्पिक)",
 
   "product.add_to_cart": "कार्ट में जोड़ें",
   "product.out_of_stock": "स्टॉक में नहीं",
