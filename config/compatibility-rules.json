@@ -1,0 +1,42 @@
+{
+  "hanger_to_axle_offset": 2.75,
+  "truck_width_tolerance": 0.25,
+  "board_type_truck_map": {
+    "Skateboard": ["Standard (TKP)"],
+    "Surfskate": ["Surfskate"],
+    "Longboard": ["Longboard (RKP)"],
+    "Old School": ["Standard (TKP)"],
+    "Cruiser": ["Standard (TKP)", "Longboard (RKP)"]
+  },
+  "board_type_wheel_map": {
+    "Skateboard": ["Street/Park", "All-Terrain"],
+    "Surfskate": ["Surfskate", "Cruiser/Longboard"],
+    "Longboard": ["Cruiser/Longboard"],
+    "Old School": ["Street/Park", "All-Terrain", "Cruiser/Longboard"],
+    "Cruiser": ["Cruiser/Longboard", "All-Terrain"]
+  },
+  "surfskate_skip_width_match": true,
+  "riser_hardware_map": {
+    "none": ["7/8\"", "1\""],
+    "1/8\"": ["1\"", "1 1/8\""],
+    "1/4\"": ["1 1/4\""],
+    "1/2\"": ["1 1/2\""]
+  },
+  "griptape_deck_max_width": {
+    "9": 8.75,
+    "10": 9.75,
+    "11": 10.75
+  },
+  "board_type_availability": {
+    "Skateboard": true,
+    "Old School": true,
+    "Surfskate": false,
+    "Longboard": false,
+    "Cruiser": false
+  },
+  "board_type_unavailable_message": {
+    "Surfskate": "Surfskate decks coming soon. Check out our complete surfskates instead!",
+    "Longboard": "Longboard components coming soon.",
+    "Cruiser": "Cruiser components coming soon."
+  }
+}
