@@ -141,6 +141,7 @@ export type ShopifyProduct = {
     namespace: string;
     type: string;
   }[];
+  collections?: Connection<{ handle: string; title: string }>;
   tags: string[];
   updatedAt: string;
 };

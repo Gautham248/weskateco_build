@@ -6,10 +6,11 @@ import Link from "next/link";
 import { Suspense } from "react";
 import MobileMenu from "./mobile-menu";
 import Search, { SearchSkeleton } from "./search";
+import NavLinks from "./nav-links";
 
 const { SITE_NAME } = process.env;
 
-export async function Navbar() {
+export async function Navbar({ locale }: { locale?: string }) {
   const menu = await getMenu("next-js-frontend-header-menu");
 
   return (
@@ -23,13 +24,12 @@ export async function Navbar() {
         <div className="flex w-full md:w-1/3">
           <Link
             href="/"
-            prefetch={true}
             className="mr-2 flex w-full items-center justify-center md:w-auto lg:mr-6"
           >
             <LogoSquare />
-            <div className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block">
+            <span className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block">
               {SITE_NAME}
-            </div>
+            </span>
           </Link>
           {menu.length ? (
             <ul className="hidden gap-6 text-sm md:flex md:items-center">
@@ -37,7 +37,6 @@ export async function Navbar() {
                 <li key={item.title}>
                   <Link
                     href={item.path}
-                    prefetch={true}
                     className="text-neutral-500 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300"
                   >
                     {item.title}
@@ -45,7 +44,9 @@ export async function Navbar() {
                 </li>
               ))}
             </ul>
-          ) : null}
+          ) : (
+            <NavLinks />
+          )}
         </div>
         <div className="hidden justify-center md:flex md:w-1/3">
           <Suspense fallback={<SearchSkeleton />}>
@@ -53,7 +54,9 @@ export async function Navbar() {
           </Suspense>
         </div>
         <div className="flex justify-end md:w-1/3">
-          <CartModal />
+          <Suspense fallback={null}>
+            <CartModal />
+          </Suspense>
         </div>
       </div>
     </nav>

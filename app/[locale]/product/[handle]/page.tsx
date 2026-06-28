@@ -1,7 +1,8 @@
-import { GridTileImage } from "components/grid/tile";
 import Footer from "components/layout/footer";
 import { Gallery } from "components/product/gallery";
 import { ProductDescription } from "components/product/product-description";
+import ProductCard from "components/product/product-card";
+import ProductTabs from "components/product/product-tabs";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
 import { getProduct, getProductRecommendations } from "lib/shopify";
 import type { Image } from "lib/shopify/types";
@@ -9,11 +10,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { createTranslator, getLocalizedPath } from "lib/i18n";
 
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  return [{ locale: "en" }, { locale: "hi" }];
+  return [];
 }
 
 export async function generateMetadata(props: {
@@ -66,7 +68,7 @@ export default async function ProductPage(props: {
     "@type": "Product",
     name: product.title,
     description: product.description,
-    image: product.featuredImage.url,
+    image: product.featuredImage?.url,
     offers: {
       "@type": "AggregateOffer",
       availability: product.availableForSale
@@ -78,6 +80,9 @@ export default async function ProductPage(props: {
     },
   };
 
+  const t = createTranslator(params.locale);
+  const firstCollection = product.collections?.edges?.[0]?.node;
+
   return (
     <>
       <script
@@ -86,7 +91,33 @@ export default async function ProductPage(props: {
           __html: JSON.stringify(productJsonLd),
         }}
       />
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4">
+      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 py-4">
+        {/* Breadcrumb */}
+        <div className="mb-6 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
+          <Link
+            href={getLocalizedPath("/", params.locale)}
+            className="transition-colors hover:text-black dark:hover:text-white"
+          >
+            {t("nav.home")}
+          </Link>
+          {firstCollection && (
+            <>
+              <span className="text-neutral-400 dark:text-neutral-600">/</span>
+              <Link
+                href={getLocalizedPath(`/search/${firstCollection.handle}`, params.locale)}
+                className="transition-colors hover:text-black dark:hover:text-white"
+              >
+                {firstCollection.title}
+              </Link>
+            </>
+          )}
+          <span className="text-neutral-400 dark:text-neutral-600">/</span>
+          <span className="font-semibold text-neutral-900 dark:text-neutral-100 line-clamp-1">
+            {product.title}
+          </span>
+        </div>
+
+        {/* Main Product Layout */}
         <div className="flex flex-col rounded-lg border border-neutral-200 bg-white p-8 md:p-12 lg:flex-row lg:gap-8 dark:border-neutral-800 dark:bg-black">
           <div className="h-full w-full basis-full lg:basis-4/6">
             <Suspense
@@ -105,51 +136,43 @@ export default async function ProductPage(props: {
 
           <div className="basis-full lg:basis-2/6">
             <Suspense fallback={null}>
-              <ProductDescription product={product} />
+              <ProductDescription product={product} locale={params.locale} />
             </Suspense>
           </div>
         </div>
-        <RelatedProducts id={product.id} />
+
+        {/* Product Information Tabs */}
+        <ProductTabs
+          descriptionHtml={product.descriptionHtml}
+          description={product.description}
+          metafields={product.metafields || []}
+        />
+
+        {/* Related Products */}
+        <RelatedProducts id={product.id} locale={params.locale} />
       </div>
       <Footer />
     </>
   );
 }
 
-async function RelatedProducts({ id }: { id: string }) {
+async function RelatedProducts({ id, locale }: { id: string; locale: string }) {
   const relatedProducts = await getProductRecommendations(id);
 
   if (!relatedProducts.length) return null;
 
+  const t = createTranslator(locale);
+
   return (
-    <div className="py-8">
-      <h2 className="mb-4 text-2xl font-bold">Related Products</h2>
-      <ul className="flex w-full gap-4 overflow-x-auto pt-1">
-        {relatedProducts.map((product) => (
-          <li
-            key={product.handle}
-            className="aspect-square w-full flex-none min-[475px]:w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5"
-          >
-            <Link
-              className="relative h-full w-full"
-              href={`/product/${product.handle}`}
-              prefetch={true}
-            >
-              <GridTileImage
-                alt={product.title}
-                label={{
-                  title: product.title,
-                  amount: product.priceRange.maxVariantPrice.amount,
-                  currencyCode: product.priceRange.maxVariantPrice.currencyCode,
-                }}
-                src={product.featuredImage?.url}
-                fill
-                sizes="(min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33vw, (min-width: 475px) 50vw, 100vw"
-              />
-            </Link>
-          </li>
+    <div className="mt-16 border-t border-neutral-200 py-12 dark:border-neutral-800">
+      <h2 className="mb-8 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+        {t("product.related_products")}
+      </h2>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+        {relatedProducts.slice(0, 4).map((product) => (
+          <ProductCard key={product.handle} product={product} locale={locale} />
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

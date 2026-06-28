@@ -48,3 +48,16 @@ export function getLocalizedField(
 ): string {
   return doc[`${field}_${locale}`] || doc[`${field}_${defaultLocale}`] || doc[field] || "";
 }
+
+/**
+ * Helper to build locale-aware paths.
+ * If locale is "en" (default), returns the path as is.
+ * Otherwise, prefixes the path with the locale (e.g., /hi/path).
+ */
+export function getLocalizedPath(path: string, locale: string): string {
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  if (locale === "en") {
+    return cleanPath;
+  }
+  return `/${locale}${cleanPath}`;
+}

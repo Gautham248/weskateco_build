@@ -8,6 +8,41 @@ import { Fragment, Suspense, useEffect, useState } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Menu } from "lib/shopify/types";
 import Search, { SearchSkeleton } from "./search";
+import { useTranslation } from "lib/i18n/TranslationProvider";
+import { getLocalizedPath } from "lib/i18n";
+
+function MobileNavLinks({ onClick }: { onClick: () => void }) {
+  const { t, locale } = useTranslation();
+
+  const links = [
+    { title: t("nav.skateboards"), href: "/search/skateboards" },
+    { title: t("nav.surfskates"), href: "/search/surfskates" },
+    { title: t("nav.apparel"), href: "/search/apparel-1" },
+    { title: t("nav.protective_gear"), href: "/search/protection-gears" },
+    { title: t("nav.brands"), href: "/search" },
+    { title: t("configurator.title"), href: "/configurator" },
+    { title: t("nav.academy"), href: "/academy" },
+    { title: t("nav.skateparks"), href: "/skateparks" },
+  ];
+
+  return (
+    <ul className="flex w-full flex-col gap-1 mt-4">
+      {links.map((link) => (
+        <li
+          className="border-b border-neutral-100 dark:border-neutral-900 py-3 text-lg font-medium text-black hover:text-neutral-500 dark:text-white"
+          key={link.title}
+        >
+          <Link
+            href={getLocalizedPath(link.href, locale)}
+            onClick={onClick}
+          >
+            {link.title}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export default function MobileMenu({ menu }: { menu: Menu[] }) {
   const pathname = usePathname();
@@ -93,7 +128,9 @@ export default function MobileMenu({ menu }: { menu: Menu[] }) {
                       </li>
                     ))}
                   </ul>
-                ) : null}
+                ) : (
+                  <MobileNavLinks onClick={closeMobileMenu} />
+                )}
               </div>
             </Dialog.Panel>
           </Transition.Child>

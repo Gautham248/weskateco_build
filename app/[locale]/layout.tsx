@@ -43,7 +43,7 @@ export default async function RootLayout(props: {
       <body className="bg-neutral-50 text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
         <CartProvider cartPromise={cart}>
           <TranslationProvider locale={params.locale} dictionary={dictionary}>
-            <Navbar />
+            <Navbar locale={params.locale} />
             <main>
               {children}
               <Toaster closeButton />

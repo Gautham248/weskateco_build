@@ -78,6 +78,14 @@ const productFragment = /* GraphQL */ `
       namespace
       type
     }
+    collections(first: 1) {
+      edges {
+        node {
+          handle
+          title
+        }
+      }
+    }
     tags
     updatedAt
   }
