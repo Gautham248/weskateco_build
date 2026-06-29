@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@fontsource/archivo";
 
 @plugin "@tailwindcss/container-queries";
 @plugin "@tailwindcss/typography";

@@ -1,6 +1,7 @@
 import HeroBanner from "components/home/hero-banner";
 import CategoryGrid from "components/home/category-grid";
 import ProductGridSection from "components/home/product-grid-section";
+import ShopNow from "components/home/shop-now";
 import ConfiguratorCTA from "components/home/configurator-cta";
 import BrandsSection from "components/home/brands-section";
 import Footer from "components/layout/footer";
@@ -56,6 +57,7 @@ export default async function HomePage(props: {
         products={slicedNewArrivals}
         locale={locale}
       />
+      <ShopNow locale={locale} />
       <ConfiguratorCTA locale={locale} />
       <BrandsSection locale={locale} />
       <Footer />

@@ -3,27 +3,38 @@
 import Link from "next/link";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { getLocalizedPath } from "lib/i18n";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import MegaMenuLeft from "./mega-menu-left";
+import MegaMenuRight from "./mega-menu-right";
 
 export default function NavLinks() {
   const { t, locale } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const menuRef = useRef<HTMLLIElement>(null);
 
-  const shopSubLinks = [
-    { title: t("nav.skateboards"), href: "/search/skateboards" },
-    { title: t("nav.surfskates"), href: "/search/surfskates" },
-    { title: t("nav.apparel"), href: "/search/apparel-1" },
-    { title: t("nav.protective_gear"), href: "/search/protection-gears" },
-  ];
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+        setActiveCategory(null);
+      }
+    }
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   return (
     <ul className="hidden gap-6 text-sm font-medium md:flex md:items-center">
       {/* Shop Dropdown */}
       <li
-        className="relative"
+        ref={menuRef}
         onMouseEnter={() => setIsDropdownOpen(true)}
-        onMouseLeave={() => setIsDropdownOpen(false)}
       >
         <button
           className="flex items-center gap-1 text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-neutral-300"
@@ -33,20 +44,19 @@ export default function NavLinks() {
           <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} />
         </button>
 
-        {isDropdownOpen && (
-          <div className="absolute top-full left-0 z-50 mt-2 w-48 rounded-xl border border-neutral-100 bg-white p-2 shadow-lg dark:border-neutral-800 dark:bg-neutral-900 animate-fadeIn">
-            {shopSubLinks.map((link) => (
-              <Link
-                key={link.title}
-                href={getLocalizedPath(link.href, locale)}
-                className="block rounded-lg px-4 py-2 text-sm text-neutral-500 hover:bg-neutral-50 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-                onClick={() => setIsDropdownOpen(false)}
-              >
-                {link.title}
-              </Link>
-            ))}
+        <div
+          className={`absolute left-1/2 -translate-x-1/2 z-50 shadow-lg top-full mt-5 ${
+            isDropdownOpen
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+          } transition-opacity duration-300`}
+          style={{ maxWidth: "1680px", width: "min(87.5vw, 1680px)", height: "471px" }}
+        >
+          <div className="flex h-full gap-3">
+            <MegaMenuLeft activeCategory={activeCategory} onCategoryHover={setActiveCategory} onLinkClick={() => setIsDropdownOpen(false)} />
+            <MegaMenuRight activeCategory={activeCategory} />
           </div>
-        )}
+        </div>
       </li>
 
       {/* Brands */}
