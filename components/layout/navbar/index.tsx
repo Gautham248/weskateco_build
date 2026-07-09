@@ -2,7 +2,7 @@
 
 import CartModal from "components/cart/modal";
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import MobileMenu from "./mobile-menu";
 import Search, { SearchSkeleton } from "./search";
 import NavLinks from "./nav-links";
@@ -24,11 +24,12 @@ function WeskatecoIcon({ color }: { color: string }) {
 
 export function Navbar({ locale }: { locale?: string }) {
   const scrolled = useNavbarScroll();
+  const [isStoreOpen, setIsStoreOpen] = useState(false);
 
   return (
-    <nav className="flex items-center justify-between h-[72px] max-w-[1680px] w-[min(87.5vw,1680px)] mx-auto">
+    <nav className="flex items-center justify-between h-[72px] mx-auto max-w-(--breakpoint-2xl) px-6 relative z-50">
       {/* Left: Mobile hamburger + Logo */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 z-50">
         <div className="md:hidden">
           <Suspense fallback={null}>
             <MobileMenu />
@@ -41,11 +42,11 @@ export function Navbar({ locale }: { locale?: string }) {
 
       {/* Center: Nav Links (desktop only) */}
       <div className="hidden md:flex">
-        <NavLinks />
+        <NavLinks onDropdownChange={setIsStoreOpen} />
       </div>
 
       {/* Right: Search, Cart, User */}
-      <div className="flex items-center gap-4 md:gap-11">
+      <div className={`flex items-center gap-3 md:gap-6 xl:gap-11 z-50 transition-opacity duration-300 ${isStoreOpen ? 'opacity-50' : 'opacity-100'}`}>
         <Suspense fallback={<SearchSkeleton />}>
           <Search />
         </Suspense>

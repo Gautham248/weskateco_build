@@ -80,7 +80,7 @@ export default function ShopNow({ locale }: { locale: string }) {
 function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trackPadding: string }) {
   const imgRef = useRef<HTMLDivElement>(null);
   const [showIndex, setShowIndex] = useState(0);
-  const moveTimer = useRef<ReturnType<typeof setTimeout>>();
+  const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imgRef.current) return;

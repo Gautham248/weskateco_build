@@ -8,7 +8,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import MegaMenuLeft from "./mega-menu-left";
 import MegaMenuRight from "./mega-menu-right";
 
-export default function NavLinks() {
+export default function NavLinks({ onDropdownChange }: { onDropdownChange?: (isOpen: boolean) => void }) {
   const { t, locale } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -23,15 +23,30 @@ export default function NavLinks() {
     }
     if (isDropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "hidden";
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "";
     };
   }, [isDropdownOpen]);
 
+  useEffect(() => {
+    onDropdownChange?.(isDropdownOpen);
+  }, [isDropdownOpen, onDropdownChange]);
+
   return (
-    <ul className="hidden items-center gap-8 text-lg font-medium tracking-wide md:flex">
-      {/* STORE */}
+    <>
+      {isDropdownOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          onClick={() => {
+            setIsDropdownOpen(false);
+            setActiveCategory(null);
+          }}
+        />
+      )}
+      <ul className="hidden items-center gap-2 lg:gap-8 text-[16px] lg:text-lg font-medium tracking-wide md:flex whitespace-nowrap relative z-50">      {/* STORE */}
       <li ref={menuRef}>
         <button
           className="flex items-center gap-1 uppercase cursor-pointer"
@@ -39,15 +54,14 @@ export default function NavLinks() {
           onMouseEnter={() => setIsDropdownOpen(true)}
         >
           STORE
-          <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} />
+          <ChevronDownIcon className={`h-2.5 w-2.5 md:h-2.5 md:w-2.5 xl:h-3 xl:w-3 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} />
         </button>
 
         <div
-          className={`absolute left-1/2 -translate-x-1/2 z-50 shadow-lg top-full mt-5 ${
-            isDropdownOpen
+          className={`absolute left-1/2 -translate-x-1/2 z-50 shadow-lg top-full mt-5 ${isDropdownOpen
               ? "opacity-100 pointer-events-auto"
               : "opacity-0 pointer-events-none"
-          } transition-opacity duration-300`}
+            } transition-opacity duration-300`}
           style={{ maxWidth: "1680px", width: "min(87.5vw, 1680px)", height: "471px" }}
         >
           <div className="flex h-full gap-3">
@@ -58,25 +72,26 @@ export default function NavLinks() {
       </li>
 
       {/* GUIDES */}
-      <li>
+      <li className={isDropdownOpen ? 'opacity-50' : ''}>
         <Link href={getLocalizedPath("/guides", locale)}>
           GUIDES
         </Link>
       </li>
 
       {/* WESKATE ACADEMY */}
-      <li>
+      <li className={isDropdownOpen ? 'opacity-50' : ''}>
         <Link href={getLocalizedPath("/academy", locale)}>
           WESKATE ACADEMY
         </Link>
       </li>
 
       {/* SKATEPARKS */}
-      <li>
+      <li className={isDropdownOpen ? 'opacity-50' : ''}>
         <Link href={getLocalizedPath("/skateparks", locale)}>
           SKATEPARKS
         </Link>
       </li>
     </ul>
+    </>
   );
 }
