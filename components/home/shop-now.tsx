@@ -34,7 +34,7 @@ export default function ShopNow({ locale }: { locale: string }) {
   const trackPadding = "max(1.5rem, calc((100vw - 1536px) / 2 + 1.5rem))";
 
   return (
-    <section className="w-full overflow-hidden py-12 md:py-16">
+    <section className="w-full overflow-hidden py-12 md:py-30">
       {/* Header aligned dynamically using trackPadding */}
       <div 
         className="mb-10 flex items-end justify-between w-full items-center"
@@ -95,7 +95,7 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
 
   return (
     <div
-      className="group/card flex flex-col bg-transparent w-[calc(100vw-3rem)] sm:w-[340px] md:w-[400px] lg:w-[440px] flex-shrink-0 snap-start"
+      className="group/card flex flex-col bg-transparent w-[calc(100vw-3rem)] sm:w-[340px] lg:w-[384px] flex-shrink-0 snap-start"
       style={{
         scrollMarginLeft: trackPadding
       }}

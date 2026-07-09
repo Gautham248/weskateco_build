@@ -42,7 +42,7 @@ export default async function RootLayout(props: {
   return (
     <html lang={params.locale} className={GeistSans.variable}>
       <link href="https://fontshare.com" rel="stylesheet" />
-      <body className="bg-neutral-50 text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
+      <body className="bg-white text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
         <CartProvider cartPromise={cart}>
           <TranslationProvider locale={params.locale} dictionary={dictionary}>
             <NavbarScrollWrapper>

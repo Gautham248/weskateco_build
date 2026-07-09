@@ -1,5 +1,6 @@
 import HeroBanner from "components/home/hero-banner";
 import NewlyRelease from "components/home/newly-release";
+import AboutSection from "components/home/about-section";
 import CategoryGrid from "components/home/category-grid";
 import ProductGridSection from "components/home/product-grid-section";
 import ShopNow from "components/home/shop-now";
@@ -46,6 +47,7 @@ export default async function HomePage(props: {
     <>
       <HeroBanner locale={locale} />
       <NewlyRelease />
+      <AboutSection />
       <CategoryGrid locale={locale} />
       <ProductGridSection
         title={t("home.featured_products")}
