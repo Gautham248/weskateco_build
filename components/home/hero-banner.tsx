@@ -1,13 +1,23 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createTranslator } from "lib/i18n";
 import { getLocalizedPath } from "lib/i18n";
+import coverVid from "components/icons/cover_vid.gif";
 
 export default function HeroBanner({ locale }: { locale: string }) {
   const t = createTranslator(locale);
 
   return (
-    <section className="relative overflow-hidden bg-radial from-neutral-900 via-neutral-950 to-black py-20 text-white md:py-32">
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-6 text-center">
+    <section className="relative h-screen w-full overflow-hidden -mt-[72px]">
+      <Image
+        src={coverVid}
+        alt="Hero background"
+        fill
+        className="object-cover"
+        priority
+      />
+      <div className="absolute inset-0 bg-black/40" />
+      {/* <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
         <h1 className="mx-auto max-w-4xl text-4xl font-extrabold tracking-tight md:text-6xl lg:text-7xl">
           <span className="bg-gradient-to-r from-neutral-200 via-white to-neutral-400 bg-clip-text text-transparent">
             {t("home.hero_title")}
@@ -36,8 +46,7 @@ export default function HeroBanner({ locale }: { locale: string }) {
             {t("home.build_your_setup")}
           </Link>
         </div>
-      </div>
-      <div className="absolute top-1/2 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-500/10 blur-[120px]" />
+      </div> */}
     </section>
   );
 }

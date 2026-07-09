@@ -30,17 +30,15 @@ export default function NavLinks() {
   }, [isDropdownOpen]);
 
   return (
-    <ul className="hidden gap-6 text-sm font-medium md:flex md:items-center">
-      {/* Shop Dropdown */}
-      <li
-        ref={menuRef}
-        onMouseEnter={() => setIsDropdownOpen(true)}
-      >
+    <ul className="hidden items-center gap-8 text-lg font-medium tracking-wide md:flex">
+      {/* STORE */}
+      <li ref={menuRef}>
         <button
-          className="flex items-center gap-1 text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-neutral-300"
+          className="flex items-center gap-1 uppercase cursor-pointer"
           aria-expanded={isDropdownOpen}
+          onMouseEnter={() => setIsDropdownOpen(true)}
         >
-          {t("nav.shop")}
+          STORE
           <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} />
         </button>
 
@@ -59,43 +57,24 @@ export default function NavLinks() {
         </div>
       </li>
 
-      {/* Brands */}
+      {/* GUIDES */}
       <li>
-        <Link
-          href={getLocalizedPath("/search", locale)}
-          className="text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-neutral-300"
-        >
-          {t("nav.brands")}
+        <Link href={getLocalizedPath("/guides", locale)}>
+          GUIDES
         </Link>
       </li>
 
-      {/* Configurator */}
+      {/* WESKATE ACADEMY */}
       <li>
-        <Link
-          href={getLocalizedPath("/configurator", locale)}
-          className="text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-neutral-300"
-        >
-          {t("configurator.title")}
+        <Link href={getLocalizedPath("/academy", locale)}>
+          WESKATE ACADEMY
         </Link>
       </li>
 
-      {/* Academy */}
+      {/* SKATEPARKS */}
       <li>
-        <Link
-          href={getLocalizedPath("/academy", locale)}
-          className="text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-neutral-300"
-        >
-          {t("nav.academy")}
-        </Link>
-      </li>
-
-      {/* Skateparks */}
-      <li>
-        <Link
-          href={getLocalizedPath("/skateparks", locale)}
-          className="text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-neutral-300"
-        >
-          {t("nav.skateparks")}
+        <Link href={getLocalizedPath("/skateparks", locale)}>
+          SKATEPARKS
         </Link>
       </li>
     </ul>

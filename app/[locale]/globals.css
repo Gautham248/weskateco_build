@@ -26,6 +26,41 @@
   }
 }
 
+/* Navbar scroll-aware colors */
+[data-scrolled="false"] nav a,
+[data-scrolled="false"] nav button,
+[data-scrolled="false"] nav svg {
+  @apply text-white/90;
+}
+
+[data-scrolled="false"] nav .border {
+  @apply border-white/20;
+}
+
+[data-scrolled="false"] nav input {
+  @apply border-white/20 bg-white/10 text-white placeholder-white/50;
+}
+
+[data-scrolled="false"] nav img[alt*="Weskateco"] {
+  filter: brightness(0) invert(1);
+}
+
+[data-scrolled="true"] nav a {
+  @apply text-black dark:text-white;
+}
+
+[data-scrolled="true"] nav .border {
+  @apply border-neutral-200 dark:border-neutral-700;
+}
+
+[data-scrolled="true"] nav button {
+  @apply text-black dark:text-white;
+}
+
+
+
+
+
 a,
 input,
 button {
