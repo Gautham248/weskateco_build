@@ -70,9 +70,9 @@ export default function MobileMenu({ menu }: { menu?: Menu[] }) {
       <button
         onClick={openMobileMenu}
         aria-label="Open mobile menu"
-        className="flex h-11 w-11 items-center justify-center rounded-md transition-colors md:hidden"
+        className="flex h-7 w-7 items-center justify-center rounded-md transition-colors md:hidden"
       >
-        <Bars3Icon className="h-4" />
+        <Bars3Icon className="h-5" />
       </button>
       <Transition show={isOpen}>
         <Dialog onClose={closeMobileMenu} className="relative z-50">

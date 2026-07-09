@@ -1,17 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import { getLocalizedPath } from "lib/i18n";
 import shopNow1 from "components/icons/shop_now_1.png";
 import shopNow2 from "components/icons/shop_now_2.png";
+import shopNow3 from "components/icons/shop_now_3.png";
 import catalog from "scripts/product-catalog-dump.json";
-
-const imageMap: Record<string, StaticImageData> = {
-  "shop_now_1.png": shopNow1,
-  "shop_now_2.png": shopNow2,
-};
 
 interface ProductCard {
   id: string;
@@ -19,14 +15,18 @@ interface ProductCard {
   name: string;
   price: string;
   originalPrice?: string;
-  images: StaticImageData[];
   discount?: string;
   monthlyPayment?: string;
 }
 
 const products: ProductCard[] = catalog.shopNow.map((p) => ({
-  ...p,
-  images: p.images.map((name) => imageMap[name]).filter((img): img is StaticImageData => img !== undefined),
+  id: p.id,
+  brand: p.brand,
+  name: p.name,
+  price: p.price,
+  originalPrice: p.originalPrice,
+  discount: p.discount,
+  monthlyPayment: p.monthlyPayment,
 }));
 
 export default function ShopNow({ locale }: { locale: string }) {
@@ -78,15 +78,20 @@ export default function ShopNow({ locale }: { locale: string }) {
 }
 
 function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trackPadding: string }) {
-  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+  const imgRef = useRef<HTMLDivElement>(null);
+  const [showIndex, setShowIndex] = useState(0);
+  const moveTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  useEffect(() => {
-    if (product.images.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentImgIndex((prev) => (prev === 0 ? 1 : 0));
-    }, 3500);
-    return () => clearInterval(interval);
-  }, [product.images.length]);
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imgRef.current) return;
+    clearTimeout(moveTimer.current);
+    moveTimer.current = setTimeout(() => {
+      const rect = imgRef.current!.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const pct = x / rect.width;
+      setShowIndex(pct < 0.25 ? 0 : pct > 0.75 ? 2 : 1);
+    }, 80);
+  };
 
   return (
     <div
@@ -96,7 +101,13 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
       }}
     >
       {/* Image Block */}
-      <div className="relative aspect-[3/4.5] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900">
+      <div
+        ref={imgRef}
+        className="relative aspect-[3/4.5] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900"
+        onMouseEnter={() => { setShowIndex(1); }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => { clearTimeout(moveTimer.current); setShowIndex(0); }}
+      >
         
         {/* Pill Badges Stack */}
         {(product.discount || product.monthlyPayment) && (
@@ -114,16 +125,13 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
           </div>
         )}
 
-        {/* Sliding Image Loop Track */}
+        {/* Sliding Image Track */}
         <div 
           className="absolute inset-0 flex transition-transform duration-700 ease-in-out"
-          style={{ transform: `translateX(-${currentImgIndex * 100}%)` }}
+          style={{ transform: `translateX(-${showIndex * 100}%)` }}
         >
-          {product.images.map((img, index) => (
-            <div
-              key={index}
-              className="relative h-full w-full flex-shrink-0"
-            >
+          {[shopNow1, shopNow2, shopNow3].map((img, index) => (
+            <div key={index} className="relative h-full w-full flex-shrink-0">
               <Image
                 src={img}
                 alt={product.name}
@@ -137,21 +145,27 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
         </div>
 
         {/* Carousel Indicators */}
-        {product.images.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-1 rounded-full bg-black/20 backdrop-blur-[2px] px-1.5 py-1">
-            {product.images.map((_, idx) => (
-              <span
-                key={idx}
-                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
-                  idx === currentImgIndex ? "w-1.5 opacity-100" : "w-1.5 opacity-50"
-                }`}
-              />
-            ))}
-          </div>
-        )}
+        <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-1 rounded-full bg-black/20 backdrop-blur-[2px] px-1.5 py-1">
+          {[0, 1, 2].map((idx) => (
+            <span
+              key={idx}
+              className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
+                idx === showIndex ? "w-1.5 opacity-100" : "w-1.5 opacity-50"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Plus circle (visible when not hovered) */}
+        <div className="absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-[#00000050] backdrop-blur-md text-white opacity-100 group-hover/card:opacity-0 transition-opacity duration-300">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        </div>
 
         {/* Hover Action Button */}
-        <button className="group/btn absolute bottom-3 right-3 z-20 flex h-10 w-10 hover:w-[130px] items-center rounded-lg bg-neutral-900/60 backdrop-blur-md text-white opacity-0 group-hover/card:opacity-100 transition-all duration-300 active:scale-95 overflow-hidden">
+        <button className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-10 w-10 hover:w-[130px] items-center rounded-lg bg-[#00000050] backdrop-blur-md text-white opacity-0 group-hover/card:opacity-100 transition-all duration-300 active:scale-95 overflow-hidden">
           <div className="flex items-center gap-2 px-3 w-full">
             <svg
               width="16"
