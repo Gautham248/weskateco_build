@@ -144,7 +144,7 @@ export default async function CategoryPage(props: {
     "skateboard-trucks": "skateboards",
     "skateboard-wheels": "skateboards",
     "skateboard-accessories": "skateboards",
-    
+
     // Surfskates
     "surfskates": "surfskates",
     "surfskate-completes": "surfskates",
@@ -152,11 +152,11 @@ export default async function CategoryPage(props: {
     "surfskate-trucks": "surfskates",
     "surfskate-wheels": "surfskates",
     "surfskate-accessories": "surfskates",
-    
+
     // Apparel
     "apparel-1": "apparel-1",
     "apparel": "apparel-1",
-    
+
     // Protection Gears
     "protection-gears": "protection-gears",
     "protective-gears": "protection-gears",
@@ -173,7 +173,7 @@ export default async function CategoryPage(props: {
   };
 
   const activeHandle = params.collection;
-  
+
   // Resolve parent category
   let parentCategory = SUB_TO_PARENT[activeHandle];
   if (!parentCategory && activeHandle) {
@@ -276,12 +276,12 @@ export default async function CategoryPage(props: {
               {currentPage > 1 ? (
                 <Link
                   href={createPageUrl(currentPage - 1)}
-                  className="flex items-center gap-1 text-sm font-medium text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors mr-2"
+                  className="flex items-center gap-1 text-sm font-medium text-black hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors mr-2"
                 >
                   &lt; Previous
                 </Link>
               ) : (
-                <span className="flex items-center gap-1 text-sm font-medium text-neutral-300 dark:text-neutral-700 cursor-not-allowed mr-2">
+                <span className="flex items-center gap-1 text-sm font-medium text-neutral-400 dark:text-neutral-700 cursor-not-allowed mr-2">
                   &lt; Previous
                 </span>
               )}
@@ -295,17 +295,16 @@ export default async function CategoryPage(props: {
                       </span>
                     );
                   }
-                  
+
                   const isCurrent = p === currentPage;
                   return (
                     <Link
                       key={p}
                       href={createPageUrl(Number(p))}
-                      className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${
-                        isCurrent
-                          ? "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-xs"
-                          : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                      }`}
+                      className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${isCurrent
+                        ? "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-xs"
+                        : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        }`}
                     >
                       {p}
                     </Link>
@@ -316,12 +315,12 @@ export default async function CategoryPage(props: {
               {currentPage < totalPages ? (
                 <Link
                   href={createPageUrl(currentPage + 1)}
-                  className="flex items-center gap-1 text-sm font-medium text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors ml-2"
+                  className="flex items-center gap-1 text-sm font-medium text-black hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors ml-2"
                 >
                   Next &gt;
                 </Link>
               ) : (
-                <span className="flex items-center gap-1 text-sm font-medium text-neutral-300 dark:text-neutral-700 cursor-not-allowed ml-2">
+                <span className="flex items-center gap-1 text-sm font-medium text-neutral-400 dark:text-neutral-700 cursor-not-allowed ml-2">
                   Next &gt;
                 </span>
               )}

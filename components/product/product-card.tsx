@@ -41,11 +41,11 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
   return (
     <Link
       href={productPath}
-      className="group flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900/50"
+      className="group flex flex-col bg-transparent"
     >
       <div
         ref={imgRef}
-        className="relative aspect-[2/3] w-full overflow-hidden bg-neutral-100 dark:bg-neutral-800"
+        className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900"
         onMouseEnter={() => { if (displayImages.length > 1) setShowIndex(1); }}
         onMouseMove={handleMouseMove}
         onMouseLeave={() => { clearTimeout(moveTimer.current); setShowIndex(0); }}
@@ -89,7 +89,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
         )}
 
         {/* Plus circle (visible when not hovered) */}
-        <div className="absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-[#00000050] backdrop-blur-md text-white opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+        <div className="absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white opacity-100 group-hover:opacity-0 transition-opacity duration-300">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
@@ -97,7 +97,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
         </div>
 
         {/* Hover Action Button */}
-        <div className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-10 w-10 hover:w-[130px] items-center rounded-lg bg-[#00000050] backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all duration-300 active:scale-95 overflow-hidden">
+        <div className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-10 w-10 hover:w-[130px] items-center rounded-lg bg-black/30 dark:bg-white/20 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all duration-300 active:scale-95 overflow-hidden">
           <div className="flex items-center gap-2 px-3 w-full">
             <svg
               width="16"
@@ -127,16 +127,30 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="mb-2 text-sm font-medium text-neutral-900 line-clamp-2 dark:text-neutral-100 group-hover:text-neutral-700 dark:group-hover:text-neutral-300">
+      <div className="flex flex-1 flex-col pt-4 px-1">
+        {product.vendor && (
+          <p className="text-[12px] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-1" style={{ fontFamily: "Archivo" }}>
+            {product.vendor}
+          </p>
+        )}
+        <h3 className="mb-2 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2" style={{ fontFamily: "Archivo" }}>
           {title}
         </h3>
-        <div className="mt-auto flex items-center justify-between">
+        <div className="flex items-center gap-3">
           <Price
             amount={priceRange.minVariantPrice.amount}
             currencyCode={priceRange.minVariantPrice.currencyCode}
-            className="text-base font-semibold text-neutral-900 dark:text-neutral-50"
+            currencyCodeClassName="hidden"
+            className="text-[14px] font-normal text-neutral-900 dark:text-neutral-100"
           />
+          {product.variants[0]?.compareAtPrice && (
+            <Price
+              amount={product.variants[0].compareAtPrice.amount}
+              currencyCode={product.variants[0].compareAtPrice.currencyCode}
+              currencyCodeClassName="hidden"
+              className="text-[14px] font-normal text-red-500 line-through decoration-red-500 decoration-1"
+            />
+          )}
         </div>
       </div>
     </Link>
