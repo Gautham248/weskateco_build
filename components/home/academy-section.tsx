@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import academyImg from "components/icons/academy.jpeg";
+import academyImg from "components/icons/academy.png";
 
 export default function AcademySection() {
   return (
@@ -10,10 +10,21 @@ export default function AcademySection() {
           src={academyImg}
           alt="Academy"
           fill
-          className="object-cover object-left-top"
+          className="object-cover object-center"
           priority
         />
-        {/* Added 'group' class to the Link */}
+        
+        {/* Top Right Text Overlay */}
+        <div className="absolute top-8 left-6 md:top-12 md:left-12 z-10 text-right select-none">
+          <h2 className="text-[10vw] font-black tracking-tighter text-cyan-400 italic leading-none drop-shadow-md">
+            WESKATE
+          </h2>
+          <p className="text-[5vw] font-extrabold tracking-widest text-cyan-400 uppercase leading-none mt-1 drop-shadow-sm">
+            ACADEMY
+          </p>
+        </div>
+
+        {/* Link Button */}
         <Link
           href="/academy"
           className="group absolute bottom-25 md:bottom-5 left-4 z-10 flex items-center gap-2 rounded-full bg-black px-6 py-3 text-white text-sm font-semibold uppercase hover:opacity-90 transition-opacity"

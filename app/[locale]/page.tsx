@@ -5,6 +5,7 @@ import CategoryGrid from "components/home/category-grid";
 import ProductGridSection from "components/home/product-grid-section";
 import ShopNow from "components/home/shop-now";
 import AcademySection from "components/home/academy-section";
+import TipsSection from "components/home/tips-section";
 import ConfiguratorCTA from "components/home/configurator-cta";
 import BrandsSection from "components/home/brands-section";
 import Footer from "components/layout/footer";
@@ -50,7 +51,7 @@ export default async function HomePage(props: {
       <NewlyRelease />
       <AboutSection />
       <CategoryGrid locale={locale} />
-      <ProductGridSection
+      {/* <ProductGridSection
         title={t("home.featured_products")}
         products={slicedFeaturedProducts}
         locale={locale}
@@ -61,11 +62,12 @@ export default async function HomePage(props: {
         title={t("home.new_arrivals")}
         products={slicedNewArrivals}
         locale={locale}
-      />
+      /> */}
       <ShopNow locale={locale} />
       <AcademySection />
-      <ConfiguratorCTA locale={locale} />
-      <BrandsSection locale={locale} />
+      <TipsSection />
+      {/* <ConfiguratorCTA locale={locale} />
+      <BrandsSection locale={locale} /> */}
       <Footer />
     </>
   );
