@@ -16,19 +16,19 @@ export default async function Footer() {
           
           {/* Column 1: Shop Categories */}
           <div>
-            <h3 className="font-bold text-xs md:text-md tracking-widest text-white mb-4 uppercase" style={{ fontFamily: 'ClashDisplay, sans-serif' }}>
+            <h3 className="font-bold text-xs md:text-[16px] tracking-widest text-white mb-4 uppercase" style={{ fontFamily: 'ClashDisplay, sans-serif' }}>
               Shop
             </h3>
-            <ul className="space-y-3 text-neutral-400 text-xs md:text-md font-normal" style={{ fontFamily: 'Archivo, sans-serif' }}>
+            <ul className="space-y-3 text-neutral-400 text-xs md:text-[16px] font-normal" style={{ fontFamily: 'Archivo, sans-serif' }}>
               <li><Link href="/search/skateboards" className="hover:text-white transition-colors">Skateboards</Link></li>
               <li><Link href="/search/surfskates" className="hover:text-white transition-colors">Surfskates</Link></li>
               <li><Link href="/search/apparel" className="hover:text-white transition-colors">Apparel</Link></li>
-              <li><Link href="/search/protective-gear" className="hover:text-white transition-colors">Protective Gear</Link></li>
+              <li><Link href="/search/protection-gears" className="hover:text-white transition-colors">Protective Gear</Link></li>
             </ul>
           </div>
 
           {/* Column 2: Info Links */}
-          <div className="flex flex-col space-y-4 font-bold text-xs md:text-md tracking-wider text-white" style={{ fontFamily: 'ClashDisplay, sans-serif' }}>
+          <div className="flex flex-col space-y-4 font-bold text-xs md:text-[16px] tracking-wider text-white" style={{ fontFamily: 'ClashDisplay, sans-serif' }}>
             <Link href="/academy" className="hover:text-neutral-300 transition-colors">ACADEMY</Link>
             <Link href="/about" className="hover:text-neutral-300 transition-colors">ABOUT US</Link>
             <Link href="/guides" className="hover:text-neutral-300 transition-colors">BUYING GUIDES</Link>
@@ -37,7 +37,7 @@ export default async function Footer() {
           </div>
 
           {/* Column 3: Legal & Support Links */}
-          <div className="flex flex-col space-y-4 font-bold text-xs md:text-md tracking-wider text-white" style={{ fontFamily: 'ClashDisplay, sans-serif' }}>
+          <div className="flex flex-col space-y-4 font-bold text-xs md:text-[16px] tracking-wider text-white" style={{ fontFamily: 'ClashDisplay, sans-serif' }}>
             <Link href="/contact" className="hover:text-neutral-300 transition-colors">CONTACT US</Link>
             <Link href="/shipping-policy" className="hover:text-neutral-300 transition-colors">SHIPPING POLICY</Link>
             <Link href="/privacy-policy" className="hover:text-neutral-300 transition-colors">PRIVACY POLICY</Link>

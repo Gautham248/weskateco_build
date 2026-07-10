@@ -206,7 +206,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
 
         {/* --- DESKTOP ACCORDION GRID VIEW --- */}
         <div
-          className="hidden md:flex w-full h-[520px] gap-4 items-stretch overflow-hidden"
+          className="hidden md:flex w-full h-[520px] gap-4 items-stretch overflow-hidden mx-auto max-w-(--breakpoint-2xl) px-6 mb-6 md:mb-10"
           onMouseLeave={() => setHoveredIndex(0)}
         >
           {categories.map((category, index) => {

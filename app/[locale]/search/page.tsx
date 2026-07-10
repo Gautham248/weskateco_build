@@ -4,6 +4,7 @@ import { defaultSort, sorting } from "lib/constants";
 import { getProducts, getCollections } from "lib/shopify";
 import Link from "next/link";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import FilterSortBar from "components/layout/search/filter-sort-bar";
 
 export const dynamicParams = true;
 
@@ -22,7 +23,7 @@ export default async function SearchPage(props: {
 }) {
   const searchParams = await props.searchParams;
   const { locale } = await props.params;
-  const { sort, q: searchValue } = (searchParams || {}) as { [key: string]: string };
+  const { sort, color, level, price, q: searchValue } = (searchParams || {}) as { [key: string]: string };
   const { sortKey, reverse } =
     sorting.find((item) => item.slug === sort) || defaultSort;
 
@@ -31,11 +32,56 @@ export default async function SearchPage(props: {
     getCollections(),
   ]);
 
-  const resultsText = products.length > 1 ? "results" : "result";
+  // Apply filters
+  let filteredProducts = [...products];
+
+  if (color) {
+    const colorLower = color.toLowerCase();
+    filteredProducts = filteredProducts.filter((product) => {
+      const matchesOption = product.options?.some((opt) =>
+        opt.name.toLowerCase() === "color" &&
+        opt.values.some((val) => val.toLowerCase() === colorLower)
+      );
+      const matchesTag = product.tags?.some((tag) => tag.toLowerCase() === colorLower);
+      const matchesTitle = product.title.toLowerCase().includes(colorLower);
+      const matchesDesc = product.description?.toLowerCase().includes(colorLower);
+      return matchesOption || matchesTag || matchesTitle || matchesDesc;
+    });
+  }
+
+  if (level) {
+    const levelLower = level.toLowerCase();
+    filteredProducts = filteredProducts.filter((product) => {
+      const matchesTag = product.tags?.some((tag) => tag.toLowerCase() === levelLower);
+      const matchesTitle = product.title.toLowerCase().includes(levelLower);
+      const matchesDesc = product.description?.toLowerCase().includes(levelLower);
+      return matchesTag || matchesTitle || matchesDesc;
+    });
+  }
+
+  if (price) {
+    const [minPrice, maxPrice] = price.split("-").map(Number);
+    if (minPrice !== undefined && maxPrice !== undefined && !isNaN(minPrice) && !isNaN(maxPrice)) {
+      filteredProducts = filteredProducts.filter((product) => {
+        const productPrice = Number(product.priceRange.minVariantPrice.amount);
+        return productPrice >= minPrice && productPrice <= maxPrice;
+      });
+    }
+  }
+
+  const resultsText = filteredProducts.length > 1 ? "results" : "result";
   const t = createTranslator(locale);
 
   // Filter out the empty handle/All collection for the grid since we show "All Products" below
   const filteredCollections = collections.filter((c) => c.handle !== "");
+
+  const formattedCollections = collections.map(c => ({
+    handle: c.handle,
+    title: c.title,
+    path: c.path
+  }));
+
+  const displayTitle = searchValue ? `Search: ${searchValue}` : t("collection.all_products");
 
   return (
     <>
@@ -66,33 +112,26 @@ export default async function SearchPage(props: {
         </div>
       )}
 
-      {searchValue ? (
-        <p className="mb-4 text-sm text-neutral-600 dark:text-neutral-400">
-          {products.length === 0
-            ? "There are no products that match "
-            : `Showing ${products.length} ${resultsText} for `}
-          <span className="font-bold text-neutral-900 dark:text-neutral-100">
-            &quot;{searchValue}&quot;
-          </span>
-        </p>
-      ) : (
-        <h2 className="mb-6 text-xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
-          {t("collection.all_products")}
-        </h2>
-      )}
+      <div className="mb-6">
+        <FilterSortBar
+          title={displayTitle}
+          totalProducts={filteredProducts.length}
+          locale={locale}
+          collections={formattedCollections}
+          activeCollectionHandle=""
+        />
+      </div>
 
-      {products.length > 0 ? (
+      {filteredProducts.length > 0 ? (
         <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          <ProductGridItems products={products} />
+          <ProductGridItems products={filteredProducts} />
         </Grid>
       ) : (
-        searchValue && (
-          <div className="flex min-h-[200px] flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 p-8 text-center dark:border-neutral-800">
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
-              No products found
-            </p>
-          </div>
-        )
+        <div className="flex min-h-[200px] flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 p-8 text-center dark:border-neutral-800">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            No products found
+          </p>
+        </div>
       )}
     </>
   );

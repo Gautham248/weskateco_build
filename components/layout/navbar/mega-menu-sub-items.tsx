@@ -1,7 +1,10 @@
 "use client";
 
+import { getLocalizedPath } from "lib/i18n";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import catalog from "scripts/product-catalog-dump.json";
+
 
 function SkateboardIcon() {
   return (
@@ -38,9 +41,33 @@ export function hasSubItems(category: string | null): boolean {
 }
 
 export default function MegaMenuSubItems({ category }: { category: string | null }) {
+  const params = useParams();
+  const locale = (params?.locale as string) || "en";
+
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const items = category ? subItemsMap[category] : undefined;
   if (!items) return null;
+
+  const getSubItemHref = (parentCategoryUrl: string, subItemName: string): string => {
+    const itemLower = subItemName.toLowerCase();
+    let path = `/search/${itemLower}`;
+
+    if (parentCategoryUrl.includes("skateboards")) {
+      if (itemLower === "completes") path = `/search/skateboard-completes`;
+      else if (itemLower === "decks") path = `/search/decks`;
+      else if (itemLower === "trucks") path = `/search/skateboard-trucks`;
+      else if (itemLower === "wheels") path = `/search/skateboard-wheels`;
+      else if (itemLower === "accessories") path = `/search/skateboard-accessories`;
+    } else if (parentCategoryUrl.includes("surfskates")) {
+      if (itemLower === "completes") path = `/search/surfskate-completes`;
+      else if (itemLower === "decks") path = `/search/surfskate-decks`;
+      else if (itemLower === "trucks") path = `/search/surfskate-trucks`;
+      else if (itemLower === "wheels") path = `/search/surfskate-wheels`;
+      else if (itemLower === "accessories") path = `/search/surfskate-accessories`;
+    }
+
+    return getLocalizedPath(path, locale);
+  };
 
   return (
     <div className="h-full bg-white dark:bg-neutral-900 rounded-xl px-[14px] py-7.5">
@@ -50,7 +77,7 @@ export default function MegaMenuSubItems({ category }: { category: string | null
           return (
             <a
               key={item}
-              href="#"
+              href={getSubItemHref(category!, item)}
               className="relative flex h-12 items-center justify-between gap-10 text-xl font-medium text-black dark:text-white whitespace-nowrap"
               style={{ fontFamily: "Archivo", letterSpacing: "0em" }}
               onMouseEnter={() => setHoveredItem(item)}
