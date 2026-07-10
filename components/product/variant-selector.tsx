@@ -105,10 +105,10 @@ export function VariantSelector({
                 className={clsx(
                   "flex h-12 items-center justify-center rounded-xs text-[13px] font-medium transition-all duration-200 border-none",
                   {
-                    "bg-black text-white dark:bg-white dark:text-black": isActive,
-                    "bg-[#f2f2f2] text-black hover:bg-neutral-200 dark:bg-neutral-800/80 dark:text-white dark:hover:bg-neutral-700":
+                    "bg-black text-white dark:bg-white dark:text-black cursor-pointer": isActive,
+                    "bg-[#f2f2f2] text-black hover:bg-neutral-200 dark:bg-neutral-800/80 dark:text-white dark:hover:bg-neutral-700 cursor-pointer":
                       !isActive && isAvailableForSale,
-                    "opacity-30 cursor-not-allowed bg-neutral-100 text-neutral-400 dark:bg-neutral-900 dark:text-neutral-600":
+                    "opacity-30 cursor-not-allowed bg-neutral-100 text-neutral-400 dark:bg-neutral-900 dark:text-neutral-600 ":
                       !isAvailableForSale,
                   },
                   {

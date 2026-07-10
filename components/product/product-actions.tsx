@@ -5,7 +5,7 @@ import { addItem, buyNowAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
-import { useActionState, useTransition } from "react";
+import { useActionState, useState, useTransition } from "react";
 
 export function ProductActions({ product }: { product: Product }) {
   const { variants, availableForSale } = product;
@@ -13,6 +13,7 @@ export function ProductActions({ product }: { product: Product }) {
   const searchParams = useSearchParams();
   const [isBuyNowPending, startBuyNowTransition] = useTransition();
   const [message, formAction] = useActionState(addItem, null);
+  const [isAdded, setIsAdded] = useState(false);
 
   const variant = variants.find((variant: ProductVariant) =>
     variant.selectedOptions.every(
@@ -62,6 +63,8 @@ export function ProductActions({ product }: { product: Product }) {
           if (selectedVariantId) {
             const bindAction = formAction.bind(null, selectedVariantId);
             bindAction();
+            setIsAdded(true);
+            setTimeout(() => setIsAdded(false), 2000);
           }
         }}
       >
@@ -76,14 +79,12 @@ export function ProductActions({ product }: { product: Product }) {
           )}
           style={{ fontFamily: "Archivo" }}
         >
-          {selectedVariantId ? "Add To Cart" : "Select Option"}
+          {selectedVariantId ? (isAdded ? "Added to Cart ✓" : "Add To Cart") : "Select Option"}
         </button>
         <p aria-live="polite" className="sr-only" role="status">
           {message}
         </p>
-      </form>
-
-      {/* Buy Now Button */}
+      </form>      {/* Buy Now Button */}
       <button
         type="button"
         disabled={!selectedVariantId || isBuyNowPending}
