@@ -16,10 +16,13 @@ const Price = ({
       style: "currency",
       currency: currencyCode,
       currencyDisplay: "narrowSymbol",
-    }).format(parseFloat(amount))}`}
-    <span
-      className={clsx("ml-1 inline", currencyCodeClassName)}
-    >{`${currencyCode}`}</span>
+    }).format(parseFloat(amount))
+      .replace(/([^\d\s])(\d)/, "$1 $2")}`}
+    {currencyCodeClassName !== "hidden" && (
+      <span
+        className={clsx("ml-1 inline", currencyCodeClassName)}
+      >{`${currencyCode}`}</span>
+    )}
   </p>
 );
 

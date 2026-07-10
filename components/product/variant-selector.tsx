@@ -47,9 +47,27 @@ export function VariantSelector({
 
   return options.map((option) => (
     <form key={option.id}>
-      <dl className="mb-8">
-        <dt className="mb-4 text-sm uppercase tracking-wide">{option.name}</dt>
-        <dd className="flex flex-wrap gap-3">
+      <dl className="mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <dt className="text-xs font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100" style={{ fontFamily: "Archivo" }}>
+            {option.name}
+          </dt>
+          {option.name.toLowerCase() === "size" && (
+            <a
+              href="#buying-guide"
+              className="text-[11px] font-semibold uppercase tracking-wider text-black hover:text-neutral-400 dark:hover:text-white transition-colors underline"
+              style={{ fontFamily: "Archivo" }}
+            >
+              Buying Guide
+            </a>
+          )}
+        </div>
+        <dd
+          className={clsx("gap-2", {
+            "grid grid-cols-4": option.name.toLowerCase() === "size" || option.values.length > 3,
+            "flex flex-wrap": option.name.toLowerCase() !== "size" && option.values.length <= 3,
+          })}
+        >
           {option.values.map((value) => {
             const optionNameLowerCase = option.name.toLowerCase();
 
@@ -85,15 +103,20 @@ export function VariantSelector({
                 disabled={!isAvailableForSale}
                 title={`${option.name} ${value}${!isAvailableForSale ? " (Out of Stock)" : ""}`}
                 className={clsx(
-                  "flex min-w-[48px] items-center justify-center rounded-full border bg-neutral-100 px-2 py-1 text-sm dark:border-neutral-800 dark:bg-neutral-900",
+                  "flex h-12 items-center justify-center rounded-xs text-[13px] font-medium transition-all duration-200 border-none",
                   {
-                    "cursor-default ring-2 ring-blue-600": isActive,
-                    "ring-1 ring-transparent transition duration-300 ease-in-out hover:ring-blue-600":
+                    "bg-black text-white dark:bg-white dark:text-black": isActive,
+                    "bg-[#f2f2f2] text-black hover:bg-neutral-200 dark:bg-neutral-800/80 dark:text-white dark:hover:bg-neutral-700":
                       !isActive && isAvailableForSale,
-                    "relative z-10 cursor-not-allowed overflow-hidden bg-neutral-100 text-neutral-500 ring-1 ring-neutral-300 before:absolute before:inset-x-0 before:-z-10 before:h-px before:-rotate-45 before:bg-neutral-300 before:transition-transform dark:bg-neutral-900 dark:text-neutral-400 dark:ring-neutral-700 dark:before:bg-neutral-700":
+                    "opacity-30 cursor-not-allowed bg-neutral-100 text-neutral-400 dark:bg-neutral-900 dark:text-neutral-600":
                       !isAvailableForSale,
                   },
+                  {
+                    "w-full": option.name.toLowerCase() === "size" || option.values.length > 3,
+                    "flex-1 min-w-[120px] max-w-[160px]": option.name.toLowerCase() !== "size" && option.values.length <= 3,
+                  }
                 )}
+                style={{ fontFamily: "Archivo" }}
               >
                 {value}
               </button>

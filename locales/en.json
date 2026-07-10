@@ -13,7 +13,6 @@
   "nav.community": "Community",
   "nav.buying_guide": "Buying Guide",
   "nav.search": "Search",
-
   "cart.title": "Your Cart",
   "cart.empty": "Your cart is empty",
   "cart.checkout": "Checkout",
@@ -34,7 +33,6 @@
   "cart.loading_checkout": "Loading checkout...",
   "cart.proceed_to_checkout": "Proceed to Checkout",
   "cart.checkout_fallback": "Checkout (alternative)",
-
   "product.add_to_cart": "Add To Cart",
   "product.out_of_stock": "Out Of Stock",
   "product.select_option": "Please select an option",
@@ -43,7 +41,6 @@
   "product.size_guide": "Size Guide",
   "product.compatibility": "What works with this",
   "product.emi_available": "EMI options available",
-
   "configurator.title": "Build Your Setup",
   "configurator.step1": "Choose Board Type",
   "configurator.step2": "Choose Your Deck",
@@ -63,18 +60,15 @@
   "configurator.next": "Next Step",
   "configurator.skip": "Skip",
   "configurator.skip_step": "Skip this step",
-
   "configurator.board_type.skateboard": "Skateboard",
   "configurator.board_type.surfskate": "Surfskate",
   "configurator.board_type.longboard": "Longboard",
   "configurator.board_type.old_school": "Old School",
   "configurator.board_type.cruiser": "Cruiser",
-
   "academy.title": "WeSkate Academy",
   "academy.book_session": "Book a Session",
   "academy.programmes": "Programmes",
   "academy.instructors": "Instructors",
-
   "skateparks.title": "WB Skateparks",
   "skateparks.progress": "Construction Progress",
   "skateparks.enquiry": "Get a Quote",
@@ -84,26 +78,20 @@
   "skateparks.status.construction": "Construction",
   "skateparks.status.finishing": "Finishing",
   "skateparks.status.complete": "Complete",
-
   "artists.title": "Artist Collaborations",
   "artists.shop_collection": "Shop the Collection",
   "artists.coming_soon": "Coming Soon",
-
   "brands.title": "Authorised Brands",
   "brands.official_distributor": "Official Indian Distributor",
-
   "team.title": "WeSkate Team",
   "team.community_rider": "Community Rider",
   "team.team_rider": "Team Rider",
   "team.ambassador": "Ambassador",
-
   "ugc.title": "Community Gallery",
   "ugc.share_prompt": "Tag @weskateco on Instagram to get featured",
   "ugc.featured": "Featured",
-
   "community.title": "Community Stories",
   "community.read_more": "Read Story",
-
   "forms.name": "Name",
   "forms.email": "Email",
   "forms.phone": "Phone",
@@ -113,12 +101,10 @@
   "forms.success": "Thank you! We will get back to you soon.",
   "forms.error": "Something went wrong. Please try again.",
   "forms.required": "This field is required",
-
   "search.title": "Search",
   "search.placeholder": "Search for products...",
   "search.no_results": "No results found",
   "search.results_for": "Results for",
-
   "common.loading": "Loading...",
   "common.step": "Step",
   "common.error": "Something went wrong",
@@ -130,7 +116,6 @@
   "common.language": "Language",
   "common.english": "English",
   "common.hindi": "हिन्दी",
-
   "home.hero_title": "India's Home for Skateboards & Surfskates",
   "home.hero_subtitle": "Born from busted decks, scraped knees, and the spirit of One Last Try",
   "home.shop_skateboards": "Shop Skateboards",
@@ -147,7 +132,6 @@
   "home.brands_title": "Brands We Carry",
   "home.configurator_cta": "Can't decide? Build your perfect setup",
   "home.configurator_desc": "Use our configurator to pick compatible parts and build your dream skateboard",
-
   "collection.title": "Collections",
   "collection.products_count": "products",
   "collection.sort_by": "Sort by",
@@ -158,10 +142,9 @@
   "collection.price_high_low": "Price: High to Low",
   "collection.newest": "Newest",
   "collection.best_selling": "Best Selling",
-
   "product.specifications": "Specifications",
   "product.specifications_coming_soon": "Specifications coming soon.",
-  "product.related_products": "You Might Also Like",
+  "product.related_products": "You May Also Like",
   "product.quantity": "Quantity",
   "product.price": "Price",
   "product.brand": "Brand",
@@ -172,7 +155,6 @@
   "product.free_shipping": "Free shipping on orders above ₹2,000",
   "product.secure_payment": "100% Secure Payment",
   "product.easy_returns": "Easy Returns",
-
   "footer.copyright": "© 2026 WeSkate Co. All rights reserved.",
   "footer.privacy": "Privacy Policy",
   "footer.terms": "Terms of Service",
