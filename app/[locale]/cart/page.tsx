@@ -190,7 +190,7 @@ function CartPageContent() {
 
                         {/* Right Column: Title, Details, Delivery, Remove */}
                         <div className="flex-1 flex flex-col min-w-0" style={{ fontFamily: "Archivo" }}>
-                          <h3 className="text-[17px] font-bold text-neutral-900 dark:text-neutral-50 leading-tight tracking-tight uppercase">
+                          <h3 className="text-[17px] font-bold text-neutral-900 dark:text-neutral-50 leading-tight tracking-[-1%] uppercase" style={{ fontFamily: "'Clash Display', sans-serif" }}>
                             {item.merchandise.product.title}
                           </h3>
 
@@ -253,10 +253,10 @@ function CartPageContent() {
                           {/* Top row: Title/Vendor on left, Quantity on right */}
                           <div className="flex justify-between items-start gap-4">
                             <div>
-                              <h3 className="text-[16px] font-bold uppercase text-black dark:text-white leading-tight tracking-tight">
+                              <h3 className="text-[16px] font-bold uppercase text-black dark:text-white leading-tight tracking-[-1%]" style={{ fontFamily: "'Clash Display', sans-serif" }}>
                                 {item.merchandise.product.title}
                               </h3>
-                              <p className="text-[12px] font-normal text-black dark:text-neutral-500 uppercase mt-0.5 tracking-wider">
+                              <p className="text-[12px] font-normal text-black dark:text-neutral-500 uppercase mt-0.5 tracking-[-1%]" style={{ fontFamily: "'Clash Display', sans-serif" }}>
                                 {item.merchandise.product.vendor || ""}
                               </p>
                             </div>
@@ -314,15 +314,15 @@ function CartPageContent() {
 
                 </div>
                 <div
-                  className="text-right text-xs text-neutral-500 dark:text-neutral-400"
+                  className="flex justify-between items-center w-full text-[14px] text-neutral-500 dark:text-neutral-400 md:justify-end md:gap-4"
                   style={{ fontFamily: "Archivo" }}
                 >
-                  Subtotal ({cart.totalQuantity} items):{" "}
+                  <span>Subtotal ({cart.totalQuantity} items):</span>
                   <Price
                     amount={cart.cost.subtotalAmount.amount}
                     currencyCode={cart.cost.subtotalAmount.currencyCode}
                     currencyCodeClassName="hidden"
-                    className="text-base font-bold text-neutral-900 dark:text-neutral-50 inline"
+                    className="text-base font-bold text-neutral-900 dark:text-neutral-50"
                   />
                 </div>
               </div>
@@ -374,7 +374,7 @@ function CartPageContent() {
                   </div>
 
                   <div className="border-t border-neutral-200 dark:border-neutral-800 pt-4 mt-2 flex justify-between items-baseline">
-                    <span className="text-xs font-bold uppercase text-neutral-900 dark:text-white">
+                    <span className="text-[14px] font-bold uppercase text-neutral-900 dark:text-white" style={{ fontFamily: "'Clash Display', sans-serif" }}>
                       Grand Total
                     </span>
                     <Price

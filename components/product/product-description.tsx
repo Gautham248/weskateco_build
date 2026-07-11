@@ -91,8 +91,8 @@ export function ProductDescription({ product, locale }: { product: Product; loca
       <div className="w-full">
         <button
           onClick={() => setIsDescOpen(!isDescOpen)}
-          className="cursor-pointer flex w-full items-center justify-between py-2 text-left font-bold text-black dark:text-white uppercase tracking-wider text-[15px]"
-          style={{ fontFamily: "Archivo" }}
+          className="cursor-pointer flex w-full items-center justify-between py-2 text-left font-bold text-black dark:text-white uppercase tracking-wider text-[18px]"
+          style={{ fontFamily: "'Clash Display', sans-serif" }}
         >
           <span>Product Description</span>
           <svg

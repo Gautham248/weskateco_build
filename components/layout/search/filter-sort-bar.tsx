@@ -130,9 +130,14 @@ export default function FilterSortBar({
       {/* Top Row: Title, showing count, Filter & Sort buttons */}
       <div className="flex flex-col px-4 md:px-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-[28px] md:text-3xl font-extrabold tracking-tight uppercase leading-tight">
-            {title}
-          </h2>
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-[28px] md:text-3xl font-extrabold tracking-[-1%] uppercase leading-tight" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+              {title}
+            </h2>
+            <span className="hidden md:inline text-xs md:text-sm font-medium text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
+              (Showing 1 – {totalProducts} products of {totalProducts} products)
+            </span>
+          </div>
 
           {/* Mobile Filter / Sort Icons */}
           <div className="flex items-center gap-3 text-neutral-800 dark:text-neutral-200 md:hidden">
@@ -240,7 +245,7 @@ export default function FilterSortBar({
         </div>
 
         {/* Showing Count */}
-        <div className="mt-1">
+        <div className="mt-1 md:hidden">
           <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
             (Showing 1 – {totalProducts} products of {totalProducts} products)
           </span>

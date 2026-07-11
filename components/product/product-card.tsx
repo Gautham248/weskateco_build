@@ -80,9 +80,8 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             {displayImages.map((_, idx) => (
               <span
                 key={idx}
-                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
-                  idx === showIndex ? "w-1.5 opacity-100" : "w-1.5 opacity-50"
-                }`}
+                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-1.5 opacity-100" : "w-1.5 opacity-50"
+                  }`}
               />
             ))}
           </div>
@@ -133,7 +132,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             {product.vendor}
           </p>
         )}
-        <h3 className="mb-2 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2" style={{ fontFamily: "Archivo" }}>
+        <h3 className="mb-2 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2" style={{ fontFamily: "'Clash Display', sans-serif" }}>
           {title}
         </h3>
         <div className="flex items-center gap-3">

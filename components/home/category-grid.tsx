@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
-import { createTranslator } from "lib/i18n";
-import { getLocalizedPath } from "lib/i18n";
+import accessoriesImg from "components/icons/accessories.png";
 import skateboardsImg from "components/icons/skateboards.png";
 import surfboardsImg from "components/icons/surfboards.png";
-import accessoriesImg from "components/icons/accessories.png";
+import { createTranslator, getLocalizedPath } from "lib/i18n";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boolean; id: string }) {
   const upperName = name.toUpperCase();
@@ -45,7 +44,7 @@ function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boo
 
   return (
     <div ref={containerRef} className="relative w-full flex items-center justify-between h-8">
-      <h3 className="text-white text-[22px] font-bold uppercase tracking-wide flex items-center whitespace-nowrap select-none z-0">
+      <h3 className="text-white text-[22px] font-medium uppercase tracking-wide flex items-center whitespace-nowrap select-none z-0">
         <span>{firstPart}</span>
         <span ref={oTargetRef} className="relative">
           {name[lastOIndex]}
@@ -54,11 +53,10 @@ function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boo
       </h3>
 
       <span
-        className={`absolute bg-[#C5FF1A] text-black rounded-full flex items-center justify-center font-bold transition-all duration-[1600ms] top-1/2 -translate-y-1/2 z-10 ${
-          !isExpanded
-            ? "text-[9px] w-5 h-5 -translate-x-1/2"
-            : "text-[10px] w-6 h-6 left-full -translate-x-full"
-        }`}
+        className={`absolute bg-[#C5FF1A] text-black rounded-full flex items-center justify-center font-bold transition-all duration-[1600ms] top-1/2 -translate-y-1/2 z-10 ${!isExpanded
+          ? "text-[9px] w-5 h-5 -translate-x-1/2"
+          : "text-[10px] w-6 h-6 left-full -translate-x-full"
+          }`}
         style={{
           transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
           left: !isExpanded ? `${oOffset}px` : undefined
@@ -73,7 +71,7 @@ function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boo
 export default function CategoryGrid({ locale }: { locale: string }) {
   const t = createTranslator(locale);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(0);
-  
+
   const [activeMobileIndex, setActiveMobileIndex] = useState<number>(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isJumping = useRef(false);
@@ -143,117 +141,114 @@ export default function CategoryGrid({ locale }: { locale: string }) {
   return (
     <section className="h-[fit-content] w-full bg-white pt-10 md:pt-30 pb-15 md:pb-5">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-6 mb-6 md:mb-10">
-        <h2 className="text-4xl font-black tracking-tighter text-black dark:text-white sm:text-5xl lg:text-[60px]">
+        <h2 className="text-4xl font-black tracking-tight text-black dark:text-white sm:text-5xl lg:text-[60px]" style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}>
           CATEGORIES
         </h2>
       </div>
 
-        {/* --- MOBILE CAROUSEL VIEW --- */}
-        <div className="block md:hidden w-full">
-          <div
-            ref={scrollContainerRef}
-            onScroll={handleScroll}
-            className="flex w-full overflow-x-auto gap-0 snap-x snap-mandatory scrollbar-none pb-6"
-            style={{ scrollbarWidth: "none" }}
-          >
-            <div className="shrink-0 w-[8vw]" />
-
-            {loopedCategories.map((category, index) => {
-              const isActive = index % categories.length === activeMobileIndex;
-              return (
-                <Link
-                  key={`mobile-${index}`}
-                  href={getLocalizedPath(category.href, locale)}
-                  className={`group relative h-[480px] w-[76vw] shrink-0 rounded-2xl overflow-hidden snap-center bg-neutral-100 shadow-md transition-all duration-500 ease-out ${
-                    isActive ? "scale-100" : "scale-[0.82]"
-                  }`}
-                >
-                  <img
-                    src={category.image.src}
-                    alt={category.name}
-                    className="w-full h-full object-cover"
-                  />
-                  
-                  <div className="absolute inset-0 bg-gradient-to-b from-blue-400/20 via-transparent to-black/80 flex flex-col justify-between p-6">
-                    <div className="text-center pt-4">
-                      <h3 className="text-white text-2xl font-normal uppercase tracking-wider">
-                        {category.name}
-                      </h3>
-                    </div>
-
-                    <div className="w-full bg-black text-white text-center py-4 rounded-xl font-normal tracking-wide uppercase border border-neutral-800 transition-colors group-active:bg-neutral-900 text-sm">
-                      View More
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-
-            <div className="shrink-0 w-[8vw]" />
-          </div>
-
-          <div className="flex justify-center items-center gap-2 mt-2">
-            {categories.map((_, index) => (
-              <span
-                key={`dot-${index}`}
-                className={`h-2.5 rounded-full transition-all duration-300 ${
-                  activeMobileIndex === index ? "w-2.5 bg-black" : "w-2.5 bg-neutral-300"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* --- DESKTOP ACCORDION GRID VIEW --- */}
+      {/* --- MOBILE CAROUSEL VIEW --- */}
+      <div className="block md:hidden w-full">
         <div
-          className="hidden md:flex w-full h-[520px] gap-4 items-stretch overflow-hidden mx-auto max-w-(--breakpoint-2xl) px-6 mb-6 md:mb-10"
-          onMouseLeave={() => setHoveredIndex(0)}
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="flex w-full overflow-x-auto gap-0 snap-x snap-mandatory scrollbar-none pb-6"
+          style={{ scrollbarWidth: "none" }}
         >
-          {categories.map((category, index) => {
-            const isExpanded = hoveredIndex === index;
-            const flexClass = isExpanded ? "flex-[3.5]" : "flex-[1.5]";
+          <div className="shrink-0 w-[8vw]" />
 
+          {loopedCategories.map((category, index) => {
+            const isActive = index % categories.length === activeMobileIndex;
             return (
               <Link
-                key={category.name}
+                key={`mobile-${index}`}
                 href={getLocalizedPath(category.href, locale)}
-                onMouseEnter={() => setHoveredIndex(index)}
-                className={`group relative h-full rounded-2xl overflow-hidden transition-all dynamic-accordion-card ${flexClass}`}
-                style={{
-                  transitionDuration: "1600ms",
-                  transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)"
-                }}
+                className={`group relative h-[480px] w-[76vw] shrink-0 rounded-2xl overflow-hidden snap-center bg-neutral-100 shadow-md transition-all duration-500 ease-out ${isActive ? "scale-100" : "scale-[0.82]"
+                  }`}
               >
-                <div className="relative w-full h-full bg-neutral-100">
-                  <img
-                    src={category.image.src}
-                    alt={category.name}
-                    className={`w-full h-full object-cover transition-transform ${
-                      isExpanded ? (category.imageExpandedClassName || "scale-100") : (category.imageClassName || "scale-100")
-                    }`}
-                    style={{
-                      transitionDuration: "1600ms",
-                      transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)"
-                    }}
-                  />
+                <img
+                  src={category.image.src}
+                  alt={category.name}
+                  className="w-full h-full object-cover"
+                />
 
-                  <div
-                    className={`absolute inset-0 transition-colors ${isExpanded ? "bg-black/5" : "bg-black/15"}`}
-                    style={{
-                      transitionDuration: "1600ms",
-                      transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)"
-                    }}
-                  />
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-400/20 via-transparent to-black/80 flex flex-col justify-between p-6">
+                  <div className="text-center pt-4">
+                    <h3 className="text-white text-2xl font-normal uppercase tracking-wider">
+                      {category.name}
+                    </h3>
+                  </div>
 
-                  <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
-                    {/* Added a unique layout id to isolate calculation bounds */}
-                    <CategoryTitle name={category.name} isExpanded={isExpanded} id={`desktop-${index}`} />
+                  <div className="w-full bg-black text-white text-center py-4 rounded-xl font-normal tracking-wide uppercase border border-neutral-800 transition-colors group-active:bg-neutral-900 text-sm">
+                    View More
                   </div>
                 </div>
               </Link>
             );
           })}
+
+          <div className="shrink-0 w-[8vw]" />
         </div>
+
+        <div className="flex justify-center items-center gap-2 mt-2">
+          {categories.map((_, index) => (
+            <span
+              key={`dot-${index}`}
+              className={`h-2.5 rounded-full transition-all duration-300 ${activeMobileIndex === index ? "w-2.5 bg-black" : "w-2.5 bg-neutral-300"
+                }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* --- DESKTOP ACCORDION GRID VIEW --- */}
+      <div
+        className="hidden md:flex w-full h-[520px] gap-4 items-stretch overflow-hidden mx-auto max-w-(--breakpoint-2xl) px-6 mb-6 md:mb-10"
+        onMouseLeave={() => setHoveredIndex(0)}
+      >
+        {categories.map((category, index) => {
+          const isExpanded = hoveredIndex === index;
+          const flexClass = isExpanded ? "flex-[3.5]" : "flex-[1.5]";
+
+          return (
+            <Link
+              key={category.name}
+              href={getLocalizedPath(category.href, locale)}
+              onMouseEnter={() => setHoveredIndex(index)}
+              className={`group relative h-full rounded-2xl overflow-hidden transition-all dynamic-accordion-card ${flexClass}`}
+              style={{
+                transitionDuration: "1600ms",
+                transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)"
+              }}
+            >
+              <div className="relative w-full h-full bg-neutral-100">
+                <img
+                  src={category.image.src}
+                  alt={category.name}
+                  className={`w-full h-full object-cover transition-transform ${isExpanded ? (category.imageExpandedClassName || "scale-100") : (category.imageClassName || "scale-100")
+                    }`}
+                  style={{
+                    transitionDuration: "1600ms",
+                    transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)"
+                  }}
+                />
+
+                <div
+                  className={`absolute inset-0 transition-colors ${isExpanded ? "bg-black/5" : "bg-black/15"}`}
+                  style={{
+                    transitionDuration: "1600ms",
+                    transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)"
+                  }}
+                />
+
+                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
+                  {/* Added a unique layout id to isolate calculation bounds */}
+                  <CategoryTitle name={category.name} isExpanded={isExpanded} id={`desktop-${index}`} />
+                </div>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
     </section>
   );
 }
