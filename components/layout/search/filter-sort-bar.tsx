@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import Link from "next/link";
-import { FunnelIcon, AdjustmentsHorizontalIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { sorting } from "lib/constants";
+import { AdjustmentsHorizontalIcon, ChevronDownIcon, ChevronUpIcon, FunnelIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { sorting } from "lib/constants";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 interface CollectionItem {
   handle: string;
@@ -76,16 +76,16 @@ export default function FilterSortBar({
 
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
-    
+
     if (selectedColor) params.set("color", selectedColor);
     else params.delete("color");
-    
+
     if (selectedLevel) params.set("level", selectedLevel);
     else params.delete("level");
-    
+
     if (selectedPrice) params.set("price", selectedPrice);
     else params.delete("price");
-    
+
     params.delete("page");
 
     router.push(`${pathname}?${params.toString()}`);
@@ -154,7 +154,7 @@ export default function FilterSortBar({
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M3 12h14M3 18h10" />
                 </svg>
               </button>
-              
+
               {/* Sort Dropdown */}
               {isSortOpen && (
                 <>
@@ -195,7 +195,7 @@ export default function FilterSortBar({
               <FunnelIcon className="h-4 w-4" />
               <span>Filter</span>
             </button>
-            
+
             <div className="h-4 w-px bg-neutral-300 dark:bg-neutral-800" />
 
             <div className="relative">
@@ -204,7 +204,7 @@ export default function FilterSortBar({
                 className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity py-1.5"
               >
                 <AdjustmentsHorizontalIcon className="h-4 w-4" />
-                <span>Sort By: {activeSortObj?.title}</span>
+                <span className="cursor-pointer">Sort By: {activeSortObj?.title}</span>
               </button>
 
               {/* Sort Dropdown */}
@@ -223,7 +223,7 @@ export default function FilterSortBar({
                           setIsSortOpen(false);
                         }}
                         className={clsx(
-                          "w-full text-left px-4 py-2.5 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors",
+                          "cursor-pointer w-full text-left px-4 py-2.5 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors",
                           {
                             "bg-neutral-50 font-bold dark:bg-neutral-800": currentSort === (option.slug || ""),
                           }
@@ -256,7 +256,7 @@ export default function FilterSortBar({
               {collections.map((coll) => {
                 const isActive = activeCollectionHandle === coll.handle;
                 const linkHref = coll.handle === "" ? `/store` : `/store/${coll.handle}`;
-                
+
                 return (
                   <Link
                     key={coll.handle}
@@ -331,125 +331,231 @@ export default function FilterSortBar({
 
       {/* Slide-over Filter Panel */}
       {isFilterOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 transition-opacity"
-            onClick={() => setIsFilterOpen(false)}
-          />
-          {/* Drawer Content */}
-          <div className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white dark:bg-neutral-950 shadow-2xl z-50 flex flex-col transition-transform duration-300">
-            <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-900">
-              <h3 className="text-lg font-bold uppercase tracking-wider">Filters</h3>
-              <button
-                onClick={() => setIsFilterOpen(false)}
-                className="p-1.5 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-              >
-                <XMarkIcon className="h-6 w-6" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-6 space-y-8">
-              {/* Color Filter */}
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-4 dark:text-neutral-400">
-                  Color
-                </h4>
-                <div className="flex flex-wrap gap-3">
-                  {COLORS.map((c) => (
-                    <button
-                      key={c.value}
-                      onClick={() => {
-                        setSelectedColor(selectedColor === c.value ? null : c.value);
-                      }}
-                      className={clsx(
-                        "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer",
-                        selectedColor === c.value
-                          ? "bg-black border-black text-white dark:bg-white dark:border-white dark:text-black"
-                          : "bg-neutral-50 border-neutral-200 text-neutral-800 hover:bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-800"
-                      )}
-                    >
-                      <span
-                        className="w-3.5 h-3.5 rounded-full border border-black/10 inline-block"
-                        style={{ backgroundColor: c.hex }}
-                      />
-                      {c.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Skill Level Filter */}
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-4 dark:text-neutral-400">
-                  Skill Level
-                </h4>
-                <div className="flex flex-wrap gap-3">
-                  {SKILL_LEVELS.map((level) => (
-                    <button
-                      key={level.value}
-                      onClick={() => {
-                        setSelectedLevel(selectedLevel === level.value ? null : level.value);
-                      }}
-                      className={clsx(
-                        "px-4 py-2 rounded-lg text-xs font-medium border transition-all cursor-pointer",
-                        selectedLevel === level.value
-                          ? "bg-black border-black text-white dark:bg-white dark:border-white dark:text-black"
-                          : "bg-neutral-50 border-neutral-200 text-neutral-800 hover:bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-800"
-                      )}
-                    >
-                      {level.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price Filter */}
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-4 dark:text-neutral-400">
-                  Price Range
-                </h4>
-                <div className="flex flex-col gap-2">
-                  {PRICE_RANGES.map((price) => (
-                    <button
-                      key={price.value}
-                      onClick={() => {
-                        setSelectedPrice(selectedPrice === price.value ? null : price.value);
-                      }}
-                      className={clsx(
-                        "w-full text-left px-4 py-3 rounded-lg text-xs font-medium border transition-all cursor-pointer flex justify-between items-center",
-                        selectedPrice === price.value
-                          ? "bg-black border-black text-white dark:bg-white dark:border-white dark:text-black"
-                          : "bg-neutral-50 border-neutral-200 text-neutral-800 hover:bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-200"
-                      )}
-                    >
-                      <span>{price.name}</span>
-                      {selectedPrice === price.value && (
-                        <span className="w-1.5 h-1.5 bg-white dark:bg-black rounded-full" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between gap-4">
-              <button
-                onClick={clearLocalFilters}
-                className="flex-1 py-3 text-center border border-neutral-200 rounded-xl text-xs font-semibold tracking-wider uppercase hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
-              >
-                Clear All
-              </button>
-              <button
-                onClick={applyFilters}
-                className="flex-1 py-3 text-center bg-black text-white dark:bg-white dark:text-black rounded-xl text-xs font-semibold tracking-wider uppercase hover:opacity-90 transition-opacity cursor-pointer"
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
-        </>
+        <FilterDrawer
+          selectedColor={selectedColor}
+          setSelectedColor={setSelectedColor}
+          selectedLevel={selectedLevel}
+          setSelectedLevel={setSelectedLevel}
+          selectedPrice={selectedPrice}
+          setSelectedPrice={setSelectedPrice}
+          applyFilters={applyFilters}
+          clearLocalFilters={clearLocalFilters}
+          onClose={() => setIsFilterOpen(false)}
+        />
       )}
     </div>
+  );
+}
+
+function Checkbox({ checked }: { checked: boolean }) {
+  return (
+    <span
+      className={clsx(
+        "w-5 h-5 rounded-[4px] border flex items-center justify-center transition-colors flex-shrink-0 pointer-events-none",
+        checked
+          ? "bg-rose-500 border-rose-500 text-white"
+          : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black"
+      )}
+    >
+      {checked && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth="3.5"
+          stroke="currentColor"
+          className="w-3.5 h-3.5"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+        </svg>
+      )}
+    </span>
+  );
+}
+
+function FilterDrawer({
+  selectedColor,
+  setSelectedColor,
+  selectedLevel,
+  setSelectedLevel,
+  selectedPrice,
+  setSelectedPrice,
+  applyFilters,
+  clearLocalFilters,
+  onClose,
+}: {
+  selectedColor: string | null;
+  setSelectedColor: (c: string | null) => void;
+  selectedLevel: string | null;
+  setSelectedLevel: (l: string | null) => void;
+  selectedPrice: string | null;
+  setSelectedPrice: (p: string | null) => void;
+  applyFilters: () => void;
+  clearLocalFilters: () => void;
+  onClose: () => void;
+}) {
+  const [openGroups, setOpenGroups] = useState({
+    level: true,
+    color: true,
+    price: true,
+  });
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 transition-opacity"
+        onClick={onClose}
+      />
+      {/* Drawer Content */}
+      <div className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white dark:bg-neutral-950 shadow-2xl z-50 flex flex-col transition-transform duration-300">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-900">
+          <h3 className="text-xl font-bold uppercase tracking-wider" style={{ fontFamily: "'Clash Display', sans-serif" }}>Filters</h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 flex items-center justify-center transition-colors"
+          >
+            <XMarkIcon className="h-5 w-5 text-black dark:text-white" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Skill Level Filter (Size equivalent) */}
+          <div className="border-b border-neutral-100 dark:border-neutral-900 pb-6">
+            <button
+              type="button"
+              onClick={() => setOpenGroups(prev => ({ ...prev, level: !prev.level }))}
+              className="flex w-full items-center justify-between text-base font-bold uppercase tracking-wider text-black dark:text-white py-2"
+              style={{ fontFamily: "'Clash Display', sans-serif" }}
+            >
+              <span>Size</span>
+              {openGroups.level ? (
+                <ChevronUpIcon className="w-4 h-4 stroke-[2.5]" />
+              ) : (
+                <ChevronDownIcon className="w-4 h-4 stroke-[2.5]" />
+              )}
+            </button>
+            {openGroups.level && (
+              <div className="mt-4 flex flex-col gap-4 pl-1">
+                {SKILL_LEVELS.map((level) => {
+                  const isSelected = selectedLevel === level.value;
+                  return (
+                    <button
+                      type="button"
+                      key={level.value}
+                      onClick={() => setSelectedLevel(isSelected ? null : level.value)}
+                      className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
+                      style={{ fontFamily: "Archivo" }}
+                    >
+                      <Checkbox checked={isSelected} />
+                      <span>{level.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Color Filter */}
+          <div className="border-b border-neutral-100 dark:border-neutral-900 pb-6">
+            <button
+              type="button"
+              onClick={() => setOpenGroups(prev => ({ ...prev, color: !prev.color }))}
+              className="flex w-full items-center justify-between text-base font-bold uppercase tracking-wider text-black dark:text-white py-2"
+              style={{ fontFamily: "'Clash Display', sans-serif" }}
+            >
+              <span>Colour</span>
+              {openGroups.color ? (
+                <ChevronUpIcon className="w-4 h-4 stroke-[2.5]" />
+              ) : (
+                <ChevronDownIcon className="w-4 h-4 stroke-[2.5]" />
+              )}
+            </button>
+            {openGroups.color && (
+              <div className="mt-4 flex flex-col gap-4 pl-1">
+                {COLORS.map((c) => {
+                  const isSelected = selectedColor === c.value;
+                  return (
+                    <button
+                      type="button"
+                      key={c.value}
+                      onClick={() => setSelectedColor(isSelected ? null : c.value)}
+                      className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
+                      style={{ fontFamily: "Archivo" }}
+                    >
+                      <Checkbox checked={isSelected} />
+                      <span
+                        className="w-5 h-5 rounded-full border border-black/10 inline-block flex-shrink-0"
+                        style={{ backgroundColor: c.hex }}
+                      />
+                      <span>{c.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Price Range Filter (Wheel size equivalent) */}
+          <div className="pb-6">
+            <button
+              type="button"
+              onClick={() => setOpenGroups(prev => ({ ...prev, price: !prev.price }))}
+              className="flex w-full items-center justify-between text-base font-bold uppercase tracking-wider text-black dark:text-white py-2"
+              style={{ fontFamily: "'Clash Display', sans-serif" }}
+            >
+              <span>Price Range</span>
+              {openGroups.price ? (
+                <ChevronUpIcon className="w-4 h-4 stroke-[2.5]" />
+              ) : (
+                <ChevronDownIcon className="w-4 h-4 stroke-[2.5]" />
+              )}
+            </button>
+            {openGroups.price && (
+              <div className="mt-4 flex flex-col gap-4 pl-1">
+                {PRICE_RANGES.map((price) => {
+                  const isSelected = selectedPrice === price.value;
+                  return (
+                    <button
+                      type="button"
+                      key={price.value}
+                      onClick={() => setSelectedPrice(isSelected ? null : price.value)}
+                      className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
+                      style={{ fontFamily: "Archivo" }}
+                    >
+                      <Checkbox checked={isSelected} />
+                      <span>{price.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer actions */}
+        <div className="p-6 border-t border-neutral-100 dark:border-neutral-900 flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={applyFilters}
+            className="w-full py-4 text-center bg-black text-white dark:bg-white dark:text-black rounded-lg text-sm font-bold uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
+            style={{ fontFamily: "Archivo" }}
+          >
+            APPLY
+          </button>
+          <button
+            type="button"
+            onClick={clearLocalFilters}
+            className="w-full py-4 text-center border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black text-black dark:text-white rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
+            style={{ fontFamily: "Archivo" }}
+          >
+            CLEAR
+          </button>
+        </div>
+      </div>
+    </>
   );
 }
