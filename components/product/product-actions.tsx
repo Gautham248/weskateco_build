@@ -52,6 +52,8 @@ export function ProductActions({ product }: { product: Product }) {
     );
   }
 
+  const addItemAction = formAction.bind(null, selectedVariantId);
+
   return (
     <div className="space-y-3">
       {/* Add To Cart Form */}
@@ -61,10 +63,9 @@ export function ProductActions({ product }: { product: Product }) {
             addCartItem(finalVariant, product);
           }
           if (selectedVariantId) {
-            const bindAction = formAction.bind(null, selectedVariantId);
-            bindAction();
             setIsAdded(true);
             setTimeout(() => setIsAdded(false), 2000);
+            await addItemAction();
           }
         }}
       >
