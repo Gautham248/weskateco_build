@@ -11,7 +11,7 @@ import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Suspense, useState, useTransition } from "react";
+import { Suspense, useActionState, useState, useTransition } from "react";
 
 function CartSkeleton() {
   return (
@@ -181,42 +181,11 @@ function CartPageContent() {
                           </div>
 
                           {/* Quantity Selector */}
-                          <div className="flex items-center gap-3.5 flex-shrink-0">
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                if (item.quantity > 1) {
-                                  updateCartItem(item.merchandise.id, "minus");
-                                  await updateItemQuantity(null, {
-                                    merchandiseId: item.merchandise.id,
-                                    quantity: item.quantity - 1,
-                                  });
-                                } else {
-                                  updateCartItem(item.merchandise.id, "delete");
-                                  await removeItem(null, item.merchandise.id);
-                                }
-                              }}
-                              className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors cursor-pointer text-base font-bold"
-                            >
-                              -
-                            </button>
-                            <span className="text-sm font-semibold w-5 text-center text-neutral-900 dark:text-neutral-100">
-                              {String(item.quantity).padStart(2, "0")}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                updateCartItem(item.merchandise.id, "plus");
-                                await updateItemQuantity(null, {
-                                  merchandiseId: item.merchandise.id,
-                                  quantity: item.quantity + 1,
-                                });
-                              }}
-                              className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors cursor-pointer text-base font-bold"
-                            >
-                              +
-                            </button>
-                          </div>
+                          <CartPageQuantitySelector
+                            item={item}
+                            updateCartItem={updateCartItem}
+                            isMobile={true}
+                          />
                         </div>
 
                         {/* Right Column: Title, Details, Delivery, Remove */}
@@ -252,16 +221,11 @@ function CartPageContent() {
 
                           {/* Remove Action */}
                           <div className="mt-5">
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                updateCartItem(item.merchandise.id, "delete");
-                                await removeItem(null, item.merchandise.id);
-                              }}
-                              className="text-[12px] font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 underline cursor-pointer hover:text-neutral-600"
-                            >
-                              REMOVE
-                            </button>
+                            <CartPageRemoveButton
+                              item={item}
+                              updateCartItem={updateCartItem}
+                              isMobile={true}
+                            />
                           </div>
                         </div>
                       </div>
@@ -298,42 +262,11 @@ function CartPageContent() {
                             </div>
 
                             {/* Quantity Selector */}
-                            <div className="flex items-center gap-3 flex-shrink-0">
-                              <button
-                                type="button"
-                                onClick={async () => {
-                                  if (item.quantity > 1) {
-                                    updateCartItem(item.merchandise.id, "minus");
-                                    await updateItemQuantity(null, {
-                                      merchandiseId: item.merchandise.id,
-                                      quantity: item.quantity - 1,
-                                    });
-                                  } else {
-                                    updateCartItem(item.merchandise.id, "delete");
-                                    await removeItem(null, item.merchandise.id);
-                                  }
-                                }}
-                                className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 transition-colors cursor-pointer text-sm font-bold"
-                              >
-                                -
-                              </button>
-                              <span className="text-xs font-semibold w-5 text-center text-neutral-700 dark:text-neutral-300">
-                                {String(item.quantity).padStart(2, "0")}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={async () => {
-                                  updateCartItem(item.merchandise.id, "plus");
-                                  await updateItemQuantity(null, {
-                                    merchandiseId: item.merchandise.id,
-                                    quantity: item.quantity + 1,
-                                  });
-                                }}
-                                className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 transition-colors cursor-pointer text-sm font-bold"
-                              >
-                                +
-                              </button>
-                            </div>
+                            <CartPageQuantitySelector
+                              item={item}
+                              updateCartItem={updateCartItem}
+                              isMobile={false}
+                            />
                           </div>
 
                           {/* Middle row: Attributes */}
@@ -348,16 +281,11 @@ function CartPageContent() {
 
                           {/* Bottom row: Remove on left, Price on right */}
                           <div className="mt-auto pt-6 flex justify-between items-end">
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                updateCartItem(item.merchandise.id, "delete");
-                                await removeItem(null, item.merchandise.id);
-                              }}
-                              className="text-[10px] font-bold uppercase tracking-wider text-black dark:text-white underline cursor-pointer hover:text-neutral-600"
-                            >
-                              REMOVE
-                            </button>
+                            <CartPageRemoveButton
+                              item={item}
+                              updateCartItem={updateCartItem}
+                              isMobile={false}
+                            />
 
                             <Price
                               amount={item.cost.totalAmount.amount}
@@ -523,5 +451,98 @@ function CartPageContent() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+function CartPageQuantitySelector({
+  item,
+  updateCartItem,
+  isMobile,
+}: {
+  item: any;
+  updateCartItem: any;
+  isMobile: boolean;
+}) {
+  const [message, formAction] = useActionState(updateItemQuantity, null);
+
+  const handleDecrease = () => {
+    if (item.quantity > 1) {
+      updateCartItem(item.merchandise.id, "minus");
+      const action = formAction.bind(null, {
+        merchandiseId: item.merchandise.id,
+        quantity: item.quantity - 1,
+      });
+      action();
+    } else {
+      updateCartItem(item.merchandise.id, "delete");
+      const action = formAction.bind(null, {
+        merchandiseId: item.merchandise.id,
+        quantity: 0,
+      });
+      action();
+    }
+  };
+
+  const handleIncrease = () => {
+    updateCartItem(item.merchandise.id, "plus");
+    const action = formAction.bind(null, {
+      merchandiseId: item.merchandise.id,
+      quantity: item.quantity + 1,
+    });
+    action();
+  };
+
+  const btnClass = isMobile
+    ? "flex h-8 w-8 items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors cursor-pointer text-base font-bold"
+    : "flex h-7 w-7 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 transition-colors cursor-pointer text-sm font-bold";
+
+  const containerClass = isMobile
+    ? "flex items-center gap-3.5 flex-shrink-0"
+    : "flex items-center gap-3 flex-shrink-0";
+
+  const textClass = isMobile
+    ? "text-sm font-semibold w-5 text-center text-neutral-900 dark:text-neutral-100"
+    : "text-xs font-semibold w-5 text-center text-neutral-700 dark:text-neutral-300";
+
+  return (
+    <div className={containerClass}>
+      <button type="button" onClick={handleDecrease} className={btnClass}>
+        -
+      </button>
+      <span className={textClass}>
+        {String(item.quantity).padStart(2, "0")}
+      </span>
+      <button type="button" onClick={handleIncrease} className={btnClass}>
+        +
+      </button>
+    </div>
+  );
+}
+
+function CartPageRemoveButton({
+  item,
+  updateCartItem,
+  isMobile,
+}: {
+  item: any;
+  updateCartItem: any;
+  isMobile: boolean;
+}) {
+  const [message, formAction] = useActionState(removeItem, null);
+
+  const handleRemove = () => {
+    updateCartItem(item.merchandise.id, "delete");
+    const action = formAction.bind(null, item.merchandise.id);
+    action();
+  };
+
+  const btnClass = isMobile
+    ? "text-[12px] font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 underline cursor-pointer hover:text-neutral-600"
+    : "text-[10px] font-bold uppercase tracking-wider text-black dark:text-white underline cursor-pointer hover:text-neutral-600";
+
+  return (
+    <button type="button" onClick={handleRemove} className={btnClass}>
+      REMOVE
+    </button>
   );
 }
