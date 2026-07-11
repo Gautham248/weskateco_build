@@ -92,75 +92,131 @@ export default function FilterSortBar({
   return (
     <div className="w-full bg-white text-black py-4 border-b border-neutral-100 dark:bg-neutral-950 dark:text-white dark:border-neutral-900">
       {/* Top Row: Title, showing count, Filter & Sort buttons */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-2">
-        <div className="flex items-baseline gap-2">
-          <h2 className="text-2xl font-bold tracking-tight uppercase">
+      <div className="flex flex-col px-4 md:px-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-[28px] md:text-3xl font-extrabold tracking-tight uppercase leading-tight">
             {title}
           </h2>
-          <span className="text-xs text-neutral-500 dark:text-neutral-400">
-            (Showing 1 – {totalProducts} products of {totalProducts} products)
-          </span>
-        </div>
 
-        <div className="flex items-center gap-4 self-end sm:self-auto text-sm font-semibold tracking-wider uppercase">
-          <button
-            onClick={() => setIsFilterOpen(true)}
-            className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity py-1.5"
-          >
-            <FunnelIcon className="h-4 w-4" />
-            <span>Filter</span>
-          </button>
-          
-          <div className="h-4 w-px bg-neutral-300 dark:bg-neutral-800" />
-
-          <div className="relative">
+          {/* Mobile Filter / Sort Icons */}
+          <div className="flex items-center gap-3 text-neutral-800 dark:text-neutral-200 md:hidden">
             <button
-              onClick={() => setIsSortOpen(!isSortOpen)}
+              onClick={() => setIsFilterOpen(true)}
+              aria-label="Filter"
+              className="p-1 cursor-pointer hover:opacity-75 transition-opacity"
+            >
+              <FunnelIcon className="h-6 w-6 stroke-[1.8]" />
+            </button>
+            <div className="h-6 w-px bg-neutral-200 dark:bg-neutral-800" />
+            <div className="relative">
+              <button
+                onClick={() => setIsSortOpen(!isSortOpen)}
+                aria-label="Sort"
+                className="p-1 cursor-pointer hover:opacity-75 transition-opacity"
+              >
+                <svg className="h-6 w-6 stroke-[1.8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M3 12h14M3 18h10" />
+                </svg>
+              </button>
+              
+              {/* Sort Dropdown */}
+              {isSortOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setIsSortOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-52 bg-white border border-neutral-200 rounded-lg shadow-xl z-20 overflow-hidden dark:bg-neutral-900 dark:border-neutral-800">
+                    {sorting.map((option) => (
+                      <button
+                        key={option.slug || "default"}
+                        onClick={() => {
+                          updateUrlParam("sort", option.slug);
+                          setIsSortOpen(false);
+                        }}
+                        className={clsx(
+                          "w-full text-left px-4 py-2.5 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors",
+                          {
+                            "bg-neutral-50 font-bold dark:bg-neutral-800": currentSort === (option.slug || ""),
+                          }
+                        )}
+                      >
+                        {option.title}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Desktop Filter / Sort Buttons */}
+          <div className="hidden md:flex items-center gap-4 text-sm font-semibold tracking-wider uppercase">
+            <button
+              onClick={() => setIsFilterOpen(true)}
               className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity py-1.5"
             >
-              <AdjustmentsHorizontalIcon className="h-4 w-4" />
-              <span>Sort By: {activeSortObj?.title}</span>
+              <FunnelIcon className="h-4 w-4" />
+              <span>Filter</span>
             </button>
+            
+            <div className="h-4 w-px bg-neutral-300 dark:bg-neutral-800" />
 
-            {/* Sort Dropdown */}
-            {isSortOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setIsSortOpen(false)}
-                />
-                <div className="absolute right-0 mt-2 w-52 bg-white border border-neutral-200 rounded-lg shadow-xl z-20 overflow-hidden dark:bg-neutral-900 dark:border-neutral-800">
-                  {sorting.map((option) => (
-                    <button
-                      key={option.slug || "default"}
-                      onClick={() => {
-                        updateUrlParam("sort", option.slug);
-                        setIsSortOpen(false);
-                      }}
-                      className={clsx(
-                        "w-full text-left px-4 py-2.5 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors",
-                        {
-                          "bg-neutral-50 font-bold dark:bg-neutral-800": currentSort === (option.slug || ""),
-                        }
-                      )}
-                    >
-                      {option.title}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
+            <div className="relative">
+              <button
+                onClick={() => setIsSortOpen(!isSortOpen)}
+                className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity py-1.5"
+              >
+                <AdjustmentsHorizontalIcon className="h-4 w-4" />
+                <span>Sort By: {activeSortObj?.title}</span>
+              </button>
+
+              {/* Sort Dropdown */}
+              {isSortOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setIsSortOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-52 bg-white border border-neutral-200 rounded-lg shadow-xl z-20 overflow-hidden dark:bg-neutral-900 dark:border-neutral-800">
+                    {sorting.map((option) => (
+                      <button
+                        key={option.slug || "default"}
+                        onClick={() => {
+                          updateUrlParam("sort", option.slug);
+                          setIsSortOpen(false);
+                        }}
+                        className={clsx(
+                          "w-full text-left px-4 py-2.5 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors",
+                          {
+                            "bg-neutral-50 font-bold dark:bg-neutral-800": currentSort === (option.slug || ""),
+                          }
+                        )}
+                      >
+                        {option.title}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
+        </div>
+
+        {/* Showing Count */}
+        <div className="mt-1">
+          <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+            (Showing 1 – {totalProducts} products of {totalProducts} products)
+          </span>
         </div>
       </div>
 
       {/* Bottom Row: Subcollection pills + Active filters chips */}
-      <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between px-2">
+      <div className="mt-5 flex flex-col gap-4 px-4 md:px-2">
         {/* Subcollection pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none max-w-full">
           {collections.map((coll) => {
             const isActive = activeCollectionHandle === coll.handle;
-            // Build localized collection link or plain link
             const linkHref = coll.handle === "" ? `/search` : `/search/${coll.handle}`;
             
             return (
@@ -168,7 +224,7 @@ export default function FilterSortBar({
                 key={coll.handle}
                 href={linkHref}
                 className={clsx(
-                  "px-4 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200 border",
+                  "px-6 py-3 rounded-[6px] text-[15px] font-medium whitespace-nowrap transition-all duration-200 border",
                   isActive
                     ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
                     : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800"
@@ -182,43 +238,43 @@ export default function FilterSortBar({
 
         {/* Active filters chips */}
         {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
+          <div className="flex flex-wrap items-center gap-2.5">
             {activeColorObj && (
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-xs text-neutral-800 dark:text-neutral-200">
+              <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
                 <span
-                  className="w-2.5 h-2.5 rounded-full inline-block border border-black/10"
+                  className="w-3.5 h-3.5 rounded-full inline-block border border-black/10"
                   style={{ backgroundColor: activeColorObj.hex }}
                 />
                 {activeColorObj.name} Color
                 <button
                   onClick={() => updateUrlParam("color", null)}
-                  className="ml-1 hover:text-black dark:hover:text-white cursor-pointer"
+                  className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
                 >
-                  <XMarkIcon className="h-3 w-3" />
+                  &#x2715;
                 </button>
               </span>
             )}
 
             {activeLevelObj && (
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-xs text-neutral-800 dark:text-neutral-200">
+              <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
                 {activeLevelObj.name}
                 <button
                   onClick={() => updateUrlParam("level", null)}
-                  className="ml-1 hover:text-black dark:hover:text-white cursor-pointer"
+                  className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
                 >
-                  <XMarkIcon className="h-3 w-3" />
+                  &#x2715;
                 </button>
               </span>
             )}
 
             {activePriceObj && (
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-xs text-neutral-800 dark:text-neutral-200">
-                {activePriceObj.name.replace("₹", "Rs.")}
+              <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
+                {activePriceObj.name.replace("₹", "Rs. ")}
                 <button
                   onClick={() => updateUrlParam("price", null)}
-                  className="ml-1 hover:text-black dark:hover:text-white cursor-pointer"
+                  className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
                 >
-                  <XMarkIcon className="h-3 w-3" />
+                  &#x2715;
                 </button>
               </span>
             )}
