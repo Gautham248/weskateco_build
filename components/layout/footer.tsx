@@ -20,10 +20,10 @@ export default async function Footer() {
               Shop
             </h3>
             <ul className="space-y-3 text-neutral-400 text-xs md:text-[16px] font-normal" style={{ fontFamily: 'Archivo, sans-serif' }}>
-              <li><Link href="/search/skateboards" className="hover:text-white transition-colors">Skateboards</Link></li>
-              <li><Link href="/search/surfskates" className="hover:text-white transition-colors">Surfskates</Link></li>
-              <li><Link href="/search/apparel" className="hover:text-white transition-colors">Apparel</Link></li>
-              <li><Link href="/search/protection-gears" className="hover:text-white transition-colors">Protective Gear</Link></li>
+              <li><Link href="/store/skateboards" className="hover:text-white transition-colors">Skateboards</Link></li>
+              <li><Link href="/store/surfskates" className="hover:text-white transition-colors">Surfskates</Link></li>
+              <li><Link href="/store/apparel" className="hover:text-white transition-colors">Apparel</Link></li>
+              <li><Link href="/store/protection-gears" className="hover:text-white transition-colors">Protective Gear</Link></li>
             </ul>
           </div>
 

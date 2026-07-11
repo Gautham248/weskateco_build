@@ -51,11 +51,11 @@ export default function MobileMenu() {
   };
 
   const storeCategories = [
-    { name: "Skateboards", key: "skateboards", href: "/search/skateboards" },
-    { name: "Surfskate", key: "surfskates", href: "/search/surfskates" },
-    { name: "Apparel", key: "apparel", href: "/search/apparel-1" },
-    { name: "Protective Gear", key: "protective_gear", href: "/search/protection-gears" },
-    { name: "Brands", key: "brands", href: "/search" },
+    { name: "Skateboards", key: "skateboards", href: "/store/skateboards" },
+    { name: "Surfskate", key: "surfskates", href: "/store/surfskates" },
+    { name: "Apparel", key: "apparel", href: "/store/apparel-1" },
+    { name: "Protective Gear", key: "protective_gear", href: "/store/protection-gears" },
+    { name: "Brands", key: "brands", href: "/store" },
   ];
 
   const subItems: Record<string, string[]> = {
@@ -68,20 +68,20 @@ export default function MobileMenu() {
 
   const getSubItemHref = (parentCategoryUrl: string, subItemName: string): string => {
     const itemLower = subItemName.toLowerCase();
-    let path = `/search/${itemLower}`;
+    let path = `/store/${itemLower}`;
 
     if (parentCategoryUrl.includes("skateboards")) {
-      if (itemLower === "completes") path = `/search/skateboard-completes`;
-      else if (itemLower === "decks") path = `/search/decks`;
-      else if (itemLower === "trucks") path = `/search/skateboard-trucks`;
-      else if (itemLower === "wheels") path = `/search/skateboard-wheels`;
-      else if (itemLower === "accessories") path = `/search/skateboard-accessories`;
+      if (itemLower === "completes") path = `/store/skateboard-completes`;
+      else if (itemLower === "decks") path = `/store/decks`;
+      else if (itemLower === "trucks") path = `/store/skateboard-trucks`;
+      else if (itemLower === "wheels") path = `/store/skateboard-wheels`;
+      else if (itemLower === "accessories") path = `/store/skateboard-accessories`;
     } else if (parentCategoryUrl.includes("surfskates")) {
-      if (itemLower === "completes") path = `/search/surfskate-completes`;
-      else if (itemLower === "decks") path = `/search/surfskate-decks`;
-      else if (itemLower === "trucks") path = `/search/surfskate-trucks`;
-      else if (itemLower === "wheels") path = `/search/surfskate-wheels`;
-      else if (itemLower === "accessories") path = `/search/surfskate-accessories`;
+      if (itemLower === "completes") path = `/store/surfskate-completes`;
+      else if (itemLower === "decks") path = `/store/surfskate-decks`;
+      else if (itemLower === "trucks") path = `/store/surfskate-trucks`;
+      else if (itemLower === "wheels") path = `/store/surfskate-wheels`;
+      else if (itemLower === "accessories") path = `/store/surfskate-accessories`;
     }
 
     return getLocalizedPath(path, locale);

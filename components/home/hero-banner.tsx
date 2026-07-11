@@ -28,13 +28,13 @@ export default function HeroBanner({ locale }: { locale: string }) {
         </p>
         <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row sm:items-center">
           <Link
-            href={getLocalizedPath("/search/skateboard-completes", locale)}
+            href={getLocalizedPath("/store/skateboard-completes", locale)}
             className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-base font-semibold text-black transition-all duration-300 hover:bg-neutral-200 hover:scale-105 active:scale-95"
           >
             {t("home.shop_skateboards")}
           </Link>
           <Link
-            href={getLocalizedPath("/search/surfskate-completes", locale)}
+            href={getLocalizedPath("/store/surfskate-completes", locale)}
             className="inline-flex items-center justify-center rounded-full border border-neutral-700 bg-neutral-900/50 px-8 py-4 text-base font-semibold transition-all duration-300 hover:bg-neutral-800 hover:scale-105 active:scale-95"
           >
             {t("home.shop_surfskates")}

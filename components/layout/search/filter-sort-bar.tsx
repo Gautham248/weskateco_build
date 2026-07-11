@@ -62,7 +62,43 @@ export default function FilterSortBar({
   const activePrice = searchParams.get("price");
   const currentSort = searchParams.get("sort") || "";
 
-  // Helper to update URL params
+  // Local selection states inside the filter drawer
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
+  const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
+
+  const openFilters = () => {
+    setSelectedColor(activeColor);
+    setSelectedLevel(activeLevel);
+    setSelectedPrice(activePrice);
+    setIsFilterOpen(true);
+  };
+
+  const applyFilters = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    if (selectedColor) params.set("color", selectedColor);
+    else params.delete("color");
+    
+    if (selectedLevel) params.set("level", selectedLevel);
+    else params.delete("level");
+    
+    if (selectedPrice) params.set("price", selectedPrice);
+    else params.delete("price");
+    
+    params.delete("page");
+
+    router.push(`${pathname}?${params.toString()}`);
+    setIsFilterOpen(false);
+  };
+
+  const clearLocalFilters = () => {
+    setSelectedColor(null);
+    setSelectedLevel(null);
+    setSelectedPrice(null);
+  };
+
+  // Helper to update URL params (for instant chips/sort updates outside drawer)
   const updateUrlParam = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value) {
@@ -101,7 +137,7 @@ export default function FilterSortBar({
           {/* Mobile Filter / Sort Icons */}
           <div className="flex items-center gap-3 text-neutral-800 dark:text-neutral-200 md:hidden">
             <button
-              onClick={() => setIsFilterOpen(true)}
+              onClick={openFilters}
               aria-label="Filter"
               className="p-1 cursor-pointer hover:opacity-75 transition-opacity"
             >
@@ -153,7 +189,7 @@ export default function FilterSortBar({
           {/* Desktop Filter / Sort Buttons */}
           <div className="hidden md:flex items-center gap-4 text-sm font-semibold tracking-wider uppercase">
             <button
-              onClick={() => setIsFilterOpen(true)}
+              onClick={openFilters}
               className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity py-1.5"
             >
               <FunnelIcon className="h-4 w-4" />
@@ -212,82 +248,86 @@ export default function FilterSortBar({
       </div>
 
       {/* Bottom Row: Subcollection pills + Active filters chips */}
-      <div className="mt-5 flex flex-col gap-4 px-4 md:px-2">
-        {/* Subcollection pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none max-w-full">
-          {collections.map((coll) => {
-            const isActive = activeCollectionHandle === coll.handle;
-            const linkHref = coll.handle === "" ? `/search` : `/search/${coll.handle}`;
-            
-            return (
-              <Link
-                key={coll.handle}
-                href={linkHref}
-                className={clsx(
-                  "px-6 py-3 rounded-[6px] text-[15px] font-medium whitespace-nowrap transition-all duration-200 border",
-                  isActive
-                    ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
-                    : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800"
-                )}
+      {(collections.length > 0 || hasActiveFilters) && (
+        <div className="mt-5 flex flex-col gap-4 px-4 md:px-2">
+          {/* Subcollection pills */}
+          {collections.length > 0 && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none max-w-full">
+              {collections.map((coll) => {
+                const isActive = activeCollectionHandle === coll.handle;
+                const linkHref = coll.handle === "" ? `/store` : `/store/${coll.handle}`;
+                
+                return (
+                  <Link
+                    key={coll.handle}
+                    href={linkHref}
+                    className={clsx(
+                      "px-6 py-3 rounded-[6px] text-[15px] font-medium whitespace-nowrap transition-all duration-200 border",
+                      isActive
+                        ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
+                        : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                    )}
+                  >
+                    {coll.title}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Active filters chips */}
+          {hasActiveFilters && (
+            <div className="flex flex-wrap items-center gap-2.5">
+              {activeColorObj && (
+                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
+                  <span
+                    className="w-3.5 h-3.5 rounded-full inline-block border border-black/10"
+                    style={{ backgroundColor: activeColorObj.hex }}
+                  />
+                  {activeColorObj.name} Color
+                  <button
+                    onClick={() => updateUrlParam("color", null)}
+                    className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
+                  >
+                    &#x2715;
+                  </button>
+                </span>
+              )}
+
+              {activeLevelObj && (
+                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
+                  {activeLevelObj.name}
+                  <button
+                    onClick={() => updateUrlParam("level", null)}
+                    className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
+                  >
+                    &#x2715;
+                  </button>
+                </span>
+              )}
+
+              {activePriceObj && (
+                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
+                  {activePriceObj.name.replace("₹", "Rs. ")}
+                  <button
+                    onClick={() => updateUrlParam("price", null)}
+                    className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
+                  >
+                    &#x2715;
+                  </button>
+                </span>
+              )}
+
+              <button
+                onClick={clearAllFilters}
+                className="text-xs font-semibold underline text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white cursor-pointer ml-1"
               >
-                {coll.title}
-              </Link>
-            );
-          })}
+                Clear All
+              </button>
+            </div>
+          )}
         </div>
-
-        {/* Active filters chips */}
-        {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2.5">
-            {activeColorObj && (
-              <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
-                <span
-                  className="w-3.5 h-3.5 rounded-full inline-block border border-black/10"
-                  style={{ backgroundColor: activeColorObj.hex }}
-                />
-                {activeColorObj.name} Color
-                <button
-                  onClick={() => updateUrlParam("color", null)}
-                  className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
-                >
-                  &#x2715;
-                </button>
-              </span>
-            )}
-
-            {activeLevelObj && (
-              <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
-                {activeLevelObj.name}
-                <button
-                  onClick={() => updateUrlParam("level", null)}
-                  className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
-                >
-                  &#x2715;
-                </button>
-              </span>
-            )}
-
-            {activePriceObj && (
-              <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
-                {activePriceObj.name.replace("₹", "Rs. ")}
-                <button
-                  onClick={() => updateUrlParam("price", null)}
-                  className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
-                >
-                  &#x2715;
-                </button>
-              </span>
-            )}
-
-            <button
-              onClick={clearAllFilters}
-              className="text-xs font-semibold underline text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white cursor-pointer ml-1"
-            >
-              Clear All
-            </button>
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Slide-over Filter Panel */}
       {isFilterOpen && (
@@ -320,11 +360,11 @@ export default function FilterSortBar({
                     <button
                       key={c.value}
                       onClick={() => {
-                        updateUrlParam("color", activeColor === c.value ? null : c.value);
+                        setSelectedColor(selectedColor === c.value ? null : c.value);
                       }}
                       className={clsx(
                         "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer",
-                        activeColor === c.value
+                        selectedColor === c.value
                           ? "bg-black border-black text-white dark:bg-white dark:border-white dark:text-black"
                           : "bg-neutral-50 border-neutral-200 text-neutral-800 hover:bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-800"
                       )}
@@ -349,11 +389,11 @@ export default function FilterSortBar({
                     <button
                       key={level.value}
                       onClick={() => {
-                        updateUrlParam("level", activeLevel === level.value ? null : level.value);
+                        setSelectedLevel(selectedLevel === level.value ? null : level.value);
                       }}
                       className={clsx(
                         "px-4 py-2 rounded-lg text-xs font-medium border transition-all cursor-pointer",
-                        activeLevel === level.value
+                        selectedLevel === level.value
                           ? "bg-black border-black text-white dark:bg-white dark:border-white dark:text-black"
                           : "bg-neutral-50 border-neutral-200 text-neutral-800 hover:bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-800"
                       )}
@@ -374,17 +414,17 @@ export default function FilterSortBar({
                     <button
                       key={price.value}
                       onClick={() => {
-                        updateUrlParam("price", activePrice === price.value ? null : price.value);
+                        setSelectedPrice(selectedPrice === price.value ? null : price.value);
                       }}
                       className={clsx(
                         "w-full text-left px-4 py-3 rounded-lg text-xs font-medium border transition-all cursor-pointer flex justify-between items-center",
-                        activePrice === price.value
+                        selectedPrice === price.value
                           ? "bg-black border-black text-white dark:bg-white dark:border-white dark:text-black"
                           : "bg-neutral-50 border-neutral-200 text-neutral-800 hover:bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-200"
                       )}
                     >
                       <span>{price.name}</span>
-                      {activePrice === price.value && (
+                      {selectedPrice === price.value && (
                         <span className="w-1.5 h-1.5 bg-white dark:bg-black rounded-full" />
                       )}
                     </button>
@@ -395,13 +435,13 @@ export default function FilterSortBar({
 
             <div className="p-6 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between gap-4">
               <button
-                onClick={clearAllFilters}
+                onClick={clearLocalFilters}
                 className="flex-1 py-3 text-center border border-neutral-200 rounded-xl text-xs font-semibold tracking-wider uppercase hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
               >
                 Clear All
               </button>
               <button
-                onClick={() => setIsFilterOpen(false)}
+                onClick={applyFilters}
                 className="flex-1 py-3 text-center bg-black text-white dark:bg-white dark:text-black rounded-xl text-xs font-semibold tracking-wider uppercase hover:opacity-90 transition-opacity cursor-pointer"
               >
                 Apply Filters

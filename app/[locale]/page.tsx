@@ -55,7 +55,7 @@ export default async function HomePage(props: {
         title={t("home.featured_products")}
         products={slicedFeaturedProducts}
         locale={locale}
-        browseAllLink={getLocalizedPath("/search/skateboard-completes", locale)}
+        browseAllLink={getLocalizedPath("/store/skateboard-completes", locale)}
         browseAllLabel={t("home.browse_all")}
       />
       <ProductGridSection

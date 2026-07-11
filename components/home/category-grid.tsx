@@ -82,17 +82,17 @@ export default function CategoryGrid({ locale }: { locale: string }) {
     {
       name: "Surfboards",
       image: surfboardsImg,
-      href: "/search/surfskates",
+      href: "/store/surfskates",
     },
     {
       name: "Skateboards",
       image: skateboardsImg,
-      href: "/search/skateboards",
+      href: "/store/skateboards",
     },
     {
       name: "Accessories",
       image: accessoriesImg,
-      href: "/search/apparel-1",
+      href: "/store/apparel-1",
       imageClassName: "scale-170 -translate-x-15",
       imageExpandedClassName: "scale-180 -translate-x-15",
     },

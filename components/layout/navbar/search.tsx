@@ -42,7 +42,7 @@ export default function Search() {
       </button>
       {expanded && (
         <div className="absolute top-full -right-17 mt-2 md:hidden">
-          <Form action="/search" className="flex items-center">
+          <Form action="/store" className="flex items-center">
             <input
               key={searchParams?.get("q")}
               ref={inputRef}
@@ -58,7 +58,7 @@ export default function Search() {
         </div>
       )}
       {expanded ? (
-        <Form action="/search" className="hidden md:flex items-center">
+        <Form action="/store" className="hidden md:flex items-center">
           <input
             key={searchParams?.get("q")}
             ref={inputRef}

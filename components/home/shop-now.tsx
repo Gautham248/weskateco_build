@@ -44,7 +44,7 @@ export default function ShopNow({ locale }: { locale: string }) {
           SHOP NOW
         </h2>
         <Link
-          href={getLocalizedPath("/search", locale)}
+          href={getLocalizedPath("/store", locale)}
           className="text-2xl font-bold tracking-[-0.01em] text-black hover:opacity-70 dark:text-white uppercase underline decoration-solid underline-offset-1 skip-ink-auto"
           style={{ fontFamily: "'Clash Display', sans-serif" }}
         >

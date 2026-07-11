@@ -103,7 +103,7 @@ export default async function ProductPage(props: {
             <>
               <span className="text-neutral-400 dark:text-neutral-600">/</span>
               <Link
-                href={getLocalizedPath(`/search/${firstCollection.handle}`, params.locale)}
+                href={getLocalizedPath(`/store/${firstCollection.handle}`, params.locale)}
                 className="transition-colors hover:text-black dark:hover:text-white"
               >
                 {firstCollection.title}

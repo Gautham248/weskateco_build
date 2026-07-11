@@ -22,11 +22,11 @@ const navigation = "navigation" in catalog ? (catalog as any).navigation : undef
 const subItemsMap: Record<string, string[]> = {};
 if (navigation) {
   const hrefMap: Record<string, string> = {
-    SKATEBOARDS: "/search/skateboards",
-    SURFSKATES: "/search/surfskates",
-    APPAREL: "/search/apparel-1",
-    "PROTECTIVE GEARS": "/search/protection-gears",
-    BRANDS: "/search",
+    SKATEBOARDS: "/store/skateboards",
+    SURFSKATES: "/store/surfskates",
+    APPAREL: "/store/apparel-1",
+    "PROTECTIVE GEARS": "/store/protection-gears",
+    BRANDS: "/store",
   };
   for (const cat of navigation.categories) {
     const href = hrefMap[cat.name];
@@ -50,20 +50,20 @@ export default function MegaMenuSubItems({ category }: { category: string | null
 
   const getSubItemHref = (parentCategoryUrl: string, subItemName: string): string => {
     const itemLower = subItemName.toLowerCase();
-    let path = `/search/${itemLower}`;
+    let path = `/store/${itemLower}`;
 
     if (parentCategoryUrl.includes("skateboards")) {
-      if (itemLower === "completes") path = `/search/skateboard-completes`;
-      else if (itemLower === "decks") path = `/search/decks`;
-      else if (itemLower === "trucks") path = `/search/skateboard-trucks`;
-      else if (itemLower === "wheels") path = `/search/skateboard-wheels`;
-      else if (itemLower === "accessories") path = `/search/skateboard-accessories`;
+      if (itemLower === "completes") path = `/store/skateboard-completes`;
+      else if (itemLower === "decks") path = `/store/decks`;
+      else if (itemLower === "trucks") path = `/store/skateboard-trucks`;
+      else if (itemLower === "wheels") path = `/store/skateboard-wheels`;
+      else if (itemLower === "accessories") path = `/store/skateboard-accessories`;
     } else if (parentCategoryUrl.includes("surfskates")) {
-      if (itemLower === "completes") path = `/search/surfskate-completes`;
-      else if (itemLower === "decks") path = `/search/surfskate-decks`;
-      else if (itemLower === "trucks") path = `/search/surfskate-trucks`;
-      else if (itemLower === "wheels") path = `/search/surfskate-wheels`;
-      else if (itemLower === "accessories") path = `/search/surfskate-accessories`;
+      if (itemLower === "completes") path = `/store/surfskate-completes`;
+      else if (itemLower === "decks") path = `/store/surfskate-decks`;
+      else if (itemLower === "trucks") path = `/store/surfskate-trucks`;
+      else if (itemLower === "wheels") path = `/store/surfskate-wheels`;
+      else if (itemLower === "accessories") path = `/store/surfskate-accessories`;
     }
 
     return getLocalizedPath(path, locale);

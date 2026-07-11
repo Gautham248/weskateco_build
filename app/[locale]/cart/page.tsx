@@ -304,7 +304,7 @@ function CartPageContent() {
               {/* Bottom Card Actions */}
               <div className="pt-6 border-t border-neutral-100 dark:border-neutral-900 flex flex-col sm:flex-row items-center justify-between gap-4">
                 {/* <Link
-                  href={getLocalizedPath("/search", locale)}
+                  href={getLocalizedPath("/store", locale)}
                   className="w-full sm:w-auto px-6 h-12 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-sm flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider transition-colors"
                   style={{ fontFamily: "Archivo" }}
                 >
