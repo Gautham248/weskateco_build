@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import Image from "next/image";
-import yellowFull from "components/icons/yellow_skateboard_full.png";
-import yellowWheels from "components/icons/yellow_skateboard_wheels.png";
 import blueFull from "components/icons/blue_skateboard_full.png";
 import blueWheels from "components/icons/blue_skateboard_wheels.png";
+import yellowFull from "components/icons/yellow_skateboard_full.png";
+import yellowWheels from "components/icons/yellow_skateboard_wheels.png";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 const slides = [
   {
@@ -77,9 +77,9 @@ export default function NewlyReleaseContent() {
 
   return (
     <div ref={containerRef} className="w-full h-full flex items-center justify-center select-none">
-      
+
       {/* ================= DESKTOP VIEW ================= */}
-      <div 
+      <div
         className="hidden md:flex w-full h-full items-center justify-center gap-8 px-12"
         onClick={handleNext}
       >
@@ -114,13 +114,13 @@ export default function NewlyReleaseContent() {
                   </div>
 
                   <div className="w-full text-black pt-4 flex flex-col justify-center bg-white rounded-[16px] p-4">
-                    <h3 className="text-xs md:text-sm font-bold tracking-tight text-black uppercase leading-tight" style={{ fontFamily: "Archivo" }}>
+                    <h3 className="text-xs md:text-sm font-medium tracking-tight text-black uppercase leading-tight" style={{ fontFamily: "Archivo" }}>
                       {slide.title}
                     </h3>
-                    <h2 className="text-xs md:text-sm font-bold tracking-tight text-black uppercase mt-0.5 leading-tight" style={{ fontFamily: "Archivo" }}>
+                    <h2 className="text-xs md:text-sm font-medium tracking-tight text-black uppercase mt-0.5 leading-tight" style={{ fontFamily: "Archivo" }}>
                       {slide.subtitle}
                     </h2>
-                    <div className="flex items-center gap-2 mt-3 text-xs md:text-sm font-medium">
+                    <div className="flex items-center gap-2 mt-3 text-xs md:text-sm font-normal">
                       <span className="text-black">{slide.price}</span>
                       <span className="line-through text-red-500 scale-95 origin-left">{slide.oldPrice}</span>
                     </div>
@@ -165,7 +165,7 @@ export default function NewlyReleaseContent() {
       {/* ================= MOBILE VIEW (Transparent over your existing BG) ================= */}
       <div className="flex md:hidden relative w-full h-[80%] max-w-[360px] aspect-[10/16] p-6">
         <div className="relative w-full h-full flex items-center justify-between z-10">
-          
+
           {/* Left Side: Skateboard Presentation */}
           <div className="w-[80%] h-full relative flex items-center justify-center">
             {slides.map((slide, idx) => {
@@ -199,14 +199,14 @@ export default function NewlyReleaseContent() {
             {slides.map((slide, idx) => {
               const isActive = idx === slideIndex;
               return (
-                <div 
+                <div
                   key={idx}
                   className={`flex flex-col gap-32 transition-all duration-500 absolute right-0 left-[50%] pl-2 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
                 >
                   <h3 className="text-[10px] font-medium tracking-wide uppercase leading-snug font-sans text-neutral-200">
                     {slide.title} <br /> {slide.subtitle}
                   </h3>
-                  
+
                   <div className="flex items-center gap-2 text-[10px] font-medium mt-2">
                     <span className="text-white">{slide.price}</span>
                     <span className="line-through text-neutral-500 text-[10px] font-medium">

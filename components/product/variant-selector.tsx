@@ -49,7 +49,7 @@ export function VariantSelector({
     <form key={option.id}>
       <dl className="mb-6">
         <div className="flex justify-between items-center mb-3">
-          <dt className="text-xs font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100" style={{ fontFamily: "Archivo" }}>
+          <dt className="text-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100" style={{ fontFamily: "'Clash Display', sans-serif" }}>
             {option.name}
           </dt>
           {option.name.toLowerCase() === "size" && (

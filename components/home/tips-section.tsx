@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import arrowClosed from "components/icons/arrow-closed.svg";
+import arrow from "components/icons/arrow.svg";
 import tip1 from "components/icons/tip1.png";
 import tip2 from "components/icons/tip2.png";
 import tip3 from "components/icons/tip3.png";
 import tip4 from "components/icons/tip4.png";
 import tip5 from "components/icons/tip5.png";
-import arrow from "components/icons/arrow.svg";
-import arrowClosed from "components/icons/arrow-closed.svg";
+import { useEffect, useRef, useState } from "react";
 
 const tips = [
   { image: tip1 },
@@ -56,22 +56,22 @@ export default function TipsSection() {
   return (
     <section className="min-h-full w-full bg-white py-10 md:py-[120px] overflow-hidden">
       <div>
-        
+
         {/* Header with Navigation Controls */}
         <div className="flex justify-between items-end mb-5 md:mb-10 mx-auto max-w-(--breakpoint-2xl) px-6">
-          <h2 className="text-[24px] font-black tracking-tighter text-black dark:text-white sm:text-4xl lg:text-[40px] uppercase" style={{ fontFamily: 'Clash Display, sans-serif' }}>
+          <h2 className="text-[24px] font-black tracking-tight text-black dark:text-white sm:text-4xl lg:text-[40px] uppercase" style={{ fontFamily: 'Clash Display, sans-serif', letterSpacing: "-0.01em" }}>
             Tips to stay connected<br />Anywhere!
           </h2>
           <div className="flex gap-3 pb-2 z-50">
-            <button 
-              onClick={handlePrev} 
+            <button
+              onClick={handlePrev}
               disabled={activeIndex === 0}
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
               <img src={arrowClosed.src || arrowClosed} className="w-3 h-3 text-neutral-700 rotate-180" alt="previous" />
             </button>
-            <button 
-              onClick={handleNext} 
+            <button
+              onClick={handleNext}
               disabled={activeIndex === tips.length - 1}
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
@@ -81,7 +81,7 @@ export default function TipsSection() {
         </div>
 
         {/* Horizontal Scroll Row */}
-        <div 
+        <div
           ref={scrollContainerRef}
           className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth select-none snap-x mandatory"
           style={{ WebkitOverflowScrolling: 'touch' }}
@@ -95,7 +95,7 @@ export default function TipsSection() {
             >
               {/* Entire Wrapper (Image Box + View Button Stack) - Moves Up Together */}
               <div className={`w-full flex flex-col transition-transform duration-300 ease-out ${activeIndex === index ? '-translate-y-14' : 'group-hover:-translate-y-14'}`}>
-                
+
                 {/* Image Container Frame */}
                 <div className={`relative w-full aspect-[3/3.8] overflow-hidden shadow-sm flex-shrink-0 ${index === 0 ? 'rounded-tr-md rounded-br-md' : index === tips.length - 1 ? 'rounded-tl-md rounded-bl-md' : 'rounded-md'}`}>
                   <img
@@ -103,7 +103,7 @@ export default function TipsSection() {
                     alt={`Tip ${index + 1}`}
                     className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                   />
-                  
+
                   {/* Instagram Banner */}
                   <div className="absolute bottom-4 left-4 right-4 bg-black/30 backdrop-blur-md rounded-md p-3 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-white">

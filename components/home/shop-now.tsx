@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { getLocalizedPath } from "lib/i18n";
 import shopNow1 from "components/icons/shop_now_1.png";
 import shopNow2 from "components/icons/shop_now_2.png";
 import shopNow3 from "components/icons/shop_now_3.png";
+import { getLocalizedPath } from "lib/i18n";
+import Image from "next/image";
+import Link from "next/link";
+import { useRef, useState } from "react";
 import catalog from "scripts/product-catalog-dump.json";
 
 interface ProductCard {
@@ -36,11 +36,11 @@ export default function ShopNow({ locale }: { locale: string }) {
   return (
     <section className="w-full overflow-hidden py-12 md:py-30">
       {/* Header aligned dynamically using trackPadding */}
-      <div 
+      <div
         className="mb-10 flex items-end justify-between w-full items-center"
         style={{ paddingLeft: trackPadding, paddingRight: trackPadding }}
       >
-        <h2 className="text-4xl font-black tracking-tighter text-black dark:text-white sm:text-5xl lg:text-[60px]">
+        <h2 className="text-4xl font-black tracking-tight text-black dark:text-white sm:text-5xl lg:text-[60px]" style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}>
           SHOP NOW
         </h2>
         <Link
@@ -108,7 +108,7 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
         onMouseMove={handleMouseMove}
         onMouseLeave={() => { clearTimeout(moveTimer.current); setShowIndex(0); }}
       >
-        
+
         {/* Pill Badges Stack */}
         {(product.discount || product.monthlyPayment) && (
           <div className="absolute right-3 top-3 z-20 flex items-center gap-1.5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
@@ -126,7 +126,7 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
         )}
 
         {/* Sliding Image Track */}
-        <div 
+        <div
           className="absolute inset-0 flex transition-transform duration-700 ease-in-out"
           style={{ transform: `translateX(-${showIndex * 100}%)` }}
         >
@@ -149,9 +149,8 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
           {[0, 1, 2].map((idx) => (
             <span
               key={idx}
-              className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
-                idx === showIndex ? "w-1.5 opacity-100" : "w-1.5 opacity-50"
-              }`}
+              className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-1.5 opacity-100" : "w-1.5 opacity-50"
+                }`}
             />
           ))}
         </div>
@@ -194,7 +193,7 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
         <p className="text-[16px] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-2" style={{ fontFamily: "Archivo", }}>
           {product.brand}
         </p>
-        <h3 className="line-clamp-2 text-[20px] font-normal leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2 h-8" style={{ fontFamily: "Archivo", }}>
+        <h3 className="line-clamp-2 text-[20px] font-medium leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2 h-8" style={{ fontFamily: "'Clash Display', sans-serif" }}>
           {product.name}
         </h3>
         <div className="flex items-baseline gap-2">

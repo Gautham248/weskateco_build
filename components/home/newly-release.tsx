@@ -5,13 +5,8 @@ export default function NewlyRelease() {
     <section className="h-screen w-full bg-white pt-10 md:pt-[120px] pb-10 md:mb-[100px]">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-6 h-full flex flex-col">
         <h2
-          className="text-[#000000] uppercase text-[24px] md:text-[60px]"
-          style={{
-            fontFamily: "'Clash Display', sans-serif",
-            fontWeight: 700,
-            lineHeight: "51px",
-            letterSpacing: "-1%",
-          }}
+          className="text-4xl font-black tracking-tight text-black dark:text-white sm:text-5xl lg:text-[60px] uppercase"
+          style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}
         >
           NEWLY RELEASED
         </h2>

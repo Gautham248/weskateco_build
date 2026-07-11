@@ -1,3 +1,4 @@
+import CategoryGrid from "components/home/category-grid";
 import TipsSection from "components/home/tips-section";
 import Footer from "components/layout/footer";
 import { Suspense } from "react";
@@ -8,6 +9,8 @@ export default async function SearchLayout(props: {
   params: Promise<{ locale: string }>;
 }) {
   const { children } = props;
+  const params = await props.params;
+  const locale = params.locale;
 
   return (
     <>
@@ -16,6 +19,7 @@ export default async function SearchLayout(props: {
           <ChildrenWrapper>{children}</ChildrenWrapper>
         </Suspense>
       </div>
+      <CategoryGrid locale={locale} />
       <TipsSection />
       <Footer />
     </>

@@ -12,6 +12,10 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+
+  body, input, button, select, textarea {
+    font-family: 'Archivo', sans-serif;
+  }
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
