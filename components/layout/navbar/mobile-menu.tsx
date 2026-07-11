@@ -135,7 +135,7 @@ export default function MobileMenu() {
               </div>
 
               {/* Scrollable Body */}
-              <div className="flex-1 overflow-y-auto px-6 py-6">
+              <div className="flex-1 overflow-y-auto px-6 py-6" style={{ fontFamily: "'Clash Display', sans-serif" }}>
                 {/* STORE Accordion */}
                 <div className="border-b border-neutral-100 dark:border-neutral-900 py-3">
                   <button
