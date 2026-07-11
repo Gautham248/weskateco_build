@@ -160,41 +160,28 @@ function CartPageContent() {
                 {cart.lines.map((item) => {
                   const hasImage = !!item.merchandise.product.featuredImage?.url;
                   return (
-                    <div
-                      key={item.id}
-                      className="flex gap-4 p-4 md:p-6 bg-neutral-50 dark:bg-neutral-900/40 rounded-sm relative border border-neutral-100 dark:border-neutral-900"
-                    >
-                      {/* Product image */}
-                      <div className="relative aspect-square w-24 h-24 sm:w-28 sm:h-28 overflow-hidden rounded-md bg-neutral-100 dark:bg-neutral-800 flex-shrink-0 border border-neutral-200/50 dark:border-neutral-800">
-                        {hasImage ? (
-                          <Image
-                            src={item.merchandise.product.featuredImage.url}
-                            alt={item.merchandise.product.featuredImage.altText || item.merchandise.product.title}
-                            fill
-                            className="object-cover object-top"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
-                            No image
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Product details info & Actions */}
-                      <div className="flex-1 flex flex-col min-h-[110px]" style={{ fontFamily: "Archivo" }}>
-                        {/* Top row: Title/Vendor on left, Quantity on right */}
-                        <div className="flex justify-between items-start gap-4">
-                          <div>
-                            <h3 className="text-[16px] font-bold uppercase text-black dark:text-white leading-tight tracking-tight">
-                              {item.merchandise.product.title}
-                            </h3>
-                            <p className="text-[12px] font-normal text-black dark:text-neutral-500 uppercase mt-0.5 tracking-wider">
-                              {item.merchandise.product.vendor || ""}
-                            </p>
+                    <div key={item.id}>
+                      {/* Mobile View */}
+                      <div className="flex md:hidden gap-6 p-4 bg-white dark:bg-black rounded-sm relative border-b border-neutral-100 dark:border-neutral-900">
+                        {/* Left Column: Image & Quantity Selector */}
+                        <div className="flex flex-col items-center gap-4 flex-shrink-0">
+                          <div className="relative aspect-square w-24 h-24 overflow-hidden rounded-md bg-neutral-50 dark:bg-neutral-900 flex-shrink-0 border border-neutral-100 dark:border-neutral-800">
+                            {hasImage ? (
+                              <Image
+                                src={item.merchandise.product.featuredImage.url}
+                                alt={item.merchandise.product.featuredImage.altText || item.merchandise.product.title}
+                                fill
+                                className="object-cover object-top"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
+                                No image
+                              </div>
+                            )}
                           </div>
 
                           {/* Quantity Selector */}
-                          <div className="flex items-center gap-3 flex-shrink-0">
+                          <div className="flex items-center gap-3.5 flex-shrink-0">
                             <button
                               type="button"
                               onClick={async () => {
@@ -209,11 +196,11 @@ function CartPageContent() {
                                   await removeItem(null, item.merchandise.id);
                                 }
                               }}
-                              className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 transition-colors cursor-pointer text-sm font-bold"
+                              className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors cursor-pointer text-base font-bold"
                             >
                               -
                             </button>
-                            <span className="text-xs font-semibold w-5 text-center text-neutral-700 dark:text-neutral-300">
+                            <span className="text-sm font-semibold w-5 text-center text-neutral-900 dark:text-neutral-100">
                               {String(item.quantity).padStart(2, "0")}
                             </span>
                             <button
@@ -225,42 +212,160 @@ function CartPageContent() {
                                   quantity: item.quantity + 1,
                                 });
                               }}
-                              className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 transition-colors cursor-pointer text-sm font-bold"
+                              className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors cursor-pointer text-base font-bold"
                             >
                               +
                             </button>
                           </div>
                         </div>
 
-                        {/* Middle row: Attributes */}
-                        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-black uppercase">
-                          {item.merchandise.selectedOptions.map((opt) => (
-                            <span key={opt.name}>
-                              <span className="font-normal text-black mr-1">{opt.name}:</span>
-                              <span className="font-bold text-black dark:text-white">{opt.value}</span>
-                            </span>
-                          ))}
+                        {/* Right Column: Title, Details, Delivery, Remove */}
+                        <div className="flex-1 flex flex-col min-w-0" style={{ fontFamily: "Archivo" }}>
+                          <h3 className="text-[17px] font-bold text-neutral-900 dark:text-neutral-50 leading-tight tracking-tight uppercase">
+                            {item.merchandise.product.title}
+                          </h3>
+
+                          {/* Price */}
+                          <div className="mt-2">
+                            <Price
+                              amount={item.cost.totalAmount.amount}
+                              currencyCode={item.cost.totalAmount.currencyCode}
+                              currencyCodeClassName="hidden"
+                              className="text-[20px] font-extrabold text-neutral-900 dark:text-neutral-50"
+                            />
+                          </div>
+
+                          {/* Selected Options / Attributes */}
+                          <div className="mt-4 flex flex-col gap-1.5 text-sm uppercase">
+                            {item.merchandise.selectedOptions.map((opt) => (
+                              <div key={opt.name} className="flex gap-1.5 items-baseline">
+                                <span className="font-normal text-neutral-600 dark:text-neutral-400">{opt.name}:</span>
+                                <span className="font-semibold text-neutral-900 dark:text-neutral-100">{opt.value}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Delivery by Today */}
+                          <div className="mt-4 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                            Delivery by <span className="text-[#3f6212] dark:text-[#84cc16] font-bold">Today</span>
+                          </div>
+
+                          {/* Remove Action */}
+                          <div className="mt-5">
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                updateCartItem(item.merchandise.id, "delete");
+                                await removeItem(null, item.merchandise.id);
+                              }}
+                              className="text-[12px] font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 underline cursor-pointer hover:text-neutral-600"
+                            >
+                              REMOVE
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Desktop View */}
+                      <div className="hidden md:flex gap-4 p-4 md:p-6 bg-neutral-50 dark:bg-neutral-900/40 rounded-sm relative border border-neutral-100 dark:border-neutral-900">
+                        {/* Product image */}
+                        <div className="relative aspect-square w-24 h-24 sm:w-28 sm:h-28 overflow-hidden rounded-md bg-neutral-100 dark:bg-neutral-800 flex-shrink-0 border border-neutral-200/50 dark:border-neutral-800">
+                          {hasImage ? (
+                            <Image
+                              src={item.merchandise.product.featuredImage.url}
+                              alt={item.merchandise.product.featuredImage.altText || item.merchandise.product.title}
+                              fill
+                              className="object-cover object-top"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
+                              No image
+                            </div>
+                          )}
                         </div>
 
-                        {/* Bottom row: Remove on left, Price on right */}
-                        <div className="mt-auto pt-6 flex justify-between items-end">
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              updateCartItem(item.merchandise.id, "delete");
-                              await removeItem(null, item.merchandise.id);
-                            }}
-                            className="text-[10px] font-bold uppercase tracking-wider text-black dark:text-white underline cursor-pointer hover:text-neutral-600"
-                          >
-                            REMOVE
-                          </button>
+                        {/* Product details info & Actions */}
+                        <div className="flex-1 flex flex-col min-h-[110px]" style={{ fontFamily: "Archivo" }}>
+                          {/* Top row: Title/Vendor on left, Quantity on right */}
+                          <div className="flex justify-between items-start gap-4">
+                            <div>
+                              <h3 className="text-[16px] font-bold uppercase text-black dark:text-white leading-tight tracking-tight">
+                                {item.merchandise.product.title}
+                              </h3>
+                              <p className="text-[12px] font-normal text-black dark:text-neutral-500 uppercase mt-0.5 tracking-wider">
+                                {item.merchandise.product.vendor || ""}
+                              </p>
+                            </div>
 
-                          <Price
-                            amount={item.cost.totalAmount.amount}
-                            currencyCode={item.cost.totalAmount.currencyCode}
-                            currencyCodeClassName="hidden"
-                            className="text-[20px] font-extrabold text-black dark:text-white"
-                          />
+                            {/* Quantity Selector */}
+                            <div className="flex items-center gap-3 flex-shrink-0">
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  if (item.quantity > 1) {
+                                    updateCartItem(item.merchandise.id, "minus");
+                                    await updateItemQuantity(null, {
+                                      merchandiseId: item.merchandise.id,
+                                      quantity: item.quantity - 1,
+                                    });
+                                  } else {
+                                    updateCartItem(item.merchandise.id, "delete");
+                                    await removeItem(null, item.merchandise.id);
+                                  }
+                                }}
+                                className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 transition-colors cursor-pointer text-sm font-bold"
+                              >
+                                -
+                              </button>
+                              <span className="text-xs font-semibold w-5 text-center text-neutral-700 dark:text-neutral-300">
+                                {String(item.quantity).padStart(2, "0")}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  updateCartItem(item.merchandise.id, "plus");
+                                  await updateItemQuantity(null, {
+                                    merchandiseId: item.merchandise.id,
+                                    quantity: item.quantity + 1,
+                                  });
+                                }}
+                                className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 transition-colors cursor-pointer text-sm font-bold"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Middle row: Attributes */}
+                          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-black uppercase">
+                            {item.merchandise.selectedOptions.map((opt) => (
+                              <span key={opt.name}>
+                                <span className="font-normal text-black mr-1">{opt.name}:</span>
+                                <span className="font-bold text-black dark:text-white">{opt.value}</span>
+                              </span>
+                            ))}
+                          </div>
+
+                          {/* Bottom row: Remove on left, Price on right */}
+                          <div className="mt-auto pt-6 flex justify-between items-end">
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                updateCartItem(item.merchandise.id, "delete");
+                                await removeItem(null, item.merchandise.id);
+                              }}
+                              className="text-[10px] font-bold uppercase tracking-wider text-black dark:text-white underline cursor-pointer hover:text-neutral-600"
+                            >
+                              REMOVE
+                            </button>
+
+                            <Price
+                              amount={item.cost.totalAmount.amount}
+                              currencyCode={item.cost.totalAmount.currencyCode}
+                              currencyCodeClassName="hidden"
+                              className="text-[20px] font-extrabold text-black dark:text-white"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -322,7 +427,7 @@ function CartPageContent() {
                   <h3 className="text-[14px] font-bold uppercase tracking-wider text-black" style={{ fontFamily: "'Clash Display', sans-serif" }}>
                     Price Details
                   </h3>
-                  <div className="flex justify-between text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                  <div className="flex justify-between text-sm font-medium text-neutral-600 dark:text-neutral-400">
                     <span>Subtotal</span>
                     <Price
                       amount={cart.cost.subtotalAmount.amount}
@@ -331,11 +436,11 @@ function CartPageContent() {
                       className="text-neutral-900 dark:text-white"
                     />
                   </div>
-                  <div className="flex justify-between text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                  <div className="flex justify-between text-sm font-medium text-neutral-600 dark:text-neutral-400">
                     <span>Discount</span>
                     <span className="text-green-600 dark:text-green-400 font-semibold">₹ 0</span>
                   </div>
-                  <div className="flex justify-between text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                  <div className="flex justify-between text-sm font-medium text-neutral-600 dark:text-neutral-400">
                     <span>Shipping</span>
                     <span className="text-green-600 dark:text-green-400 font-semibold uppercase">Free</span>
                   </div>
