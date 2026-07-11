@@ -20,6 +20,23 @@ export async function addItem(
     return "Error adding item to cart";
   }
 
+  let cartId = (await cookies()).get("cartId")?.value;
+  let cart;
+
+  if (cartId) {
+    cart = await getCart();
+  }
+
+  if (!cartId || !cart) {
+    try {
+      cart = await createCart();
+      cartId = cart.id;
+      (await cookies()).set("cartId", cartId!);
+    } catch (e) {
+      return "Error creating cart";
+    }
+  }
+
   try {
     await addToCart([{ merchandiseId: selectedVariantId, quantity: 1 }]);
     updateTag(TAGS.cart);
@@ -138,5 +155,22 @@ export async function addConfiguratorBundle(
   } catch (e) {
     console.error("Error adding configurator bundle to cart:", e);
     return "Error adding configurator bundle to cart";
+  }
+}
+
+export async function buyNowAction(selectedVariantId: string | undefined) {
+  if (!selectedVariantId) {
+    return "Error adding item to cart";
+  }
+  try {
+    await addToCart([{ merchandiseId: selectedVariantId, quantity: 1 }]);
+    updateTag(TAGS.cart);
+  } catch (e) {
+    return "Error adding item to cart";
+  }
+
+  const cart = await getCart();
+  if (cart?.checkoutUrl) {
+    redirect(cart.checkoutUrl);
   }
 }

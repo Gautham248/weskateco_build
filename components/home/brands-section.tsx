@@ -25,7 +25,7 @@ export default function BrandsSection({ locale }: { locale: string }) {
         {brands.map((brand) => (
           <Link
             key={brand.name}
-            href={getLocalizedPath(`/search/${brand.handle}`, locale)}
+            href={getLocalizedPath(`/store/${brand.handle}`, locale)}
             className="flex items-center justify-center rounded-2xl border border-neutral-200 bg-white p-6 text-center text-base font-semibold text-neutral-700 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-400 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900/35 dark:text-neutral-300 dark:hover:border-neutral-600"
           >
             <span className="tracking-wide">{brand.name}</span>

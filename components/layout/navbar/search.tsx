@@ -3,41 +3,86 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Form from "next/form";
 import { useSearchParams } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 
 export default function Search() {
   const searchParams = useSearchParams();
+  const [expanded, setExpanded] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (expanded && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [expanded]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setExpanded(false);
+      }
+    }
+    if (expanded) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [expanded]);
 
   return (
-    <Form
-      action="/search"
-      className="w-max-[550px] relative w-full lg:w-80 xl:w-full"
-    >
-      <input
-        key={searchParams?.get("q")}
-        type="text"
-        name="q"
-        placeholder="Search for products..."
-        autoComplete="off"
-        defaultValue={searchParams?.get("q") || ""}
-        className="text-md w-full rounded-lg border bg-white px-4 py-2 text-black placeholder:text-neutral-500 md:text-sm dark:border-neutral-800 dark:bg-transparent dark:text-white dark:placeholder:text-neutral-400"
-      />
-      <div className="absolute right-0 top-0 mr-3 flex h-full items-center">
-        <MagnifyingGlassIcon className="h-4" />
-      </div>
-    </Form>
+    <div className="relative" ref={containerRef}>
+      {/* Absolute dropdown search input: rendered below LG viewport */}
+      {expanded && (
+        <div className="absolute top-full -right-17 mt-2 z-50 lg:hidden">
+          <Form action="/store" className="flex items-center">
+            <input
+              key={searchParams?.get("q")}
+              ref={inputRef}
+              type="text"
+              name="q"
+              placeholder="Search..."
+              autoComplete="off"
+              defaultValue={searchParams?.get("q") || ""}
+              onBlur={() => setExpanded(false)}
+              className="w-[180px] rounded-lg border bg-white px-3 py-2 text-sm text-black placeholder:text-neutral-500 outline-none dark:border-neutral-700 dark:bg-transparent dark:text-white dark:placeholder:text-neutral-400"
+            />
+          </Form>
+        </div>
+      )}
+
+      {/* Inline search input: rendered on LG viewports and above */}
+      {expanded && (
+        <Form action="/store" className="hidden lg:flex items-center">
+          <input
+            key={searchParams?.get("q")}
+            ref={inputRef}
+            type="text"
+            name="q"
+            placeholder="Search..."
+            autoComplete="off"
+            defaultValue={searchParams?.get("q") || ""}
+            onBlur={() => setExpanded(false)}
+            className="rounded-lg border bg-white px-3 py-2 text-sm text-black placeholder:text-neutral-500 outline-none lg:w-[150px] xl:w-[280px] dark:border-neutral-700 dark:bg-transparent dark:text-white dark:placeholder:text-neutral-400"
+          />
+        </Form>
+      )}
+
+      {/* Trigger Button */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        aria-label="Search"
+        className={`flex items-center justify-center rounded-md transition-colors h-5 w-5 md:h-7 md:w-7 ${expanded ? "lg:hidden" : ""}`}
+      >
+        <MagnifyingGlassIcon className="h-5 md:h-7" />
+      </button>
+    </div>
   );
 }
 
 export function SearchSkeleton() {
   return (
-    <form className="w-max-[550px] relative w-full lg:w-80 xl:w-full">
-      <input
-        placeholder="Search for products..."
-        className="w-full rounded-lg border bg-white px-4 py-2 text-sm text-black placeholder:text-neutral-500 dark:border-neutral-800 dark:bg-transparent dark:text-white dark:placeholder:text-neutral-400"
-      />
-      <div className="absolute right-0 top-0 mr-3 flex h-full items-center">
-        <MagnifyingGlassIcon className="h-4" />
-      </div>
-    </form>
+    <div className="h-11 w-11 rounded-md border" />
   );
 }

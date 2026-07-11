@@ -1,0 +1,137 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import tip1 from "components/icons/tip1.png";
+import tip2 from "components/icons/tip2.png";
+import tip3 from "components/icons/tip3.png";
+import tip4 from "components/icons/tip4.png";
+import tip5 from "components/icons/tip5.png";
+import arrow from "components/icons/arrow.svg";
+import arrowClosed from "components/icons/arrow-closed.svg";
+
+const tips = [
+  { image: tip1 },
+  { image: tip2 },
+  { image: tip3 },
+  { image: tip4 },
+  { image: tip5 },
+];
+
+export default function TipsSection() {
+  const [activeIndex, setActiveIndex] = useState(2);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Smoothly center the active card in the viewport
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const activeChild = container.children[activeIndex] as HTMLElement;
+    if (activeChild) {
+      const containerRect = container.getBoundingClientRect();
+      const childRect = activeChild.getBoundingClientRect();
+
+      // Calculate the exact distance needed to place the card center-stage
+      const scrollOffset =
+        childRect.left -
+        containerRect.left -
+        containerRect.width / 2 +
+        childRect.width / 2;
+
+      container.scrollBy({
+        left: scrollOffset,
+        behavior: "smooth",
+      });
+    }
+  }, [activeIndex]);
+
+  const handlePrev = () => {
+    setActiveIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleNext = () => {
+    setActiveIndex((prev) => Math.min(tips.length - 1, prev + 1));
+  };
+
+  return (
+    <section className="min-h-full w-full bg-white py-10 md:py-[120px] overflow-hidden">
+      <div>
+        
+        {/* Header with Navigation Controls */}
+        <div className="flex justify-between items-end mb-5 md:mb-10 mx-auto max-w-(--breakpoint-2xl) px-6">
+          <h2 className="text-[24px] font-black tracking-tighter text-black dark:text-white sm:text-4xl lg:text-[40px] uppercase" style={{ fontFamily: 'Clash Display, sans-serif' }}>
+            Tips to stay connected<br />Anywhere!
+          </h2>
+          <div className="flex gap-3 pb-2 z-50">
+            <button 
+              onClick={handlePrev} 
+              disabled={activeIndex === 0}
+              className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              <img src={arrowClosed.src || arrowClosed} className="w-3 h-3 text-neutral-700 rotate-180" alt="previous" />
+            </button>
+            <button 
+              onClick={handleNext} 
+              disabled={activeIndex === tips.length - 1}
+              className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              <img src={arrowClosed.src || arrowClosed} className="w-3 h-3 text-neutral-700" alt="next" />
+            </button>
+          </div>
+        </div>
+
+        {/* Horizontal Scroll Row */}
+        <div 
+          ref={scrollContainerRef}
+          className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth select-none snap-x mandatory"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
+          {tips.map((tip, index) => (
+            <div
+              key={index}
+              className="group relative pt-14 cursor-pointer overflow-hidden flex-shrink-0 w-[75vw] sm:w-[50vw] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-13px)] snap-center"
+              onMouseEnter={() => setActiveIndex(index)}
+              onTouchStart={() => setActiveIndex(index)}
+            >
+              {/* Entire Wrapper (Image Box + View Button Stack) - Moves Up Together */}
+              <div className={`w-full flex flex-col transition-transform duration-300 ease-out ${activeIndex === index ? '-translate-y-14' : 'group-hover:-translate-y-14'}`}>
+                
+                {/* Image Container Frame */}
+                <div className={`relative w-full aspect-[3/3.8] overflow-hidden shadow-sm flex-shrink-0 ${index === 0 ? 'rounded-tr-md rounded-br-md' : index === tips.length - 1 ? 'rounded-tl-md rounded-bl-md' : 'rounded-md'}`}>
+                  <img
+                    src={tip.image.src || (tip.image as unknown as string)}
+                    alt={`Tip ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  />
+                  
+                  {/* Instagram Banner */}
+                  <div className="absolute bottom-4 left-4 right-4 bg-black/30 backdrop-blur-md rounded-md p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-white">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                      </svg>
+                    </div>
+                    <span className="text-white font-bold text-xs uppercase tracking-wider" style={{ fontFamily: 'ClashDisplay, sans-serif' }}>Instagram</span>
+                  </div>
+                </div>
+
+                {/* View Post Button (Reveals right at the bottom edge boundary) */}
+                <div className={`w-full h-14 pt-3 flex-shrink-0 transition-opacity duration-300 ${activeIndex === index ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                  <button className="w-full h-full bg-black text-white rounded-md font-bold text-xs uppercase tracking-wide flex items-center justify-between px-4 hover:bg-neutral-900 transition-colors">
+                    <span>View Post</span>
+                    <div className="bg-white text-black rounded-full p-1">
+                      <img src={arrow.src || arrow} className="w-3.5 h-3.5" alt="arrow" />
+                    </div>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -1,93 +1,97 @@
 "use client";
 
-import Link from "next/link";
-import { useTranslation } from "lib/i18n/TranslationProvider";
-import { getLocalizedPath } from "lib/i18n";
-import { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import MegaMenuLeft from "./mega-menu-left";
+import MegaMenuRight from "./mega-menu-right";
 
-export default function NavLinks() {
+export default function NavLinks({ onDropdownChange }: { onDropdownChange?: (isOpen: boolean) => void }) {
   const { t, locale } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const menuRef = useRef<HTMLLIElement>(null);
 
-  const shopSubLinks = [
-    { title: t("nav.skateboards"), href: "/search/skateboards" },
-    { title: t("nav.surfskates"), href: "/search/surfskates" },
-    { title: t("nav.apparel"), href: "/search/apparel-1" },
-    { title: t("nav.protective_gear"), href: "/search/protection-gears" },
-  ];
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+        setActiveCategory(null);
+      }
+    }
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "";
+    };
+  }, [isDropdownOpen]);
+
+  useEffect(() => {
+    onDropdownChange?.(isDropdownOpen);
+  }, [isDropdownOpen, onDropdownChange]);
 
   return (
-    <ul className="hidden gap-6 text-sm font-medium md:flex md:items-center">
-      {/* Shop Dropdown */}
-      <li
-        className="relative"
-        onMouseEnter={() => setIsDropdownOpen(true)}
-        onMouseLeave={() => setIsDropdownOpen(false)}
-      >
-        <button
-          className="flex items-center gap-1 text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-neutral-300"
-          aria-expanded={isDropdownOpen}
-        >
-          {t("nav.shop")}
-          <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} />
-        </button>
+    <>
+      {isDropdownOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          onClick={() => {
+            setIsDropdownOpen(false);
+            setActiveCategory(null);
+          }}
+        />
+      )}
+      <ul className="hidden items-center gap-2 lg:gap-8 text-[16px] lg:text-lg font-medium tracking-wide md:flex whitespace-nowrap z-50">      {/* STORE */}
+        <li ref={menuRef}>
+          <button
+            className="flex items-center gap-1 uppercase cursor-pointer"
+            aria-expanded={isDropdownOpen}
+            onMouseEnter={() => setIsDropdownOpen(true)}
+          >
+            STORE
+            <ChevronDownIcon className={`h-2.5 w-2.5 md:h-2.5 md:w-2.5 xl:h-3 xl:w-3 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} />
+          </button>
 
-        {isDropdownOpen && (
-          <div className="absolute top-full left-0 z-50 mt-2 w-48 rounded-xl border border-neutral-100 bg-white p-2 shadow-lg dark:border-neutral-800 dark:bg-neutral-900 animate-fadeIn">
-            {shopSubLinks.map((link) => (
-              <Link
-                key={link.title}
-                href={getLocalizedPath(link.href, locale)}
-                className="block rounded-lg px-4 py-2 text-sm text-neutral-500 hover:bg-neutral-50 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-                onClick={() => setIsDropdownOpen(false)}
-              >
-                {link.title}
-              </Link>
-            ))}
+          <div
+            className={`absolute left-6 right-6 z-50 shadow-lg top-full mt-5 ${isDropdownOpen
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+              } transition-opacity duration-300`}
+            style={{ height: "471px" }}
+          >
+            <div className="flex h-full gap-3">
+              <MegaMenuLeft activeCategory={activeCategory} onCategoryHover={setActiveCategory} onLinkClick={() => setIsDropdownOpen(false)} />
+              <MegaMenuRight activeCategory={activeCategory} />
+            </div>
           </div>
-        )}
-      </li>
+        </li>
 
-      {/* Brands */}
-      <li>
-        <Link
-          href={getLocalizedPath("/search", locale)}
-          className="text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-neutral-300"
-        >
-          {t("nav.brands")}
-        </Link>
-      </li>
+        {/* GUIDES */}
+        <li className={isDropdownOpen ? 'opacity-50' : ''}>
+          <Link href={getLocalizedPath("/guides", locale)}>
+            GUIDES
+          </Link>
+        </li>
 
-      {/* Configurator */}
-      <li>
-        <Link
-          href={getLocalizedPath("/configurator", locale)}
-          className="text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-neutral-300"
-        >
-          {t("configurator.title")}
-        </Link>
-      </li>
+        {/* WESKATE ACADEMY */}
+        <li className={isDropdownOpen ? 'opacity-50' : ''}>
+          <Link href={getLocalizedPath("/academy", locale)}>
+            WESKATE ACADEMY
+          </Link>
+        </li>
 
-      {/* Academy */}
-      <li>
-        <Link
-          href={getLocalizedPath("/academy", locale)}
-          className="text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-neutral-300"
-        >
-          {t("nav.academy")}
-        </Link>
-      </li>
-
-      {/* Skateparks */}
-      <li>
-        <Link
-          href={getLocalizedPath("/skateparks", locale)}
-          className="text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-neutral-300"
-        >
-          {t("nav.skateparks")}
-        </Link>
-      </li>
-    </ul>
+        {/* SKATEPARKS */}
+        <li className={isDropdownOpen ? 'opacity-50' : ''}>
+          <Link href={getLocalizedPath("/skateparks", locale)}>
+            SKATEPARKS
+          </Link>
+        </li>
+      </ul>
+    </>
   );
 }

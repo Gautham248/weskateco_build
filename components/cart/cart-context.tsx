@@ -10,24 +10,27 @@ import React, {
   createContext,
   use,
   useContext,
+  useEffect,
   useMemo,
   useOptimistic,
+  useState,
 } from "react";
 
 type UpdateType = "plus" | "minus" | "delete";
 
 type CartAction =
   | {
-      type: "UPDATE_ITEM";
-      payload: { merchandiseId: string; updateType: UpdateType };
-    }
+    type: "UPDATE_ITEM";
+    payload: { merchandiseId: string; updateType: UpdateType };
+  }
   | {
-      type: "ADD_ITEM";
-      payload: { variant: ProductVariant; product: Product };
-    };
+    type: "ADD_ITEM";
+    payload: { variant: ProductVariant; product: Product };
+  };
 
 type CartContextType = {
   cartPromise: Promise<Cart | undefined>;
+  resolvedCart: Cart | undefined | null;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -175,8 +178,8 @@ function cartReducer(state: Cart | undefined, action: CartAction): Cart {
 
       const updatedLines = existingItem
         ? currentCart.lines.map((item) =>
-            item.merchandise.id === variant.id ? updatedItem : item,
-          )
+          item.merchandise.id === variant.id ? updatedItem : item,
+        )
         : [...currentCart.lines, updatedItem];
 
       return {
@@ -189,7 +192,6 @@ function cartReducer(state: Cart | undefined, action: CartAction): Cart {
       return currentCart;
   }
 }
-
 export function CartProvider({
   children,
   cartPromise,
@@ -197,8 +199,22 @@ export function CartProvider({
   children: React.ReactNode;
   cartPromise: Promise<Cart | undefined>;
 }) {
+  const [resolvedCart, setResolvedCart] = useState<Cart | undefined | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    cartPromise.then((cart) => {
+      if (active) {
+        setResolvedCart(cart);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [cartPromise]);
+
   return (
-    <CartContext.Provider value={{ cartPromise }}>
+    <CartContext.Provider value={{ cartPromise, resolvedCart }}>
       {children}
     </CartContext.Provider>
   );
@@ -210,7 +226,10 @@ export function useCart() {
     throw new Error("useCart must be used within a CartProvider");
   }
 
-  const initialCart = use(context.cartPromise);
+  const initialCart =
+    context.resolvedCart !== null
+      ? context.resolvedCart
+      : use(context.cartPromise);
   const [optimisticCart, updateOptimisticCart] = useOptimistic(
     initialCart,
     cartReducer,

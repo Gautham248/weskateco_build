@@ -1,63 +1,91 @@
-import CartModal from "components/cart/modal";
-import LogoSquare from "components/logo-square";
-import { getMenu } from "lib/shopify";
-import { Menu } from "lib/shopify/types";
+"use client";
+
+import { useCart } from "components/cart/cart-context";
+import OpenCart from "components/cart/open-cart";
+import { getLocalizedPath } from "lib/i18n";
 import Link from "next/link";
-import { Suspense } from "react";
+import { useParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import MobileMenu from "./mobile-menu";
-import Search, { SearchSkeleton } from "./search";
 import NavLinks from "./nav-links";
+import { useNavbarScroll } from "./navbar-scroll";
+import Search, { SearchSkeleton } from "./search";
 
 const { SITE_NAME } = process.env;
 
-export async function Navbar({ locale }: { locale?: string }) {
-  const menu = await getMenu("next-js-frontend-header-menu");
+export function WeskatecoIcon({ color }: { color: string }) {
+  return (
+    <svg width="212" height="29" viewBox="0 0 212 29" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-[23px] md:h-[27px] w-auto">
+      <path fillRule="evenodd" clipRule="evenodd" d="M171.231 0.0553302C173.746 -0.254373 178.066 0.766597 180.011 2.3537C182.349 4.26178 183.192 5.92692 183.61 8.81255C185.224 3.52107 188.373 0.894412 193.918 0.1854C197.728 -0.30184 202.342 0.27781 205.436 2.67627C210.822 6.85427 211.013 17.5652 207.031 22.7464C204.814 25.6277 201.49 26.5642 198.01 26.9657C193.84 27.1198 189.61 26.6637 186.491 23.5012C184.917 21.9069 184.28 20.2904 183.611 18.2187C183.361 20.1958 182.793 21.949 181.447 23.4743C177.367 28.0977 167.505 28.0988 162.984 24.1864C160.017 21.511 159.264 17.6634 159.204 13.8775C159.072 5.53222 162.657 0.571025 171.231 0.0553302ZM172.351 4.67794C172.074 4.66536 171.46 4.65996 171.204 4.72092C165.023 5.29723 164.783 10.668 165.103 15.6879C165.225 17.5944 165.936 19.7518 167.455 20.9979C169.702 22.8211 173.878 22.8269 176.221 21.2062C177.666 20.0229 178.253 18.6401 178.235 16.763H183.373C183.086 15.1542 183.006 11.9384 183.357 10.3283H178.034C177.782 6.82831 176.056 4.84552 172.351 4.67794ZM203.867 11.4502C203.35 6.46602 200.241 4.43169 195.468 4.71283C189.173 5.48331 188.584 10.332 189.048 15.8226C189.461 20.6001 193.077 22.8832 197.654 22.2992L197.705 22.2924C203.467 21.6668 204.367 16.2681 203.867 11.4502Z" fill={color} />
+      <path d="M30.5916 0.494801L53.1063 0.494572L52.2939 5.13864H39.9236V10.951H51.2968C51.0149 12.4793 50.741 14.009 50.475 15.5403H39.9236V21.875H49.391C49.0817 23.3692 48.8317 25.0339 48.5465 26.5545H34.2417L34.2436 12.856C34.2441 10.8027 34.3418 7.46997 34.1923 5.48839C33.7071 7.79743 33.3004 10.4324 32.8855 12.773L30.4379 26.5545H24.0148C23.5452 24.7629 23.1494 22.7662 22.7174 20.9466C21.5985 16.2339 20.5812 11.4686 19.4279 6.76676C18.8967 8.76759 18.4208 11.1351 17.959 13.1728L14.9125 26.5545H8.28874C7.91438 23.8272 7.21015 20.401 6.72153 17.6416L3.67969 0.494896L8.66452 0.494801C8.96898 1.75212 9.265 3.79285 9.49814 5.10672L11.1266 14.3058C11.43 16.02 11.7339 17.9977 12.1133 19.6665C12.4771 17.5904 13.0723 15.122 13.5196 13.0363L16.2157 0.494801H22.9571C23.7747 4.50772 24.7846 8.63535 25.6389 12.6585C25.9713 14.224 26.7805 18.3077 27.2219 19.6186C27.5096 17.5481 28.0025 15.1045 28.3703 13.0213L30.5916 0.494801Z" fill={color} />
+      <path fillRule="evenodd" clipRule="evenodd" d="M83.7581 0.492028C83.505 1.54505 83.2516 3.25845 83.052 4.37729L81.6996 11.9676C83.0527 10.8664 84.7912 9.18101 86.1064 7.97981L94.3084 0.492028H101.731L89.9555 11.0877C91.6044 14.6655 93.3882 18.2928 95.0833 21.8619C96.4309 19.6123 97.8392 16.9305 99.1327 14.6067L106.987 0.492028H113.957C114.26 2.18429 114.687 4.05091 115.038 5.74908C115.495 7.7015 115.898 9.87943 116.31 11.8678L119.374 26.5545H113.586C113.224 25.0827 112.88 22.964 112.584 21.4314H101.191L98.4252 26.5544C95.9181 26.5888 93.411 26.5888 90.9046 26.5545L85.5962 14.9783C83.9084 16.2817 82.152 17.7558 80.4834 19.1039L79.1575 26.5545H73.4877C74.8884 17.951 76.5819 9.09934 78.0949 0.492028H83.7581ZM109.563 5.39943C109.122 6.19914 108.689 7.07354 108.304 7.90193C106.879 10.9596 105.143 13.8667 103.623 16.8702H111.711C111.215 14.2494 110.738 11.6253 110.277 8.99804C110.18 8.42847 109.811 5.71741 109.563 5.39943Z" fill={color} />
+      <path d="M117.073 0.49218L160.04 0.491618C159.74 2.0356 159.486 3.58566 159.178 5.13464H144.137C143.756 6.83174 143.417 9.18575 143.108 10.9463H156.474C156.211 12.4785 155.94 14.0092 155.66 15.5383H142.268C141.934 17.6412 141.539 19.7786 141.173 21.8795L156.244 21.8798C156.123 22.5757 156.051 22.9337 155.832 23.6012C155.06 25.128 153.556 26.3793 151.799 26.4926C150.073 26.6039 148.262 26.55 146.527 26.5511L134.658 26.5519C136.023 19.5182 137.096 12.2977 138.456 5.24735H130.228C129.932 7.25065 129.495 9.38077 129.154 11.3972C128.298 16.4464 127.33 21.5018 126.503 26.5538H120.803C122.165 19.6364 123.324 12.2363 124.562 5.24735H116.237C116.503 3.66009 116.782 2.07497 117.073 0.49218Z" fill={color} />
+      <path d="M60.5529 0.525773C60.8715 0.458158 64.5247 0.483614 65.1002 0.483824L76.6805 0.491417L75.8632 5.16484L66.4385 5.16455C64.8852 5.16494 63.3159 5.1113 61.7607 5.2502C60.6537 5.34919 59.4856 6.52362 59.7006 7.67681C59.9416 8.96957 61.7471 9.68965 62.7829 10.2866C65.5762 11.8603 68.285 12.82 71.0033 14.5791C74.4567 16.8135 74.133 20.7288 72.126 23.8852C71.1316 25.4492 69.4063 26.2119 67.6001 26.5171C66.4412 26.6405 63.4097 26.5606 62.1542 26.5602L51.3373 26.5545C51.6255 24.9953 51.8994 23.4335 52.159 21.8692L61.4106 21.8641C62.9111 21.8641 64.4525 21.9328 65.9485 21.834C68.0912 21.6924 69.2463 19.3656 67.2752 17.9698C66.0675 17.1147 64.6425 16.578 63.3333 15.8929C59.3803 13.78 53.3039 12.2223 54.5449 6.4214C55.259 3.08349 57.0261 0.93095 60.5529 0.525773Z" fill={color} />
+    </svg>
+  );
+}
+
+function CartLink() {
+  const { cart } = useCart();
+  const params = useParams();
+  const locale = (params?.locale as string) || "en";
+  return (
+    <Link href={getLocalizedPath("/cart", locale)} aria-label="Open cart">
+      <OpenCart quantity={cart?.totalQuantity} />
+    </Link>
+  );
+}
+
+export function Navbar({ locale }: { locale?: string }) {
+  const scrolled = useNavbarScroll();
+  const [isStoreOpen, setIsStoreOpen] = useState(false);
 
   return (
-    <nav className="relative flex items-center justify-between p-4 lg:px-6">
-      <div className="block flex-none md:hidden">
-        <Suspense fallback={null}>
-          <MobileMenu menu={menu} />
-        </Suspense>
-      </div>
-      <div className="flex w-full items-center">
-        <div className="flex w-full md:w-1/3">
-          <Link
-            href="/"
-            className="mr-2 flex w-full items-center justify-center md:w-auto lg:mr-6"
-          >
-            <LogoSquare />
-            <span className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block">
-              {SITE_NAME}
-            </span>
-          </Link>
-          {menu.length ? (
-            <ul className="hidden gap-6 text-sm md:flex md:items-center">
-              {menu.map((item: Menu) => (
-                <li key={item.title}>
-                  <Link
-                    href={item.path}
-                    className="text-neutral-500 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300"
-                  >
-                    {item.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <NavLinks />
-          )}
-        </div>
-        <div className="hidden justify-center md:flex md:w-1/3">
-          <Suspense fallback={<SearchSkeleton />}>
-            <Search />
-          </Suspense>
-        </div>
-        <div className="flex justify-end md:w-1/3">
+    <nav className="flex items-center justify-between h-[72px] mx-auto max-w-(--breakpoint-2xl) px-6 relative z-50">
+      {/* Left: Mobile hamburger + Logo */}
+      <div className="w-[35%] flex items-center justify-start gap-4 z-50">
+        <div className="md:hidden">
           <Suspense fallback={null}>
-            <CartModal />
+            <MobileMenu />
           </Suspense>
         </div>
+        <Link href="/" className="flex items-center">
+          <WeskatecoIcon color={scrolled ? 'black' : 'white'} />
+        </Link>
+      </div>
+
+      {/* Center: Nav Links (desktop only) */}
+      <div className="hidden md:flex flex-grow justify-center">
+        <NavLinks onDropdownChange={setIsStoreOpen} />
+      </div>
+
+      {/* Right: Search, Cart, User */}
+      <div className={`w-[35%] flex items-center justify-end gap-3 md:gap-6 xl:gap-11 z-50 transition-opacity duration-300 ${isStoreOpen ? 'opacity-50' : 'opacity-100'}`}>
+        <Suspense fallback={<SearchSkeleton />}>
+          <Search />
+        </Suspense>
+        <Suspense fallback={null}>
+          <CartLink />
+        </Suspense>
+        <button
+          aria-label="Account"
+          className="h-7 w-7 flex items-center justify-center rounded-md transition-colors flex-shrink-0"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="h-5 w-5 md:h-7 md:w-7"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+            />
+          </svg>
+        </button>
       </div>
     </nav>
   );
