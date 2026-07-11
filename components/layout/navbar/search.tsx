@@ -33,15 +33,9 @@ export default function Search() {
 
   return (
     <div className="relative" ref={containerRef}>
-      <button
-        onClick={() => setExpanded(!expanded)}
-        aria-label="Search"
-        className="flex h-5 w-5 items-center justify-center rounded-md transition-colors md:hidden"
-      >
-        <MagnifyingGlassIcon className="h-5" />
-      </button>
+      {/* Absolute dropdown search input: rendered below LG viewport */}
       {expanded && (
-        <div className="absolute top-full -right-17 mt-2 md:hidden">
+        <div className="absolute top-full -right-17 mt-2 z-50 lg:hidden">
           <Form action="/store" className="flex items-center">
             <input
               key={searchParams?.get("q")}
@@ -57,8 +51,10 @@ export default function Search() {
           </Form>
         </div>
       )}
-      {expanded ? (
-        <Form action="/store" className="hidden md:flex items-center">
+
+      {/* Inline search input: rendered on LG viewports and above */}
+      {expanded && (
+        <Form action="/store" className="hidden lg:flex items-center">
           <input
             key={searchParams?.get("q")}
             ref={inputRef}
@@ -68,18 +64,19 @@ export default function Search() {
             autoComplete="off"
             defaultValue={searchParams?.get("q") || ""}
             onBlur={() => setExpanded(false)}
-            className="w-[180px] rounded-lg border bg-white px-3 py-2 text-sm text-black placeholder:text-neutral-500 outline-none md:w-[320px] dark:border-neutral-700 dark:bg-transparent dark:text-white dark:placeholder:text-neutral-400"
+            className="rounded-lg border bg-white px-3 py-2 text-sm text-black placeholder:text-neutral-500 outline-none lg:w-[150px] xl:w-[280px] dark:border-neutral-700 dark:bg-transparent dark:text-white dark:placeholder:text-neutral-400"
           />
         </Form>
-      ) : (
-        <button
-          onClick={() => setExpanded(true)}
-          aria-label="Search"
-          className="hidden md:flex md:h-7 md:w-7 items-center justify-center rounded-md transition-colors"
-        >
-          <MagnifyingGlassIcon className="h-7" />
-        </button>
       )}
+
+      {/* Trigger Button */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        aria-label="Search"
+        className={`flex items-center justify-center rounded-md transition-colors h-5 w-5 md:h-7 md:w-7 ${expanded ? "lg:hidden" : ""}`}
+      >
+        <MagnifyingGlassIcon className="h-5 md:h-7" />
+      </button>
     </div>
   );
 }

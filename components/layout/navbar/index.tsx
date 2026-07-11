@@ -43,7 +43,7 @@ export function Navbar({ locale }: { locale?: string }) {
   return (
     <nav className="flex items-center justify-between h-[72px] mx-auto max-w-(--breakpoint-2xl) px-6 relative z-50">
       {/* Left: Mobile hamburger + Logo */}
-      <div className="flex items-center gap-4 z-50">
+      <div className="w-[35%] flex items-center justify-start gap-4 z-50">
         <div className="md:hidden">
           <Suspense fallback={null}>
             <MobileMenu />
@@ -55,12 +55,12 @@ export function Navbar({ locale }: { locale?: string }) {
       </div>
 
       {/* Center: Nav Links (desktop only) */}
-      <div className="hidden md:flex">
+      <div className="hidden md:flex flex-grow justify-center">
         <NavLinks onDropdownChange={setIsStoreOpen} />
       </div>
 
       {/* Right: Search, Cart, User */}
-      <div className={`flex items-center gap-3 md:gap-6 xl:gap-11 z-50 transition-opacity duration-300 ${isStoreOpen ? 'opacity-50' : 'opacity-100'}`}>
+      <div className={`w-[35%] flex items-center justify-end gap-3 md:gap-6 xl:gap-11 z-50 transition-opacity duration-300 ${isStoreOpen ? 'opacity-50' : 'opacity-100'}`}>
         <Suspense fallback={<SearchSkeleton />}>
           <Search />
         </Suspense>
@@ -69,7 +69,7 @@ export function Navbar({ locale }: { locale?: string }) {
         </Suspense>
         <button
           aria-label="Account"
-          className="h-7 w-7 items-center justify-center rounded-md transition-colors"
+          className="h-7 w-7 flex items-center justify-center rounded-md transition-colors flex-shrink-0"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
