@@ -222,15 +222,41 @@ export default function NewlyReleaseContent() {
         {/* Carousel UI Actions */}
         <button
           onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-          className="absolute left-1 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 border border-neutral-700/30 flex items-center justify-center text-white text-xs backdrop-blur-sm active:scale-90 transition-transform z-20"
+          className="absolute left-1 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 border border-neutral-700/30 flex items-center justify-center text-white backdrop-blur-sm active:scale-90 transition-transform z-20"
         >
-          ←
+          <svg 
+            width="14" 
+            height="14" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2.5" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+            className="w-3.5 h-3.5"
+          >
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); handleNext(); }}
-          className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 border border-neutral-700/30 flex items-center justify-center text-white text-xs backdrop-blur-sm active:scale-90 transition-transform z-20"
+          className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 border border-neutral-700/30 flex items-center justify-center text-white backdrop-blur-sm active:scale-90 transition-transform z-20"
         >
-          →
+          <svg 
+            width="14" 
+            height="14" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2.5" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+            className="w-3.5 h-3.5"
+          >
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
         </button>
       </div>
 

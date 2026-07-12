@@ -162,7 +162,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
               <Link
                 key={`mobile-${index}`}
                 href={getLocalizedPath(category.href, locale)}
-                className={`group relative h-[480px] w-[76vw] shrink-0 rounded-2xl overflow-hidden snap-center bg-neutral-100 shadow-md transition-all duration-500 ease-out ${isActive ? "scale-100" : "scale-[0.82]"
+                className={`group relative h-auto aspect-[2/3] w-[76vw] shrink-0 rounded-2xl overflow-hidden snap-center bg-neutral-100 shadow-md transition-all duration-500 ease-out ${isActive ? "scale-100" : "scale-[0.82]"
                   }`}
               >
                 <img
@@ -202,7 +202,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
 
       {/* --- DESKTOP ACCORDION GRID VIEW --- */}
       <div
-        className="hidden md:flex w-full h-[520px] gap-4 items-stretch overflow-hidden mx-auto max-w-(--breakpoint-2xl) px-6 mb-6 md:mb-10"
+        className="hidden md:flex w-full h-[560px] gap-4 items-stretch overflow-hidden mx-auto max-w-(--breakpoint-2xl) px-6 mb-6 md:mb-10"
         onMouseLeave={() => setHoveredIndex(0)}
       >
         {categories.map((category, index) => {
