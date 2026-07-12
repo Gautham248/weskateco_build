@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import aboutImg from "components/icons/about.png";
 import Image from "next/image";
 import Link from "next/link";
-import aboutImg from "components/icons/about.png";
+import { useEffect, useRef, useState } from "react";
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -27,14 +27,14 @@ export default function AboutSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative h-screen w-full overflow-hidden bg-black select-none">
+    <section ref={sectionRef} className="relative h-auto aspect-square md:h-screen md:aspect-auto w-full overflow-hidden bg-black select-none">
       {/* Background Image */}
       <div className="absolute inset-0 w-full h-full">
         <Image
           src={aboutImg}
           alt="About Background"
           fill
-          className="object-cover object-center"
+          className="object-cover object-[43.5%_center] md:object-center"
           priority
         />
         {/* Dark overlay to ensure text readability against the background */}
@@ -45,9 +45,8 @@ export default function AboutSection() {
           viewBox="0 0 1082 716"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={`hidden md:block absolute top-0 left-[20%] right-0 w-[80%] h-[75%] overflow-visible pointer-events-none z-10 ${
-            isInView ? "animate-path" : ""
-          }`}
+          className={`absolute top-0 left-[20%] right-0 w-[80%] h-[75%] overflow-visible pointer-events-none z-10 ${isInView ? "animate-path" : ""
+            }`}
           preserveAspectRatio="none"
         >
           <style>{`
@@ -86,20 +85,20 @@ export default function AboutSection() {
       </div>
 
       {/* Content Overlay */}
-      <div className="relative z-10 mx-auto flex h-full flex-col justify-between px-6 py-16 md:flex-row md:items-end md:py-24 lg:px-12">
+      <div className="relative z-10 mx-auto flex h-full flex-row items-end justify-between pl-4 pr-5 md:px-4 pb-8 pt-12 md:px-6 md:py-24 lg:px-12">
 
         {/* Left Side: Description Text */}
-        <div className="max-w-md md:w-5/12 mb-8 md:mb-0">
-          <h2 className="text-[8vw] font-bold leading-8 tracking-tight text-[#d4ff00] sm:text-2xl lg:text-3xl font-sans">
-            We are a community driven by grit, built on persistence, and united by skateboarding.
+        <div className="max-w-[45%] mb-0 md:max-w-md md:w-5/12">
+          <h2 className="text-[3.8vw] font-bold leading-tight tracking-tight text-[#d4ff00] sm:text-2xl sm:leading-8 lg:text-3xl font-sans">
+            We are a community<br className="sm:hidden" /> driven by grit, built on<br className="sm:hidden" /> persistence, and united<br className="sm:hidden" /> by skateboarding.
           </h2>
         </div>
 
         {/* Right Side: Large Title & CTA Button Container */}
-        <div className="relative flex flex-col items-start md:w-7/12 md:items-end">
+        <div className="relative flex flex-col items-end md:w-7/12">
           <div className="relative inline-flex items-start tracking-tighter select-none">
 
-            <h1 className="flex items-start text-[30vw] font-black uppercase text-[#d4ff00] sm:text-[14vw] md:text-[15vw] lg:text-[11vw] leading-[0.8] font-sans">
+            <h1 className="flex items-start text-[15vw] font-black uppercase text-[#d4ff00] sm:text-[14vw] md:text-[15vw] lg:text-[11vw] leading-[0.8] font-sans">
               {/* WE */}
               <span className="leading-[0.8]">WE</span>
 
@@ -138,7 +137,7 @@ export default function AboutSection() {
                 <div className="absolute left-0 right-0 bottom-[-0.05em] z-20 translate-y-[100%]">
                   <Link
                     href="/about"
-                    className="group flex items-center justify-between rounded-full bg-black border border-neutral-900 px-3 py-1.5 text-[1.5vw] sm:text-[0.8vw] md:text-[1vw] font-bold tracking-widest text-[#d4ff00] uppercase transition-all duration-300 hover:bg-neutral-950 hover:border-neutral-800 w-full"
+                    className="!w-[fit-content] group flex items-center justify-between rounded-full bg-black border border-neutral-900 p-1 md:px-3 md:py-1.5 text-[1.75vw] sm:text-[0.8vw] md:text-[1vw] font-bold tracking-widest text-[#d4ff00] uppercase transition-all duration-300 hover:bg-neutral-950 hover:border-neutral-800 w-full"
                   >
                     <span className="truncate">CTA BUTTON</span>
                     <svg

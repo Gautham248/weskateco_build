@@ -54,7 +54,7 @@ export default function TipsSection() {
   };
 
   return (
-    <section className="min-h-full w-full bg-white py-10 md:py-[120px] overflow-hidden">
+    <section className="min-h-full w-full bg-white py-10 md:py-[88px] overflow-hidden">
       <div>
 
         {/* Header with Navigation Controls */}
