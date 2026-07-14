@@ -94,6 +94,7 @@ function createOrUpdateCartItem(
         handle: product.handle,
         title: product.title,
         featuredImage: product.featuredImage,
+        vendor: product.vendor,
       },
     },
   };
