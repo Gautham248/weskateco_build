@@ -89,8 +89,8 @@ export default function AboutSection() {
 
         {/* Left Side: Description Text */}
         <div className="max-w-[45%] mb-0 md:max-w-md md:w-5/12">
-          <h2 className="text-[3.8vw] font-bold leading-tight tracking-tight text-[#d4ff00] sm:text-2xl sm:leading-8 lg:text-3xl font-sans">
-            We are a community<br className="sm:hidden" /> driven by grit, built on<br className="sm:hidden" /> persistence, and united<br className="sm:hidden" /> by skateboarding.
+          <h2 className="font-bold leading-tight tracking-tight text-[#d4ff00] font-sans fluid-text-xl sm:fluid-text-2xl lg:fluid-text-3xl text-balance">
+            We are a community driven by grit, built on persistence, and united by skateboarding.
           </h2>
         </div>
 
@@ -98,7 +98,7 @@ export default function AboutSection() {
         <div className="relative flex flex-col items-end md:w-7/12">
           <div className="relative inline-flex items-start tracking-tighter select-none">
 
-            <h1 className="flex items-start text-[15vw] font-black uppercase text-[#d4ff00] sm:text-[14vw] md:text-[15vw] lg:text-[11vw] leading-[0.8] font-sans">
+            <h1 className="flex items-start text-[clamp(3rem,15vw,15rem)] font-black uppercase text-[#d4ff00] sm:text-[clamp(3rem,14vw,14rem)] lg:text-[clamp(3rem,11vw,11rem)] leading-[0.8] font-sans">
               {/* WE */}
               <span className="leading-[0.8]">WE</span>
 
@@ -137,7 +137,7 @@ export default function AboutSection() {
                 <div className="absolute left-0 right-0 bottom-[-0.05em] z-20 translate-y-[100%]">
                   <Link
                     href="/about"
-                    className="!w-[fit-content] group flex items-center justify-between rounded-full bg-black border border-neutral-900 p-1 md:px-3 md:py-1.5 text-[1.75vw] sm:text-[0.8vw] md:text-[1vw] font-bold tracking-widest text-[#d4ff00] uppercase transition-all duration-300 hover:bg-neutral-950 hover:border-neutral-800 w-full"
+                    className="!w-[fit-content] group flex items-center justify-between rounded-full bg-black border border-neutral-900 p-1 md:px-3 md:py-1.5 text-[clamp(0.625rem,1.75vw,1.25rem)] sm:text-[clamp(0.625rem,0.8vw,0.875rem)] md:text-[clamp(0.625rem,1vw,1rem)] font-bold tracking-widest text-[#d4ff00] uppercase transition-all duration-300 hover:bg-neutral-950 hover:border-neutral-800 w-full"
                   >
                     <span className="truncate">CTA BUTTON</span>
                     <svg

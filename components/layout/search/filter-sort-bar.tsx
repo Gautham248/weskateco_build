@@ -131,7 +131,7 @@ export default function FilterSortBar({
       <div className="flex flex-col px-4 md:px-2">
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2">
-            <h2 className="text-[28px] md:text-3xl font-extrabold tracking-[-1%] uppercase leading-tight" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+            <h2 className="text-[clamp(1.5rem,3.5vw,2rem)] font-extrabold tracking-[-1%] uppercase leading-tight" style={{ fontFamily: "'Clash Display', sans-serif" }}>
               {title}
             </h2>
             <span className="hidden md:inline text-xs md:text-sm font-medium text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
@@ -267,7 +267,7 @@ export default function FilterSortBar({
                     key={coll.handle}
                     href={linkHref}
                     className={clsx(
-                      "px-6 py-3 rounded-[6px] text-[15px] font-medium whitespace-nowrap transition-all duration-200 border",
+                      "px-6 py-3 rounded-[6px] text-[clamp(0.813rem,2vw,1rem)] font-medium whitespace-nowrap transition-all duration-200 border",
                       isActive
                         ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
                         : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800"
@@ -284,7 +284,7 @@ export default function FilterSortBar({
           {hasActiveFilters && (
             <div className="flex flex-wrap items-center gap-2.5">
               {activeColorObj && (
-                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
+                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium">
                   <span
                     className="w-3.5 h-3.5 rounded-full inline-block border border-black/10"
                     style={{ backgroundColor: activeColorObj.hex }}
@@ -300,7 +300,7 @@ export default function FilterSortBar({
               )}
 
               {activeLevelObj && (
-                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
+                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium">
                   {activeLevelObj.name}
                   <button
                     onClick={() => updateUrlParam("level", null)}
@@ -312,7 +312,7 @@ export default function FilterSortBar({
               )}
 
               {activePriceObj && (
-                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[14px] text-neutral-800 dark:text-neutral-200 font-medium">
+                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium">
                   {activePriceObj.name.replace("₹", "Rs. ")}
                   <button
                     onClick={() => updateUrlParam("price", null)}

@@ -128,11 +128,11 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
 
       <div className="flex flex-1 flex-col pt-4 px-1">
         {product.vendor && (
-          <p className="text-[12px] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-1" style={{ fontFamily: "Archivo" }}>
+          <p className="text-[clamp(0.625rem,1.5vw,0.75rem)] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-1" style={{ fontFamily: "Archivo" }}>
             {product.vendor}
           </p>
         )}
-        <h3 className="mb-2 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+        <h3 className="mb-2 text-[clamp(0.8125rem,2vw,1rem)] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2" style={{ fontFamily: "'Clash Display', sans-serif" }}>
           {title}
         </h3>
         <div className="flex items-center gap-3">
@@ -140,7 +140,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             amount={priceRange.minVariantPrice.amount}
             currencyCode={priceRange.minVariantPrice.currencyCode}
             currencyCodeClassName="hidden"
-            className="text-[14px] font-normal text-neutral-900 dark:text-neutral-100"
+            className="text-[clamp(0.75rem,1.8vw,0.875rem)] font-normal text-neutral-900 dark:text-neutral-100"
           />
           {product.variants[0]?.compareAtPrice && (
             <Price

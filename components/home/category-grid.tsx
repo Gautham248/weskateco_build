@@ -29,7 +29,7 @@ function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boo
   if (lastOIndex === -1) {
     return (
       <div className="flex items-center justify-between w-full">
-        <h3 className="text-white text-[22px] font-bold uppercase tracking-wide">
+          <h3 className="text-white text-[clamp(1rem,2.5vw,1.375rem)] font-bold uppercase tracking-wide">
           {name}
         </h3>
         <span className="bg-[#CCFF02] text-black rounded-full w-6 h-6 flex items-center justify-center text-[10px]">
@@ -44,7 +44,7 @@ function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boo
 
   return (
     <div ref={containerRef} className="relative w-full flex items-center justify-between h-8">
-      <h3 className="text-white text-[22px] font-medium uppercase tracking-wide flex items-center whitespace-nowrap select-none z-0">
+      <h3 className="text-white text-[clamp(1rem,2.5vw,1.375rem)] font-medium uppercase tracking-wide flex items-center whitespace-nowrap select-none z-0">
         <span>{firstPart}</span>
         <span ref={oTargetRef} className="relative">
           {name[lastOIndex]}
@@ -141,7 +141,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
   return (
     <section className="h-[fit-content] w-full bg-white pt-10 md:pt-30 pb-15 md:pb-5">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-6 mb-6 md:mb-10">
-        <h2 className="text-4xl font-black tracking-tight text-black dark:text-white sm:text-5xl lg:text-[60px]" style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}>
+        <h2 className="text-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase" style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}>
           CATEGORIES
         </h2>
       </div>

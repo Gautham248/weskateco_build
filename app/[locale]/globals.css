@@ -89,4 +89,40 @@ button {
     0%, 100% { transform: translateX(0); }
     50% { transform: translateX(4px); }
   }
+
+  /* Fluid heading - scales smoothly from sm to 2xl screens */
+  .fluid-heading {
+    font-size: clamp(1.5rem, 4vw, 3.75rem);
+  }
+
+  /* Fluid text sizes - scale from ~640px to ~1536px viewport */
+  .fluid-text-xs {
+    font-size: clamp(0.625rem, 1vw + 0.25rem, 0.75rem);
+  }
+  .fluid-text-sm {
+    font-size: clamp(0.75rem, 1vw + 0.35rem, 0.875rem);
+  }
+  .fluid-text-base {
+    font-size: clamp(0.875rem, 1.5vw + 0.25rem, 1.125rem);
+  }
+  .fluid-text-lg {
+    font-size: clamp(1rem, 2vw + 0.25rem, 1.25rem);
+  }
+  .fluid-text-xl {
+    font-size: clamp(1.125rem, 2.5vw + 0.2rem, 1.5rem);
+  }
+  .fluid-text-2xl {
+    font-size: clamp(1.25rem, 3vw + 0.15rem, 1.75rem);
+  }
+  .fluid-text-3xl {
+    font-size: clamp(1.5rem, 3.5vw + 0.2rem, 2.25rem);
+  }
+  .fluid-text-4xl {
+    font-size: clamp(1.75rem, 4vw + 0.25rem, 2.75rem);
+  }
+
+  /* Fluid leading for headings */
+  .fluid-leading-tight {
+    line-height: clamp(1, 1.1, 1.25);
+  }
 }

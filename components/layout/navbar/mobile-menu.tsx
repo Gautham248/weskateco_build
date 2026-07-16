@@ -140,9 +140,9 @@ export default function MobileMenu() {
                 <div className="border-b border-neutral-100 dark:border-neutral-900 py-3">
                   <button
                     onClick={() => setIsStoreExpanded(!isStoreExpanded)}
-                    className="flex w-full items-center justify-between font-bold text-[17px] tracking-wider uppercase text-black dark:text-white"
+                    className="flex w-full items-center justify-between font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                   >
-                    <span>STORE</span>
+                    <span style={{ fontFamily: "'Clash Display', sans-serif" }}>STORE</span>
                     {isStoreExpanded ? (
                       <ChevronUpIcon className="h-4 w-4 stroke-[2.5]" />
                     ) : (
@@ -160,7 +160,7 @@ export default function MobileMenu() {
                           <div key={category.name} className="border-b border-neutral-100 dark:border-neutral-900/60 py-3 last:border-0">
                             <div
                               onClick={() => hasSub ? toggleCategory(category.name) : undefined}
-                              className="flex w-full items-center justify-between font-medium text-[16px] text-neutral-800 dark:text-neutral-200 cursor-pointer"
+                              className="flex w-full items-center justify-between font-medium text-[clamp(0.875rem,2vw,1rem)] text-neutral-800 dark:text-neutral-200 cursor-pointer"
                             >
                               {hasSub ? (
                                 <span>{category.name}</span>
@@ -210,7 +210,8 @@ export default function MobileMenu() {
                   <Link
                     href={getLocalizedPath("/guides", locale)}
                     onClick={closeMobileMenu}
-                    className="block font-bold text-[17px] tracking-wider uppercase text-black dark:text-white"
+                      className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
                     GUIDES
                   </Link>
@@ -221,7 +222,8 @@ export default function MobileMenu() {
                   <Link
                     href={getLocalizedPath("/academy", locale)}
                     onClick={closeMobileMenu}
-                    className="block font-bold text-[17px] tracking-wider uppercase text-black dark:text-white"
+                      className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
                     WESKATE ACADEMY
                   </Link>
@@ -232,7 +234,8 @@ export default function MobileMenu() {
                   <Link
                     href={getLocalizedPath("/skateparks", locale)}
                     onClick={closeMobileMenu}
-                    className="block font-bold text-[17px] tracking-wider uppercase text-black dark:text-white"
+                      className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
                     SKATEPARKS
                   </Link>
@@ -272,7 +275,7 @@ export default function MobileMenu() {
                     />
                     <div className="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-black/20" />
                     <div
-                      className="absolute bottom-3 left-3 z-10 text-white font-extrabold text-[12px] uppercase leading-tight tracking-wider"
+                      className="absolute bottom-3 left-3 z-10 text-white font-extrabold text-[clamp(0.625rem,1.5vw,0.75rem)] uppercase leading-tight tracking-wider"
                       style={{ fontFamily: "'Archivo', sans-serif" }}
                     >
                       Newly<br />Released

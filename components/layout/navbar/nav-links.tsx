@@ -46,7 +46,7 @@ export default function NavLinks({ onDropdownChange }: { onDropdownChange?: (isO
           }}
         />
       )}
-      <ul className="hidden items-center gap-2 lg:gap-8 text-[16px] lg:text-lg font-medium tracking-wide md:flex whitespace-nowrap z-50">      {/* STORE */}
+      <ul className="hidden items-center gap-2 lg:gap-8 text-[clamp(0.875rem,2vw,1.125rem)] font-medium tracking-wide md:flex whitespace-nowrap z-50">      {/* STORE */}
         <li ref={menuRef}>
           <button
             className="flex items-center gap-1 uppercase cursor-pointer"

@@ -78,7 +78,7 @@ export default function MegaMenuSubItems({ category }: { category: string | null
             <a
               key={item}
               href={getSubItemHref(category!, item)}
-              className="relative flex h-12 items-center justify-between gap-10 text-xl font-medium text-black dark:text-white whitespace-nowrap"
+              className="relative flex h-12 items-center justify-between gap-10 text-[clamp(1.125rem,2vw,1.375rem)] font-medium text-black dark:text-white whitespace-nowrap"
               style={{ fontFamily: "Archivo", letterSpacing: "0em" }}
               onMouseEnter={() => setHoveredItem(item)}
               onMouseLeave={() => setHoveredItem(null)}

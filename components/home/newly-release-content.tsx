@@ -84,8 +84,14 @@ export default function NewlyReleaseContent() {
         onClick={handleNext}
       >
         {/* Left: 3D Flipping Product Card & Details */}
-        <div className="flex-1 flex items-center justify-center [perspective:1200px] z-1">
-          <div className="relative w-full max-w-[344px] aspect-[103/156] [transform-style:preserve-3d]">
+        <div className="flex-1 h-full flex items-center justify-center [perspective:1200px] z-1">
+          <div
+            className="relative w-full aspect-[414/699] [transform-style:preserve-3d]"
+            style={{
+              maxWidth: "min(414px, calc((100% - 80px) * (414 / 699)))",
+              maxHeight: "calc(100% - 80px)"
+            }}
+          >
             {slides.map((slide, idx) => {
               const isActive = idx === slideIndex;
               return (
@@ -103,7 +109,7 @@ export default function NewlyReleaseContent() {
                     pointerEvents: isActive ? "auto" : "none",
                   }}
                 >
-                  <div className="relative w-full aspect-[3/4] bg-[#e3e3e3] rounded-[16px] overflow-hidden">
+                  <div className="relative w-full aspect-[414/552] bg-[#e3e3e3] rounded-[16px] overflow-hidden">
                     <Image
                       src={slide.wheels}
                       alt={`skateboard wheels ${idx}`}
@@ -163,20 +169,25 @@ export default function NewlyReleaseContent() {
       </div>
 
       {/* ================= MOBILE VIEW (Transparent over your existing BG) ================= */}
-      <div className="flex md:hidden relative w-full h-[80%] max-w-[360px] aspect-[10/16] p-6">
+      <div className="flex md:hidden relative w-full h-full max-w-[360px] aspect-[10/16] px-6 py-0">
         <div className="relative w-full h-full flex items-center justify-between z-10">
 
           {/* Left Side: Skateboard Presentation */}
-          <div className="w-[80%] h-full relative flex items-center justify-center">
+          <div className="w-[80%] h-full relative flex items-center justify-center overflow-hidden">
             {slides.map((slide, idx) => {
               const isActive = idx === slideIndex;
+              const isPast = idx < slideIndex;
+
+              let translateY = "120%";
+              if (isActive) translateY = "0%";
+              else if (isPast) translateY = "-120%";
+
               return (
                 <div
                   key={idx}
-                  className="absolute inset-0 transition-all duration-500 ease-out flex items-center justify-center"
+                  className="absolute inset-0 transition-all duration-800 ease-[cubic-bezier(0.25,1,0.5,1)] flex items-center justify-center"
                   style={{
-                    opacity: isActive ? 1 : 0,
-                    transform: isActive ? "translateY(0) scale(1)" : "translateY(20px) scale(0.95)",
+                    transform: `translateY(${translateY})`,
                     pointerEvents: isActive ? "auto" : "none"
                   }}
                 >
@@ -203,13 +214,13 @@ export default function NewlyReleaseContent() {
                   key={idx}
                   className={`flex flex-col gap-32 transition-all duration-500 absolute right-0 left-[50%] pl-2 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
                 >
-                  <h3 className="text-[10px] font-medium tracking-wide uppercase leading-snug font-sans text-neutral-200">
+                  <h3 className="text-[clamp(0.563rem,1.5vw,0.625rem)] font-medium tracking-wide uppercase leading-snug font-sans text-neutral-200">
                     {slide.title} <br /> {slide.subtitle}
                   </h3>
 
-                  <div className="flex items-center gap-2 text-[10px] font-medium mt-2">
+                  <div className="flex items-center gap-2 text-[clamp(0.563rem,1.5vw,0.625rem)] font-medium mt-2">
                     <span className="text-white">{slide.price}</span>
-                    <span className="line-through text-neutral-500 text-[10px] font-medium">
+                    <span className="line-through text-neutral-500 text-[clamp(0.563rem,1.5vw,0.625rem)] font-medium">
                       {slide.oldPrice}
                     </span>
                   </div>
@@ -224,14 +235,14 @@ export default function NewlyReleaseContent() {
           onClick={(e) => { e.stopPropagation(); handlePrev(); }}
           className="absolute left-1 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 border border-neutral-700/30 flex items-center justify-center text-white backdrop-blur-sm active:scale-90 transition-transform z-20"
         >
-          <svg 
-            width="14" 
-            height="14" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2.5" 
-            strokeLinecap="round" 
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
             strokeLinejoin="round"
             className="w-3.5 h-3.5"
           >
@@ -243,14 +254,14 @@ export default function NewlyReleaseContent() {
           onClick={(e) => { e.stopPropagation(); handleNext(); }}
           className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 border border-neutral-700/30 flex items-center justify-center text-white backdrop-blur-sm active:scale-90 transition-transform z-20"
         >
-          <svg 
-            width="14" 
-            height="14" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2.5" 
-            strokeLinecap="round" 
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
             strokeLinejoin="round"
             className="w-3.5 h-3.5"
           >

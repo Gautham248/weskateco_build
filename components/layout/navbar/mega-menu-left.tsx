@@ -36,7 +36,7 @@ export default function MegaMenuLeft({
           <Link
             key={link.id}
             href={getLocalizedPath(link.href, locale)}
-            className={`block text-xl font-semibold hover:text-black dark:hover:text-white ${activeCategory === null || activeCategory === link.href ? "!text-black dark:!text-white" : "!text-[#717171] dark:!text-neutral-400"}`}
+            className={`block text-[clamp(1.125rem,2vw,1.375rem)] font-semibold hover:text-black dark:hover:text-white ${activeCategory === null || activeCategory === link.href ? "!text-black dark:!text-white" : "!text-[#717171] dark:!text-neutral-400"}`}
             style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "0em" }}
             onClick={onLinkClick}
             onMouseEnter={() => onCategoryHover(link.href)}

@@ -40,12 +40,12 @@ export default function ShopNow({ locale }: { locale: string }) {
         className="mb-10 flex items-end justify-between w-full items-center"
         style={{ paddingLeft: trackPadding, paddingRight: trackPadding }}
       >
-        <h2 className="text-4xl font-black tracking-tight text-black dark:text-white sm:text-5xl lg:text-[60px]" style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}>
+        <h2 className="text-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase" style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}>
           SHOP NOW
         </h2>
         <Link
           href={getLocalizedPath("/store", locale)}
-          className="text-2xl font-bold tracking-[-0.01em] text-black hover:opacity-70 dark:text-white uppercase underline decoration-solid underline-offset-1 skip-ink-auto"
+          className="fluid-text-xl font-bold tracking-[-0.01em] text-black hover:opacity-70 dark:text-white uppercase underline decoration-solid underline-offset-1 skip-ink-auto"
           style={{ fontFamily: "'Clash Display', sans-serif" }}
         >
           VIEW MORE
@@ -113,12 +113,12 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
         {(product.discount || product.monthlyPayment) && (
           <div className="absolute right-3 top-3 z-20 flex items-center gap-1.5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
             {product.discount && (
-              <span className="rounded bg-neutral-900/60 backdrop-blur-md px-2 py-1 text-[10px] font-medium text-white">
+              <span className="rounded bg-neutral-900/60 backdrop-blur-md px-2 py-1 text-[clamp(0.5rem,1.5vw,0.625rem)] font-medium text-white">
                 {product.discount}
               </span>
             )}
             {product.monthlyPayment && (
-              <span className="rounded bg-neutral-900/60 backdrop-blur-md px-2 py-1 text-[10px] font-medium text-white">
+              <span className="rounded bg-neutral-900/60 backdrop-blur-md px-2 py-1 text-[clamp(0.5rem,1.5vw,0.625rem)] font-medium text-white">
                 {product.monthlyPayment}
               </span>
             )}
@@ -190,14 +190,14 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
 
       {/* Product Metadata Track */}
       <div className="py-4">
-        <p className="text-[16px] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-2" style={{ fontFamily: "Archivo", }}>
+        <p className="text-[clamp(0.75rem,2vw,1rem)] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-2" style={{ fontFamily: "Archivo", }}>
           {product.brand}
         </p>
-        <h3 className="line-clamp-2 text-[20px] font-medium leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2 h-8" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+        <h3 className="line-clamp-2 text-[clamp(1rem,2.5vw,1.25rem)] font-medium leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2 h-8" style={{ fontFamily: "'Clash Display', sans-serif" }}>
           {product.name}
         </h3>
         <div className="flex items-baseline gap-2">
-          <span className="text-[18px] font-[300] text-neutral-900 dark:text-neutral-100" style={{ fontFamily: "Archivo", }}>
+          <span className="text-[clamp(0.875rem,2vw,1.125rem)] font-[300] text-neutral-900 dark:text-neutral-100" style={{ fontFamily: "Archivo", }}>
             {product.price}
           </span>
           {product.originalPrice && (

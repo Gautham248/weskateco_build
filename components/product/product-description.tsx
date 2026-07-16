@@ -18,11 +18,11 @@ export function ProductDescription({ product, locale }: { product: Product; loca
       <div className="flex justify-between items-start gap-4 mb-6 border-b pb-6 dark:border-neutral-800 w-full">
         <div className="flex-1">
           {product.vendor && (
-            <p className="text-[14px] font-normal tracking-wider text-neutral-400 dark:text-neutral-500 uppercase mb-1" style={{ fontFamily: "Archivo" }}>
+            <p className="text-[clamp(0.75rem,1.5vw,0.875rem)] font-normal tracking-wider text-neutral-400 dark:text-neutral-500 uppercase mb-1" style={{ fontFamily: "Archivo" }}>
               {product.vendor}
             </p>
           )}
-          <h1 className="text-[22px] sm:text-[26px] font-semibold text-black dark:text-white uppercase leading-tight" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+          <h1 className="text-[clamp(1.125rem,3vw,1.75rem)] font-semibold text-black dark:text-white uppercase leading-tight" style={{ fontFamily: "'Clash Display', sans-serif" }}>
             {(() => {
               const words = product.title.split(" ");
               if (words.length >= 4) {
@@ -43,11 +43,11 @@ export function ProductDescription({ product, locale }: { product: Product; loca
               amount={product.priceRange.maxVariantPrice.amount}
               currencyCode={product.priceRange.maxVariantPrice.currencyCode}
               currencyCodeClassName="hidden"
-              className="text-[24px] font-bold text-neutral-900 dark:text-neutral-50"
+              className="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-neutral-900 dark:text-neutral-50"
             />
-            <span className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-400">MRP</span>
+            <span className="text-[clamp(0.563rem,1.5vw,0.688rem)] font-semibold text-neutral-600 dark:text-neutral-400">MRP</span>
           </div>
-          <p className="text-[12px] text-black leading-tight" style={{ fontFamily: "Archivo" }}>
+          <p className="text-[clamp(0.625rem,1.5vw,0.75rem)] text-black leading-tight" style={{ fontFamily: "Archivo" }}>
             {product.variants[0]?.compareAtPrice && (
               <span className="line-through mr-1 text-neutral-400">
                 ₹ {Math.round(parseFloat(product.variants[0].compareAtPrice.amount))}
@@ -71,7 +71,7 @@ export function ProductDescription({ product, locale }: { product: Product; loca
             <h4 className="text-sm font-semibold text-[#193F48]" style={{ fontFamily: "Archivo" }}>
               Explore EMI Options
             </h4>
-            <p className="mt-2 text-[11px] text-[#193F48]" style={{ fontFamily: "Archivo" }}>
+            <p className="mt-2 text-[clamp(0.563rem,1.5vw,0.688rem)] text-[#193F48]" style={{ fontFamily: "Archivo" }}>
               Explore EMI Options: Compare EMI plans <br />  to find one that fits your budget.
             </p>
           </div>
@@ -91,7 +91,7 @@ export function ProductDescription({ product, locale }: { product: Product; loca
       <div className="w-full">
         <button
           onClick={() => setIsDescOpen(!isDescOpen)}
-          className="cursor-pointer flex w-full items-center justify-between py-2 text-left font-bold text-black dark:text-white uppercase tracking-wider text-[18px]"
+          className="cursor-pointer flex w-full items-center justify-between py-2 text-left font-bold text-black dark:text-white uppercase tracking-wider text-[clamp(1rem,2.5vw,1.25rem)]"
           style={{ fontFamily: "'Clash Display', sans-serif" }}
         >
           <span>Product Description</span>
@@ -114,7 +114,7 @@ export function ProductDescription({ product, locale }: { product: Product; loca
           <div className="pt-4 pb-6 animate-fadeIn">
             {product.descriptionHtml ? (
               <Prose
-                className="text-[14px] leading-relaxed text-black dark:text-neutral-300"
+                className="text-[clamp(0.75rem,1.5vw,0.875rem)] leading-relaxed text-black dark:text-neutral-300"
                 html={product.descriptionHtml}
               />
             ) : (

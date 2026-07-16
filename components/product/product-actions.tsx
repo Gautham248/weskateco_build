@@ -34,7 +34,7 @@ export function ProductActions({ product }: { product: Product }) {
   };
 
   const buttonBaseClasses =
-    "flex w-full items-center justify-center rounded-xs h-14 uppercase text-[14px] font-semibold tracking-wider transition-colors duration-200 border cursor-pointer";
+    "flex w-full items-center justify-center rounded-xs h-14 uppercase text-[clamp(0.75rem,1.8vw,0.875rem)] font-semibold tracking-wider transition-colors duration-200 border cursor-pointer";
 
   if (!availableForSale) {
     return (
@@ -102,7 +102,7 @@ export function ProductActions({ product }: { product: Product }) {
       </button>
 
       <div className="text-left">
-        <span className="text-[12px] text-black font-normal" style={{ fontFamily: "Archivo" }}>
+        <span className="text-[clamp(0.625rem,1.5vw,0.75rem)] text-black font-normal" style={{ fontFamily: "Archivo" }}>
           Free Shipping Within India
         </span>
       </div>

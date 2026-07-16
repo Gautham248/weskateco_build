@@ -59,7 +59,7 @@ export default function TipsSection() {
 
         {/* Header with Navigation Controls */}
         <div className="flex justify-between items-end mb-5 md:mb-10 mx-auto max-w-(--breakpoint-2xl) px-6">
-          <h2 className="text-[24px] font-black tracking-tight text-black dark:text-white sm:text-4xl lg:text-[40px] uppercase" style={{ fontFamily: 'Clash Display, sans-serif', letterSpacing: "-0.01em" }}>
+          <h2 className="text-[clamp(1.25rem,4vw,2.5rem)] font-black tracking-tight text-black dark:text-white sm:text-[clamp(1.5rem,3vw,2.5rem)] lg:text-[clamp(1.75rem,2.5vw,2.5rem)] uppercase" style={{ fontFamily: 'Clash Display, sans-serif', letterSpacing: "-0.01em" }}>
             Tips to stay connected<br />Anywhere!
           </h2>
           <div className="flex gap-3 pb-2 z-50">

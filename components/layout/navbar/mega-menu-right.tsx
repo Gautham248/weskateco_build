@@ -90,7 +90,7 @@ export default function MegaMenuRight({ activeCategory }: { activeCategory: stri
                 }`}
             >
               <h3
-                className="text-white font-[700] text-[18px] uppercase leading-tight tracking-wide drop-shadow-md"
+                className="text-white font-[700] text-[clamp(1rem,2.5vw,1.25rem)] uppercase leading-tight tracking-wide drop-shadow-md"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 Newly <br /> Released
@@ -108,7 +108,7 @@ export default function MegaMenuRight({ activeCategory }: { activeCategory: stri
             }}
           >
             <span
-              className="text-black dark:text-white font-[700] text-[47px] tracking-[-0.01em] uppercase whitespace-nowrap select-none px-2"
+              className="text-black dark:text-white font-[700] text-[clamp(2rem,5vw,3rem)] tracking-[-0.01em] uppercase whitespace-nowrap select-none px-2"
               style={{
                 fontFamily: "Archivo",
                 transform: "rotate(-90deg)",
