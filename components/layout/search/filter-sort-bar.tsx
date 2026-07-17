@@ -128,7 +128,7 @@ export default function FilterSortBar({
   return (
     <div className="w-full bg-white text-black py-4 border-b border-neutral-100 dark:bg-neutral-950 dark:text-white dark:border-neutral-900">
       {/* Top Row: Title, showing count, Filter & Sort buttons */}
-      <div className="flex flex-col px-4 md:px-2">
+      <div className="flex flex-col px-0 md:px-2">
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2">
             <h2 className="text-[clamp(1.5rem,3.5vw,2rem)] font-extrabold tracking-[-1%] uppercase leading-tight" style={{ fontFamily: "'Clash Display', sans-serif" }}>
@@ -254,7 +254,7 @@ export default function FilterSortBar({
 
       {/* Bottom Row: Subcollection pills + Active filters chips */}
       {(collections.length > 0 || hasActiveFilters) && (
-        <div className="mt-5 flex flex-col gap-4 px-4 md:px-2">
+        <div className="mt-5 flex flex-col gap-4 px-0 md:px-2">
           {/* Subcollection pills */}
           {collections.length > 0 && (
             <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none max-w-full">

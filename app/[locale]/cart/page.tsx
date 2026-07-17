@@ -71,7 +71,7 @@ function CartPageContent() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-black dark:bg-neutral-950 dark:text-white">
       {/* Main Cart Body */}
-      <main className="flex-1 mx-auto max-w-(--breakpoint-2xl) w-full px-6 py-12">
+      <main className="flex-1 mx-auto max-w-(--breakpoint-2xl) w-full px-4 py-12">
         {!cart || cart.lines.length === 0 && <h1
           className="text-[32px] font-semibold font-black tracking-tighter uppercase mb-8 flex items-baseline gap-2"
           style={{ fontFamily: "'Clash Display', sans-serif" }}
@@ -85,7 +85,7 @@ function CartPageContent() {
         </h1>}
 
         {!cart || cart.lines.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-xl">
+          <div className="flex flex-col items-center justify-center px-2 py-20 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-xl">
             <svg
               className="h-16 w-16 text-neutral-400 mb-4"
               fill="none"

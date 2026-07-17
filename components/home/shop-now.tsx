@@ -31,13 +31,13 @@ const products: ProductCard[] = catalog.shopNow.map((p) => ({
 
 export default function ShopNow({ locale }: { locale: string }) {
   // Calculates dynamic alignment padding relative to a 1536px max-width container
-  const trackPadding = "max(1.5rem, calc((100vw - 1536px) / 2 + 1.5rem))";
+  const trackPadding = "max(1rem, calc((100vw - 1536px) / 2 + 1rem))";
 
   return (
     <section className="w-full overflow-hidden py-12 md:py-30">
       {/* Header aligned dynamically using trackPadding */}
       <div
-        className="mb-10 flex items-end justify-between w-full items-center"
+        className="mb-6 md:mb-10 flex items-end justify-between w-full items-center"
         style={{ paddingLeft: trackPadding, paddingRight: trackPadding }}
       >
         <h2 className="text-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase" style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}>
@@ -95,7 +95,7 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
 
   return (
     <div
-      className="group/card flex flex-col bg-transparent w-[calc(100vw-3rem)] sm:w-[340px] lg:w-[384px] flex-shrink-0 snap-start"
+      className="group/card flex flex-col bg-transparent w-[calc(100vw-2rem)] sm:w-[340px] lg:w-[384px] flex-shrink-0 snap-start"
       style={{
         scrollMarginLeft: trackPadding
       }}

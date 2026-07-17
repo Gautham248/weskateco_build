@@ -15,7 +15,7 @@ export default function AcademySection() {
         />
 
         {/* Top Left Text Overlay */}
-        <div className="absolute top-8 left-6 md:top-12 md:left-12 z-10 flex flex-col items-end select-none" style={{ fontFamily: '"Clash Display", sans-serif' }}>
+        <div className="absolute top-8 left-4 md:top-12 md:left-12 z-10 flex flex-col items-end select-none" style={{ fontFamily: '"Clash Display", sans-serif' }}>
           <svg
             width="162"
             height="29"

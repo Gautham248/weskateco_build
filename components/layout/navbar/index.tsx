@@ -41,7 +41,7 @@ export function Navbar({ locale }: { locale?: string }) {
   const [isStoreOpen, setIsStoreOpen] = useState(false);
 
   return (
-    <nav className="flex items-center justify-between h-[72px] mx-auto max-w-(--breakpoint-2xl) px-6 relative z-50" style={{ fontFamily: "Archivo" }}>
+    <nav className="flex items-center justify-between h-[72px] mx-auto max-w-(--breakpoint-2xl) px-4 relative z-50" style={{ fontFamily: "Archivo" }}>
       {/* Left: Mobile hamburger + Logo */}
       <div className="w-[35%] flex items-center justify-start gap-4 z-50">
         <div className="md:hidden">

@@ -22,7 +22,7 @@ export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
 
   // Accordion states
-  const [isStoreExpanded, setIsStoreExpanded] = useState(false);
+  const [isStoreExpanded, setIsStoreExpanded] = useState(true);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const openMobileMenu = () => setIsOpen(true);
@@ -120,7 +120,7 @@ export default function MobileMenu() {
           >
             <Dialog.Panel className="fixed inset-0 flex h-full w-full flex-col bg-white pb-6 dark:bg-black text-black dark:text-white">
               {/* Header */}
-              <div className="flex items-center justify-between h-[72px] px-6 border-b border-neutral-200 dark:border-neutral-800">
+              <div className="flex items-center justify-between h-[72px] px-4 border-b border-neutral-200 dark:border-neutral-800">
                 <button
                   className="flex h-11 w-11 items-center justify-start text-black dark:text-white"
                   onClick={closeMobileMenu}
@@ -135,7 +135,7 @@ export default function MobileMenu() {
               </div>
 
               {/* Scrollable Body */}
-              <div className="flex-1 overflow-y-auto px-6 py-6" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+              <div className="flex-1 overflow-y-auto px-4 py-4" style={{ fontFamily: "'Clash Display', sans-serif" }}>
                 {/* STORE Accordion */}
                 <div className="border-b border-neutral-100 dark:border-neutral-900 py-3">
                   <button
@@ -157,7 +157,7 @@ export default function MobileMenu() {
                         const isExpanded = expandedCategory === category.name;
                         const hasSub = items.length > 0;
                         return (
-                          <div key={category.name} className="border-b border-neutral-100 dark:border-neutral-900/60 py-3 last:border-0">
+                          <div key={category.name} className="border-b border-neutral-100 dark:border-neutral-900/60 py-3 last:border-0" style={{ fontFamily: "Archivo" }}>
                             <div
                               onClick={() => hasSub ? toggleCategory(category.name) : undefined}
                               className="flex w-full items-center justify-between font-medium text-[clamp(0.875rem,2vw,1rem)] text-neutral-800 dark:text-neutral-200 cursor-pointer"
@@ -191,7 +191,7 @@ export default function MobileMenu() {
                                     key={subItem}
                                     href={getSubItemHref(category.href, subItem)}
                                     onClick={closeMobileMenu}
-                                    className="bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-semibold px-3 py-1.5 rounded-[6px] transition-colors"
+                                    className="bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-semibold px-3 py-1.5 rounded-[6px] transition-colors active:bg-black active:text-white dark:active:bg-white dark:active:text-black"
                                   >
                                     {subItem}
                                   </Link>
@@ -210,7 +210,7 @@ export default function MobileMenu() {
                   <Link
                     href={getLocalizedPath("/guides", locale)}
                     onClick={closeMobileMenu}
-                      className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                    className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                     style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
                     GUIDES
@@ -222,7 +222,7 @@ export default function MobileMenu() {
                   <Link
                     href={getLocalizedPath("/academy", locale)}
                     onClick={closeMobileMenu}
-                      className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                    className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                     style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
                     WESKATE ACADEMY
@@ -234,7 +234,7 @@ export default function MobileMenu() {
                   <Link
                     href={getLocalizedPath("/skateparks", locale)}
                     onClick={closeMobileMenu}
-                      className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                    className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                     style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
                     SKATEPARKS
@@ -243,20 +243,20 @@ export default function MobileMenu() {
               </div>
 
               {/* Bottom Promo Images Section (Fixed at bottom) */}
-              <div className="pl-6 pt-4 pb-2 dark:border-neutral-900 bg-white dark:bg-black">
-                <div className="grid grid-cols-2 gap-1">
+              <div className="pl-4 pt-4 pb-2 dark:border-neutral-900 bg-white dark:bg-black">
+                <div className="flex overflow-x-auto gap-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   {/* Shop Image 1 (Skateboarder in air) */}
                   <Link
                     href={getLocalizedPath("/search", locale)}
                     onClick={closeMobileMenu}
-                    className="relative aspect-[1.1] w-full rounded-sm overflow-hidden bg-neutral-100 dark:bg-neutral-900 group"
+                    className="relative w-[50vw] shrink-0 aspect-[1.1] rounded-sm overflow-hidden bg-neutral-100 dark:bg-neutral-900 group"
                   >
                     <Image
                       src={shopImg1}
                       alt="Shop Skateboards"
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="(max-width: 768px) 50vw, 33vw"
+                      sizes="(max-width: 768px) 60vw, 33vw"
                     />
                   </Link>
 
@@ -264,23 +264,24 @@ export default function MobileMenu() {
                   <Link
                     href={getLocalizedPath("/search?sort=latest", locale)}
                     onClick={closeMobileMenu}
-                    className="relative aspect-[1.1] w-full rounded-sm overflow-hidden bg-neutral-100 dark:bg-neutral-900 group"
+                    className="relative w-[50vw] shrink-0 aspect-[1.1] rounded-sm overflow-hidden bg-neutral-100 dark:bg-neutral-900 group"
                   >
                     <Image
                       src={shopImg2}
                       alt="Newly Released"
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="(max-width: 768px) 50vw, 33vw"
+                      sizes="(max-width: 768px) 60vw, 33vw"
                     />
                     <div className="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-black/20" />
                     <div
-                      className="absolute bottom-3 left-3 z-10 text-white font-extrabold text-[clamp(0.625rem,1.5vw,0.75rem)] uppercase leading-tight tracking-wider"
-                      style={{ fontFamily: "'Archivo', sans-serif" }}
+                      className="absolute bottom-3 left-3 z-10 text-white font-extrabold fluid-text-sm uppercase leading-tight tracking-wider"
+                      style={{ fontFamily: "'Clash Display', sans-serif" }}
                     >
                       Newly<br />Released
                     </div>
                   </Link>
+                  <div className="w-4 shrink-0" />
                 </div>
               </div>
             </Dialog.Panel>
