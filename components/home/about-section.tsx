@@ -89,8 +89,11 @@ export default function AboutSection() {
 
         {/* Left Side: Description Text */}
         <div className="max-w-[45%] mb-0 md:max-w-md md:w-5/12">
-          <h2 className="font-bold leading-tight tracking-tight text-[#d4ff00] font-sans fluid-text-xl sm:fluid-text-2xl lg:fluid-text-3xl text-balance">
+          <h2 className="md:hidden font-normal leading-tight tracking-tight text-[#d4ff00] fluid-text-xl sm:fluid-text-2xl lg:fluid-text-3xl text-balance">
             We are a community driven by grit, built on persistence, and united by skateboarding.
+          </h2>
+          <h2 className="hidden md:block font-bold leading-tight tracking-tight text-[#d4ff00] lg:fluid-text-3xl text-4xl">
+            We are a community<br /> driven by grit, built on<br /> persistence, and united<br /> by skateboarding.
           </h2>
         </div>
 
@@ -98,7 +101,7 @@ export default function AboutSection() {
         <div className="relative flex flex-col items-end md:w-7/12">
           <div className="relative inline-flex items-start tracking-tighter select-none">
 
-            <h1 className="flex items-start text-[clamp(3rem,15vw,15rem)] font-black uppercase text-[#d4ff00] sm:text-[clamp(3rem,14vw,14rem)] lg:text-[clamp(3rem,11vw,11rem)] leading-[0.8] font-sans">
+            <h1 className="flex items-start text-[clamp(3rem,15vw,15rem)] font-black uppercase text-[#d4ff00] sm:text-[clamp(3rem,14vw,14rem)] lg:text-[clamp(3rem,11vw,11rem)] leading-[0.8]">
               {/* WE */}
               <span className="leading-[0.8]">WE</span>
 
@@ -106,7 +109,7 @@ export default function AboutSection() {
               <span className="relative inline-flex items-start">
 
                 {/* Custom Apostrophe Frame */}
-                <span className="inline-flex items-center justify-center w-[0.36em] h-[0.6em] mr-[-0.03em] ml-[-0.03em] translate-y-[0.05em] shrink-0 mt-[-0.02em]">
+                <span className="inline-flex items-center justify-center w-[0.36em] h-[0.6em] mr-[-0.03em] ml-[-0.03em] translate-y-[0.05em] shrink-0 mt-[-0.1em]">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 130" width="100%" height="100%">
                     <path
                       d="M 15,10 
@@ -129,7 +132,7 @@ export default function AboutSection() {
                 </span>
 
                 {/* 'RE' */}
-                <span className="text-[0.60em] font-black leading-[0.8] mt-[0.04em] translate-y-[0.04em]">
+                <span className="text-[0.60em] font-black leading-[0.8] mt-[0.00em] translate-y-[0.04em]">
                   RE
                 </span>
 

@@ -74,7 +74,7 @@ export default async function Footer() {
         </div>
 
         {/* BOTTOM SECTION: Copyright & Legal Meta */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-[clamp(0.75rem,1.5vw,0.875rem)] text-white" style={{ fontFamily: 'ClashDisplay, sans-serif' }}>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-[clamp(0.75rem,1.5vw,0.875rem)] text-white" style={{ fontFamily: "'Archivo', sans-serif" }}>
           <p>&copy; {currentYear} Weskateco Pvt Ltd</p>
           <div className="flex items-center gap-2">
             <Link href="/refund-policy" className="hover:text-white transition-colors">Refund policy</Link>

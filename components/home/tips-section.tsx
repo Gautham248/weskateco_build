@@ -59,7 +59,7 @@ export default function TipsSection() {
 
         {/* Header with Navigation Controls */}
         <div className="flex justify-between items-end mb-5 md:mb-10 mx-auto max-w-(--breakpoint-2xl) px-4">
-          <h2 className="text-[clamp(1.25rem,4vw,2.5rem)] font-black tracking-tight text-black dark:text-white sm:text-[clamp(1.5rem,3vw,2.5rem)] lg:text-[clamp(1.75rem,2.5vw,2.5rem)] uppercase" style={{ fontFamily: 'Clash Display, sans-serif', letterSpacing: "-0.01em" }}>
+          <h2 className="text-[clamp(1.25rem,4vw,2.5rem)] font-black leading-[120%] tracking-tight text-black dark:text-white sm:text-[clamp(1.5rem,3vw,2.5rem)] lg:text-[clamp(1.75rem,2.5vw,2.5rem)] uppercase" style={{ fontFamily: 'Clash Display, sans-serif', letterSpacing: "-0.01em" }}>
             Tips to stay connected<br />Anywhere!
           </h2>
           <div className="flex gap-3 pb-2">
@@ -97,13 +97,12 @@ export default function TipsSection() {
               <div className={`w-full flex flex-col transition-transform duration-300 ease-out -translate-y-14 ${activeIndex === index ? "" : "md:translate-y-0 md:group-hover:-translate-y-14"}`}>
 
                 {/* Image Container Frame */}
-                <div className={`relative w-full aspect-[3/3.8] overflow-hidden shadow-sm flex-shrink-0 ${
-                  index === 0
-                    ? 'rounded-md md:rounded-l-none md:rounded-r-md'
-                    : index === tips.length - 1
+                <div className={`relative w-full aspect-[3/3.8] overflow-hidden shadow-sm flex-shrink-0 ${index === 0
+                  ? 'rounded-md md:rounded-l-none md:rounded-r-md'
+                  : index === tips.length - 1
                     ? 'rounded-md md:rounded-r-none md:rounded-l-md'
                     : 'rounded-md'
-                }`}>
+                  }`}>
                   <img
                     src={tip.image.src || (tip.image as unknown as string)}
                     alt={`Tip ${index + 1}`}
@@ -119,13 +118,18 @@ export default function TipsSection() {
                         <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                       </svg>
                     </div>
-                    <span className="text-white font-bold text-xs uppercase tracking-wider" style={{ fontFamily: 'ClashDisplay, sans-serif' }}>Instagram</span>
+                    <span className="text-white font-bold text-xs uppercase tracking-wider" style={{ fontFamily: "'Clash Display', sans-serif" }}>Instagram</span>
                   </div>
                 </div>
 
                 {/* View Post Button (Reveals right at the bottom edge boundary) */}
                 <div className={`w-full h-14 pt-3 flex-shrink-0 transition-opacity duration-300 opacity-100 ${activeIndex === index ? "md:opacity-100" : "md:opacity-0 md:group-hover:opacity-100"}`}>
-                  <button className="w-full h-full bg-black text-white rounded-md font-bold text-xs uppercase tracking-wide flex items-center justify-between px-4 hover:bg-neutral-900 transition-colors">
+                  <button className={`w-full h-full bg-black text-white font-bold text-xs uppercase tracking-wide flex items-center justify-between px-4 hover:bg-neutral-900 transition-colors ${index === 0
+                    ? 'rounded-md md:rounded-l-none md:rounded-r-md'
+                    : index === tips.length - 1
+                      ? 'rounded-md md:rounded-r-none md:rounded-l-md'
+                      : 'rounded-md'
+                    }`}>
                     <span>View Post</span>
                     <div className="bg-white text-black rounded-full p-1">
                       <img src={arrow.src || arrow} className="w-3.5 h-3.5" alt="arrow" />

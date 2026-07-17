@@ -76,7 +76,7 @@ export default function NewlyReleaseContent() {
   }, [maxSlide]);
 
   return (
-    <div ref={containerRef} className="w-full h-full flex items-center justify-center select-none">
+    <div ref={containerRef} className="relative w-full h-full flex items-center justify-center select-none">
 
       {/* ================= DESKTOP VIEW ================= */}
       <div
@@ -270,6 +270,23 @@ export default function NewlyReleaseContent() {
           </svg>
         </button>
       </div>
+
+      {/* Vertical Slide Indicators */}
+      {slides.length > 1 && (
+        <div className="hidden md:flex absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-1 rounded-full bg-black/20 backdrop-blur-[2px] px-1 py-1.5">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSlideIndex(idx);
+              }}
+              className={`w-1.5 transition-all duration-300 rounded-full bg-white cursor-pointer ${idx === slideIndex ? "h-4 opacity-100" : "h-1.5 opacity-50"
+                }`}
+            />
+          ))}
+        </div>
+      )}
 
     </div>
   );

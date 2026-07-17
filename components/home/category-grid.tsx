@@ -194,7 +194,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
 
                 <div className="absolute inset-0 bg-gradient-to-b from-blue-400/20 via-transparent to-black/80 flex flex-col justify-between p-6">
                   <div className="text-center pt-4">
-                    <h3 className="text-white text-xl font-normal uppercase tracking-wider">
+                    <h3 className="text-white text-lg font-normal uppercase tracking-wider">
                       {category.name}
                     </h3>
                   </div>
@@ -209,12 +209,12 @@ export default function CategoryGrid({ locale }: { locale: string }) {
         </div>
 
         {/* --- DOTS NAVIGATION INDICATOR --- */}
-        <div className="flex justify-center items-center gap-2 mt-4 pb-4">
+        <div className="flex justify-center items-center gap-1 mt-4 pb-4">
           {categories.map((_, index) => (
             <span
               key={`dot-${index}`}
               onClick={() => setActiveMobileIndex(index)}
-              className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${activeMobileIndex === index ? "w-2.5 bg-black" : "w-2.5 bg-neutral-300"
+              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${activeMobileIndex === index ? "w-4 bg-black" : "w-1.5 bg-neutral-300"
                 }`}
             />
           ))}

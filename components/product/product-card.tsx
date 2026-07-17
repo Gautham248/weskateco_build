@@ -80,7 +80,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             {displayImages.map((_, idx) => (
               <span
                 key={idx}
-                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-1.5 opacity-100" : "w-1.5 opacity-50"
+                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
                   }`}
               />
             ))}
@@ -88,7 +88,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
         )}
 
         {/* Plus circle (visible when not hovered) */}
-        <div className="absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+        <div className="absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white opacity-100 group-hover:opacity-0 transition-opacity duration-300">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
