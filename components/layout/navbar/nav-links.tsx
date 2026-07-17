@@ -66,7 +66,7 @@ export default function NavLinks({ onDropdownChange }: { onDropdownChange?: (isO
           >
             <div className="flex h-full gap-3">
               <MegaMenuLeft activeCategory={activeCategory} onCategoryHover={setActiveCategory} onLinkClick={() => setIsDropdownOpen(false)} />
-              <MegaMenuRight activeCategory={activeCategory} />
+              <MegaMenuRight activeCategory={activeCategory} onCollapse={() => setActiveCategory(null)} />
             </div>
           </div>
         </li>

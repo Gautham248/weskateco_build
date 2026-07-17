@@ -1,12 +1,18 @@
 "use client";
 
-import Image from "next/image";
 import shopImg1 from "components/icons/shop_image_1.png";
 import shopImg2 from "components/icons/shop_image_2.png";
 import shopImg3 from "components/icons/shop_image_3.png";
+import Image from "next/image";
 import MegaMenuSubItems, { hasSubItems } from "./mega-menu-sub-items";
 
-export default function MegaMenuRight({ activeCategory }: { activeCategory: string | null }) {
+export default function MegaMenuRight({
+  activeCategory,
+  onCollapse,
+}: {
+  activeCategory: string | null;
+  onCollapse?: () => void;
+}) {
   const showPanel = hasSubItems(activeCategory);
 
   return (
@@ -24,7 +30,10 @@ export default function MegaMenuRight({ activeCategory }: { activeCategory: stri
       </div>
 
       {/* Main Content Grid Container */}
-      <div className="flex flex-1 bg-white dark:bg-neutral-900 rounded-xl p-2.5 gap-2.5">
+      <div
+        className="flex flex-1 bg-white dark:bg-neutral-900 rounded-xl p-2.5 gap-2.5"
+        onMouseEnter={onCollapse}
+      >
 
         {/* Left Image Component */}
         <div
@@ -104,7 +113,7 @@ export default function MegaMenuRight({ activeCategory }: { activeCategory: stri
             style={{
               opacity: showPanel ? 0 : 1,
               visibility: showPanel ? "hidden" : "visible",
-              pointerEvents: showPanel ? "none" : "auto",
+              // pointerEvents: showPanel ? "none" : "auto",
             }}
           >
             <span

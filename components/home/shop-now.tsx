@@ -95,7 +95,7 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
 
   return (
     <div
-      className="group/card flex flex-col bg-transparent w-[calc(100vw-2rem)] sm:w-[340px] lg:w-[384px] flex-shrink-0 snap-start"
+      className="group/card flex flex-col bg-transparent w-[calc(50vw-1.25rem)] sm:w-[340px] lg:w-[384px] flex-shrink-0 snap-start"
       style={{
         scrollMarginLeft: trackPadding
       }}
@@ -156,7 +156,7 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
         </div>
 
         {/* Plus circle (visible when not hovered) */}
-        <div className="absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-[#00000050] backdrop-blur-md text-white opacity-100 group-hover/card:opacity-0 transition-opacity duration-300">
+        <div className="absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-[#00000050] backdrop-blur-md text-white opacity-100 group-hover/card:opacity-0 transition-opacity duration-300">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
@@ -193,7 +193,7 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
         <p className="text-[clamp(0.75rem,2vw,1rem)] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-2" style={{ fontFamily: "Archivo", }}>
           {product.brand}
         </p>
-        <h3 className="line-clamp-2 text-[clamp(1rem,2.5vw,1.25rem)] font-medium leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2 h-8" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+        <h3 className="line-clamp-2 text-[clamp(0.875rem,2.5vw,1.25rem)] font-medium leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2" style={{ fontFamily: "'Clash Display', sans-serif" }}>
           {product.name}
         </h3>
         <div className="flex items-baseline gap-2">
@@ -201,7 +201,7 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
             {product.price}
           </span>
           {product.originalPrice && (
-            <span className="text-[18px] font-[300] text-red-500 dark:text-red-400 line-through decoration-red-500 decoration-1" style={{ fontFamily: "Archivo", }}>
+            <span className="text-[clamp(0.75rem,2vw,1rem)] font-[300] text-red-500 dark:text-red-400 line-through decoration-red-500 decoration-1" style={{ fontFamily: "Archivo", }}>
               {product.originalPrice}
             </span>
           )}
