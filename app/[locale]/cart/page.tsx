@@ -104,7 +104,7 @@ function CartPageContent() {
               Looks like you haven't added anything to your cart yet. Let's find some setups!
             </p>
             <Link
-              href={getLocalizedPath("/search", locale)}
+              href={getLocalizedPath("/store/skateboards", locale)}
               className="rounded-xs bg-black text-white px-6 py-3 uppercase text-xs font-semibold tracking-wider hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 transition-colors"
               style={{ fontFamily: "Archivo" }}
             >
