@@ -1,11 +1,10 @@
 "use client";
 
 import {
-  AdjustmentsHorizontalIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   FunnelIcon,
-  XMarkIcon,
+  XMarkIcon
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { sorting } from "lib/constants";
@@ -131,32 +130,38 @@ export default function FilterSortBar({
     sorting.find((s) => s.slug === currentSort) || sorting[0];
 
   const hasActiveFilters = !!(activeColor || activeLevel || activePrice);
+  const activeFiltersCount = [activeColor, activeLevel, activePrice].filter(Boolean).length;
 
   return (
     <div className="w-full bg-white text-black py-4 border-b border-neutral-100 dark:bg-neutral-950 dark:text-white dark:border-neutral-900">
       {/* Top Row: Title, showing count, Filter & Sort buttons */}
       <div className="flex flex-col px-0 md:px-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-baseline gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex-1 min-w-[180px]">
             <h2
               className="text-[clamp(1.5rem,3.5vw,2rem)] font-extrabold tracking-[-1%] uppercase leading-tight"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
               {title}
+              <span className="hidden md:inline-block ml-2 text-xs md:text-sm font-medium text-neutral-500 dark:text-neutral-400 whitespace-nowrap normal-case font-sans tracking-normal align-middle">
+                (Showing 1 – {totalProducts} products of {totalProducts} products)
+              </span>
             </h2>
-            <span className="hidden md:inline text-xs md:text-sm font-medium text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
-              (Showing 1 – {totalProducts} products of {totalProducts} products)
-            </span>
           </div>
 
           {/* Mobile Filter / Sort Icons */}
-          <div className="flex items-center gap-3 text-neutral-800 dark:text-neutral-200 md:hidden">
+          <div className="flex items-center gap-3 text-neutral-800 dark:text-neutral-200 md:hidden ml-auto">
             <button
               onClick={openFilters}
               aria-label="Filter"
-              className="p-1 cursor-pointer hover:opacity-75 transition-opacity"
+              className="p-1 cursor-pointer hover:opacity-75 transition-opacity relative"
             >
               <FunnelIcon className="h-6 w-6 stroke-[1.8]" />
+              {activeFiltersCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#CCFF02] text-[10px] font-black text-black shadow-sm">
+                  {activeFiltersCount}
+                </span>
+              )}
             </button>
             <div className="h-6 w-px bg-neutral-200 dark:bg-neutral-800" />
             <div className="relative">
@@ -174,7 +179,7 @@ export default function FilterSortBar({
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M3 6h18M3 12h14M3 18h10"
+                    d="M3 6h18 M6 12h12 M9 18h6"
                   />
                 </svg>
               </button>
@@ -217,7 +222,14 @@ export default function FilterSortBar({
               onClick={openFilters}
               className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity py-1.5"
             >
-              <FunnelIcon className="h-4 w-4" />
+              <div className="relative">
+                <FunnelIcon className="h-4 w-4" />
+                {activeFiltersCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#CCFF02] text-[8px] font-black text-black shadow-sm">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </div>
               <span>Filter</span>
             </button>
 
@@ -228,7 +240,18 @@ export default function FilterSortBar({
                 onClick={() => setIsSortOpen(!isSortOpen)}
                 className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity py-1.5"
               >
-                <AdjustmentsHorizontalIcon className="h-4 w-4" />
+                <svg
+                  className="h-5 w-5 stroke-[1.8]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 6h18 M6 12h12 M9 18h6"
+                  />
+                </svg>
                 <span className="cursor-pointer">
                   Sort By: {activeSortObj?.title}
                 </span>
@@ -269,7 +292,7 @@ export default function FilterSortBar({
 
         {/* Showing Count */}
         <div className="mt-1 md:hidden">
-          <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+          <span className="text-xs md:text-sm font-medium text-neutral-600 dark:text-neutral-400">
             (Showing 1 – {totalProducts} products of {totalProducts} products)
           </span>
         </div>
@@ -291,7 +314,7 @@ export default function FilterSortBar({
                     key={coll.handle}
                     href={linkHref}
                     className={clsx(
-                      "px-6 py-3 rounded-[6px] text-[clamp(0.813rem,2vw,1rem)] font-medium whitespace-nowrap transition-all duration-200 border",
+                      "px-3 py-2 md:px-6 md:py-3 rounded-[6px] text-[clamp(0.813rem,2vw,1rem)] font-medium whitespace-nowrap transition-all duration-200 border",
                       isActive
                         ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
                         : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800",
@@ -308,7 +331,7 @@ export default function FilterSortBar({
           {hasActiveFilters && (
             <div className="flex flex-wrap items-center gap-2.5">
               {activeColorObj && (
-                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium">
+                <span className="flex items-center gap-2 px-2 py-1.5 md:px-3 md:py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium">
                   <span
                     className="w-3.5 h-3.5 rounded-full inline-block border border-black/10"
                     style={{ backgroundColor: activeColorObj.hex }}
@@ -324,7 +347,7 @@ export default function FilterSortBar({
               )}
 
               {activeLevelObj && (
-                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium">
+                <span className="flex items-center gap-2 px-2 py-1.5 md:px-3 md:py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium">
                   {activeLevelObj.name}
                   <button
                     onClick={() => updateUrlParam("level", null)}

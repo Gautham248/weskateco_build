@@ -22,6 +22,28 @@ import { WeskatecoIcon } from "./index";
 import shopImg1 from "components/icons/shop_image_1.png";
 import shopImg2 from "components/icons/shop_image_2.png";
 
+const CATEGORY_PREFIXES = [
+  { match: "skateboards", prefix: "skateboard" },
+  { match: "surfskates", prefix: "surfskate" },
+] as const;
+
+const ITEM_SLUGS: Record<string, (prefix: string) => string> = {
+  completes: (p) => `${p}-completes`,
+  decks: (p) => (p === "skateboard" ? "decks" : `${p}-decks`),
+  trucks: (p) => `${p}-trucks`,
+  wheels: (p) => `${p}-wheels`,
+  accessories: (p) => `${p}-accessories`,
+};
+
+function getStorePath(parentCategoryUrl: string, itemLower: string): string {
+  const category = CATEGORY_PREFIXES.find((c) =>
+    parentCategoryUrl.includes(c.match)
+  );
+  const slugFn = category && ITEM_SLUGS[itemLower];
+  const slug = slugFn ? slugFn(category.prefix) : itemLower;
+  return `/store/${slug}`;
+}
+
 export default function MobileMenu() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -82,24 +104,7 @@ export default function MobileMenu() {
     subItemName: string,
   ): string => {
     const itemLower = subItemName.toLowerCase();
-    let path = `/store/${itemLower}`;
-
-    if (parentCategoryUrl.includes("skateboards")) {
-      if (itemLower === "completes") path = `/store/skateboard-completes`;
-      else if (itemLower === "decks") path = `/store/decks`;
-      else if (itemLower === "trucks") path = `/store/skateboard-trucks`;
-      else if (itemLower === "wheels") path = `/store/skateboard-wheels`;
-      else if (itemLower === "accessories")
-        path = `/store/skateboard-accessories`;
-    } else if (parentCategoryUrl.includes("surfskates")) {
-      if (itemLower === "completes") path = `/store/surfskate-completes`;
-      else if (itemLower === "decks") path = `/store/surfskate-decks`;
-      else if (itemLower === "trucks") path = `/store/surfskate-trucks`;
-      else if (itemLower === "wheels") path = `/store/surfskate-wheels`;
-      else if (itemLower === "accessories")
-        path = `/store/surfskate-accessories`;
-    }
-
+    const path = getStorePath(parentCategoryUrl, itemLower);
     return getLocalizedPath(path, locale);
   };
 
