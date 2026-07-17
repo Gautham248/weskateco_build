@@ -16,7 +16,6 @@ function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boo
   const [oOffset, setOOffset] = useState<number>(0);
 
   useEffect(() => {
-    // Only calculate if the container is visible in the viewport (prevents hidden layout breaking refs)
     if (oTargetRef.current && containerRef.current && containerRef.current.offsetParent !== null) {
       const containerRect = containerRef.current.getBoundingClientRect();
       const oRect = oTargetRef.current.getBoundingClientRect();
@@ -24,7 +23,7 @@ function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boo
       const offset = (oRect.left + oRect.width / 2) - containerRect.left;
       setOOffset(offset);
     }
-  }, [name, isExpanded]); // Recalculate on expansion shift to ensure precision
+  }, [name, isExpanded]);
 
   if (lastOIndex === -1) {
     return (
@@ -72,9 +71,9 @@ export default function CategoryGrid({ locale }: { locale: string }) {
   const t = createTranslator(locale);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(0);
 
+  // Mobile active index tracking
   const [activeMobileIndex, setActiveMobileIndex] = useState<number>(0);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const isJumping = useRef(false);
+  const touchStart = useRef<number | null>(null);
 
   const categories = [
     {
@@ -96,46 +95,28 @@ export default function CategoryGrid({ locale }: { locale: string }) {
     },
   ];
 
-  const loopedCategories = [...categories, ...categories, ...categories];
-  const midSetStart = categories.length;
-
-  useEffect(() => {
-    if (!scrollContainerRef.current) return;
-    const container = scrollContainerRef.current;
-    const cardWidth = container.clientWidth * 0.76;
-    const gap = 16;
-    const itemWidth = cardWidth + gap;
-    container.scrollLeft = itemWidth * midSetStart;
-  }, [midSetStart]);
-
-  const handleScroll = () => {
-    if (!scrollContainerRef.current) return;
-    if (isJumping.current) return;
-    const container = scrollContainerRef.current;
-    const { scrollLeft, clientWidth } = container;
-    if (clientWidth === 0) return;
-    const cardWidth = clientWidth * 0.76;
-    const gap = 16;
-    const itemWidth = cardWidth + gap;
-    const rawIndex = scrollLeft / itemWidth;
-    const boundedIndex = Math.max(0, Math.min(loopedCategories.length - 1, Math.round(rawIndex)));
-    const displayIndex = boundedIndex % categories.length;
-    setActiveMobileIndex(displayIndex);
-
-    const threshold = categories.length * 0.5;
-    const setIndex = boundedIndex / categories.length;
-    if (setIndex < 0.5 + threshold / categories.length && setIndex > 0.5 - threshold / categories.length) return;
-
-    if (boundedIndex < categories.length) {
-      isJumping.current = true;
-      container.scrollLeft = itemWidth * (midSetStart + boundedIndex);
-      requestAnimationFrame(() => { isJumping.current = false; });
-    } else if (boundedIndex >= categories.length * 2) {
-      isJumping.current = true;
-      const offset = boundedIndex - categories.length * 2;
-      container.scrollLeft = itemWidth * (midSetStart + offset);
-      requestAnimationFrame(() => { isJumping.current = false; });
+  // Mobile Touch Mechanics
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.targetTouches[0]) {
+      touchStart.current = e.targetTouches[0].clientX;
     }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart.current === null) return;
+    if (e.changedTouches[0]) {
+      const touchEnd = e.changedTouches[0].clientX;
+      const diff = touchStart.current - touchEnd;
+
+      if (Math.abs(diff) > 50) { // Swipe detection threshold
+        if (diff > 0) {
+          setActiveMobileIndex((prev) => (prev + 1) % categories.length);
+        } else {
+          setActiveMobileIndex((prev) => (prev - 1 + categories.length) % categories.length);
+        }
+      }
+    }
+    touchStart.current = null;
   };
 
   return (
@@ -146,54 +127,94 @@ export default function CategoryGrid({ locale }: { locale: string }) {
         </h2>
       </div>
 
-      {/* --- MOBILE CAROUSEL VIEW --- */}
-      <div className="block md:hidden w-full">
-        <div
-          ref={scrollContainerRef}
-          onScroll={handleScroll}
-          className="flex w-full overflow-x-auto gap-0 snap-x snap-mandatory scrollbar-none pb-6"
-          style={{ scrollbarWidth: "none" }}
-        >
-          <div className="shrink-0 w-[8vw]" />
+      {/* --- MOBILE 3D COVERFLOW VIEW --- */}
+      <div
+        className="block md:hidden w-full overflow-hidden select-none touch-pan-y"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div className="relative h-[115vw] max-h-[500px] w-full flex items-center justify-center">
+          {categories.map((category, index) => {
+            // Virtual infinite math offset positioning
+            let offset = index - activeMobileIndex;
+            if (offset < -1) offset += categories.length;
+            if (offset > 1) offset -= categories.length;
 
-          {loopedCategories.map((category, index) => {
-            const isActive = index % categories.length === activeMobileIndex;
+            const isActive = offset === 0;
+            const isLeft = offset === -1;
+            const isRight = offset === 1;
+
+            let transformStyle = "";
+            let zIndex = 0;
+            let opacity = 1;
+
+            if (isActive) {
+              transformStyle = "translateX(0%) scale(1)";
+              zIndex = 30; // Tops the stack layout
+            } else if (isLeft) {
+              transformStyle = "translateX(calc(-90% - 14px)) scale(0.85)";
+              zIndex = 10;
+            } else if (isRight) {
+              transformStyle = "translateX(calc(90% + 14px)) scale(0.85)";
+              zIndex = 10;
+            } else {
+              transformStyle = "translateX(0%) scale(0.5)";
+              zIndex = 0;
+              opacity = 0;
+            }
+
+            // Click intercept handler for side cards
+            const handleCardClick = (e: React.MouseEvent) => {
+              if (!isActive) {
+                e.preventDefault(); // Stop Link navigation
+                setActiveMobileIndex(index); // Move side card to center
+              }
+            };
+
             return (
               <Link
                 key={`mobile-${index}`}
                 href={getLocalizedPath(category.href, locale)}
-                className={`group relative h-auto aspect-[2/3] w-[76vw] shrink-0 rounded-2xl overflow-hidden snap-center bg-neutral-100 shadow-md transition-all duration-500 ease-out ${isActive ? "scale-100" : "scale-[0.82]"
+                onClick={handleCardClick}
+                className={`absolute w-[68vw] aspect-[2/3] rounded-md overflow-hidden bg-neutral-100 shadow-xl transition-all ${isActive ? "cursor-pointer" : "cursor-pointer pointer-events-auto"
                   }`}
+                style={{
+                  transform: transformStyle,
+                  zIndex: zIndex,
+                  opacity: opacity,
+                  transitionDuration: "600ms",
+                  transitionTimingFunction: "cubic-bezier(0.25, 1, 0.5, 1)",
+                }}
               >
                 <img
                   src={category.image.src}
                   alt={category.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover pointer-events-none"
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-b from-blue-400/20 via-transparent to-black/80 flex flex-col justify-between p-6">
                   <div className="text-center pt-4">
-                    <h3 className="text-white text-2xl font-normal uppercase tracking-wider">
+                    <h3 className="text-white text-xl font-normal uppercase tracking-wider">
                       {category.name}
                     </h3>
                   </div>
 
-                  <div className="w-full bg-black text-white text-center py-4 rounded-xl font-normal tracking-wide uppercase border border-neutral-800 transition-colors group-active:bg-neutral-900 text-sm">
+                  <div className="w-full bg-black text-white text-center py-2.5 rounded-md font-normal tracking-wide uppercase border border-neutral-800 text-sm">
                     View More
                   </div>
                 </div>
               </Link>
             );
           })}
-
-          <div className="shrink-0 w-[8vw]" />
         </div>
 
-        <div className="flex justify-center items-center gap-2 mt-2">
+        {/* --- DOTS NAVIGATION INDICATOR --- */}
+        <div className="flex justify-center items-center gap-2 mt-4 pb-4">
           {categories.map((_, index) => (
             <span
               key={`dot-${index}`}
-              className={`h-2.5 rounded-full transition-all duration-300 ${activeMobileIndex === index ? "w-2.5 bg-black" : "w-2.5 bg-neutral-300"
+              onClick={() => setActiveMobileIndex(index)}
+              className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${activeMobileIndex === index ? "w-2.5 bg-black" : "w-2.5 bg-neutral-300"
                 }`}
             />
           ))}
@@ -241,7 +262,6 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                 />
 
                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
-                  {/* Added a unique layout id to isolate calculation bounds */}
                   <CategoryTitle name={category.name} isExpanded={isExpanded} id={`desktop-${index}`} />
                 </div>
               </div>

@@ -137,7 +137,7 @@ export default function AboutSection() {
                 <div className="absolute left-0 right-0 bottom-[-0.05em] z-20 translate-y-[100%]">
                   <Link
                     href="/about"
-                    className="!w-[fit-content] group flex items-center justify-between rounded-full bg-black border border-neutral-900 p-1 md:px-3 md:py-1.5 text-[clamp(0.625rem,1.75vw,1.25rem)] sm:text-[clamp(0.625rem,0.8vw,0.875rem)] md:text-[clamp(0.625rem,1vw,1rem)] font-bold tracking-widest text-[#d4ff00] uppercase transition-all duration-300 hover:bg-neutral-950 hover:border-neutral-800 w-full"
+                    className="!w-[fit-content] group flex items-center justify-between rounded-full bg-black border border-neutral-900 p-1 md:px-3 md:py-1.5 text-[7px] sm:text-[clamp(0.625rem,0.8vw,0.875rem)] md:text-[clamp(0.625rem,1vw,1rem)] font-bold tracking-widest text-[#d4ff00] uppercase transition-all duration-300 hover:bg-neutral-950 hover:border-neutral-800 w-full"
                   >
                     <span className="truncate">CTA BUTTON</span>
                     <svg
