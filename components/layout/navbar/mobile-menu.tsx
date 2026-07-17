@@ -6,7 +6,14 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 
-import { Bars3Icon, ChevronDownIcon, ChevronUpIcon, MinusIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  MinusIcon,
+  PlusIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { WeskatecoIcon } from "./index";
@@ -54,7 +61,11 @@ export default function MobileMenu() {
     { name: "Skateboards", key: "skateboards", href: "/store/skateboards" },
     { name: "Surfskate", key: "surfskates", href: "/store/surfskates" },
     { name: "Apparel", key: "apparel", href: "/store/apparel-1" },
-    { name: "Protective Gear", key: "protective_gear", href: "/store/protection-gears" },
+    {
+      name: "Protective Gear",
+      key: "protective_gear",
+      href: "/store/protection-gears",
+    },
     { name: "Brands", key: "brands", href: "/store" },
   ];
 
@@ -63,10 +74,13 @@ export default function MobileMenu() {
     Surfskate: ["Completes", "Decks", "Wheels", "Trucks", "Accessories"],
     Apparel: [],
     "Protective Gear": [],
-    Brands: []
+    Brands: [],
   };
 
-  const getSubItemHref = (parentCategoryUrl: string, subItemName: string): string => {
+  const getSubItemHref = (
+    parentCategoryUrl: string,
+    subItemName: string,
+  ): string => {
     const itemLower = subItemName.toLowerCase();
     let path = `/store/${itemLower}`;
 
@@ -75,13 +89,15 @@ export default function MobileMenu() {
       else if (itemLower === "decks") path = `/store/decks`;
       else if (itemLower === "trucks") path = `/store/skateboard-trucks`;
       else if (itemLower === "wheels") path = `/store/skateboard-wheels`;
-      else if (itemLower === "accessories") path = `/store/skateboard-accessories`;
+      else if (itemLower === "accessories")
+        path = `/store/skateboard-accessories`;
     } else if (parentCategoryUrl.includes("surfskates")) {
       if (itemLower === "completes") path = `/store/surfskate-completes`;
       else if (itemLower === "decks") path = `/store/surfskate-decks`;
       else if (itemLower === "trucks") path = `/store/surfskate-trucks`;
       else if (itemLower === "wheels") path = `/store/surfskate-wheels`;
-      else if (itemLower === "accessories") path = `/store/surfskate-accessories`;
+      else if (itemLower === "accessories")
+        path = `/store/surfskate-accessories`;
     }
 
     return getLocalizedPath(path, locale);
@@ -135,14 +151,19 @@ export default function MobileMenu() {
               </div>
 
               {/* Scrollable Body */}
-              <div className="flex-1 overflow-y-auto px-4 py-4" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+              <div
+                className="flex-1 overflow-y-auto px-4 py-4"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
                 {/* STORE Accordion */}
                 <div className="border-b border-neutral-100 dark:border-neutral-900 py-3">
                   <button
                     onClick={() => setIsStoreExpanded(!isStoreExpanded)}
                     className="flex w-full items-center justify-between font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                   >
-                    <span style={{ fontFamily: "'Clash Display', sans-serif" }}>STORE</span>
+                    <span style={{ fontFamily: "'Clash Display', sans-serif" }}>
+                      STORE
+                    </span>
                     {isStoreExpanded ? (
                       <ChevronUpIcon className="h-4 w-4 stroke-[2.5]" />
                     ) : (
@@ -157,9 +178,17 @@ export default function MobileMenu() {
                         const isExpanded = expandedCategory === category.name;
                         const hasSub = items.length > 0;
                         return (
-                          <div key={category.name} className="border-b border-neutral-100 dark:border-neutral-900/60 py-3 last:border-0" style={{ fontFamily: "Archivo" }}>
+                          <div
+                            key={category.name}
+                            className="border-b border-neutral-100 dark:border-neutral-900/60 py-3 last:border-0"
+                            style={{ fontFamily: "Archivo" }}
+                          >
                             <div
-                              onClick={() => hasSub ? toggleCategory(category.name) : undefined}
+                              onClick={() =>
+                                hasSub
+                                  ? toggleCategory(category.name)
+                                  : undefined
+                              }
                               className="flex w-full items-center justify-between font-medium text-[clamp(0.875rem,2vw,1rem)] text-neutral-800 dark:text-neutral-200 cursor-pointer"
                             >
                               {hasSub ? (
@@ -174,7 +203,10 @@ export default function MobileMenu() {
                                 </Link>
                               )}
                               {hasSub && (
-                                <button aria-label="Toggle Section" className="p-1">
+                                <button
+                                  aria-label="Toggle Section"
+                                  className="p-1"
+                                >
                                   {isExpanded ? (
                                     <MinusIcon className="h-4 w-4 text-neutral-500" />
                                   ) : (
@@ -189,7 +221,10 @@ export default function MobileMenu() {
                                 {items.map((subItem) => (
                                   <Link
                                     key={subItem}
-                                    href={getSubItemHref(category.href, subItem)}
+                                    href={getSubItemHref(
+                                      category.href,
+                                      subItem,
+                                    )}
                                     onClick={closeMobileMenu}
                                     className="bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-semibold px-3 py-1.5 rounded-[6px] transition-colors active:bg-black active:text-white dark:active:bg-white dark:active:text-black"
                                   >
@@ -278,7 +313,9 @@ export default function MobileMenu() {
                       className="absolute bottom-3 left-3 z-10 text-white font-extrabold fluid-text-sm uppercase leading-tight tracking-wider"
                       style={{ fontFamily: "'Clash Display', sans-serif" }}
                     >
-                      Newly<br />Released
+                      Newly
+                      <br />
+                      Released
                     </div>
                   </Link>
                   <div className="w-4 shrink-0" />

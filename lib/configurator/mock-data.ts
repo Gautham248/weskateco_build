@@ -1,7 +1,5 @@
 import type { Product } from "lib/shopify/types";
-import type {
-  ConfiguratorItem,
-} from "./types";
+import type { ConfiguratorItem } from "./types";
 import mockData from "config/mock-configurator-data.json";
 
 // Type for the mock data JSON structure
@@ -82,7 +80,9 @@ export function buildConfiguratorItems(products: Product[]): {
     }
 
     if (handle in (mockData.trucks || {})) {
-      const mock = (mockData.trucks as Record<string, MockProductData>)[handle]!;
+      const mock = (mockData.trucks as Record<string, MockProductData>)[
+        handle
+      ]!;
       const hangerByVariant = mock.truck_hanger_size_by_variant || {};
 
       for (const variant of product.variants) {
@@ -106,14 +106,17 @@ export function buildConfiguratorItems(products: Product[]): {
             truck_type: mock.truck_type as any,
             truck_hanger_size: hangerSize ?? null,
             truck_sold_as: (mock.truck_sold_as as any) || "Pair",
-            truck_compatible_board_types: mock.truck_compatible_board_types || "",
+            truck_compatible_board_types:
+              mock.truck_compatible_board_types || "",
           },
         });
       }
     }
 
     if (handle in (mockData.wheels || {})) {
-      const mock = (mockData.wheels as Record<string, MockProductData>)[handle]!;
+      const mock = (mockData.wheels as Record<string, MockProductData>)[
+        handle
+      ]!;
       const diameterByVariant = mock.wheel_diameter_by_variant || {};
 
       for (const variant of product.variants) {
@@ -138,14 +141,17 @@ export function buildConfiguratorItems(products: Product[]): {
             wheel_diameter: diameter,
             wheel_hardness: mock.wheel_hardness || "",
             wheel_type: mock.wheel_type as any,
-            wheel_compatible_board_types: mock.wheel_compatible_board_types || "",
+            wheel_compatible_board_types:
+              mock.wheel_compatible_board_types || "",
           },
         });
       }
     }
 
     if (handle in (mockData.bearings || {})) {
-      const mock = (mockData.bearings as Record<string, MockProductData>)[handle]!;
+      const mock = (mockData.bearings as Record<string, MockProductData>)[
+        handle
+      ]!;
 
       for (const variant of product.variants) {
         bearings.push({
@@ -170,7 +176,9 @@ export function buildConfiguratorItems(products: Product[]): {
     }
 
     if (handle in (mockData.griptape || {})) {
-      const mock = (mockData.griptape as Record<string, MockProductData>)[handle]!;
+      const mock = (mockData.griptape as Record<string, MockProductData>)[
+        handle
+      ]!;
 
       for (const variant of product.variants) {
         griptape.push({

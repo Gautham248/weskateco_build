@@ -11,7 +11,8 @@ export async function generateMetadata(props: {
   const t = createTranslator(params.locale);
   return {
     title: t("configurator.title"),
-    description: "Build your perfect skateboard setup with the WeSkate configurator.",
+    description:
+      "Build your perfect skateboard setup with the WeSkate configurator.",
   };
 }
 

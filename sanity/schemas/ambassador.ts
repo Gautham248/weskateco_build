@@ -84,7 +84,8 @@ export default defineType({
     defineField({
       name: "shopifyCustomerId",
       title: "Shopify Customer ID",
-      description: "Links this ambassador to their Shopify customer account for perks",
+      description:
+        "Links this ambassador to their Shopify customer account for perks",
       type: "string",
     }),
   ],

@@ -2,48 +2,48 @@
 @import "@fontsource/archivo";
 
 @font-face {
-  font-family: 'Clash Display';
-  src: url('../../fonts/ClashDisplay-Extralight.woff2') format('woff2');
+  font-family: "Clash Display";
+  src: url("../../fonts/ClashDisplay-Extralight.woff2") format("woff2");
   font-weight: 200;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Clash Display';
-  src: url('../../fonts/ClashDisplay-Light.woff2') format('woff2');
+  font-family: "Clash Display";
+  src: url("../../fonts/ClashDisplay-Light.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Clash Display';
-  src: url('../../fonts/ClashDisplay-Regular.woff2') format('woff2');
+  font-family: "Clash Display";
+  src: url("../../fonts/ClashDisplay-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Clash Display';
-  src: url('../../fonts/ClashDisplay-Medium.woff2') format('woff2');
+  font-family: "Clash Display";
+  src: url("../../fonts/ClashDisplay-Medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Clash Display';
-  src: url('../../fonts/ClashDisplay-Semibold.woff2') format('woff2');
+  font-family: "Clash Display";
+  src: url("../../fonts/ClashDisplay-Semibold.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Clash Display';
-  src: url('../../fonts/ClashDisplay-Bold.woff2') format('woff2');
+  font-family: "Clash Display";
+  src: url("../../fonts/ClashDisplay-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -61,8 +61,12 @@
     border-color: var(--color-gray-200, currentColor);
   }
 
-  body, input, button, select, textarea {
-    font-family: 'Archivo', sans-serif;
+  body,
+  input,
+  button,
+  select,
+  textarea {
+    font-family: "Archivo", sans-serif;
   }
 }
 
@@ -109,10 +113,6 @@ html {
   @apply text-black dark:text-white;
 }
 
-
-
-
-
 /* Hide scrollbar */
 ::-webkit-scrollbar {
   display: none;
@@ -134,8 +134,13 @@ button {
     animation: nudgeX 0.8s ease-in-out infinite;
   }
   @keyframes nudgeX {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(4px); }
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(4px);
+    }
   }
 
   /* Fluid heading - scales smoothly from sm to 2xl screens */

@@ -134,25 +134,27 @@ export const getConfiguratorProductsQuery = /* GraphQL */ `
               }
             }
           }
-          metafields(identifiers: [
-            { namespace: "configurator", key: "deck_width" }
-            { namespace: "configurator", key: "deck_board_type" }
-            { namespace: "configurator", key: "truck_type" }
-            { namespace: "configurator", key: "truck_hanger_size" }
-            { namespace: "configurator", key: "truck_max_wheel_diameter" }
-            { namespace: "configurator", key: "truck_sold_as" }
-            { namespace: "configurator", key: "truck_compatible_board_types" }
-            { namespace: "configurator", key: "wheel_diameter" }
-            { namespace: "configurator", key: "wheel_hardness" }
-            { namespace: "configurator", key: "wheel_type" }
-            { namespace: "configurator", key: "wheel_compatible_board_types" }
-            { namespace: "configurator", key: "bearing_type" }
-            { namespace: "configurator", key: "hardware_length" }
-            { namespace: "configurator", key: "hardware_head_type" }
-            { namespace: "configurator", key: "griptape_width" }
-            { namespace: "configurator", key: "riser_height" }
-            { namespace: "configurator", key: "riser_type" }
-          ]) {
+          metafields(
+            identifiers: [
+              { namespace: "configurator", key: "deck_width" }
+              { namespace: "configurator", key: "deck_board_type" }
+              { namespace: "configurator", key: "truck_type" }
+              { namespace: "configurator", key: "truck_hanger_size" }
+              { namespace: "configurator", key: "truck_max_wheel_diameter" }
+              { namespace: "configurator", key: "truck_sold_as" }
+              { namespace: "configurator", key: "truck_compatible_board_types" }
+              { namespace: "configurator", key: "wheel_diameter" }
+              { namespace: "configurator", key: "wheel_hardness" }
+              { namespace: "configurator", key: "wheel_type" }
+              { namespace: "configurator", key: "wheel_compatible_board_types" }
+              { namespace: "configurator", key: "bearing_type" }
+              { namespace: "configurator", key: "hardware_length" }
+              { namespace: "configurator", key: "hardware_head_type" }
+              { namespace: "configurator", key: "griptape_width" }
+              { namespace: "configurator", key: "riser_height" }
+              { namespace: "configurator", key: "riser_type" }
+            ]
+          ) {
             key
             value
             namespace
@@ -227,7 +229,11 @@ The `CartLineInput` in Shopify's schema already accepts `attributes: [AttributeI
 ```typescript
 export async function addConfiguratorBundle(
   prevState: any,
-  items: { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] }[]
+  items: {
+    merchandiseId: string;
+    quantity: number;
+    attributes?: { key: string; value: string }[];
+  }[],
 ) {
   if (!items || items.length === 0) {
     return "No items to add";
@@ -297,7 +303,7 @@ export async function POST(req: NextRequest) {
     encoder.encode(secret),
     { name: "HMAC", hash: "SHA-256" },
     false,
-    ["sign"]
+    ["sign"],
   );
   const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
   const computedHmac = Buffer.from(signature).toString("base64");

@@ -1,6 +1,12 @@
 "use client";
 
-import { AdjustmentsHorizontalIcon, ChevronDownIcon, ChevronUpIcon, FunnelIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  AdjustmentsHorizontalIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  FunnelIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { sorting } from "lib/constants";
 import Link from "next/link";
@@ -121,7 +127,8 @@ export default function FilterSortBar({
   const activeColorObj = COLORS.find((c) => c.value === activeColor);
   const activeLevelObj = SKILL_LEVELS.find((l) => l.value === activeLevel);
   const activePriceObj = PRICE_RANGES.find((p) => p.value === activePrice);
-  const activeSortObj = sorting.find((s) => s.slug === currentSort) || sorting[0];
+  const activeSortObj =
+    sorting.find((s) => s.slug === currentSort) || sorting[0];
 
   const hasActiveFilters = !!(activeColor || activeLevel || activePrice);
 
@@ -131,7 +138,10 @@ export default function FilterSortBar({
       <div className="flex flex-col px-0 md:px-2">
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2">
-            <h2 className="text-[clamp(1.5rem,3.5vw,2rem)] font-extrabold tracking-[-1%] uppercase leading-tight" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+            <h2
+              className="text-[clamp(1.5rem,3.5vw,2rem)] font-extrabold tracking-[-1%] uppercase leading-tight"
+              style={{ fontFamily: "'Clash Display', sans-serif" }}
+            >
               {title}
             </h2>
             <span className="hidden md:inline text-xs md:text-sm font-medium text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
@@ -155,8 +165,17 @@ export default function FilterSortBar({
                 aria-label="Sort"
                 className="p-1 cursor-pointer hover:opacity-75 transition-opacity"
               >
-                <svg className="h-6 w-6 stroke-[1.8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M3 12h14M3 18h10" />
+                <svg
+                  className="h-6 w-6 stroke-[1.8]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 6h18M3 12h14M3 18h10"
+                  />
                 </svg>
               </button>
 
@@ -178,8 +197,9 @@ export default function FilterSortBar({
                         className={clsx(
                           "w-full text-left px-4 py-2.5 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors",
                           {
-                            "bg-neutral-50 font-bold dark:bg-neutral-800": currentSort === (option.slug || ""),
-                          }
+                            "bg-neutral-50 font-bold dark:bg-neutral-800":
+                              currentSort === (option.slug || ""),
+                          },
                         )}
                       >
                         {option.title}
@@ -209,7 +229,9 @@ export default function FilterSortBar({
                 className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity py-1.5"
               >
                 <AdjustmentsHorizontalIcon className="h-4 w-4" />
-                <span className="cursor-pointer">Sort By: {activeSortObj?.title}</span>
+                <span className="cursor-pointer">
+                  Sort By: {activeSortObj?.title}
+                </span>
               </button>
 
               {/* Sort Dropdown */}
@@ -230,8 +252,9 @@ export default function FilterSortBar({
                         className={clsx(
                           "cursor-pointer w-full text-left px-4 py-2.5 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors",
                           {
-                            "bg-neutral-50 font-bold dark:bg-neutral-800": currentSort === (option.slug || ""),
-                          }
+                            "bg-neutral-50 font-bold dark:bg-neutral-800":
+                              currentSort === (option.slug || ""),
+                          },
                         )}
                       >
                         {option.title}
@@ -260,7 +283,8 @@ export default function FilterSortBar({
             <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none max-w-full">
               {collections.map((coll) => {
                 const isActive = activeCollectionHandle === coll.handle;
-                const linkHref = coll.handle === "" ? `/store` : `/store/${coll.handle}`;
+                const linkHref =
+                  coll.handle === "" ? `/store` : `/store/${coll.handle}`;
 
                 return (
                   <Link
@@ -270,7 +294,7 @@ export default function FilterSortBar({
                       "px-6 py-3 rounded-[6px] text-[clamp(0.813rem,2vw,1rem)] font-medium whitespace-nowrap transition-all duration-200 border",
                       isActive
                         ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
-                        : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                        : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800",
                     )}
                   >
                     {coll.title}
@@ -359,7 +383,7 @@ function Checkbox({ checked }: { checked: boolean }) {
         "w-5 h-5 rounded-[4px] border flex items-center justify-center transition-colors flex-shrink-0 pointer-events-none",
         checked
           ? "bg-rose-500 border-rose-500 text-white"
-          : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black"
+          : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black",
       )}
     >
       {checked && (
@@ -371,7 +395,11 @@ function Checkbox({ checked }: { checked: boolean }) {
           stroke="currentColor"
           className="w-3.5 h-3.5"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="m4.5 12.75 6 6 9-13.5"
+          />
         </svg>
       )}
     </span>
@@ -416,7 +444,12 @@ function FilterDrawer({
       <div className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white dark:bg-neutral-950 shadow-2xl z-50 flex flex-col transition-transform duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-900">
-          <h3 className="text-xl font-bold uppercase tracking-wider" style={{ fontFamily: "'Clash Display', sans-serif" }}>Filters</h3>
+          <h3
+            className="text-xl font-bold uppercase tracking-wider"
+            style={{ fontFamily: "'Clash Display', sans-serif" }}
+          >
+            Filters
+          </h3>
           <button
             type="button"
             onClick={onClose}
@@ -432,7 +465,9 @@ function FilterDrawer({
           <div className="border-b border-neutral-100 dark:border-neutral-900 pb-6">
             <button
               type="button"
-              onClick={() => setOpenGroups(prev => ({ ...prev, level: !prev.level }))}
+              onClick={() =>
+                setOpenGroups((prev) => ({ ...prev, level: !prev.level }))
+              }
               className="flex w-full items-center justify-between text-base font-bold uppercase tracking-wider text-black dark:text-white py-2"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
@@ -451,7 +486,9 @@ function FilterDrawer({
                     <button
                       type="button"
                       key={level.value}
-                      onClick={() => setSelectedLevel(isSelected ? null : level.value)}
+                      onClick={() =>
+                        setSelectedLevel(isSelected ? null : level.value)
+                      }
                       className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
                       style={{ fontFamily: "Archivo" }}
                     >
@@ -468,7 +505,9 @@ function FilterDrawer({
           <div className="border-b border-neutral-100 dark:border-neutral-900 pb-6">
             <button
               type="button"
-              onClick={() => setOpenGroups(prev => ({ ...prev, color: !prev.color }))}
+              onClick={() =>
+                setOpenGroups((prev) => ({ ...prev, color: !prev.color }))
+              }
               className="flex w-full items-center justify-between text-base font-bold uppercase tracking-wider text-black dark:text-white py-2"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
@@ -487,7 +526,9 @@ function FilterDrawer({
                     <button
                       type="button"
                       key={c.value}
-                      onClick={() => setSelectedColor(isSelected ? null : c.value)}
+                      onClick={() =>
+                        setSelectedColor(isSelected ? null : c.value)
+                      }
                       className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
                       style={{ fontFamily: "Archivo" }}
                     >
@@ -508,7 +549,9 @@ function FilterDrawer({
           <div className="pb-6">
             <button
               type="button"
-              onClick={() => setOpenGroups(prev => ({ ...prev, price: !prev.price }))}
+              onClick={() =>
+                setOpenGroups((prev) => ({ ...prev, price: !prev.price }))
+              }
               className="flex w-full items-center justify-between text-base font-bold uppercase tracking-wider text-black dark:text-white py-2"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
@@ -527,7 +570,9 @@ function FilterDrawer({
                     <button
                       type="button"
                       key={price.value}
-                      onClick={() => setSelectedPrice(isSelected ? null : price.value)}
+                      onClick={() =>
+                        setSelectedPrice(isSelected ? null : price.value)
+                      }
                       className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
                       style={{ fontFamily: "Archivo" }}
                     >

@@ -83,10 +83,22 @@ All TypeScript types for the configurator.
 
 ```typescript
 // Board types supported by the configurator
-export type BoardType = "Skateboard" | "Surfskate" | "Longboard" | "Old School" | "Cruiser";
+export type BoardType =
+  | "Skateboard"
+  | "Surfskate"
+  | "Longboard"
+  | "Old School"
+  | "Cruiser";
 
 // Product categories in the configurator
-export type ConfiguratorCategory = "deck" | "truck" | "wheel" | "bearing" | "griptape" | "riser" | "hardware";
+export type ConfiguratorCategory =
+  | "deck"
+  | "truck"
+  | "wheel"
+  | "bearing"
+  | "griptape"
+  | "riser"
+  | "hardware";
 
 // A single selectable option in the configurator
 // This represents a specific product variant (e.g., "Twisted Human Deck — 8.25 / Regular")
@@ -129,7 +141,11 @@ export interface DeckMeta {
 
 export interface TruckMeta {
   category: "truck";
-  truck_type: "Standard (TKP)" | "Surfskate" | "Longboard (RKP)" | "Longboard (TKP)";
+  truck_type:
+    | "Standard (TKP)"
+    | "Surfskate"
+    | "Longboard (RKP)"
+    | "Longboard (TKP)";
   truck_hanger_size: number | null; // inches — null for surfskate trucks
   truck_sold_as: "Pair" | "Set (front+rear)";
   truck_compatible_board_types: string; // comma-separated: "Skateboard,Old School"
@@ -174,7 +190,7 @@ export interface ConfiguratorState {
   wheels: ConfiguratorItem | null;
   bearings: ConfiguratorItem | null;
   griptape: ConfiguratorItem | null;
-  risers: ConfiguratorItem | null;   // optional
+  risers: ConfiguratorItem | null; // optional
   hardware: ConfiguratorItem | null; // optional
 }
 
@@ -305,7 +321,9 @@ export function buildConfiguratorItems(products: Product[]): {
     }
 
     if (handle in (mockData.trucks || {})) {
-      const mock = (mockData.trucks as Record<string, MockProductData>)[handle]!;
+      const mock = (mockData.trucks as Record<string, MockProductData>)[
+        handle
+      ]!;
       const hangerByVariant = mock.truck_hanger_size_by_variant || {};
 
       for (const variant of product.variants) {
@@ -329,14 +347,17 @@ export function buildConfiguratorItems(products: Product[]): {
             truck_type: mock.truck_type as any,
             truck_hanger_size: hangerSize ?? null,
             truck_sold_as: (mock.truck_sold_as as any) || "Pair",
-            truck_compatible_board_types: mock.truck_compatible_board_types || "",
+            truck_compatible_board_types:
+              mock.truck_compatible_board_types || "",
           },
         });
       }
     }
 
     if (handle in (mockData.wheels || {})) {
-      const mock = (mockData.wheels as Record<string, MockProductData>)[handle]!;
+      const mock = (mockData.wheels as Record<string, MockProductData>)[
+        handle
+      ]!;
       const diameterByVariant = mock.wheel_diameter_by_variant || {};
 
       for (const variant of product.variants) {
@@ -361,14 +382,17 @@ export function buildConfiguratorItems(products: Product[]): {
             wheel_diameter: diameter,
             wheel_hardness: mock.wheel_hardness || "",
             wheel_type: mock.wheel_type as any,
-            wheel_compatible_board_types: mock.wheel_compatible_board_types || "",
+            wheel_compatible_board_types:
+              mock.wheel_compatible_board_types || "",
           },
         });
       }
     }
 
     if (handle in (mockData.bearings || {})) {
-      const mock = (mockData.bearings as Record<string, MockProductData>)[handle]!;
+      const mock = (mockData.bearings as Record<string, MockProductData>)[
+        handle
+      ]!;
 
       for (const variant of product.variants) {
         bearings.push({
@@ -393,7 +417,9 @@ export function buildConfiguratorItems(products: Product[]): {
     }
 
     if (handle in (mockData.griptape || {})) {
-      const mock = (mockData.griptape as Record<string, MockProductData>)[handle]!;
+      const mock = (mockData.griptape as Record<string, MockProductData>)[
+        handle
+      ]!;
 
       for (const variant of product.variants) {
         griptape.push({
@@ -467,7 +493,9 @@ export function isBoardTypeAvailable(boardType: BoardType): boolean {
  * Get the unavailability message for a board type.
  */
 export function getBoardTypeUnavailableMessage(boardType: BoardType): string {
-  return compatRules.board_type_unavailable_message[boardType] ?? "Coming soon.";
+  return (
+    compatRules.board_type_unavailable_message[boardType] ?? "Coming soon."
+  );
 }
 
 /**
@@ -475,7 +503,7 @@ export function getBoardTypeUnavailableMessage(boardType: BoardType): string {
  */
 export function getCompatibleDecks(
   allDecks: ConfiguratorItem[],
-  boardType: BoardType
+  boardType: BoardType,
 ): FilterResult {
   const compatible = allDecks.filter((item) => {
     const meta = item.meta as DeckMeta;
@@ -491,9 +519,10 @@ export function getCompatibleDecks(
     compatible,
     incompatible,
     empty: compatible.length === 0,
-    emptyMessage: compatible.length === 0
-      ? `No ${boardType.toLowerCase()} decks available yet.`
-      : undefined,
+    emptyMessage:
+      compatible.length === 0
+        ? `No ${boardType.toLowerCase()} decks available yet.`
+        : undefined,
   };
 }
 
@@ -509,7 +538,7 @@ export function getCompatibleDecks(
 export function getCompatibleTrucks(
   allTrucks: ConfiguratorItem[],
   selectedDeck: ConfiguratorItem,
-  boardType: BoardType
+  boardType: BoardType,
 ): FilterResult {
   const deckMeta = selectedDeck.meta as DeckMeta;
   const deckWidth = deckMeta.deck_width;
@@ -539,7 +568,10 @@ export function getCompatibleTrucks(
     }
 
     // Surfskate trucks: skip width matching
-    if (meta.truck_type === "Surfskate" && compatRules.surfskate_skip_width_match) {
+    if (
+      meta.truck_type === "Surfskate" &&
+      compatRules.surfskate_skip_width_match
+    ) {
       if (item.availableForSale) {
         compatible.push(item);
       } else {
@@ -569,9 +601,10 @@ export function getCompatibleTrucks(
     compatible,
     incompatible,
     empty: compatible.length === 0,
-    emptyMessage: compatible.length === 0
-      ? `No compatible trucks found for a ${deckWidth}" deck. Try a different deck width.`
-      : undefined,
+    emptyMessage:
+      compatible.length === 0
+        ? `No compatible trucks found for a ${deckWidth}" deck. Try a different deck width.`
+        : undefined,
   };
 }
 
@@ -585,7 +618,7 @@ export function getCompatibleTrucks(
 export function getCompatibleWheels(
   allWheels: ConfiguratorItem[],
   selectedTruck: ConfiguratorItem,
-  boardType: BoardType
+  boardType: BoardType,
 ): FilterResult {
   const allowedWheelTypes = compatRules.board_type_wheel_map[boardType] || [];
 
@@ -621,9 +654,10 @@ export function getCompatibleWheels(
     compatible,
     incompatible,
     empty: compatible.length === 0,
-    emptyMessage: compatible.length === 0
-      ? `No compatible wheels found for this setup.`
-      : undefined,
+    emptyMessage:
+      compatible.length === 0
+        ? `No compatible wheels found for this setup.`
+        : undefined,
   };
 }
 
@@ -631,7 +665,7 @@ export function getCompatibleWheels(
  * Get all bearings. Bearings are universally compatible.
  */
 export function getCompatibleBearings(
-  allBearings: ConfiguratorItem[]
+  allBearings: ConfiguratorItem[],
 ): FilterResult {
   const compatible = allBearings.filter((item) => item.availableForSale);
   const incompatible = allBearings.filter((item) => !item.availableForSale);
@@ -640,9 +674,8 @@ export function getCompatibleBearings(
     compatible,
     incompatible,
     empty: compatible.length === 0,
-    emptyMessage: compatible.length === 0
-      ? "No bearings available."
-      : undefined,
+    emptyMessage:
+      compatible.length === 0 ? "No bearings available." : undefined,
   };
 }
 
@@ -655,7 +688,7 @@ export function getCompatibleBearings(
  */
 export function getCompatibleGriptape(
   allGriptape: ConfiguratorItem[],
-  selectedDeck: ConfiguratorItem
+  selectedDeck: ConfiguratorItem,
 ): FilterResult {
   const deckMeta = selectedDeck.meta as DeckMeta;
   const deckWidth = deckMeta.deck_width;
@@ -668,7 +701,11 @@ export function getCompatibleGriptape(
     const gripWidth = meta.griptape_width;
     const maxDeckWidth = compatRules.griptape_deck_max_width[String(gripWidth)];
 
-    if (maxDeckWidth !== undefined && deckWidth <= maxDeckWidth && item.availableForSale) {
+    if (
+      maxDeckWidth !== undefined &&
+      deckWidth <= maxDeckWidth &&
+      item.availableForSale
+    ) {
       compatible.push(item);
     } else {
       incompatible.push(item);
@@ -679,9 +716,10 @@ export function getCompatibleGriptape(
     compatible,
     incompatible,
     empty: compatible.length === 0,
-    emptyMessage: compatible.length === 0
-      ? `No griptape wide enough for a ${deckWidth}" deck.`
-      : undefined,
+    emptyMessage:
+      compatible.length === 0
+        ? `No griptape wide enough for a ${deckWidth}" deck.`
+        : undefined,
   };
 }
 
@@ -689,7 +727,7 @@ export function getCompatibleGriptape(
  * Get all risers. Currently no products — returns empty.
  */
 export function getCompatibleRisers(
-  allRisers: ConfiguratorItem[]
+  allRisers: ConfiguratorItem[],
 ): FilterResult {
   return {
     compatible: allRisers.filter((item) => item.availableForSale),
@@ -705,7 +743,7 @@ export function getCompatibleRisers(
  */
 export function getCompatibleHardware(
   allHardware: ConfiguratorItem[],
-  selectedRiser: ConfiguratorItem | null
+  selectedRiser: ConfiguratorItem | null,
 ): FilterResult {
   return {
     compatible: [],
@@ -737,7 +775,10 @@ export function calculateBuildTotal(state: {
     state.hardware,
   ].filter(Boolean) as ConfiguratorItem[];
 
-  const total = items.reduce((sum, item) => sum + parseFloat(item.price.amount), 0);
+  const total = items.reduce(
+    (sum, item) => sum + parseFloat(item.price.amount),
+    0,
+  );
   const currencyCode = items[0]?.price.currencyCode || "INR";
 
   return { amount: total, currencyCode };
@@ -749,7 +790,7 @@ export function calculateBuildTotal(state: {
  */
 export function getConfiguratorSteps(
   hasRisers: boolean,
-  hasHardware: boolean
+  hasHardware: boolean,
 ): Array<{
   id: number;
   translationKey: string;
@@ -759,15 +800,71 @@ export function getConfiguratorSteps(
   skipMessage?: string;
 }> {
   return [
-    { id: 1, translationKey: "configurator.step1", category: "board_type", isOptional: false, skip: false },
-    { id: 2, translationKey: "configurator.step2", category: "deck", isOptional: false, skip: false },
-    { id: 3, translationKey: "configurator.step3", category: "truck", isOptional: false, skip: false },
-    { id: 4, translationKey: "configurator.step4", category: "wheel", isOptional: false, skip: false },
-    { id: 5, translationKey: "configurator.step5", category: "bearing", isOptional: false, skip: false },
-    { id: 6, translationKey: "configurator.step6", category: "griptape", isOptional: false, skip: false },
-    { id: 7, translationKey: "configurator.step7", category: "riser", isOptional: true, skip: !hasRisers, skipMessage: "Riser pads coming soon." },
-    { id: 8, translationKey: "configurator.step8", category: "hardware", isOptional: true, skip: !hasHardware, skipMessage: "Hardware included with trucks." },
-    { id: 9, translationKey: "configurator.step9", category: "review", isOptional: false, skip: false },
+    {
+      id: 1,
+      translationKey: "configurator.step1",
+      category: "board_type",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 2,
+      translationKey: "configurator.step2",
+      category: "deck",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 3,
+      translationKey: "configurator.step3",
+      category: "truck",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 4,
+      translationKey: "configurator.step4",
+      category: "wheel",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 5,
+      translationKey: "configurator.step5",
+      category: "bearing",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 6,
+      translationKey: "configurator.step6",
+      category: "griptape",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 7,
+      translationKey: "configurator.step7",
+      category: "riser",
+      isOptional: true,
+      skip: !hasRisers,
+      skipMessage: "Riser pads coming soon.",
+    },
+    {
+      id: 8,
+      translationKey: "configurator.step8",
+      category: "hardware",
+      isOptional: true,
+      skip: !hasHardware,
+      skipMessage: "Hardware included with trucks.",
+    },
+    {
+      id: 9,
+      translationKey: "configurator.step9",
+      category: "review",
+      isOptional: false,
+      skip: false,
+    },
   ];
 }
 ```
@@ -842,7 +939,9 @@ async function test() {
   // Test 1: Compatibility rules loaded
   const rules = require("../config/compatibility-rules.json");
   console.log("✓ Compatibility rules loaded");
-  console.log(`  Board types: ${Object.keys(rules.board_type_truck_map).join(", ")}`);
+  console.log(
+    `  Board types: ${Object.keys(rules.board_type_truck_map).join(", ")}`,
+  );
   console.log(`  Hanger-to-axle offset: ${rules.hanger_to_axle_offset}"`);
   console.log(`  Width tolerance: ±${rules.truck_width_tolerance}"\n`);
 
@@ -854,7 +953,9 @@ async function test() {
   const bearingCount = Object.keys(mockData.bearings || {}).length;
   const gripCount = Object.keys(mockData.griptape || {}).length;
   console.log("✓ Mock data loaded");
-  console.log(`  Decks: ${deckCount}, Trucks: ${truckCount}, Wheels: ${wheelCount}, Bearings: ${bearingCount}, Griptape: ${gripCount}\n`);
+  console.log(
+    `  Decks: ${deckCount}, Trucks: ${truckCount}, Wheels: ${wheelCount}, Bearings: ${bearingCount}, Griptape: ${gripCount}\n`,
+  );
 
   // Test 3: Width matching logic
   const offset = rules.hanger_to_axle_offset; // 2.75
@@ -863,20 +964,28 @@ async function test() {
   // Double Hollow trucks hanger size 5.25 → axle 8.0"
   const axle525 = 5.25 + offset; // 8.0
   console.log("✓ Width matching test");
-  console.log(`  Truck hanger 5.25" → axle ${axle525}" → fits decks ${axle525 - tolerance}" to ${axle525 + tolerance}"`);
+  console.log(
+    `  Truck hanger 5.25" → axle ${axle525}" → fits decks ${axle525 - tolerance}" to ${axle525 + tolerance}"`,
+  );
 
   // Deck 8.25" should match hanger 5.25" (axle 8.0", diff 0.25 = within tolerance)
   const diff825 = Math.abs(axle525 - 8.25);
-  console.log(`  8.25" deck ↔ 5.25" hanger: diff = ${diff825}" → ${diff825 <= tolerance ? "COMPATIBLE ✓" : "INCOMPATIBLE ✗"}`);
+  console.log(
+    `  8.25" deck ↔ 5.25" hanger: diff = ${diff825}" → ${diff825 <= tolerance ? "COMPATIBLE ✓" : "INCOMPATIBLE ✗"}`,
+  );
 
   // Deck 8.5" should NOT match hanger 5.25" (axle 8.0", diff 0.5 > tolerance)
   const diff85 = Math.abs(axle525 - 8.5);
-  console.log(`  8.5" deck ↔ 5.25" hanger: diff = ${diff85}" → ${diff85 <= tolerance ? "COMPATIBLE ✓" : "INCOMPATIBLE ✗"}`);
+  console.log(
+    `  8.5" deck ↔ 5.25" hanger: diff = ${diff85}" → ${diff85 <= tolerance ? "COMPATIBLE ✓" : "INCOMPATIBLE ✗"}`,
+  );
 
   // Truck hanger 5.5" → axle 8.25"
   const axle55 = 5.5 + offset; // 8.25
   const diff825_55 = Math.abs(axle55 - 8.25);
-  console.log(`  8.25" deck ↔ 5.5" hanger: diff = ${diff825_55}" → ${diff825_55 <= tolerance ? "COMPATIBLE ✓" : "INCOMPATIBLE ✗"}`);
+  console.log(
+    `  8.25" deck ↔ 5.5" hanger: diff = ${diff825_55}" → ${diff825_55 <= tolerance ? "COMPATIBLE ✓" : "INCOMPATIBLE ✗"}`,
+  );
 
   console.log("\n=== All checks passed ===");
 }

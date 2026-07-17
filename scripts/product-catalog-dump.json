@@ -159,11 +159,7 @@
           }
         }
       ],
-      "collections": [
-        "sphere",
-        "skateboards",
-        "decks"
-      ]
+      "collections": ["sphere", "skateboards", "decks"]
     },
     {
       "title": "OLDMAN SPHERE X AKIL DECK",
@@ -239,11 +235,7 @@
           }
         }
       ],
-      "collections": [
-        "sphere",
-        "skateboards",
-        "decks"
-      ]
+      "collections": ["sphere", "skateboards", "decks"]
     },
     {
       "title": "TWISTED HUMAN DECK",
@@ -404,11 +396,7 @@
           }
         }
       ],
-      "collections": [
-        "sphere",
-        "skateboards",
-        "decks"
-      ]
+      "collections": ["sphere", "skateboards", "decks"]
     },
     {
       "title": "SUMMER SKATEBOARD DECK",
@@ -518,11 +506,7 @@
           }
         }
       ],
-      "collections": [
-        "sphere",
-        "skateboards",
-        "decks"
-      ]
+      "collections": ["sphere", "skateboards", "decks"]
     },
     {
       "title": "TOUCAN TROPICAL WHEELS 85BD (51mm/52mm)",
@@ -556,11 +540,7 @@
           }
         }
       ],
-      "collections": [
-        "toucan",
-        "skateboards",
-        "skateboard-wheels"
-      ]
+      "collections": ["toucan", "skateboards", "skateboard-wheels"]
     },
     {
       "title": "TOUCAN WHEELS 53mm- 55mm 85BD",
@@ -594,11 +574,7 @@
           }
         }
       ],
-      "collections": [
-        "toucan",
-        "skateboards",
-        "skateboard-wheels"
-      ]
+      "collections": ["toucan", "skateboards", "skateboard-wheels"]
     },
     {
       "title": "DOUBLE HOLLOW TRUCKS",
@@ -645,11 +621,7 @@
           }
         }
       ],
-      "collections": [
-        "toucan",
-        "skateboards",
-        "skateboard-trucks"
-      ]
+      "collections": ["toucan", "skateboards", "skateboard-trucks"]
     },
     {
       "title": "TOUCAN TRUCKS (KIDS)",
@@ -683,11 +655,7 @@
           }
         }
       ],
-      "collections": [
-        "toucan",
-        "skateboards",
-        "skateboard-trucks"
-      ]
+      "collections": ["toucan", "skateboards", "skateboard-trucks"]
     },
     {
       "title": "STEEL BALL SKATE BEARINGS",
@@ -1439,11 +1407,7 @@
           }
         }
       ],
-      "collections": [
-        "sphere",
-        "skateboards",
-        "skateboard-accessories"
-      ]
+      "collections": ["sphere", "skateboards", "skateboard-accessories"]
     },
     {
       "title": "SKATEBOARD OLD SCHOOL DECK (SPECIAL EDITION)",
@@ -1464,11 +1428,7 @@
           }
         }
       ],
-      "collections": [
-        "sphere",
-        "skateboards",
-        "decks"
-      ]
+      "collections": ["sphere", "skateboards", "decks"]
     },
     {
       "title": "SKATEBOARD DECK (SPECIAL EDITION) A-KILL",
@@ -1489,11 +1449,7 @@
           }
         }
       ],
-      "collections": [
-        "sphere",
-        "skateboards",
-        "decks"
-      ]
+      "collections": ["sphere", "skateboards", "decks"]
     },
     {
       "title": "SKATEBOARD DECK (SPECIAL EDITION) TWISTED MAN",
@@ -1514,11 +1470,7 @@
           }
         }
       ],
-      "collections": [
-        "sphere",
-        "skateboards",
-        "decks"
-      ]
+      "collections": ["sphere", "skateboards", "decks"]
     },
     {
       "title": "SKATEBOARD GRIPTAPE WITH LOGO (SPHERE)",
@@ -1539,11 +1491,7 @@
           }
         }
       ],
-      "collections": [
-        "sphere",
-        "skateboards",
-        "skateboard-accessories"
-      ]
+      "collections": ["sphere", "skateboards", "skateboard-accessories"]
     },
     {
       "title": "OLD MAN SPHERE SKATEBOARD COMPLETE",
@@ -1760,11 +1708,7 @@
           }
         }
       ],
-      "collections": [
-        "skateboards",
-        "decks",
-        "disorder-skateboards"
-      ]
+      "collections": ["skateboards", "decks", "disorder-skateboards"]
     },
     {
       "title": "DISORDER - HANDS OF CHAOS",
@@ -1785,11 +1729,7 @@
           }
         }
       ],
-      "collections": [
-        "skateboards",
-        "decks",
-        "disorder-skateboards"
-      ]
+      "collections": ["skateboards", "decks", "disorder-skateboards"]
     },
     {
       "title": "SHAKE JUNT GRIPTAPE - NEEN WILLIAMS PRO",
@@ -1810,10 +1750,7 @@
           }
         }
       ],
-      "collections": [
-        "skateboards",
-        "skateboard-accessories"
-      ]
+      "collections": ["skateboards", "skateboard-accessories"]
     },
     {
       "title": "SHAKE JUNT - RED/BLACK GRIPTAPE",
@@ -1834,10 +1771,7 @@
           }
         }
       ],
-      "collections": [
-        "skateboards",
-        "skateboard-accessories"
-      ]
+      "collections": ["skateboards", "skateboard-accessories"]
     },
     {
       "title": "GIRL SKATEBOARDS MALTO 93 TIL",
@@ -1871,11 +1805,7 @@
           }
         }
       ],
-      "collections": [
-        "skateboards",
-        "decks",
-        "girl-skateboards"
-      ]
+      "collections": ["skateboards", "decks", "girl-skateboards"]
     },
     {
       "title": "GIRL DECK 93 TILL INFINITY CORY KENNEDY",
@@ -1909,11 +1839,7 @@
           }
         }
       ],
-      "collections": [
-        "skateboards",
-        "decks",
-        "girl-skateboards"
-      ]
+      "collections": ["skateboards", "decks", "girl-skateboards"]
     },
     {
       "title": "PALM TREE - MACBA LIFE EDITION SKATEBOARD DECK",
@@ -1947,11 +1873,7 @@
           }
         }
       ],
-      "collections": [
-        "skateboards",
-        "decks",
-        "macba-life"
-      ]
+      "collections": ["skateboards", "decks", "macba-life"]
     },
     {
       "title": "WASTED ANGELS X MON AMOUR GRIPTAPE",
@@ -2053,12 +1975,7 @@
           }
         }
       ],
-      "collections": [
-        "sphere",
-        "decks",
-        "newly-released",
-        "wasted-angels"
-      ]
+      "collections": ["sphere", "decks", "newly-released", "wasted-angels"]
     },
     {
       "title": "WASTED ANGELS x SPHERE SKATEBOARD COMPLETE",
@@ -2303,10 +2220,7 @@
           }
         }
       ],
-      "collections": [
-        "skateboards",
-        "decks"
-      ]
+      "collections": ["skateboards", "decks"]
     },
     {
       "title": "SPHERE RED WHITE GRAFITTI DECK",
@@ -2353,11 +2267,7 @@
           }
         }
       ],
-      "collections": [
-        "skateboards",
-        "decks",
-        "newly-released"
-      ]
+      "collections": ["skateboards", "decks", "newly-released"]
     },
     {
       "title": "SPHERE LOVERS DECK",
@@ -2501,11 +2411,7 @@
           }
         }
       ],
-      "collections": [
-        "skateboards",
-        "decks",
-        "newly-released"
-      ]
+      "collections": ["skateboards", "decks", "newly-released"]
     },
     {
       "title": "BUBBLEGUM MAGNIFIED SPHERE DECK",
@@ -2539,11 +2445,7 @@
           }
         }
       ],
-      "collections": [
-        "skateboards",
-        "decks",
-        "newly-released"
-      ]
+      "collections": ["skateboards", "decks", "newly-released"]
     },
     {
       "title": "BUBBLEGUM MAGNIFIED SPHERE COMPLETE",
@@ -2577,11 +2479,7 @@
           }
         }
       ],
-      "collections": [
-        "sphere",
-        "skateboards",
-        "skateboard-completes"
-      ]
+      "collections": ["sphere", "skateboards", "skateboard-completes"]
     },
     {
       "title": "BEGINNER SKATEBOARD SPHERE LOGO COMPLETE",
@@ -2973,11 +2871,7 @@
           }
         }
       ],
-      "collections": [
-        "newly-released",
-        "apparel",
-        "apparel-1"
-      ]
+      "collections": ["newly-released", "apparel", "apparel-1"]
     },
     {
       "title": "BAKER BRAND LOGO WHITE DECK",
@@ -2998,34 +2892,18 @@
           }
         }
       ],
-      "collections": [
-        "decks",
-        "newly-released",
-        "baker-skateboards"
-      ]
+      "collections": ["decks", "newly-released", "baker-skateboards"]
     }
   ],
   "navigation": {
     "categories": [
       {
         "name": "SKATEBOARDS",
-        "items": [
-          "COMPLETES",
-          "DECKS",
-          "TRUCKS",
-          "WHEELS",
-          "ACCESSORIES"
-        ]
+        "items": ["COMPLETES", "DECKS", "TRUCKS", "WHEELS", "ACCESSORIES"]
       },
       {
         "name": "SURFSKATES",
-        "items": [
-          "COMPLETES",
-          "DECKS",
-          "TRUCKS",
-          "WHEELS",
-          "ACCESSORIES"
-        ]
+        "items": ["COMPLETES", "DECKS", "TRUCKS", "WHEELS", "ACCESSORIES"]
       },
       {
         "name": "APPAREL",
@@ -3049,10 +2927,7 @@
       "name": "SPHERE LOVERS PRO COMPLETE",
       "price": "₹8,499",
       "originalPrice": "₹10,999",
-      "images": [
-        "shop_now_1.png",
-        "shop_now_2.png"
-      ],
+      "images": ["shop_now_1.png", "shop_now_2.png"],
       "discount": "50% off",
       "monthlyPayment": "₹1,166/ Month"
     },
@@ -3062,10 +2937,7 @@
       "name": "BEGINNER SKATEBOARD SPHERE LOGO COMPLETE",
       "price": "₹8,499",
       "originalPrice": "₹10,999",
-      "images": [
-        "shop_now_2.png",
-        "shop_now_1.png"
-      ],
+      "images": ["shop_now_2.png", "shop_now_1.png"],
       "discount": "50% off",
       "monthlyPayment": "₹1,166/ Month"
     },
@@ -3075,10 +2947,7 @@
       "name": "SPHERE LOVERS PRO COMPLETE",
       "price": "₹8,499",
       "originalPrice": "₹10,999",
-      "images": [
-        "shop_now_2.png",
-        "shop_now_1.png"
-      ],
+      "images": ["shop_now_2.png", "shop_now_1.png"],
       "discount": "50% off",
       "monthlyPayment": "₹1,166/ Month"
     },
@@ -3088,10 +2957,7 @@
       "name": "SPHERE LOVERS PRO COMPLETE",
       "price": "₹8,499",
       "originalPrice": "₹10,999",
-      "images": [
-        "shop_now_1.png",
-        "shop_now_2.png"
-      ],
+      "images": ["shop_now_1.png", "shop_now_2.png"],
       "discount": "50% off",
       "monthlyPayment": "₹1,166/ Month"
     },
@@ -3101,10 +2967,7 @@
       "name": "SPHERE LOVERS PRO COMPLETE",
       "price": "₹8,499",
       "originalPrice": "₹10,999",
-      "images": [
-        "shop_now_1.png",
-        "shop_now_2.png"
-      ],
+      "images": ["shop_now_1.png", "shop_now_2.png"],
       "discount": "50% off",
       "monthlyPayment": "₹1,166/ Month"
     }

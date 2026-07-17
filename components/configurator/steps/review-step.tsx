@@ -4,14 +4,23 @@ import { useState } from "react";
 import Image from "next/image";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { addConfiguratorBundle } from "components/cart/actions";
-import type { ConfiguratorItem, ConfiguratorState } from "lib/configurator/types";
+import type {
+  ConfiguratorItem,
+  ConfiguratorState,
+} from "lib/configurator/types";
 
 interface ReviewStepProps {
   state: ConfiguratorState;
   buildTotal: { amount: number; currencyCode: string };
 }
 
-function ReviewLineItem({ item, label }: { item: ConfiguratorItem | null; label: string }) {
+function ReviewLineItem({
+  item,
+  label,
+}: {
+  item: ConfiguratorItem | null;
+  label: string;
+}) {
   if (!item) return null;
 
   return (
@@ -27,7 +36,9 @@ function ReviewLineItem({ item, label }: { item: ConfiguratorItem | null; label:
             className="object-cover"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-2xl">BOARD</div>
+          <div className="flex h-full items-center justify-center text-2xl">
+            BOARD
+          </div>
         )}
       </div>
 
@@ -133,7 +144,7 @@ export function ReviewStep({ state, buildTotal }: ReviewStepProps) {
       <div className="mb-6 space-y-3">
         {lineItems.map(
           ({ item, label }) =>
-            item && <ReviewLineItem key={label} item={item} label={label} />
+            item && <ReviewLineItem key={label} item={item} label={label} />,
         )}
       </div>
 
@@ -173,9 +184,7 @@ export function ReviewStep({ state, buildTotal }: ReviewStepProps) {
             ${isAdding ? "cursor-wait opacity-70" : "hover:bg-blue-700"}
           `}
         >
-          {isAdding
-            ? t("common.loading")
-            : t("configurator.add_to_cart")}
+          {isAdding ? t("common.loading") : t("configurator.add_to_cart")}
         </button>
       )}
 

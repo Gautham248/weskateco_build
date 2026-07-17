@@ -57,8 +57,12 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
 
   // Determine which steps to show
   const steps = useMemo(
-    () => getConfiguratorSteps(catalog.risers.length > 0, catalog.hardware.length > 0),
-    [catalog]
+    () =>
+      getConfiguratorSteps(
+        catalog.risers.length > 0,
+        catalog.hardware.length > 0,
+      ),
+    [catalog],
   );
 
   // Get active (non-skipped) steps
@@ -96,7 +100,7 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
       });
       goToNextStep();
     },
-    [goToNextStep]
+    [goToNextStep],
   );
 
   const selectItem = useCallback(
@@ -127,7 +131,7 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
       });
       goToNextStep();
     },
-    [goToNextStep]
+    [goToNextStep],
   );
 
   // Calculate running total
@@ -166,7 +170,7 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
         const result = getCompatibleTrucks(
           catalog.trucks,
           state.deck,
-          state.boardType
+          state.boardType,
         );
         return (
           <ProductSelectionStep
@@ -186,7 +190,7 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
         const result = getCompatibleWheels(
           catalog.wheels,
           state.trucks,
-          state.boardType
+          state.boardType,
         );
         return (
           <ProductSelectionStep
@@ -236,12 +240,7 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
       // They're filtered out of activeSteps via getConfiguratorSteps()
 
       case 9:
-        return (
-          <ReviewStep
-            state={state}
-            buildTotal={buildTotal}
-          />
-        );
+        return <ReviewStep state={state} buildTotal={buildTotal} />;
 
       default:
         return null;
@@ -288,7 +287,9 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
 
         <div>
           {(() => {
-            const currentStepConfig = activeSteps.find((s) => s.id === currentStep);
+            const currentStepConfig = activeSteps.find(
+              (s) => s.id === currentStep,
+            );
             if (
               currentStepConfig &&
               currentStepConfig.isOptional &&
@@ -298,10 +299,11 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
                 <button
                   onClick={() => {
                     // Clear the current optional selection and move to next step
-                    const categoryMap: Record<number, keyof ConfiguratorState> = {
-                      7: "risers",
-                      8: "hardware",
-                    };
+                    const categoryMap: Record<number, keyof ConfiguratorState> =
+                      {
+                        7: "risers",
+                        8: "hardware",
+                      };
                     const category = categoryMap[currentStep];
                     if (category) {
                       setState((prev) => ({ ...prev, [category]: null }));

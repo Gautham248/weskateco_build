@@ -7,7 +7,15 @@ import { createTranslator, getLocalizedPath } from "lib/i18n";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boolean; id: string }) {
+function CategoryTitle({
+  name,
+  isExpanded,
+  id,
+}: {
+  name: string;
+  isExpanded: boolean;
+  id: string;
+}) {
   const upperName = name.toUpperCase();
   const lastOIndex = upperName.lastIndexOf("O");
 
@@ -16,11 +24,15 @@ function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boo
   const [oOffset, setOOffset] = useState<number>(0);
 
   useEffect(() => {
-    if (oTargetRef.current && containerRef.current && containerRef.current.offsetParent !== null) {
+    if (
+      oTargetRef.current &&
+      containerRef.current &&
+      containerRef.current.offsetParent !== null
+    ) {
       const containerRect = containerRef.current.getBoundingClientRect();
       const oRect = oTargetRef.current.getBoundingClientRect();
 
-      const offset = (oRect.left + oRect.width / 2) - containerRect.left;
+      const offset = oRect.left + oRect.width / 2 - containerRect.left;
       setOOffset(offset);
     }
   }, [name, isExpanded]);
@@ -42,7 +54,10 @@ function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boo
   const secondPart = name.slice(lastOIndex + 1);
 
   return (
-    <div ref={containerRef} className="relative w-full flex items-center justify-between h-8">
+    <div
+      ref={containerRef}
+      className="relative w-full flex items-center justify-between h-8"
+    >
       <h3 className="text-white text-[clamp(1rem,2.5vw,1.375rem)] font-medium uppercase tracking-wide flex items-center whitespace-nowrap select-none z-0">
         <span>{firstPart}</span>
         <span ref={oTargetRef} className="relative">
@@ -52,13 +67,14 @@ function CategoryTitle({ name, isExpanded, id }: { name: string; isExpanded: boo
       </h3>
 
       <span
-        className={`absolute bg-[#C5FF1A] text-black rounded-full flex items-center justify-center font-bold transition-all duration-[1600ms] top-1/2 -translate-y-1/2 z-10 ${!isExpanded
-          ? "text-[9px] w-5 h-5 -translate-x-1/2"
-          : "text-[10px] w-6 h-6 left-full -translate-x-full"
-          }`}
+        className={`absolute bg-[#C5FF1A] text-black rounded-full flex items-center justify-center font-bold transition-all duration-[1600ms] top-1/2 -translate-y-1/2 z-10 ${
+          !isExpanded
+            ? "text-[9px] w-5 h-5 -translate-x-1/2"
+            : "text-[10px] w-6 h-6 left-full -translate-x-full"
+        }`}
         style={{
           transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-          left: !isExpanded ? `${oOffset}px` : undefined
+          left: !isExpanded ? `${oOffset}px` : undefined,
         }}
       >
         ➔
@@ -108,11 +124,14 @@ export default function CategoryGrid({ locale }: { locale: string }) {
       const touchEnd = e.changedTouches[0].clientX;
       const diff = touchStart.current - touchEnd;
 
-      if (Math.abs(diff) > 50) { // Swipe detection threshold
+      if (Math.abs(diff) > 50) {
+        // Swipe detection threshold
         if (diff > 0) {
           setActiveMobileIndex((prev) => (prev + 1) % categories.length);
         } else {
-          setActiveMobileIndex((prev) => (prev - 1 + categories.length) % categories.length);
+          setActiveMobileIndex(
+            (prev) => (prev - 1 + categories.length) % categories.length,
+          );
         }
       }
     }
@@ -122,7 +141,13 @@ export default function CategoryGrid({ locale }: { locale: string }) {
   return (
     <section className="h-[fit-content] w-full bg-white pt-10 md:pt-30 pb-15 md:pb-5">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 mb-6 md:mb-10">
-        <h2 className="text-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase" style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}>
+        <h2
+          className="text-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
+          style={{
+            fontFamily: "'Clash Display', sans-serif",
+            letterSpacing: "-0.01em",
+          }}
+        >
           CATEGORIES
         </h2>
       </div>
@@ -176,8 +201,11 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                 key={`mobile-${index}`}
                 href={getLocalizedPath(category.href, locale)}
                 onClick={handleCardClick}
-                className={`absolute w-[68vw] aspect-[2/3] rounded-md overflow-hidden bg-neutral-100 shadow-xl transition-all ${isActive ? "cursor-pointer" : "cursor-pointer pointer-events-auto"
-                  }`}
+                className={`absolute w-[68vw] aspect-[2/3] rounded-md overflow-hidden bg-neutral-100 shadow-xl transition-all ${
+                  isActive
+                    ? "cursor-pointer"
+                    : "cursor-pointer pointer-events-auto"
+                }`}
                 style={{
                   transform: transformStyle,
                   zIndex: zIndex,
@@ -214,8 +242,11 @@ export default function CategoryGrid({ locale }: { locale: string }) {
             <span
               key={`dot-${index}`}
               onClick={() => setActiveMobileIndex(index)}
-              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${activeMobileIndex === index ? "w-4 bg-black" : "w-1.5 bg-neutral-300"
-                }`}
+              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                activeMobileIndex === index
+                  ? "w-4 bg-black"
+                  : "w-1.5 bg-neutral-300"
+              }`}
             />
           ))}
         </div>
@@ -238,18 +269,21 @@ export default function CategoryGrid({ locale }: { locale: string }) {
               className={`group relative h-full rounded-2xl overflow-hidden transition-all dynamic-accordion-card ${flexClass}`}
               style={{
                 transitionDuration: "1600ms",
-                transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)"
+                transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
               }}
             >
               <div className="relative w-full h-full bg-neutral-100">
                 <img
                   src={category.image.src}
                   alt={category.name}
-                  className={`w-full h-full object-cover transition-transform ${isExpanded ? (category.imageExpandedClassName || "scale-100") : (category.imageClassName || "scale-100")
-                    }`}
+                  className={`w-full h-full object-cover transition-transform ${
+                    isExpanded
+                      ? category.imageExpandedClassName || "scale-100"
+                      : category.imageClassName || "scale-100"
+                  }`}
                   style={{
                     transitionDuration: "1600ms",
-                    transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)"
+                    transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
                 />
 
@@ -257,12 +291,16 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                   className={`absolute inset-0 transition-colors ${isExpanded ? "bg-black/5" : "bg-black/15"}`}
                   style={{
                     transitionDuration: "1600ms",
-                    transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)"
+                    transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
                 />
 
                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
-                  <CategoryTitle name={category.name} isExpanded={isExpanded} id={`desktop-${index}`} />
+                  <CategoryTitle
+                    name={category.name}
+                    isExpanded={isExpanded}
+                    id={`desktop-${index}`}
+                  />
                 </div>
               </div>
             </Link>

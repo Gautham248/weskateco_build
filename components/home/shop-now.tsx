@@ -40,7 +40,13 @@ export default function ShopNow({ locale }: { locale: string }) {
         className="mb-6 md:mb-10 flex justify-between w-full items-center"
         style={{ paddingLeft: trackPadding, paddingRight: trackPadding }}
       >
-        <h2 className="text-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase" style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}>
+        <h2
+          className="text-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
+          style={{
+            fontFamily: "'Clash Display', sans-serif",
+            letterSpacing: "-0.01em",
+          }}
+        >
           SHOP NOW
         </h2>
         <Link
@@ -62,25 +68,40 @@ export default function ShopNow({ locale }: { locale: string }) {
           scrollbarWidth: "none",
         }}
       >
-        <style dangerouslySetInnerHTML={{
-          __html: `
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
           div::-webkit-scrollbar {
             display: none !important;
           }
-        `}} />
+        `,
+          }}
+        />
 
         {products.map((product) => (
-          <ProductCardGrid key={product.id} product={product} trackPadding={trackPadding} />
+          <ProductCardGrid
+            key={product.id}
+            product={product}
+            trackPadding={trackPadding}
+          />
         ))}
       </div>
     </section>
   );
 }
 
-function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trackPadding: string }) {
+function ProductCardGrid({
+  product,
+  trackPadding,
+}: {
+  product: ProductCard;
+  trackPadding: string;
+}) {
   const imgRef = useRef<HTMLDivElement>(null);
   const [showIndex, setShowIndex] = useState(0);
-  const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imgRef.current) return;
@@ -97,18 +118,22 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
     <div
       className="group/card flex flex-col bg-transparent w-[calc(50vw-1.25rem)] sm:w-[340px] lg:w-[384px] flex-shrink-0 snap-start"
       style={{
-        scrollMarginLeft: trackPadding
+        scrollMarginLeft: trackPadding,
       }}
     >
       {/* Image Block */}
       <div
         ref={imgRef}
         className="relative aspect-[3/4.5] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900"
-        onMouseEnter={() => { setShowIndex(1); }}
+        onMouseEnter={() => {
+          setShowIndex(1);
+        }}
         onMouseMove={handleMouseMove}
-        onMouseLeave={() => { clearTimeout(moveTimer.current); setShowIndex(0); }}
+        onMouseLeave={() => {
+          clearTimeout(moveTimer.current);
+          setShowIndex(0);
+        }}
       >
-
         {/* Pill Badges Stack */}
         {(product.discount || product.monthlyPayment) && (
           <div className="absolute right-3 top-3 z-20 flex items-center gap-1.5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
@@ -149,15 +174,25 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
           {[0, 1, 2].map((idx) => (
             <span
               key={idx}
-              className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
-                }`}
+              className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
+                idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
+              }`}
             />
           ))}
         </div>
 
         {/* Plus circle (visible when not hovered) */}
         <div className="absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-[#00000050] backdrop-blur-md text-white opacity-100 group-hover/card:opacity-0 transition-opacity duration-300">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
@@ -190,18 +225,30 @@ function ProductCardGrid({ product, trackPadding }: { product: ProductCard; trac
 
       {/* Product Metadata Track */}
       <div className="py-4">
-        <p className="text-[clamp(0.75rem,2vw,1rem)] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-2" style={{ fontFamily: "Archivo", }}>
+        <p
+          className="text-[clamp(0.75rem,2vw,1rem)] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-2"
+          style={{ fontFamily: "Archivo" }}
+        >
           {product.brand}
         </p>
-        <h3 className="line-clamp-2 text-[clamp(0.875rem,2.5vw,1.25rem)] font-medium leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+        <h3
+          className="line-clamp-2 text-[clamp(0.875rem,2.5vw,1.25rem)] font-medium leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2"
+          style={{ fontFamily: "'Clash Display', sans-serif" }}
+        >
           {product.name}
         </h3>
         <div className="flex items-baseline gap-2">
-          <span className="text-[clamp(0.875rem,2vw,1.125rem)] font-[300] text-neutral-900 dark:text-neutral-100" style={{ fontFamily: "Archivo", }}>
+          <span
+            className="text-[clamp(0.875rem,2vw,1.125rem)] font-[300] text-neutral-900 dark:text-neutral-100"
+            style={{ fontFamily: "Archivo" }}
+          >
             {product.price}
           </span>
           {product.originalPrice && (
-            <span className="text-[clamp(0.75rem,2vw,1rem)] font-[300] text-red-500 dark:text-red-400 line-through decoration-red-500 decoration-1" style={{ fontFamily: "Archivo", }}>
+            <span
+              className="text-[clamp(0.75rem,2vw,1rem)] font-[300] text-red-500 dark:text-red-400 line-through decoration-red-500 decoration-1"
+              style={{ fontFamily: "Archivo" }}
+            >
               {product.originalPrice}
             </span>
           )}

@@ -179,7 +179,9 @@ export function useGoKwikCheckout({
       if (!isReady) {
         setIsError(true);
         if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
-        console.warn("[GoKwik] SDK did not load within timeout. Fallback available.");
+        console.warn(
+          "[GoKwik] SDK did not load within timeout. Fallback available.",
+        );
       }
     }, timeout);
 
@@ -289,7 +291,13 @@ import { useGoKwikCheckout } from "lib/gokwik";
 **Step 2**: Inside the `CartModal` component function, after the existing hooks (`useCart`, `useState`, etc.), add the GoKwik hook:
 
 ```typescript
-const { isReady: gokwikReady, isError: gokwikError, isCheckingOut, triggerCheckout, useFallback } = useGoKwikCheckout({
+const {
+  isReady: gokwikReady,
+  isError: gokwikError,
+  isCheckingOut,
+  triggerCheckout,
+  useFallback,
+} = useGoKwikCheckout({
   cartId: cart?.id,
 });
 ```

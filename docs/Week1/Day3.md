@@ -39,7 +39,7 @@ export function proxy(request: NextRequest) {
 
   // Check if pathname already has a locale prefix
   const pathnameHasLocale = locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`,
   );
 
   if (pathnameHasLocale) {
@@ -365,7 +365,9 @@ const dictionaries: Record<string, Record<string, string>> = { en, hi };
  * Falls back to the key itself if missing in all locales.
  */
 export function getTranslation(locale: string, key: string): string {
-  return dictionaries[locale]?.[key] || dictionaries[defaultLocale]?.[key] || key;
+  return (
+    dictionaries[locale]?.[key] || dictionaries[defaultLocale]?.[key] || key
+  );
 }
 
 /**
@@ -396,9 +398,14 @@ export function getDictionary(locale: string): Record<string, string> {
 export function getLocalizedField(
   doc: Record<string, any>,
   field: string,
-  locale: string
+  locale: string,
 ): string {
-  return doc[`${field}_${locale}`] || doc[`${field}_${defaultLocale}`] || doc[field] || "";
+  return (
+    doc[`${field}_${locale}`] ||
+    doc[`${field}_${defaultLocale}`] ||
+    doc[field] ||
+    ""
+  );
 }
 ```
 
@@ -502,7 +509,7 @@ export function LanguageSwitcher() {
   const targetLocale = currentLocale === "en" ? "hi" : "en";
 
   return (
-    
+
       href={getLocalizedPath(targetLocale)}
       className="text-sm text-neutral-500 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300"
       aria-label={`Switch to ${localeNames[targetLocale]}`}

@@ -34,11 +34,11 @@ export default function MegaMenuRight({
         className="flex flex-1 bg-white dark:bg-neutral-900 rounded-xl p-2.5 gap-2.5"
         onMouseEnter={onCollapse}
       >
-
         {/* Left Image Component */}
         <div
-          className={`relative flex-shrink-0 h-full rounded-lg overflow-hidden transition-all duration-700 ease-in-out ${showPanel ? "w-[65%]" : "w-[55%]"
-            }`}
+          className={`relative flex-shrink-0 h-full rounded-lg overflow-hidden transition-all duration-700 ease-in-out ${
+            showPanel ? "w-[65%]" : "w-[55%]"
+          }`}
         >
           <Image src={shopImg1} alt="" fill className="object-cover" priority />
         </div>
@@ -52,7 +52,6 @@ export default function MegaMenuRight({
         >
           {/* Main Image Layer */}
           <div className="relative flex-1 h-full rounded-lg overflow-hidden bg-black">
-
             {/* BASE LAYER: Image 3 (Shrunk State)
                 Fades in quickly and silently underneath, acting as a backdrop */}
             <div
@@ -95,8 +94,11 @@ export default function MegaMenuRight({
 
             {/* Horizontal Text Overlay */}
             <div
-              className={`absolute bottom-6 left-6 z-10 max-w-[85%] transition-all duration-700 ease-in-out ${showPanel ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
-                }`}
+              className={`absolute bottom-6 left-6 z-10 max-w-[85%] transition-all duration-700 ease-in-out ${
+                showPanel
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4 pointer-events-none"
+              }`}
             >
               <h3
                 className="text-white font-[700] text-[clamp(1rem,2.5vw,1.25rem)] uppercase leading-tight tracking-wide drop-shadow-md"
@@ -130,8 +132,9 @@ export default function MegaMenuRight({
 
           {/* Floating Action Button */}
           <button
-            className={`absolute cursor-pointer bottom-6 z-10 w-11 h-11 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center shadow-lg transition-all duration-700 hover:scale-105 active:scale-95 ${showPanel ? "right-6" : "right-16"
-              }`}
+            className={`absolute cursor-pointer bottom-6 z-10 w-11 h-11 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center shadow-lg transition-all duration-700 hover:scale-105 active:scale-95 ${
+              showPanel ? "right-6" : "right-16"
+            }`}
           >
             <svg
               width="18"

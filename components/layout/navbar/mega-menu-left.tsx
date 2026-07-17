@@ -22,10 +22,18 @@ export default function MegaMenuLeft({
   const { t, locale } = useTranslation();
 
   const links: LinkItem[] = [
-    { title: t("nav.skateboards"), href: "/store/skateboards", id: "skateboards" },
+    {
+      title: t("nav.skateboards"),
+      href: "/store/skateboards",
+      id: "skateboards",
+    },
     { title: t("nav.surfskates"), href: "/store/surfskates", id: "surfskates" },
     { title: t("nav.apparel"), href: "/store/apparel-1", id: "apparel" },
-    { title: t("nav.protective_gear"), href: "/store/protection-gears", id: "protective_gear" },
+    {
+      title: t("nav.protective_gear"),
+      href: "/store/protection-gears",
+      id: "protective_gear",
+    },
     { title: t("nav.brands"), href: "/store", id: "brands" },
   ];
 
@@ -37,7 +45,10 @@ export default function MegaMenuLeft({
             key={link.id}
             href={getLocalizedPath(link.href, locale)}
             className={`block text-[clamp(1.125rem,2vw,1.375rem)] font-semibold hover:text-black dark:hover:text-white ${activeCategory === null || activeCategory === link.href ? "!text-black dark:!text-white" : "!text-[#717171] dark:!text-neutral-400"}`}
-            style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "0em" }}
+            style={{
+              fontFamily: "'Clash Display', sans-serif",
+              letterSpacing: "0em",
+            }}
             onClick={onLinkClick}
             onMouseEnter={() => onCategoryHover(link.href)}
           >

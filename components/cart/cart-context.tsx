@@ -20,13 +20,13 @@ type UpdateType = "plus" | "minus" | "delete";
 
 type CartAction =
   | {
-    type: "UPDATE_ITEM";
-    payload: { merchandiseId: string; updateType: UpdateType };
-  }
+      type: "UPDATE_ITEM";
+      payload: { merchandiseId: string; updateType: UpdateType };
+    }
   | {
-    type: "ADD_ITEM";
-    payload: { variant: ProductVariant; product: Product };
-  };
+      type: "ADD_ITEM";
+      payload: { variant: ProductVariant; product: Product };
+    };
 
 type CartContextType = {
   cartPromise: Promise<Cart | undefined>;
@@ -179,8 +179,8 @@ function cartReducer(state: Cart | undefined, action: CartAction): Cart {
 
       const updatedLines = existingItem
         ? currentCart.lines.map((item) =>
-          item.merchandise.id === variant.id ? updatedItem : item,
-        )
+            item.merchandise.id === variant.id ? updatedItem : item,
+          )
         : [...currentCart.lines, updatedItem];
 
       return {
@@ -200,7 +200,9 @@ export function CartProvider({
   children: React.ReactNode;
   cartPromise: Promise<Cart | undefined>;
 }) {
-  const [resolvedCart, setResolvedCart] = useState<Cart | undefined | null>(null);
+  const [resolvedCart, setResolvedCart] = useState<Cart | undefined | null>(
+    null,
+  );
 
   useEffect(() => {
     let active = true;
