@@ -52,8 +52,8 @@ export default function NewlyRelease() {
                     y2="265.233"
                     gradientUnits="userSpaceOnUse"
                   >
-                    <stop stop-color="#3C3C3C" />
-                    <stop offset="1" stop-color="#999999" />
+                    <stop stopColor="#3C3C3C" />
+                    <stop offset="1" stopColor="#999999" />
                   </linearGradient>
                 </defs>
               </svg>

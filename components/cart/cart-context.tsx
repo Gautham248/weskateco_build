@@ -31,6 +31,7 @@ type CartAction =
 type CartContextType = {
   cartPromise: Promise<Cart | undefined>;
   resolvedCart: Cart | undefined | null;
+  resolvedPromise: Promise<Cart | undefined> | null;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -203,12 +204,14 @@ export function CartProvider({
   const [resolvedCart, setResolvedCart] = useState<Cart | undefined | null>(
     null,
   );
+  const [resolvedPromise, setResolvedPromise] = useState<Promise<Cart | undefined> | null>(null);
 
   useEffect(() => {
     let active = true;
     cartPromise.then((cart) => {
       if (active) {
         setResolvedCart(cart);
+        setResolvedPromise(cartPromise);
       }
     });
     return () => {
@@ -217,7 +220,7 @@ export function CartProvider({
   }, [cartPromise]);
 
   return (
-    <CartContext.Provider value={{ cartPromise, resolvedCart }}>
+    <CartContext.Provider value={{ cartPromise, resolvedCart, resolvedPromise }}>
       {children}
     </CartContext.Provider>
   );
@@ -230,7 +233,7 @@ export function useCart() {
   }
 
   const initialCart =
-    context.resolvedCart !== null
+    context.resolvedCart !== null && context.resolvedPromise === context.cartPromise
       ? context.resolvedCart
       : use(context.cartPromise);
   const [optimisticCart, updateOptimisticCart] = useOptimistic(

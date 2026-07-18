@@ -66,11 +66,10 @@ export default function NavLinks({
           </button>
 
           <div
-            className={`absolute left-6 right-6 z-50 shadow-lg top-full mt-5 ${
-              isDropdownOpen
+            className={`absolute left-6 right-6 z-50 shadow-lg top-full mt-5 ${isDropdownOpen
                 ? "opacity-100 pointer-events-auto"
                 : "opacity-0 pointer-events-none"
-            } transition-opacity duration-300`}
+              } transition-opacity duration-300`}
             style={{ height: "471px" }}
           >
             <div className="flex h-full gap-3">
