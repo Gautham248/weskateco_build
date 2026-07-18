@@ -114,6 +114,57 @@ function ProductCardGrid({
     }, 80);
   };
 
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const isSwiping = useRef(false);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches[0]) {
+      touchStart.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+      isSwiping.current = false;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+
+    const diffX = touch.clientX - touchStart.current.x;
+    const diffY = touch.clientY - touchStart.current.y;
+
+    if (Math.abs(diffX) > 10 && Math.abs(diffX) > Math.abs(diffY)) {
+      isSwiping.current = true;
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current) return;
+    const touch = e.changedTouches[0];
+    if (touch) {
+      const diffX = touch.clientX - touchStart.current.x;
+      const diffY = touch.clientY - touchStart.current.y;
+
+      const threshold = 40; // minimum distance for swipe in px
+
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        if (Math.abs(diffX) > threshold) {
+          if (diffX < 0) {
+            // Swiped left
+            setShowIndex((prev) => Math.min(prev + 1, 2));
+          } else {
+            // Swiped right
+            setShowIndex((prev) => Math.max(prev - 1, 0));
+          }
+        }
+      }
+    }
+    touchStart.current = null;
+  };
+
+
   return (
     <div
       className="group/card flex flex-col bg-transparent w-[calc(50vw-1.25rem)] sm:w-[340px] lg:w-[384px] flex-shrink-0 snap-start"
@@ -124,7 +175,7 @@ function ProductCardGrid({
       {/* Image Block */}
       <div
         ref={imgRef}
-        className="relative aspect-[3/4.5] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900"
+        className="relative aspect-[3/4.5] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
         onMouseEnter={() => {
           setShowIndex(1);
         }}
@@ -133,6 +184,9 @@ function ProductCardGrid({
           clearTimeout(moveTimer.current);
           setShowIndex(0);
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Pill Badges Stack */}
         {(product.discount || product.monthlyPayment) && (
