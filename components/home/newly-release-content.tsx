@@ -124,13 +124,13 @@ export default function NewlyReleaseContent() {
                   <div className="w-full text-black pt-4 flex flex-col justify-center bg-white rounded-[16px] p-4">
                     <h3
                       className="text-xs md:text-sm font-medium tracking-tight text-black uppercase leading-tight"
-                      style={{ fontFamily: "Archivo" }}
+                      style={{ fontFamily: "Archivo, sans-serif" }}
                     >
                       {slide.title}
                     </h3>
                     <h2
                       className="text-xs md:text-sm font-medium tracking-tight text-black uppercase mt-0.5 leading-tight"
-                      style={{ fontFamily: "Archivo" }}
+                      style={{ fontFamily: "Archivo, sans-serif" }}
                     >
                       {slide.subtitle}
                     </h2>
@@ -298,9 +298,8 @@ export default function NewlyReleaseContent() {
                 e.stopPropagation();
                 setSlideIndex(idx);
               }}
-              className={`w-1.5 transition-all duration-300 rounded-full bg-white cursor-pointer ${
-                idx === slideIndex ? "h-4 opacity-100" : "h-1.5 opacity-50"
-              }`}
+              className={`w-1.5 transition-all duration-300 rounded-full bg-white cursor-pointer ${idx === slideIndex ? "h-4 opacity-100" : "h-1.5 opacity-50"
+                }`}
             />
           ))}
         </div>

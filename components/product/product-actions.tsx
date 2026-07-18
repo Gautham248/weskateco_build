@@ -98,7 +98,7 @@ export function ProductActions({ product }: { product: Product }) {
                 ? "bg-neutral-200 text-black border-neutral-300 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 cursor-not-allowed"
                 : "bg-black text-white hover:bg-neutral-800 border-black dark:bg-white dark:text-black dark:hover:bg-neutral-100 dark:border-white",
           )}
-          style={{ fontFamily: "Archivo" }}
+          style={{ fontFamily: "Archivo, sans-serif" }}
         >
           {!selectedVariantId
             ? "Select Option"
@@ -123,14 +123,14 @@ export function ProductActions({ product }: { product: Product }) {
             ? "bg-white text-black hover:bg-neutral-50 border-black dark:bg-black dark:text-white dark:hover:bg-neutral-900 dark:border-white"
             : "bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed",
         )}
-        style={{ fontFamily: "Archivo" }}
+        style={{ fontFamily: "Archivo, sans-serif" }}
       >
         {isBuyNowPending ? "Processing..." : "Buy Now"}
       </button>
       <div className="text-left">
         <span
           className="text-[clamp(0.625rem,1.5vw,0.75rem)] text-black font-normal"
-          style={{ fontFamily: "Archivo" }}
+          style={{ fontFamily: "Archivo, sans-serif" }}
         >
           Free Shipping Within India
         </span>

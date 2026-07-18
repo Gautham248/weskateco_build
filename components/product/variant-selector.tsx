@@ -59,7 +59,7 @@ export function VariantSelector({
             <a
               href="#buying-guide"
               className="text-[clamp(0.563rem,1.5vw,0.688rem)] font-semibold uppercase tracking-wider text-black hover:text-neutral-400 dark:hover:text-white transition-colors underline"
-              style={{ fontFamily: "Archivo" }}
+              style={{ fontFamily: "Archivo, sans-serif" }}
             >
               Buying Guide
             </a>
@@ -126,7 +126,7 @@ export function VariantSelector({
                       option.values.length <= 3,
                   },
                 )}
-                style={{ fontFamily: "Archivo" }}
+                style={{ fontFamily: "Archivo, sans-serif" }}
               >
                 {value}
               </button>

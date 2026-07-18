@@ -228,9 +228,8 @@ function ProductCardGrid({
           {[0, 1, 2].map((idx) => (
             <span
               key={idx}
-              className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
-                idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
-              }`}
+              className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
+                }`}
             />
           ))}
         </div>
@@ -281,7 +280,7 @@ function ProductCardGrid({
       <div className="py-4">
         <p
           className="text-[clamp(0.75rem,2vw,1rem)] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-2"
-          style={{ fontFamily: "Archivo" }}
+          style={{ fontFamily: "Archivo, sans-serif" }}
         >
           {product.brand}
         </p>
@@ -294,14 +293,14 @@ function ProductCardGrid({
         <div className="flex items-baseline gap-2">
           <span
             className="text-[clamp(0.875rem,2vw,1.125rem)] font-[300] text-neutral-900 dark:text-neutral-100"
-            style={{ fontFamily: "Archivo" }}
+            style={{ fontFamily: "Archivo, sans-serif" }}
           >
             {product.price}
           </span>
           {product.originalPrice && (
             <span
               className="text-[clamp(0.75rem,2vw,1rem)] font-[300] text-red-500 dark:text-red-400 line-through decoration-red-500 decoration-1"
-              style={{ fontFamily: "Archivo" }}
+              style={{ fontFamily: "Archivo, sans-serif" }}
             >
               {product.originalPrice}
             </span>

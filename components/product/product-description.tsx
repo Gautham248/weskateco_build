@@ -62,7 +62,7 @@ export function ProductDescription({
           {product.vendor && (
             <p
               className="text-[clamp(0.75rem,1.5vw,0.875rem)] font-normal tracking-wider text-neutral-400 dark:text-neutral-500 uppercase mb-1"
-              style={{ fontFamily: "Archivo" }}
+              style={{ fontFamily: "Archivo, sans-serif" }}
             >
               {product.vendor}
             </p>
@@ -87,7 +87,7 @@ export function ProductDescription({
         </div>
         <div
           className="text-right flex-shrink-0"
-          style={{ fontFamily: "Archivo" }}
+          style={{ fontFamily: "Archivo, sans-serif" }}
         >
           <div className="flex items-baseline justify-end gap-1">
             <Price
@@ -102,7 +102,7 @@ export function ProductDescription({
           </div>
           <p
             className="text-[clamp(0.625rem,1.5vw,0.75rem)] text-black leading-tight"
-            style={{ fontFamily: "Archivo" }}
+            style={{ fontFamily: "Archivo, sans-serif" }}
           >
             {product.variants[0]?.compareAtPrice && (
               <span className="line-through mr-1 text-neutral-400">
@@ -129,13 +129,13 @@ export function ProductDescription({
           <div>
             <h4
               className="text-sm font-semibold text-[#193F48]"
-              style={{ fontFamily: "Archivo" }}
+              style={{ fontFamily: "Archivo, sans-serif" }}
             >
               Explore EMI Options
             </h4>
             <p
               className="mt-2 text-[clamp(0.563rem,1.5vw,0.688rem)] text-[#193F48]"
-              style={{ fontFamily: "Archivo" }}
+              style={{ fontFamily: "Archivo, sans-serif" }}
             >
               Explore EMI Options: Compare EMI plans <br /> to find one that
               fits your budget.
