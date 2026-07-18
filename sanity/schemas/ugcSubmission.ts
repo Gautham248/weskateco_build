@@ -63,7 +63,11 @@ export default defineType({
     }),
   ],
   orderings: [
-    { title: "Newest First", name: "createdDesc", by: [{ field: "_createdAt", direction: "desc" }] },
+    {
+      title: "Newest First",
+      name: "createdDesc",
+      by: [{ field: "_createdAt", direction: "desc" }],
+    },
   ],
   preview: {
     select: { title: "customerName", subtitle: "status", media: "image" },

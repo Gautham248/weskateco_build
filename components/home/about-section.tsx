@@ -16,7 +16,7 @@ export default function AboutSection() {
           setIsInView(entry.isIntersecting);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (sectionRef.current) {
@@ -27,7 +27,10 @@ export default function AboutSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative h-auto aspect-square md:h-screen md:aspect-auto w-full overflow-hidden bg-black select-none">
+    <section
+      ref={sectionRef}
+      className="relative h-auto aspect-square md:h-screen md:aspect-auto w-full overflow-hidden bg-black select-none"
+    >
       {/* Background Image */}
       <div className="absolute inset-0 w-full h-full">
         <Image
@@ -45,8 +48,9 @@ export default function AboutSection() {
           viewBox="0 0 1082 716"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={`absolute top-0 left-[20%] right-0 w-[80%] h-[75%] overflow-visible pointer-events-none z-10 ${isInView ? "animate-path" : ""
-            }`}
+          className={`absolute top-0 left-[20%] right-0 w-[80%] h-[75%] overflow-visible pointer-events-none z-10 ${
+            isInView ? "animate-path" : ""
+          }`}
           preserveAspectRatio="none"
         >
           <style>{`
@@ -76,7 +80,14 @@ export default function AboutSection() {
           />
 
           <defs>
-            <linearGradient id="paint0_linear_3254_912" x1="16.194" y1="98.9013" x2="539.496" y2="715.994" gradientUnits="userSpaceOnUse">
+            <linearGradient
+              id="paint0_linear_3254_912"
+              x1="16.194"
+              y1="98.9013"
+              x2="539.496"
+              y2="715.994"
+              gradientUnits="userSpaceOnUse"
+            >
               <stop stopColor="#3C3C3C" />
               <stop offset="1" stopColor="#999999" />
             </linearGradient>
@@ -86,28 +97,37 @@ export default function AboutSection() {
 
       {/* Content Overlay */}
       <div className="relative z-10 mx-auto flex h-full flex-row items-end justify-between pl-4 pr-5 md:px-4 pb-8 pt-12 md:px-6 md:py-24 lg:px-12">
-
         {/* Left Side: Description Text */}
         <div className="max-w-[45%] mb-0 md:max-w-md md:w-5/12">
-          <h2 className="text-[3.8vw] font-bold leading-tight tracking-tight text-[#d4ff00] sm:text-2xl sm:leading-8 lg:text-3xl font-sans">
-            We are a community<br className="sm:hidden" /> driven by grit, built on<br className="sm:hidden" /> persistence, and united<br className="sm:hidden" /> by skateboarding.
+          <h2 className="md:hidden font-normal leading-tight tracking-tight text-[#d4ff00] fluid-text-xl sm:fluid-text-2xl lg:fluid-text-3xl text-balance">
+            We are a community driven by grit, built on persistence, and united
+            by skateboarding.
+          </h2>
+          <h2 className="hidden md:block font-bold leading-tight tracking-tight text-[#d4ff00] lg:fluid-text-3xl text-4xl">
+            We are a community
+            <br /> driven by grit, built on
+            <br /> persistence, and united
+            <br /> by skateboarding.
           </h2>
         </div>
 
         {/* Right Side: Large Title & CTA Button Container */}
         <div className="relative flex flex-col items-end md:w-7/12">
           <div className="relative inline-flex items-start tracking-tighter select-none">
-
-            <h1 className="flex items-start text-[15vw] font-black uppercase text-[#d4ff00] sm:text-[14vw] md:text-[15vw] lg:text-[11vw] leading-[0.8] font-sans">
+            <h1 className="flex items-start text-[clamp(3rem,15vw,15rem)] font-black uppercase text-[#d4ff00] sm:text-[clamp(3rem,14vw,14rem)] lg:text-[clamp(3rem,11vw,11rem)] leading-[0.8]">
               {/* WE */}
               <span className="leading-[0.8]">WE</span>
 
               {/* Wrapper container for the Apostrophe + RE to establish the exact button width bounds */}
               <span className="relative inline-flex items-start">
-
                 {/* Custom Apostrophe Frame */}
-                <span className="inline-flex items-center justify-center w-[0.36em] h-[0.6em] mr-[-0.03em] ml-[-0.03em] translate-y-[0.05em] shrink-0 mt-[-0.02em]">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 130" width="100%" height="100%">
+                <span className="inline-flex items-center justify-center w-[0.36em] h-[0.6em] mr-[-0.03em] ml-[-0.03em] translate-y-[0.05em] shrink-0 mt-[-0.1em]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 100 130"
+                    width="100%"
+                    height="100%"
+                  >
                     <path
                       d="M 15,10 
               L 85,10 
@@ -129,7 +149,7 @@ export default function AboutSection() {
                 </span>
 
                 {/* 'RE' */}
-                <span className="text-[0.60em] font-black leading-[0.8] mt-[0.04em] translate-y-[0.04em]">
+                <span className="text-[0.60em] font-black leading-[0.8] mt-[0.00em] translate-y-[0.04em]">
                   RE
                 </span>
 
@@ -137,7 +157,7 @@ export default function AboutSection() {
                 <div className="absolute left-0 right-0 bottom-[-0.05em] z-20 translate-y-[100%]">
                   <Link
                     href="/about"
-                    className="!w-[fit-content] group flex items-center justify-between rounded-full bg-black border border-neutral-900 p-1 md:px-3 md:py-1.5 text-[1.75vw] sm:text-[0.8vw] md:text-[1vw] font-bold tracking-widest text-[#d4ff00] uppercase transition-all duration-300 hover:bg-neutral-950 hover:border-neutral-800 w-full"
+                    className="!w-[fit-content] group flex items-center justify-between rounded-full bg-black border border-neutral-900 p-1 md:px-3 md:py-1.5 text-[7px] sm:text-[clamp(0.625rem,0.8vw,0.875rem)] md:text-[clamp(0.625rem,1vw,1rem)] font-bold tracking-widest text-[#d4ff00] uppercase transition-all duration-300 hover:bg-neutral-950 hover:border-neutral-800 w-full"
                   >
                     <span className="truncate">CTA BUTTON</span>
                     <svg
@@ -156,10 +176,8 @@ export default function AboutSection() {
                     </svg>
                   </Link>
                 </div>
-
               </span>
             </h1>
-
           </div>
         </div>
       </div>

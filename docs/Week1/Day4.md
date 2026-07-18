@@ -209,19 +209,13 @@ export default defineType({
       name: "body_en",
       title: "Body (English)",
       type: "array",
-      of: [
-        { type: "block" },
-        { type: "image", options: { hotspot: true } },
-      ],
+      of: [{ type: "block" }, { type: "image", options: { hotspot: true } }],
     }),
     defineField({
       name: "body_hi",
       title: "Body (Hindi)",
       type: "array",
-      of: [
-        { type: "block" },
-        { type: "image", options: { hotspot: true } },
-      ],
+      of: [{ type: "block" }, { type: "image", options: { hotspot: true } }],
     }),
     defineField({
       name: "publishedAt",
@@ -535,7 +529,12 @@ export default defineType({
         {
           type: "object",
           fields: [
-            { name: "image", title: "Image", type: "image", options: { hotspot: true } },
+            {
+              name: "image",
+              title: "Image",
+              type: "image",
+              options: { hotspot: true },
+            },
             { name: "caption", title: "Caption", type: "string" },
             {
               name: "stage",
@@ -634,7 +633,8 @@ export default defineType({
     defineField({
       name: "shopifyProductHandles",
       title: "Shopify Product Handles",
-      description: "Enter the Shopify handle for each product in this collaboration",
+      description:
+        "Enter the Shopify handle for each product in this collaboration",
       type: "array",
       of: [{ type: "string" }],
     }),
@@ -715,7 +715,11 @@ export default defineType({
     }),
   ],
   orderings: [
-    { title: "Sort Order", name: "sortOrderAsc", by: [{ field: "sortOrder", direction: "asc" }] },
+    {
+      title: "Sort Order",
+      name: "sortOrderAsc",
+      by: [{ field: "sortOrder", direction: "asc" }],
+    },
   ],
   preview: {
     select: { title: "name", media: "logo" },
@@ -812,7 +816,8 @@ export default defineType({
     defineField({
       name: "shopifyCustomerId",
       title: "Shopify Customer ID",
-      description: "Links this ambassador to their Shopify customer account for perks",
+      description:
+        "Links this ambassador to their Shopify customer account for perks",
       type: "string",
     }),
   ],
@@ -890,7 +895,11 @@ export default defineType({
     }),
   ],
   orderings: [
-    { title: "Newest First", name: "createdDesc", by: [{ field: "_createdAt", direction: "desc" }] },
+    {
+      title: "Newest First",
+      name: "createdDesc",
+      by: [{ field: "_createdAt", direction: "desc" }],
+    },
   ],
   preview: {
     select: { title: "customerName", subtitle: "status", media: "image" },
@@ -1079,8 +1088,16 @@ export default defineType({
                 {
                   type: "object",
                   fields: [
-                    { name: "label_en", title: "Label (English)", type: "string" },
-                    { name: "label_hi", title: "Label (Hindi)", type: "string" },
+                    {
+                      name: "label_en",
+                      title: "Label (English)",
+                      type: "string",
+                    },
+                    {
+                      name: "label_hi",
+                      title: "Label (Hindi)",
+                      type: "string",
+                    },
                     { name: "href", title: "Link URL", type: "string" },
                   ],
                   preview: {
@@ -1139,7 +1156,11 @@ export default defineType({
         { name: "city", title: "City", type: "string" },
         { name: "budgetRange", title: "Budget Range", type: "string" },
         { name: "projectType", title: "Project Type", type: "string" },
-        { name: "additionalData", title: "Additional Data (JSON)", type: "text" },
+        {
+          name: "additionalData",
+          title: "Additional Data (JSON)",
+          type: "text",
+        },
       ],
     }),
     defineField({
@@ -1150,7 +1171,11 @@ export default defineType({
     }),
   ],
   orderings: [
-    { title: "Newest First", name: "createdDesc", by: [{ field: "_createdAt", direction: "desc" }] },
+    {
+      title: "Newest First",
+      name: "createdDesc",
+      by: [{ field: "_createdAt", direction: "desc" }],
+    },
   ],
   preview: {
     select: { title: "formType", subtitle: "data.name" },
@@ -1436,7 +1461,7 @@ if (
   pathname.startsWith("/favicon.ico") ||
   pathname.startsWith("/robots.txt") ||
   pathname.startsWith("/sitemap.xml") ||
-  pathname.startsWith("/studio")  // <-- ensure this exists
+  pathname.startsWith("/studio") // <-- ensure this exists
 ) {
   return NextResponse.next();
 }

@@ -22,7 +22,7 @@ export default function ProductGridSection({
   return (
     <section className="mx-auto max-w-(--breakpoint-2xl) px-6 py-12 md:py-16">
       <div className="mb-8 flex items-baseline justify-between border-b border-neutral-100 pb-4 dark:border-neutral-800">
-        <h2 className="text-2xl font-bold tracking-tight text-neutral-900 md:text-3xl dark:text-neutral-100">
+        <h2 className="text-[clamp(1.25rem,3vw,1.875rem)] font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
           {title}
         </h2>
         {browseAllLink && browseAllLabel && (

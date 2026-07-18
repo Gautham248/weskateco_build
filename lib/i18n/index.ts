@@ -13,7 +13,9 @@ const dictionaries: Record<string, Record<string, string>> = { en, hi };
  * Falls back to the key itself if missing in all locales.
  */
 export function getTranslation(locale: string, key: string): string {
-  return dictionaries[locale]?.[key] || dictionaries[defaultLocale]?.[key] || key;
+  return (
+    dictionaries[locale]?.[key] || dictionaries[defaultLocale]?.[key] || key
+  );
 }
 
 /**
@@ -44,9 +46,14 @@ export function getDictionary(locale: string): Record<string, string> {
 export function getLocalizedField(
   doc: Record<string, any>,
   field: string,
-  locale: string
+  locale: string,
 ): string {
-  return doc[`${field}_${locale}`] || doc[`${field}_${defaultLocale}`] || doc[field] || "";
+  return (
+    doc[`${field}_${locale}`] ||
+    doc[`${field}_${defaultLocale}`] ||
+    doc[field] ||
+    ""
+  );
 }
 
 /**

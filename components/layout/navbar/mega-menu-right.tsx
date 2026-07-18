@@ -1,12 +1,18 @@
 "use client";
 
-import Image from "next/image";
 import shopImg1 from "components/icons/shop_image_1.png";
 import shopImg2 from "components/icons/shop_image_2.png";
 import shopImg3 from "components/icons/shop_image_3.png";
+import Image from "next/image";
 import MegaMenuSubItems, { hasSubItems } from "./mega-menu-sub-items";
 
-export default function MegaMenuRight({ activeCategory }: { activeCategory: string | null }) {
+export default function MegaMenuRight({
+  activeCategory,
+  onCollapse,
+}: {
+  activeCategory: string | null;
+  onCollapse?: () => void;
+}) {
   const showPanel = hasSubItems(activeCategory);
 
   return (
@@ -24,8 +30,10 @@ export default function MegaMenuRight({ activeCategory }: { activeCategory: stri
       </div>
 
       {/* Main Content Grid Container */}
-      <div className="flex flex-1 bg-white dark:bg-neutral-900 rounded-xl p-2.5 gap-2.5">
-
+      <div
+        className="flex flex-1 bg-white dark:bg-neutral-900 rounded-xl p-2.5 gap-2.5"
+        onMouseEnter={onCollapse}
+      >
         {/* Left Image Component */}
         <div
           className={`relative flex-shrink-0 h-full rounded-lg overflow-hidden transition-all duration-700 ease-in-out ${showPanel ? "w-[65%]" : "w-[55%]"
@@ -43,7 +51,6 @@ export default function MegaMenuRight({ activeCategory }: { activeCategory: stri
         >
           {/* Main Image Layer */}
           <div className="relative flex-1 h-full rounded-lg overflow-hidden bg-black">
-
             {/* BASE LAYER: Image 3 (Shrunk State)
                 Fades in quickly and silently underneath, acting as a backdrop */}
             <div
@@ -86,11 +93,13 @@ export default function MegaMenuRight({ activeCategory }: { activeCategory: stri
 
             {/* Horizontal Text Overlay */}
             <div
-              className={`absolute bottom-6 left-6 z-10 max-w-[85%] transition-all duration-700 ease-in-out ${showPanel ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+              className={`absolute bottom-6 left-6 z-10 max-w-[85%] transition-all duration-700 ease-in-out ${showPanel
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4 pointer-events-none"
                 }`}
             >
               <h3
-                className="text-white font-[700] text-[18px] uppercase leading-tight tracking-wide drop-shadow-md"
+                className="text-white font-[700] text-[clamp(1rem,2.5vw,1.25rem)] uppercase leading-tight tracking-wide drop-shadow-md"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 Newly <br /> Released
@@ -104,11 +113,10 @@ export default function MegaMenuRight({ activeCategory }: { activeCategory: stri
             style={{
               opacity: showPanel ? 0 : 1,
               visibility: showPanel ? "hidden" : "visible",
-              pointerEvents: showPanel ? "none" : "auto",
             }}
           >
             <span
-              className="text-black dark:text-white font-[700] text-[47px] tracking-[-0.01em] uppercase whitespace-nowrap select-none px-2"
+              className="text-black dark:text-white font-[700] text-[clamp(2rem,5vw,3rem)] tracking-[-0.01em] uppercase whitespace-nowrap select-none px-2"
               style={{
                 fontFamily: "Archivo",
                 transform: "rotate(-90deg)",

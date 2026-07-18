@@ -1,7 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import type { ConfiguratorItem, DeckMeta, TruckMeta, WheelMeta } from "lib/configurator/types";
+import type {
+  ConfiguratorItem,
+  DeckMeta,
+  TruckMeta,
+  WheelMeta,
+} from "lib/configurator/types";
 
 interface ConfiguratorProductCardProps {
   item: ConfiguratorItem;
@@ -25,9 +30,13 @@ function getSubtitle(item: ConfiguratorItem): string {
     case "wheel":
       return `${(meta as WheelMeta).wheel_diameter}mm — ${(meta as WheelMeta).wheel_hardness}`;
     case "bearing":
-      return item.variantTitle !== "Default Title" ? item.variantTitle : meta.bearing_type;
+      return item.variantTitle !== "Default Title"
+        ? item.variantTitle
+        : meta.bearing_type;
     case "griptape":
-      return item.variantTitle !== "Default Title" ? item.variantTitle : `${meta.griptape_width}"`;
+      return item.variantTitle !== "Default Title"
+        ? item.variantTitle
+        : `${meta.griptape_width}"`;
     default:
       return item.variantTitle;
   }

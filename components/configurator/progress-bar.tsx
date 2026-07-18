@@ -12,7 +12,11 @@ interface ProgressBarProps {
   }>;
 }
 
-export function ProgressBar({ currentStep, totalSteps, steps }: ProgressBarProps) {
+export function ProgressBar({
+  currentStep,
+  totalSteps,
+  steps,
+}: ProgressBarProps) {
   const { t } = useTranslation();
   const percentage = Math.round((currentStep / totalSteps) * 100);
 

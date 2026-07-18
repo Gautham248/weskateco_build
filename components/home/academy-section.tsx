@@ -15,7 +15,10 @@ export default function AcademySection() {
         />
 
         {/* Top Left Text Overlay */}
-        <div className="absolute top-8 left-6 md:top-12 md:left-12 z-10 flex flex-col items-end select-none" style={{ fontFamily: '"Clash Display", sans-serif' }}>
+        <div
+          className="absolute top-8 left-4 md:top-12 md:left-12 z-10 flex flex-col items-end select-none"
+          style={{ fontFamily: '"Clash Display", sans-serif' }}
+        >
           <svg
             width="162"
             height="29"
@@ -41,7 +44,7 @@ export default function AcademySection() {
               fill="currentColor"
             />
           </svg>
-          <p className="text-[5vw] md:text-[4vw] mr-[2.5vw] font-extrabold tracking-normal text-cyan-400 uppercase leading-none mt-2 drop-shadow-sm pl-1">
+          <p className="text-[clamp(1.5rem,5vw,3.5rem)] md:text-[clamp(1.5rem,4vw,3.5rem)] mr-[2.5vw] font-extrabold tracking-normal text-cyan-400 uppercase leading-none mt-2 drop-shadow-sm pl-1">
             ACADEMY
           </p>
         </div>
@@ -49,7 +52,7 @@ export default function AcademySection() {
         {/* Link Button */}
         <Link
           href="/academy"
-          className="group absolute bottom-6 md:bottom-5 left-4 z-10 flex items-center gap-2 rounded-full bg-black px-4 py-2 md:px-6 md:py-3 text-white text-[10px] md:text-sm font-semibold uppercase hover:opacity-90 transition-opacity"
+          className="group absolute bottom-6 md:bottom-5 left-4 z-10 flex items-center gap-2 rounded-full bg-black px-4 py-2 md:px-6 md:py-3 text-white text-[clamp(0.625rem,2vw,0.875rem)] font-semibold uppercase hover:opacity-90 transition-opacity"
         >
           KNOW MORE
           <svg

@@ -74,7 +74,9 @@ export function BoardTypeStep({
 
               {/* Name */}
               <h3 className="mb-1 text-lg font-bold text-neutral-900 dark:text-white">
-                {t(translationKey) !== translationKey ? t(translationKey) : boardType}
+                {t(translationKey) !== translationKey
+                  ? t(translationKey)
+                  : boardType}
               </h3>
 
               {/* Description */}

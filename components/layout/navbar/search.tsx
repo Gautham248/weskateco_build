@@ -19,7 +19,10 @@ export default function Search() {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setExpanded(false);
       }
     }
@@ -82,7 +85,5 @@ export default function Search() {
 }
 
 export function SearchSkeleton() {
-  return (
-    <div className="h-11 w-11 rounded-md border" />
-  );
+  return <div className="h-11 w-11 rounded-md border" />;
 }

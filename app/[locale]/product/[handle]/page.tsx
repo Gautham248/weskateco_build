@@ -41,15 +41,15 @@ export async function generateMetadata(props: {
     },
     openGraph: url
       ? {
-        images: [
-          {
-            url,
-            width,
-            height,
-            alt,
-          },
-        ],
-      }
+          images: [
+            {
+              url,
+              width,
+              height,
+              alt,
+            },
+          ],
+        }
       : null,
   };
 }
@@ -157,7 +157,13 @@ async function RelatedProducts({ id, locale }: { id: string; locale: string }) {
 
   return (
     <div className="mt-16 border-t border-neutral-200 py-12 dark:border-neutral-800">
-      <h2 className="mb-8 text-4xl font-black tracking-tight text-black dark:text-white sm:text-5xl lg:text-[60px]" style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}>
+      <h2
+        className="mb-8 text-4xl font-black tracking-tight text-black dark:text-white sm:text-5xl lg:text-[60px]"
+        style={{
+          fontFamily: "'Clash Display', sans-serif",
+          letterSpacing: "-0.01em",
+        }}
+      >
         {t("product.related_products").toUpperCase()}
       </h2>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">

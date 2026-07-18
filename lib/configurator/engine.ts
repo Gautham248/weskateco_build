@@ -23,7 +23,9 @@ export function isBoardTypeAvailable(boardType: BoardType): boolean {
  * Get the unavailability message for a board type.
  */
 export function getBoardTypeUnavailableMessage(boardType: BoardType): string {
-  return compatRules.board_type_unavailable_message[boardType] ?? "Coming soon.";
+  return (
+    compatRules.board_type_unavailable_message[boardType] ?? "Coming soon."
+  );
 }
 
 /**
@@ -31,7 +33,7 @@ export function getBoardTypeUnavailableMessage(boardType: BoardType): string {
  */
 export function getCompatibleDecks(
   allDecks: ConfiguratorItem[],
-  boardType: BoardType
+  boardType: BoardType,
 ): FilterResult {
   const compatible = allDecks.filter((item) => {
     const meta = item.meta as DeckMeta;
@@ -47,9 +49,10 @@ export function getCompatibleDecks(
     compatible,
     incompatible,
     empty: compatible.length === 0,
-    emptyMessage: compatible.length === 0
-      ? `No ${boardType.toLowerCase()} decks available yet.`
-      : undefined,
+    emptyMessage:
+      compatible.length === 0
+        ? `No ${boardType.toLowerCase()} decks available yet.`
+        : undefined,
   };
 }
 
@@ -59,7 +62,7 @@ export function getCompatibleDecks(
 export function getCompatibleTrucks(
   allTrucks: ConfiguratorItem[],
   selectedDeck: ConfiguratorItem,
-  boardType: BoardType
+  boardType: BoardType,
 ): FilterResult {
   const deckMeta = selectedDeck.meta as DeckMeta;
   const deckWidth = deckMeta.deck_width;
@@ -89,7 +92,10 @@ export function getCompatibleTrucks(
     }
 
     // Surfskate trucks: skip width matching
-    if (meta.truck_type === "Surfskate" && compatRules.surfskate_skip_width_match) {
+    if (
+      meta.truck_type === "Surfskate" &&
+      compatRules.surfskate_skip_width_match
+    ) {
       if (item.availableForSale) {
         compatible.push(item);
       } else {
@@ -119,9 +125,10 @@ export function getCompatibleTrucks(
     compatible,
     incompatible,
     empty: compatible.length === 0,
-    emptyMessage: compatible.length === 0
-      ? `No compatible trucks found for a ${deckWidth}" deck. Try a different deck width.`
-      : undefined,
+    emptyMessage:
+      compatible.length === 0
+        ? `No compatible trucks found for a ${deckWidth}" deck. Try a different deck width.`
+        : undefined,
   };
 }
 
@@ -131,7 +138,7 @@ export function getCompatibleTrucks(
 export function getCompatibleWheels(
   allWheels: ConfiguratorItem[],
   selectedTruck: ConfiguratorItem,
-  boardType: BoardType
+  boardType: BoardType,
 ): FilterResult {
   const allowedWheelTypes = compatRules.board_type_wheel_map[boardType] || [];
 
@@ -167,9 +174,10 @@ export function getCompatibleWheels(
     compatible,
     incompatible,
     empty: compatible.length === 0,
-    emptyMessage: compatible.length === 0
-      ? `No compatible wheels found for this setup.`
-      : undefined,
+    emptyMessage:
+      compatible.length === 0
+        ? `No compatible wheels found for this setup.`
+        : undefined,
   };
 }
 
@@ -177,7 +185,7 @@ export function getCompatibleWheels(
  * Get all bearings. Bearings are universally compatible.
  */
 export function getCompatibleBearings(
-  allBearings: ConfiguratorItem[]
+  allBearings: ConfiguratorItem[],
 ): FilterResult {
   const compatible = allBearings.filter((item) => item.availableForSale);
   const incompatible = allBearings.filter((item) => !item.availableForSale);
@@ -186,9 +194,8 @@ export function getCompatibleBearings(
     compatible,
     incompatible,
     empty: compatible.length === 0,
-    emptyMessage: compatible.length === 0
-      ? "No bearings available."
-      : undefined,
+    emptyMessage:
+      compatible.length === 0 ? "No bearings available." : undefined,
   };
 }
 
@@ -197,7 +204,7 @@ export function getCompatibleBearings(
  */
 export function getCompatibleGriptape(
   allGriptape: ConfiguratorItem[],
-  selectedDeck: ConfiguratorItem
+  selectedDeck: ConfiguratorItem,
 ): FilterResult {
   const deckMeta = selectedDeck.meta as DeckMeta;
   const deckWidth = deckMeta.deck_width;
@@ -210,7 +217,11 @@ export function getCompatibleGriptape(
     const gripWidth = meta.griptape_width;
     const maxDeckWidth = compatRules.griptape_deck_max_width[String(gripWidth)];
 
-    if (maxDeckWidth !== undefined && deckWidth <= maxDeckWidth && item.availableForSale) {
+    if (
+      maxDeckWidth !== undefined &&
+      deckWidth <= maxDeckWidth &&
+      item.availableForSale
+    ) {
       compatible.push(item);
     } else {
       incompatible.push(item);
@@ -221,9 +232,10 @@ export function getCompatibleGriptape(
     compatible,
     incompatible,
     empty: compatible.length === 0,
-    emptyMessage: compatible.length === 0
-      ? `No griptape wide enough for a ${deckWidth}" deck.`
-      : undefined,
+    emptyMessage:
+      compatible.length === 0
+        ? `No griptape wide enough for a ${deckWidth}" deck.`
+        : undefined,
   };
 }
 
@@ -231,7 +243,7 @@ export function getCompatibleGriptape(
  * Get all risers. Currently no products — returns empty.
  */
 export function getCompatibleRisers(
-  allRisers: ConfiguratorItem[]
+  allRisers: ConfiguratorItem[],
 ): FilterResult {
   return {
     compatible: allRisers.filter((item) => item.availableForSale),
@@ -247,7 +259,7 @@ export function getCompatibleRisers(
  */
 export function getCompatibleHardware(
   allHardware: ConfiguratorItem[],
-  selectedRiser: ConfiguratorItem | null
+  selectedRiser: ConfiguratorItem | null,
 ): FilterResult {
   return {
     compatible: [],
@@ -279,7 +291,10 @@ export function calculateBuildTotal(state: {
     state.hardware,
   ].filter(Boolean) as ConfiguratorItem[];
 
-  const total = items.reduce((sum, item) => sum + parseFloat(item.price.amount), 0);
+  const total = items.reduce(
+    (sum, item) => sum + parseFloat(item.price.amount),
+    0,
+  );
   const currencyCode = items[0]?.price.currencyCode || "INR";
 
   return { amount: total, currencyCode };
@@ -290,7 +305,7 @@ export function calculateBuildTotal(state: {
  */
 export function getConfiguratorSteps(
   hasRisers: boolean,
-  hasHardware: boolean
+  hasHardware: boolean,
 ): Array<{
   id: number;
   translationKey: string;
@@ -300,14 +315,70 @@ export function getConfiguratorSteps(
   skipMessage?: string;
 }> {
   return [
-    { id: 1, translationKey: "configurator.step1", category: "board_type", isOptional: false, skip: false },
-    { id: 2, translationKey: "configurator.step2", category: "deck", isOptional: false, skip: false },
-    { id: 3, translationKey: "configurator.step3", category: "truck", isOptional: false, skip: false },
-    { id: 4, translationKey: "configurator.step4", category: "wheel", isOptional: false, skip: false },
-    { id: 5, translationKey: "configurator.step5", category: "bearing", isOptional: false, skip: false },
-    { id: 6, translationKey: "configurator.step6", category: "griptape", isOptional: false, skip: false },
-    { id: 7, translationKey: "configurator.step7", category: "riser", isOptional: true, skip: !hasRisers, skipMessage: "Riser pads coming soon." },
-    { id: 8, translationKey: "configurator.step8", category: "hardware", isOptional: true, skip: !hasHardware, skipMessage: "Hardware included with trucks." },
-    { id: 9, translationKey: "configurator.step9", category: "review", isOptional: false, skip: false },
+    {
+      id: 1,
+      translationKey: "configurator.step1",
+      category: "board_type",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 2,
+      translationKey: "configurator.step2",
+      category: "deck",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 3,
+      translationKey: "configurator.step3",
+      category: "truck",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 4,
+      translationKey: "configurator.step4",
+      category: "wheel",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 5,
+      translationKey: "configurator.step5",
+      category: "bearing",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 6,
+      translationKey: "configurator.step6",
+      category: "griptape",
+      isOptional: false,
+      skip: false,
+    },
+    {
+      id: 7,
+      translationKey: "configurator.step7",
+      category: "riser",
+      isOptional: true,
+      skip: !hasRisers,
+      skipMessage: "Riser pads coming soon.",
+    },
+    {
+      id: 8,
+      translationKey: "configurator.step8",
+      category: "hardware",
+      isOptional: true,
+      skip: !hasHardware,
+      skipMessage: "Hardware included with trucks.",
+    },
+    {
+      id: 9,
+      translationKey: "configurator.step9",
+      category: "review",
+      isOptional: false,
+      skip: false,
+    },
   ];
 }

@@ -71,21 +71,27 @@ function CartPageContent() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-black dark:bg-neutral-950 dark:text-white">
       {/* Main Cart Body */}
-      <main className="flex-1 mx-auto max-w-(--breakpoint-2xl) w-full px-6 py-12">
-        {!cart || cart.lines.length === 0 && <h1
-          className="text-[32px] font-semibold font-black tracking-tighter uppercase mb-8 flex items-baseline gap-2"
-          style={{ fontFamily: "'Clash Display', sans-serif" }}
-        >
-          My Cart
-          {cart && cart.totalQuantity > 0 && (
-            <span className="text-lg font-semibold text-black relative -top-[20px]" style={{ fontFamily: "'Clash Display', sans-serif" }}>
-              ({cart.totalQuantity})
-            </span>
-          )}
-        </h1>}
+      <main className="flex-1 mx-auto max-w-(--breakpoint-2xl) w-full px-4 py-12">
+        {!cart ||
+          (cart.lines.length === 0 && (
+            <h1
+              className="text-[32px] font-semibold font-black tracking-tighter uppercase mb-8 flex items-baseline gap-2"
+              style={{ fontFamily: "'Clash Display', sans-serif" }}
+            >
+              My Cart
+              {cart && cart.totalQuantity > 0 && (
+                <span
+                  className="text-lg font-semibold text-black relative -top-[20px]"
+                  style={{ fontFamily: "'Clash Display', sans-serif" }}
+                >
+                  ({cart.totalQuantity})
+                </span>
+              )}
+            </h1>
+          ))}
 
         {!cart || cart.lines.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-xl">
+          <div className="flex flex-col items-center justify-center px-2 py-20 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-xl">
             <svg
               className="h-16 w-16 text-neutral-400 mb-4"
               fill="none"
@@ -101,10 +107,11 @@ function CartPageContent() {
             </svg>
             <h2 className="text-xl font-bold mb-2">Your cart is empty</h2>
             <p className="text-neutral-500 mb-6 max-w-sm text-sm">
-              Looks like you haven't added anything to your cart yet. Let's find some setups!
+              Looks like you haven't added anything to your cart yet. Let's find
+              some setups!
             </p>
             <Link
-              href={getLocalizedPath("/search", locale)}
+              href={getLocalizedPath("/store/skateboards", locale)}
               className="rounded-xs bg-black text-white px-6 py-3 uppercase text-xs font-semibold tracking-wider hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 transition-colors"
               style={{ fontFamily: "Archivo" }}
             >
@@ -121,7 +128,10 @@ function CartPageContent() {
               >
                 My Cart
                 {cart && cart.totalQuantity > 0 && (
-                  <span className="text-lg font-semibold text-black relative -top-[20px]" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+                  <span
+                    className="text-lg font-semibold text-black relative -top-[20px]"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
                     ({cart.totalQuantity})
                   </span>
                 )}
@@ -147,8 +157,12 @@ function CartPageContent() {
                   <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
                 <span>
-                  You're signed out right now. To save these items or see your previously saved items,{" "}
-                  <Link href="#" className="underline font-bold hover:text-neutral-300">
+                  You're signed out right now. To save these items or see your
+                  previously saved items,{" "}
+                  <Link
+                    href="#"
+                    className="underline font-bold hover:text-neutral-300"
+                  >
                     Sign in
                   </Link>
                   .
@@ -158,7 +172,8 @@ function CartPageContent() {
               {/* Items Card List */}
               <div className="space-y-4">
                 {cart.lines.map((item) => {
-                  const hasImage = !!item.merchandise.product.featuredImage?.url;
+                  const hasImage =
+                    !!item.merchandise.product.featuredImage?.url;
                   return (
                     <div key={item.id}>
                       {/* Mobile View */}
@@ -169,7 +184,10 @@ function CartPageContent() {
                             {hasImage ? (
                               <Image
                                 src={item.merchandise.product.featuredImage.url}
-                                alt={item.merchandise.product.featuredImage.altText || item.merchandise.product.title}
+                                alt={
+                                  item.merchandise.product.featuredImage
+                                    .altText || item.merchandise.product.title
+                                }
                                 fill
                                 className="object-cover object-top"
                               />
@@ -189,8 +207,16 @@ function CartPageContent() {
                         </div>
 
                         {/* Right Column: Title, Details, Delivery, Remove */}
-                        <div className="flex-1 flex flex-col min-w-0" style={{ fontFamily: "Archivo" }}>
-                          <h3 className="text-[17px] font-bold text-neutral-900 dark:text-neutral-50 leading-tight tracking-[-1%] uppercase" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+                        <div
+                          className="flex-1 flex flex-col min-w-0"
+                          style={{ fontFamily: "Archivo" }}
+                        >
+                          <h3
+                            className="text-[17px] font-bold text-neutral-900 dark:text-neutral-50 leading-tight tracking-[-1%] uppercase"
+                            style={{
+                              fontFamily: "'Clash Display', sans-serif",
+                            }}
+                          >
                             {item.merchandise.product.title}
                           </h3>
 
@@ -207,16 +233,26 @@ function CartPageContent() {
                           {/* Selected Options / Attributes */}
                           <div className="mt-4 flex flex-col gap-1.5 text-sm uppercase">
                             {item.merchandise.selectedOptions.map((opt) => (
-                              <div key={opt.name} className="flex gap-1.5 items-baseline">
-                                <span className="font-normal text-neutral-600 dark:text-neutral-400">{opt.name}:</span>
-                                <span className="font-semibold text-neutral-900 dark:text-neutral-100">{opt.value}</span>
+                              <div
+                                key={opt.name}
+                                className="flex gap-1.5 items-baseline"
+                              >
+                                <span className="font-normal text-neutral-600 dark:text-neutral-400">
+                                  {opt.name}:
+                                </span>
+                                <span className="font-semibold text-neutral-900 dark:text-neutral-100">
+                                  {opt.value}
+                                </span>
                               </div>
                             ))}
                           </div>
 
                           {/* Delivery by Today */}
                           <div className="mt-4 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-                            Delivery by <span className="text-[#3f6212] dark:text-[#84cc16] font-bold">Today</span>
+                            Delivery by{" "}
+                            <span className="text-[#3f6212] dark:text-[#84cc16] font-bold">
+                              Today
+                            </span>
                           </div>
 
                           {/* Remove Action */}
@@ -237,7 +273,10 @@ function CartPageContent() {
                           {hasImage ? (
                             <Image
                               src={item.merchandise.product.featuredImage.url}
-                              alt={item.merchandise.product.featuredImage.altText || item.merchandise.product.title}
+                              alt={
+                                item.merchandise.product.featuredImage
+                                  .altText || item.merchandise.product.title
+                              }
                               fill
                               className="object-cover object-top"
                             />
@@ -249,14 +288,27 @@ function CartPageContent() {
                         </div>
 
                         {/* Product details info & Actions */}
-                        <div className="flex-1 flex flex-col min-h-[110px]" style={{ fontFamily: "Archivo" }}>
+                        <div
+                          className="flex-1 flex flex-col min-h-[110px]"
+                          style={{ fontFamily: "Archivo" }}
+                        >
                           {/* Top row: Title/Vendor on left, Quantity on right */}
                           <div className="flex justify-between items-start gap-4">
                             <div>
-                              <h3 className="text-[16px] font-bold uppercase text-black dark:text-white leading-tight tracking-[-1%]" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+                              <h3
+                                className="text-[16px] font-bold uppercase text-black dark:text-white leading-tight tracking-[-1%]"
+                                style={{
+                                  fontFamily: "'Clash Display', sans-serif",
+                                }}
+                              >
                                 {item.merchandise.product.title}
                               </h3>
-                              <p className="text-[12px] font-normal text-black dark:text-neutral-500 uppercase mt-0.5 tracking-[-1%]" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+                              <p
+                                className="text-[12px] font-normal text-black dark:text-neutral-500 uppercase mt-0.5 tracking-[-1%]"
+                                style={{
+                                  fontFamily: "'Clash Display', sans-serif",
+                                }}
+                              >
                                 {item.merchandise.product.vendor || ""}
                               </p>
                             </div>
@@ -273,8 +325,12 @@ function CartPageContent() {
                           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-black uppercase">
                             {item.merchandise.selectedOptions.map((opt) => (
                               <span key={opt.name}>
-                                <span className="font-normal text-black mr-1">{opt.name}:</span>
-                                <span className="font-bold text-black dark:text-white">{opt.value}</span>
+                                <span className="font-normal text-black mr-1">
+                                  {opt.name}:
+                                </span>
+                                <span className="font-bold text-black dark:text-white">
+                                  {opt.value}
+                                </span>
                               </span>
                             ))}
                           </div>
@@ -310,9 +366,7 @@ function CartPageContent() {
                 >
                   <span className="text-sm">+</span> Add from Wishlist
                 </Link> */}
-                <div>
-
-                </div>
+                <div></div>
                 <div
                   className="flex justify-between items-center w-full text-[14px] text-neutral-500 dark:text-neutral-400 md:justify-end md:gap-4"
                   style={{ fontFamily: "Archivo" }}
@@ -341,18 +395,36 @@ function CartPageContent() {
 
                 {/* Offer alert promo */}
                 <div className="mb-6 p-3.5 bg-rose-50/60 dark:bg-rose-950/10 border border-rose-100 dark:border-rose-950/20 rounded-md flex items-center justify-between text-xs cursor-pointer hover:bg-rose-100/50 dark:hover:bg-rose-950/20 transition-colors">
-                  <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-semibold animate-pulse" style={{ fontFamily: "Archivo" }}>
-                    <img src={percent.src || percent} className="w-5 h-5" alt="percent" />
+                  <div
+                    className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-semibold animate-pulse"
+                    style={{ fontFamily: "Archivo" }}
+                  >
+                    <img
+                      src={percent.src || percent}
+                      className="w-5 h-5"
+                      alt="percent"
+                    />
                     <span>View available offer</span>
                   </div>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-rose-600 dark:text-rose-400">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    className="text-rose-600 dark:text-rose-400"
+                  >
                     <polyline points="9 18 15 12 9 6" />
                   </svg>
                 </div>
 
                 {/* Price Details breakdown */}
                 <div className="space-y-4" style={{ fontFamily: "Archivo" }}>
-                  <h3 className="text-[14px] font-bold uppercase tracking-wider text-black" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+                  <h3
+                    className="text-[14px] font-bold uppercase tracking-wider text-black"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
                     Price Details
                   </h3>
                   <div className="flex justify-between text-sm font-medium text-neutral-600 dark:text-neutral-400">
@@ -366,15 +438,22 @@ function CartPageContent() {
                   </div>
                   <div className="flex justify-between text-sm font-medium text-neutral-600 dark:text-neutral-400">
                     <span>Discount</span>
-                    <span className="text-green-600 dark:text-green-400 font-semibold">₹ 0</span>
+                    <span className="text-green-600 dark:text-green-400 font-semibold">
+                      ₹ 0
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm font-medium text-neutral-600 dark:text-neutral-400">
                     <span>Shipping</span>
-                    <span className="text-green-600 dark:text-green-400 font-semibold uppercase">Free</span>
+                    <span className="text-green-600 dark:text-green-400 font-semibold uppercase">
+                      Free
+                    </span>
                   </div>
 
                   <div className="border-t border-neutral-200 dark:border-neutral-800 pt-4 mt-2 flex justify-between items-baseline">
-                    <span className="text-[14px] font-bold uppercase text-neutral-900 dark:text-white" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+                    <span
+                      className="text-[14px] font-bold uppercase text-neutral-900 dark:text-white"
+                      style={{ fontFamily: "'Clash Display', sans-serif" }}
+                    >
                       Grand Total
                     </span>
                     <Price
@@ -387,7 +466,10 @@ function CartPageContent() {
                 </div>
 
                 {/* Terms agreement checkbox */}
-                <div className="mt-6 flex items-end gap-2 " style={{ fontFamily: "Archivo" }}>
+                <div
+                  className="mt-6 flex items-end gap-2 "
+                  style={{ fontFamily: "Archivo" }}
+                >
                   <input
                     type="checkbox"
                     id="terms"
@@ -395,9 +477,16 @@ function CartPageContent() {
                     onChange={(e) => setIsChecked(e.target.checked)}
                     className="mt-0.5 rounded-xs border-neutral-300 dark:border-neutral-700 text-black focus:ring-black h-3.5 w-3.5"
                   />
-                  <label htmlFor="terms" className="text-[12px] text-black leading-tight" style={{ fontFamily: "Archivo" }}>
+                  <label
+                    htmlFor="terms"
+                    className="text-[12px] text-black leading-tight"
+                    style={{ fontFamily: "Archivo" }}
+                  >
                     By clicking "Checkout" button to agree to our{" "}
-                    <Link href="#" className="underline text-rose-500 font-medium">
+                    <Link
+                      href="#"
+                      className="underline text-rose-500 font-medium"
+                    >
                       T&C
                     </Link>
                   </label>
@@ -414,23 +503,49 @@ function CartPageContent() {
                 </button>
 
                 {/* Secure payments indicator badge */}
-                <div className="mt-4 p-3 flex items-center gap-2.5 text-[12px] text-black font-medium" style={{ fontFamily: "Archivo" }}>
-                  <img src={secure.src || secure} className="bg-green-50 dark:bg-green-950/10 p-2 w-9 h-9 rounded-md flex-shrink-0" alt="secure" />
-                  <span>Secure Encrypted Payments | Genuine Weskateco Products</span>
+                <div
+                  className="mt-4 p-3 flex items-center gap-2.5 text-[12px] text-black font-medium"
+                  style={{ fontFamily: "Archivo" }}
+                >
+                  <img
+                    src={secure.src || secure}
+                    className="bg-green-50 dark:bg-green-950/10 p-2 w-9 h-9 rounded-md flex-shrink-0"
+                    alt="secure"
+                  />
+                  <span>
+                    Secure Encrypted Payments | Genuine Weskateco Products
+                  </span>
                 </div>
               </div>
 
               {/* COD / Free Ship badges under summary card */}
-              <div className="grid grid-cols-3 gap-2 p-4 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-100 dark:border-neutral-900 rounded-xl text-[9px] font-medium text-neutral-800 dark:text-neutral-300" style={{ fontFamily: "Archivo" }}>
+              <div
+                className="grid grid-cols-3 gap-2 p-4 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-100 dark:border-neutral-900 rounded-xl text-[9px] font-medium text-neutral-800 dark:text-neutral-300"
+                style={{ fontFamily: "Archivo" }}
+              >
                 <div className="flex flex-col items-center text-center gap-1.5">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <rect x="2" y="5" width="20" height="14" rx="2" />
                     <line x1="2" y1="10" x2="22" y2="10" />
                   </svg>
                   <span>Cash on Delivery</span>
                 </div>
                 <div className="flex flex-col items-center text-center gap-1.5 border-x border-neutral-200 dark:border-neutral-800 px-1">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <rect x="1" y="3" width="15" height="13" />
                     <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
                     <circle cx="5.5" cy="18.5" r="2.5" />
@@ -439,7 +554,14 @@ function CartPageContent() {
                   <span>Free Shipping Within India</span>
                 </div>
                 <div className="flex flex-col items-center text-center gap-1.5">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
                   </svg>
                   <span>Return Policy</span>
