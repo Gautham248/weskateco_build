@@ -23,7 +23,13 @@ export default async function StorePage(props: {
 }) {
   const searchParams = await props.searchParams;
   const { locale } = await props.params;
-  const { sort, color, level, price, q: searchValue } = (searchParams || {}) as { [key: string]: string };
+  const {
+    sort,
+    color,
+    level,
+    price,
+    q: searchValue,
+  } = (searchParams || {}) as { [key: string]: string };
   const { sortKey, reverse } =
     sorting.find((item) => item.slug === sort) || defaultSort;
 
@@ -38,13 +44,18 @@ export default async function StorePage(props: {
   if (color) {
     const colorLower = color.toLowerCase();
     filteredProducts = filteredProducts.filter((product) => {
-      const matchesOption = product.options?.some((opt) =>
-        opt.name.toLowerCase() === "color" &&
-        opt.values.some((val) => val.toLowerCase() === colorLower)
+      const matchesOption = product.options?.some(
+        (opt) =>
+          opt.name.toLowerCase() === "color" &&
+          opt.values.some((val) => val.toLowerCase() === colorLower),
       );
-      const matchesTag = product.tags?.some((tag) => tag.toLowerCase() === colorLower);
+      const matchesTag = product.tags?.some(
+        (tag) => tag.toLowerCase() === colorLower,
+      );
       const matchesTitle = product.title.toLowerCase().includes(colorLower);
-      const matchesDesc = product.description?.toLowerCase().includes(colorLower);
+      const matchesDesc = product.description
+        ?.toLowerCase()
+        .includes(colorLower);
       return matchesOption || matchesTag || matchesTitle || matchesDesc;
     });
   }
@@ -52,16 +63,25 @@ export default async function StorePage(props: {
   if (level) {
     const levelLower = level.toLowerCase();
     filteredProducts = filteredProducts.filter((product) => {
-      const matchesTag = product.tags?.some((tag) => tag.toLowerCase() === levelLower);
+      const matchesTag = product.tags?.some(
+        (tag) => tag.toLowerCase() === levelLower,
+      );
       const matchesTitle = product.title.toLowerCase().includes(levelLower);
-      const matchesDesc = product.description?.toLowerCase().includes(levelLower);
+      const matchesDesc = product.description
+        ?.toLowerCase()
+        .includes(levelLower);
       return matchesTag || matchesTitle || matchesDesc;
     });
   }
 
   if (price) {
     const [minPrice, maxPrice] = price.split("-").map(Number);
-    if (minPrice !== undefined && maxPrice !== undefined && !isNaN(minPrice) && !isNaN(maxPrice)) {
+    if (
+      minPrice !== undefined &&
+      maxPrice !== undefined &&
+      !isNaN(minPrice) &&
+      !isNaN(maxPrice)
+    ) {
       filteredProducts = filteredProducts.filter((product) => {
         const productPrice = Number(product.priceRange.minVariantPrice.amount);
         return productPrice >= minPrice && productPrice <= maxPrice;
@@ -75,13 +95,15 @@ export default async function StorePage(props: {
   // Filter out the empty handle/All collection for the grid since we show "All Products" below
   const filteredCollections = collections.filter((c) => c.handle !== "");
 
-  const formattedCollections = collections.map(c => ({
+  const formattedCollections = collections.map((c) => ({
     handle: c.handle,
     title: c.title,
-    path: c.path
+    path: c.path,
   }));
 
-  const displayTitle = searchValue ? `Search: ${searchValue}` : t("collection.all_products");
+  const displayTitle = searchValue
+    ? `Search: ${searchValue}`
+    : t("collection.all_products");
 
   return (
     <>

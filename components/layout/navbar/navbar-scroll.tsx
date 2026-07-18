@@ -11,7 +11,11 @@ export function useNavbarScroll() {
   return useContext(NavbarScrollContext);
 }
 
-export function NavbarScrollWrapper({ children }: { children: React.ReactNode }) {
+export function NavbarScrollWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const isHomePage = HOME_PATHS.includes(pathname);
   const [scrolled, setScrolled] = useState(!isHomePage);

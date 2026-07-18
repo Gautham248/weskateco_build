@@ -26,7 +26,13 @@ type MerchandiseSearchParams = {
 export default function CartModal() {
   const { t } = useTranslation();
   const { cart, updateCartItem } = useCart();
-  const { isReady: gokwikReady, isError: gokwikError, isCheckingOut, triggerCheckout, useFallback } = useGoKwikCheckout({
+  const {
+    isReady: gokwikReady,
+    isError: gokwikError,
+    isCheckingOut,
+    triggerCheckout,
+    useFallback,
+  } = useGoKwikCheckout({
     cartId: cart?.id,
   });
   const [isOpen, setIsOpen] = useState(false);
@@ -234,7 +240,9 @@ export default function CartModal() {
                                         <div className="flex h-12 flex-col justify-between">
                                           <Price
                                             className="flex justify-end text-right text-xs"
-                                            amount={item.cost.totalAmount.amount}
+                                            amount={
+                                              item.cost.totalAmount.amount
+                                            }
                                             currencyCode={
                                               item.cost.totalAmount.currencyCode
                                             }

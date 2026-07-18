@@ -49,13 +49,16 @@ export function VariantSelector({
     <form key={option.id}>
       <dl className="mb-6">
         <div className="flex justify-between items-center mb-3">
-          <dt className="text-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+          <dt
+            className="text-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100"
+            style={{ fontFamily: "'Clash Display', sans-serif" }}
+          >
             {option.name}
           </dt>
           {option.name.toLowerCase() === "size" && (
             <a
               href="#buying-guide"
-              className="text-[11px] font-semibold uppercase tracking-wider text-black hover:text-neutral-400 dark:hover:text-white transition-colors underline"
+              className="text-[clamp(0.563rem,1.5vw,0.688rem)] font-semibold uppercase tracking-wider text-black hover:text-neutral-400 dark:hover:text-white transition-colors underline"
               style={{ fontFamily: "Archivo" }}
             >
               Buying Guide
@@ -64,8 +67,10 @@ export function VariantSelector({
         </div>
         <dd
           className={clsx("gap-2", {
-            "grid grid-cols-4": option.name.toLowerCase() === "size" || option.values.length > 3,
-            "flex flex-wrap": option.name.toLowerCase() !== "size" && option.values.length <= 3,
+            "grid grid-cols-4":
+              option.name.toLowerCase() === "size" || option.values.length > 3,
+            "flex flex-wrap":
+              option.name.toLowerCase() !== "size" && option.values.length <= 3,
           })}
         >
           {option.values.map((value) => {
@@ -103,18 +108,23 @@ export function VariantSelector({
                 disabled={!isAvailableForSale}
                 title={`${option.name} ${value}${!isAvailableForSale ? " (Out of Stock)" : ""}`}
                 className={clsx(
-                  "flex h-12 items-center justify-center rounded-xs text-[13px] font-medium transition-all duration-200 border-none",
+                  "flex h-12 items-center justify-center rounded-xs text-[clamp(0.688rem,1.5vw,0.813rem)] font-medium transition-all duration-200 border-none",
                   {
-                    "bg-black text-white dark:bg-white dark:text-black cursor-pointer": isActive,
+                    "bg-black text-white dark:bg-white dark:text-black cursor-pointer":
+                      isActive,
                     "bg-[#f2f2f2] text-black hover:bg-neutral-200 dark:bg-neutral-800/80 dark:text-white dark:hover:bg-neutral-700 cursor-pointer":
                       !isActive && isAvailableForSale,
                     "opacity-30 cursor-not-allowed bg-neutral-100 text-neutral-400 dark:bg-neutral-900 dark:text-neutral-600 ":
                       !isAvailableForSale,
                   },
                   {
-                    "w-full": option.name.toLowerCase() === "size" || option.values.length > 3,
-                    "flex-1 min-w-[120px] max-w-[160px]": option.name.toLowerCase() !== "size" && option.values.length <= 3,
-                  }
+                    "w-full":
+                      option.name.toLowerCase() === "size" ||
+                      option.values.length > 3,
+                    "flex-1 min-w-[120px] max-w-[160px]":
+                      option.name.toLowerCase() !== "size" &&
+                      option.values.length <= 3,
+                  },
                 )}
                 style={{ fontFamily: "Archivo" }}
               >

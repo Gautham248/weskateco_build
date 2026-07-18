@@ -27,8 +27,11 @@ export default function StoreBanner({ title, description }: StoreBannerProps) {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 flex flex-col max-[500px]:justify-end justify-center items-start p-8 md:p-12 text-white bg-gradient-to-t from-black/60 to-transparent">
-            <h1 className="text-3xl font-bold tracking-[-1%] text-white md:text-5xl lg:text-6xl" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+          <div className="absolute inset-0 flex flex-col max-[500px]:justify-end justify-center items-start p-6 md:p-12 text-white bg-gradient-to-t from-black/60 to-transparent">
+            <h1
+              className="text-[clamp(1.5rem,5vw,3.75rem)] font-bold tracking-[-1%] text-white"
+              style={{ fontFamily: "'Clash Display', sans-serif" }}
+            >
               {title.toUpperCase()}
             </h1>
             {description && (

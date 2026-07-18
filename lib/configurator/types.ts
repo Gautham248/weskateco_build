@@ -1,8 +1,20 @@
 // Board types supported by the configurator
-export type BoardType = "Skateboard" | "Surfskate" | "Longboard" | "Old School" | "Cruiser";
+export type BoardType =
+  | "Skateboard"
+  | "Surfskate"
+  | "Longboard"
+  | "Old School"
+  | "Cruiser";
 
 // Product categories in the configurator
-export type ConfiguratorCategory = "deck" | "truck" | "wheel" | "bearing" | "griptape" | "riser" | "hardware";
+export type ConfiguratorCategory =
+  | "deck"
+  | "truck"
+  | "wheel"
+  | "bearing"
+  | "griptape"
+  | "riser"
+  | "hardware";
 
 // A single selectable option in the configurator
 // This represents a specific product variant (e.g., "Twisted Human Deck — 8.25 / Regular")
@@ -45,7 +57,11 @@ export interface DeckMeta {
 
 export interface TruckMeta {
   category: "truck";
-  truck_type: "Standard (TKP)" | "Surfskate" | "Longboard (RKP)" | "Longboard (TKP)";
+  truck_type:
+    | "Standard (TKP)"
+    | "Surfskate"
+    | "Longboard (RKP)"
+    | "Longboard (TKP)";
   truck_hanger_size: number | null; // inches — null for surfskate trucks
   truck_sold_as: "Pair" | "Set (front+rear)";
   truck_compatible_board_types: string; // comma-separated: "Skateboard,Old School"
@@ -90,7 +106,7 @@ export interface ConfiguratorState {
   wheels: ConfiguratorItem | null;
   bearings: ConfiguratorItem | null;
   griptape: ConfiguratorItem | null;
-  risers: ConfiguratorItem | null;   // optional
+  risers: ConfiguratorItem | null; // optional
   hardware: ConfiguratorItem | null; // optional
 }
 

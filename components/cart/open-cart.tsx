@@ -44,7 +44,7 @@ export default function OpenCart({
       </svg>
 
       {quantity ? (
-        <div className="absolute right-0 top-0 -mr-2 -mt-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-bold text-white">
+        <div className="absolute right-0 top-0 -mr-2 -mt-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-blue-600 px-1 text-[clamp(0.5rem,1vw,0.563rem)] font-bold text-white">
           {quantity}
         </div>
       ) : null}

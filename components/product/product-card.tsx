@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Price from "components/price";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 import { Product } from "lib/shopify/types";
@@ -13,18 +13,24 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, locale }: ProductCardProps) {
   const t = createTranslator(locale);
-  const { title, handle, availableForSale, priceRange, featuredImage, images } = product;
+  const { title, handle, availableForSale, priceRange, featuredImage, images } =
+    product;
   const isSoldOut = !availableForSale;
 
   const productPath = getLocalizedPath(`/product/${handle}`, locale);
 
   const imgRef = useRef<HTMLDivElement>(null);
   const [showIndex, setShowIndex] = useState(0);
-  const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
-  const displayImages = images && images.length > 0
-    ? images.slice(0, 2)
-    : featuredImage ? [featuredImage] : [];
+  const displayImages =
+    images && images.length > 0
+      ? images.slice(0, 2)
+      : featuredImage
+        ? [featuredImage]
+        : [];
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imgRef.current || displayImages.length < 2) return;
@@ -39,16 +45,18 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
   };
 
   return (
-    <Link
-      href={productPath}
-      className="group flex flex-col bg-transparent"
-    >
+    <Link href={productPath} className="group flex flex-col bg-transparent">
       <div
         ref={imgRef}
         className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900"
-        onMouseEnter={() => { if (displayImages.length > 1) setShowIndex(1); }}
+        onMouseEnter={() => {
+          if (displayImages.length > 1) setShowIndex(1);
+        }}
         onMouseMove={handleMouseMove}
-        onMouseLeave={() => { clearTimeout(moveTimer.current); setShowIndex(0); }}
+        onMouseLeave={() => {
+          clearTimeout(moveTimer.current);
+          setShowIndex(0);
+        }}
       >
         {displayImages.length > 0 ? (
           <div
@@ -56,7 +64,10 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             style={{ transform: `translateX(-${showIndex * 100}%)` }}
           >
             {displayImages.map((img, index) => (
-              <div key={img.url || index} className="relative h-full w-full flex-shrink-0">
+              <div
+                key={img.url || index}
+                className="relative h-full w-full flex-shrink-0"
+              >
                 <Image
                   src={img.url}
                   alt={img.altText || title}
@@ -80,16 +91,26 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             {displayImages.map((_, idx) => (
               <span
                 key={idx}
-                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-1.5 opacity-100" : "w-1.5 opacity-50"
-                  }`}
+                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
+                  idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
+                }`}
               />
             ))}
           </div>
         )}
 
         {/* Plus circle (visible when not hovered) */}
-        <div className="absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white opacity-100 group-hover:opacity-0 transition-opacity duration-300">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <div className="absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
@@ -128,11 +149,17 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
 
       <div className="flex flex-1 flex-col pt-4 px-1">
         {product.vendor && (
-          <p className="text-[12px] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-1" style={{ fontFamily: "Archivo" }}>
+          <p
+            className="text-[clamp(0.625rem,1.5vw,0.75rem)] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-1"
+            style={{ fontFamily: "Archivo" }}
+          >
             {product.vendor}
           </p>
         )}
-        <h3 className="mb-2 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+        <h3
+          className="mb-2 text-[clamp(0.8125rem,2vw,1rem)] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2"
+          style={{ fontFamily: "'Clash Display', sans-serif" }}
+        >
           {title}
         </h3>
         <div className="flex items-center gap-3">
@@ -140,7 +167,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             amount={priceRange.minVariantPrice.amount}
             currencyCode={priceRange.minVariantPrice.currencyCode}
             currencyCodeClassName="hidden"
-            className="text-[14px] font-normal text-neutral-900 dark:text-neutral-100"
+            className="text-[clamp(0.75rem,1.8vw,0.875rem)] font-normal text-neutral-900 dark:text-neutral-100"
           />
           {product.variants[0]?.compareAtPrice && (
             <Price

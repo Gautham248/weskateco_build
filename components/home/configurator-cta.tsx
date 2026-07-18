@@ -9,10 +9,10 @@ export default function ConfiguratorCTA({ locale }: { locale: string }) {
     <section className="mx-auto max-w-(--breakpoint-2xl) px-6 py-8">
       <div className="relative overflow-hidden rounded-3xl bg-neutral-900 px-8 py-12 text-white shadow-xl md:px-16 md:py-20 dark:bg-black dark:border dark:border-neutral-800">
         <div className="relative z-10 max-w-2xl">
-          <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
+          <h2 className="text-[clamp(1.5rem,4vw,2.5rem)] font-extrabold tracking-tight">
             {t("home.configurator_cta")}
           </h2>
-          <p className="mt-4 text-base text-neutral-400 md:text-lg">
+          <p className="mt-4 text-[clamp(0.875rem,2vw,1.125rem)] text-neutral-400">
             {t("home.configurator_desc")}
           </p>
           <div className="mt-8">

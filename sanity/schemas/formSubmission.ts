@@ -31,7 +31,11 @@ export default defineType({
         { name: "city", title: "City", type: "string" },
         { name: "budgetRange", title: "Budget Range", type: "string" },
         { name: "projectType", title: "Project Type", type: "string" },
-        { name: "additionalData", title: "Additional Data (JSON)", type: "text" },
+        {
+          name: "additionalData",
+          title: "Additional Data (JSON)",
+          type: "text",
+        },
       ],
     }),
     defineField({
@@ -42,7 +46,11 @@ export default defineType({
     }),
   ],
   orderings: [
-    { title: "Newest First", name: "createdDesc", by: [{ field: "_createdAt", direction: "desc" }] },
+    {
+      title: "Newest First",
+      name: "createdDesc",
+      by: [{ field: "_createdAt", direction: "desc" }],
+    },
   ],
   preview: {
     select: { title: "formType", subtitle: "data.name" },

@@ -25,7 +25,7 @@ export default function ProductTabs({
     <div className="mt-12 w-full border-t border-neutral-200 pt-8 dark:border-neutral-800">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between py-4 text-left font-bold text-black dark:text-white uppercase tracking-wider text-[16px]"
+        className="flex w-full items-center justify-between py-4 text-left font-bold text-black dark:text-white uppercase tracking-wider text-[clamp(0.875rem,2vw,1.125rem)]"
         style={{ fontFamily: "'Clash Display', sans-serif" }}
       >
         <span>Product Description</span>
@@ -48,7 +48,7 @@ export default function ProductTabs({
         <div className="pt-4 pb-6 animate-fadeIn">
           {descriptionHtml ? (
             <Prose
-              className="text-[14px] leading-relaxed text-black dark:text-neutral-300"
+              className="text-[clamp(0.75rem,1.5vw,0.875rem)] leading-relaxed text-black dark:text-neutral-300"
               html={descriptionHtml}
             />
           ) : (

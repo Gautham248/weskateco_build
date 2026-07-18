@@ -54,7 +54,11 @@ export default defineType({
     }),
   ],
   orderings: [
-    { title: "Sort Order", name: "sortOrderAsc", by: [{ field: "sortOrder", direction: "asc" }] },
+    {
+      title: "Sort Order",
+      name: "sortOrderAsc",
+      by: [{ field: "sortOrder", direction: "asc" }],
+    },
   ],
   preview: {
     select: { title: "name", media: "logo" },

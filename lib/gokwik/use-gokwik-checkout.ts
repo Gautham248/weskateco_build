@@ -71,7 +71,9 @@ export function useGoKwikCheckout({
       if (!isReady) {
         setIsError(true);
         if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
-        console.warn("[GoKwik] SDK did not load within timeout. Fallback available.");
+        console.warn(
+          "[GoKwik] SDK did not load within timeout. Fallback available.",
+        );
       }
     }, timeout);
 

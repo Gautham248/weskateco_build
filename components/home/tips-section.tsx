@@ -56,26 +56,41 @@ export default function TipsSection() {
   return (
     <section className="min-h-full w-full bg-white py-10 md:py-[88px] overflow-hidden">
       <div>
-
         {/* Header with Navigation Controls */}
-        <div className="flex justify-between items-end mb-5 md:mb-10 mx-auto max-w-(--breakpoint-2xl) px-6">
-          <h2 className="text-[24px] font-black tracking-tight text-black dark:text-white sm:text-4xl lg:text-[40px] uppercase" style={{ fontFamily: 'Clash Display, sans-serif', letterSpacing: "-0.01em" }}>
-            Tips to stay connected<br />Anywhere!
+        <div className="flex justify-between items-end mb-5 md:mb-10 mx-auto max-w-(--breakpoint-2xl) px-4">
+          <h2
+            className="text-[clamp(1.25rem,4vw,2.5rem)] font-black leading-[120%] tracking-tight text-black dark:text-white sm:text-[clamp(1.5rem,3vw,2.5rem)] lg:text-[clamp(1.75rem,2.5vw,2.5rem)] uppercase"
+            style={{
+              fontFamily: "Clash Display, sans-serif",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Tips to stay connected
+            <br />
+            Anywhere!
           </h2>
-          <div className="flex gap-3 pb-2 z-50">
+          <div className="flex gap-3 pb-2">
             <button
               onClick={handlePrev}
               disabled={activeIndex === 0}
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              <img src={arrowClosed.src || arrowClosed} className="w-3 h-3 text-neutral-700 rotate-180" alt="previous" />
+              <img
+                src={arrowClosed.src || arrowClosed}
+                className="w-3 h-3 text-neutral-700 rotate-180"
+                alt="previous"
+              />
             </button>
             <button
               onClick={handleNext}
               disabled={activeIndex === tips.length - 1}
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              <img src={arrowClosed.src || arrowClosed} className="w-3 h-3 text-neutral-700" alt="next" />
+              <img
+                src={arrowClosed.src || arrowClosed}
+                className="w-3 h-3 text-neutral-700"
+                alt="next"
+              />
             </button>
           </div>
         </div>
@@ -83,8 +98,8 @@ export default function TipsSection() {
         {/* Horizontal Scroll Row */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth select-none snap-x mandatory"
-          style={{ WebkitOverflowScrolling: 'touch' }}
+          className="px-4 md:px-0 flex gap-4 overflow-x-auto no-scrollbar scroll-smooth select-none snap-x mandatory"
+          style={{ WebkitOverflowScrolling: "touch" }}
         >
           {tips.map((tip, index) => (
             <div
@@ -94,10 +109,19 @@ export default function TipsSection() {
               onTouchStart={() => setActiveIndex(index)}
             >
               {/* Entire Wrapper (Image Box + View Button Stack) - Moves Up Together */}
-              <div className={`w-full flex flex-col transition-transform duration-300 ease-out ${activeIndex === index ? '-translate-y-14' : 'group-hover:-translate-y-14'}`}>
-
+              <div
+                className={`w-full flex flex-col transition-transform duration-300 ease-out -translate-y-14 ${activeIndex === index ? "" : "md:translate-y-0 md:group-hover:-translate-y-14"}`}
+              >
                 {/* Image Container Frame */}
-                <div className={`relative w-full aspect-[3/3.8] overflow-hidden shadow-sm flex-shrink-0 ${index === 0 ? 'rounded-tr-md rounded-br-md' : index === tips.length - 1 ? 'rounded-tl-md rounded-bl-md' : 'rounded-md'}`}>
+                <div
+                  className={`relative w-full aspect-[3/3.8] overflow-hidden shadow-sm flex-shrink-0 ${
+                    index === 0
+                      ? "rounded-md md:rounded-l-none md:rounded-r-md"
+                      : index === tips.length - 1
+                        ? "rounded-md md:rounded-r-none md:rounded-l-md"
+                        : "rounded-md"
+                  }`}
+                >
                   <img
                     src={tip.image.src || (tip.image as unknown as string)}
                     alt={`Tip ${index + 1}`}
@@ -107,26 +131,60 @@ export default function TipsSection() {
                   {/* Instagram Banner */}
                   <div className="absolute bottom-4 left-4 right-4 bg-black/30 backdrop-blur-md rounded-md p-3 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-white">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect
+                          x="2"
+                          y="2"
+                          width="20"
+                          height="20"
+                          rx="5"
+                          ry="5"
+                        />
                         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                         <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                       </svg>
                     </div>
-                    <span className="text-white font-bold text-xs uppercase tracking-wider" style={{ fontFamily: 'ClashDisplay, sans-serif' }}>Instagram</span>
+                    <span
+                      className="text-white font-bold text-xs uppercase tracking-wider"
+                      style={{ fontFamily: "'Clash Display', sans-serif" }}
+                    >
+                      Instagram
+                    </span>
                   </div>
                 </div>
 
                 {/* View Post Button (Reveals right at the bottom edge boundary) */}
-                <div className={`w-full h-14 pt-3 flex-shrink-0 transition-opacity duration-300 ${activeIndex === index ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                  <button className="w-full h-full bg-black text-white rounded-md font-bold text-xs uppercase tracking-wide flex items-center justify-between px-4 hover:bg-neutral-900 transition-colors">
+                <div
+                  className={`w-full h-14 pt-3 flex-shrink-0 transition-opacity duration-300 opacity-100 ${activeIndex === index ? "md:opacity-100" : "md:opacity-0 md:group-hover:opacity-100"}`}
+                >
+                  <button
+                    className={`w-full h-full bg-black text-white font-bold text-xs uppercase tracking-wide flex items-center justify-between px-4 hover:bg-neutral-900 transition-colors ${
+                      index === 0
+                        ? "rounded-md md:rounded-l-none md:rounded-r-md"
+                        : index === tips.length - 1
+                          ? "rounded-md md:rounded-r-none md:rounded-l-md"
+                          : "rounded-md"
+                    }`}
+                  >
                     <span>View Post</span>
                     <div className="bg-white text-black rounded-full p-1">
-                      <img src={arrow.src || arrow} className="w-3.5 h-3.5" alt="arrow" />
+                      <img
+                        src={arrow.src || arrow}
+                        className="w-3.5 h-3.5"
+                        alt="arrow"
+                      />
                     </div>
                   </button>
                 </div>
-
               </div>
             </div>
           ))}
