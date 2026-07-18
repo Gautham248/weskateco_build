@@ -1,6 +1,3 @@
-import StoreBanner from "components/layout/search/banner";
-import FilterSortBar from "components/layout/search/filter-sort-bar";
-import ProductCard from "components/product/product-card";
 import { defaultSort, sorting } from "lib/constants";
 import { createTranslator } from "lib/i18n";
 import {
@@ -8,9 +5,10 @@ import {
   getCollectionProducts,
   getCollections,
 } from "lib/shopify";
+import { Product } from "lib/shopify/types";
 import { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import StoreCollectionClient from "./store-collection-client";
 
 export const dynamicParams = true;
 
@@ -41,114 +39,18 @@ export default async function CategoryPage(props: {
 }) {
   const searchParams = await props.searchParams;
   const params = await props.params;
-  const { sort, color, level, price, page } = (searchParams || {}) as {
+  const { sort } = (searchParams || {}) as {
     [key: string]: string;
   };
   const { sortKey, reverse } =
     sorting.find((item) => item.slug === sort) || defaultSort;
 
-  const [collection, products, collections] = await Promise.all([
+  const [collection, collections] = await Promise.all([
     getCollection(params.collection),
-    getCollectionProducts({
-      collection: params.collection,
-      sortKey,
-      reverse,
-    }),
     getCollections(),
   ]);
 
   if (!collection) return notFound();
-
-  // Apply filters
-  let filteredProducts = [...products];
-
-  if (color) {
-    const colorLower = color.toLowerCase();
-    filteredProducts = filteredProducts.filter((product) => {
-      const matchesOption = product.options?.some(
-        (opt) =>
-          opt.name.toLowerCase() === "color" &&
-          opt.values.some((val) => val.toLowerCase() === colorLower),
-      );
-      const matchesTag = product.tags?.some(
-        (tag) => tag.toLowerCase() === colorLower,
-      );
-      const matchesTitle = product.title.toLowerCase().includes(colorLower);
-      const matchesDesc = product.description
-        ?.toLowerCase()
-        .includes(colorLower);
-      return matchesOption || matchesTag || matchesTitle || matchesDesc;
-    });
-  }
-
-  if (level) {
-    const levelLower = level.toLowerCase();
-    filteredProducts = filteredProducts.filter((product) => {
-      const matchesTag = product.tags?.some(
-        (tag) => tag.toLowerCase() === levelLower,
-      );
-      const matchesTitle = product.title.toLowerCase().includes(levelLower);
-      const matchesDesc = product.description
-        ?.toLowerCase()
-        .includes(levelLower);
-      return matchesTag || matchesTitle || matchesDesc;
-    });
-  }
-
-  if (price) {
-    const parts = price.split("-").map(Number);
-    const minPrice = parts[0];
-    const maxPrice = parts[1];
-    if (
-      minPrice !== undefined &&
-      maxPrice !== undefined &&
-      !isNaN(minPrice) &&
-      !isNaN(maxPrice)
-    ) {
-      filteredProducts = filteredProducts.filter((product) => {
-        const productPrice = Number(product.priceRange.minVariantPrice.amount);
-        return productPrice >= minPrice && productPrice <= maxPrice;
-      });
-    }
-  }
-
-  // Pagination calculations
-  const ITEMS_PER_PAGE = 12;
-  const currentPage = Number(page) || 1;
-  const totalProducts = filteredProducts.length;
-  const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
-
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  );
-
-  const createPageUrl = (pageNumber: number) => {
-    const paramsObj = new URLSearchParams();
-    if (sort) paramsObj.set("sort", sort);
-    if (color) paramsObj.set("color", color);
-    if (level) paramsObj.set("level", level);
-    if (price) paramsObj.set("price", price);
-    paramsObj.set("page", String(pageNumber));
-    return `?${paramsObj.toString()}`;
-  };
-
-  const getPagesArray = (current: number, total: number) => {
-    if (total <= 5) {
-      return Array.from({ length: total }, (_, i) => i + 1);
-    }
-    const pages: (number | string)[] = [];
-    if (current <= 3) {
-      pages.push(1, 2, 3, "...", total);
-    } else if (current >= total - 2) {
-      pages.push(1, "...", total - 2, total - 1, total);
-    } else {
-      pages.push(1, "...", current - 1, current, current + 1, "...", total);
-    }
-    return pages;
-  };
-
-  const t = createTranslator(params.locale);
 
   // Mapping of subcollection handles to their main category handle
   const SUB_TO_PARENT: Record<string, string> = {
@@ -270,102 +172,54 @@ export default async function CategoryPage(props: {
       return 0;
     });
 
+  // Collect handles to fetch (including active and all other tabs)
+  const handlesToFetch = new Set(formattedCollections.map((c) => c.handle));
+  handlesToFetch.add(params.collection);
+
+  const productsByCollection: Record<string, Product[]> = {};
+  const collectionsMeta: Record<string, { title: string; description?: string }> = {};
+
+  // Add initial collection metadata
+  collectionsMeta[params.collection] = {
+    title: collection.title,
+    description: collection.description,
+  };
+
+  await Promise.all(
+    Array.from(handlesToFetch).map(async (handle) => {
+      try {
+        const [prods, colData] = await Promise.all([
+          getCollectionProducts({
+            collection: handle,
+            sortKey,
+            reverse,
+          }),
+          handle === params.collection ? Promise.resolve(collection) : getCollection(handle),
+        ]);
+        productsByCollection[handle] = prods;
+        if (colData) {
+          collectionsMeta[handle] = {
+            title: colData.title,
+            description: colData.description,
+          };
+        }
+      } catch (e) {
+        console.error(`Error prefetching collection ${handle}:`, e);
+        productsByCollection[handle] = [];
+      }
+    })
+  );
+
+  const t = createTranslator(params.locale);
+
   return (
-    <section className="w-full">
-      <StoreBanner
-        title={collection.title}
-        description={collection.description}
-      />
-
-      <div className="mb-6">
-        <FilterSortBar
-          title={collection.title}
-          totalProducts={filteredProducts.length}
-          locale={params.locale}
-          collections={formattedCollections}
-          activeCollectionHandle={params.collection}
-        />
-      </div>
-
-      {paginatedProducts.length === 0 ? (
-        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 p-8 text-center dark:border-neutral-800">
-          <p className="text-base text-neutral-500 dark:text-neutral-400">
-            {t("collection.no_products")}
-          </p>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
-            {paginatedProducts.map((product) => (
-              <ProductCard
-                key={product.handle}
-                product={product}
-                locale={params.locale}
-              />
-            ))}
-          </div>
-
-          {totalPages > 1 && (
-            <div className="mt-12 flex items-center justify-center gap-2 py-4">
-              {currentPage > 1 ? (
-                <Link
-                  href={createPageUrl(currentPage - 1)}
-                  className="flex items-center gap-1 text-sm font-medium text-black hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors mr-2"
-                >
-                  &lt; Previous
-                </Link>
-              ) : (
-                <span className="flex items-center gap-1 text-sm font-medium text-neutral-400 dark:text-neutral-700 cursor-not-allowed mr-2">
-                  &lt; Previous
-                </span>
-              )}
-
-              <div className="flex items-center gap-1">
-                {getPagesArray(currentPage, totalPages).map((p, idx) => {
-                  if (p === "...") {
-                    return (
-                      <span
-                        key={`ellipse-${idx}`}
-                        className="px-2 text-neutral-400 dark:text-neutral-600"
-                      >
-                        ...
-                      </span>
-                    );
-                  }
-
-                  const isCurrent = p === currentPage;
-                  return (
-                    <Link
-                      key={p}
-                      href={createPageUrl(Number(p))}
-                      className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${
-                        isCurrent
-                          ? "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-xs"
-                          : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                      }`}
-                    >
-                      {p}
-                    </Link>
-                  );
-                })}
-              </div>
-
-              {currentPage < totalPages ? (
-                <Link
-                  href={createPageUrl(currentPage + 1)}
-                  className="flex items-center gap-1 text-sm font-medium text-black hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors ml-2"
-                >
-                  Next &gt;
-                </Link>
-              ) : (
-                <span className="flex items-center gap-1 text-sm font-medium text-neutral-400 dark:text-neutral-700 cursor-not-allowed ml-2">
-                  Next &gt;
-                </span>
-              )}
-            </div>
-          )}
-        </>
-      )}
-    </section>
+    <StoreCollectionClient
+      initialCollectionHandle={params.collection}
+      productsByCollection={productsByCollection}
+      collections={formattedCollections}
+      collectionsMeta={collectionsMeta}
+      locale={params.locale}
+      noProductsText={t("collection.no_products")}
+    />
   );
 }

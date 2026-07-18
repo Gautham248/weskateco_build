@@ -44,11 +44,75 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
     }, 80);
   };
 
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const isSwiping = useRef(false);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches[0]) {
+      touchStart.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+      isSwiping.current = false;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+
+    const diffX = touch.clientX - touchStart.current.x;
+    const diffY = touch.clientY - touchStart.current.y;
+
+    if (Math.abs(diffX) > 10 && Math.abs(diffX) > Math.abs(diffY)) {
+      isSwiping.current = true;
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current) return;
+    const touch = e.changedTouches[0];
+    if (touch) {
+      const diffX = touch.clientX - touchStart.current.x;
+      const diffY = touch.clientY - touchStart.current.y;
+
+      const threshold = 40; // minimum distance for swipe in px
+
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        if (Math.abs(diffX) > threshold) {
+          if (diffX < 0) {
+            // Swiped left
+            if (displayImages.length > 1) {
+              setShowIndex((prev) => Math.min(prev + 1, displayImages.length - 1));
+            }
+          } else {
+            // Swiped right
+            setShowIndex((prev) => Math.max(prev - 1, 0));
+          }
+        }
+      }
+    }
+    touchStart.current = null;
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (isSwiping.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      isSwiping.current = false;
+    }
+  };
+
   return (
-    <Link href={productPath} className="group flex flex-col bg-transparent">
+    <Link
+      href={productPath}
+      className="group flex flex-col bg-transparent"
+      onClick={handleClick}
+    >
       <div
         ref={imgRef}
-        className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900"
+        className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
         onMouseEnter={() => {
           if (displayImages.length > 1) setShowIndex(1);
         }}
@@ -57,6 +121,9 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
           clearTimeout(moveTimer.current);
           setShowIndex(0);
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {displayImages.length > 0 ? (
           <div
@@ -91,9 +158,8 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             {displayImages.map((_, idx) => (
               <span
                 key={idx}
-                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
-                  idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
-                }`}
+                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
+                  }`}
               />
             ))}
           </div>
@@ -117,8 +183,8 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
         </div>
 
         {/* Hover Action Button */}
-        <div className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-10 w-10 hover:w-[130px] items-center rounded-lg bg-black/30 dark:bg-white/20 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all duration-300 active:scale-95 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 w-full">
+        <div className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-10 w-10 hover:w-[110px] items-center rounded-lg bg-black/30 dark:bg-white/20 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all duration-300 active:scale-95 overflow-hidden">
+          <div className="flex items-center gap-2 px-2 w-full">
             <svg
               width="16"
               height="16"

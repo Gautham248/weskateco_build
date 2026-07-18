@@ -41,15 +41,15 @@ export async function generateMetadata(props: {
     },
     openGraph: url
       ? {
-          images: [
-            {
-              url,
-              width,
-              height,
-              alt,
-            },
-          ],
-        }
+        images: [
+          {
+            url,
+            width,
+            height,
+            alt,
+          },
+        ],
+      }
       : null,
   };
 }
@@ -117,15 +117,15 @@ export default async function ProductPage(props: {
         </div> */}
 
         {/* Main Product Layout */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:gap-12 py-8 md:py-12">
-          <div className="w-full basis-full lg:basis-7/12 lg:sticky lg:top-24">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:gap-12 py-6 md:py-8">
+          <div className="-mx-4 w-[calc(100%+32px)] lg:mx-0 lg:w-full basis-full lg:basis-7/12 lg:sticky lg:top-24 mb-5 lg:mb-0">
             <Suspense
               fallback={
-                <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden" />
+                <div className="relative aspect-[581/897] w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900" />
               }
             >
               <Gallery
-                images={product.images.slice(0, 5).map((image: Image) => ({
+                images={product.images.slice(0, 6).map((image: Image) => ({
                   src: image.url,
                   altText: image.altText,
                 }))}

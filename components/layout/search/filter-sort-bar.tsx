@@ -24,6 +24,14 @@ interface FilterSortBarProps {
   locale: string;
   collections: CollectionItem[];
   activeCollectionHandle?: string;
+  // Optional controlled props for client-side state
+  onTabChange?: (handle: string) => void;
+  activeColor?: string | null;
+  activeLevel?: string | null;
+  activePrice?: string | null;
+  currentSort?: string;
+  onFilterChange?: (filters: { color: string | null; level: string | null; price: string | null }) => void;
+  onSortChange?: (sort: string) => void;
 }
 
 const COLORS = [
@@ -53,6 +61,13 @@ export default function FilterSortBar({
   locale,
   collections,
   activeCollectionHandle = "",
+  onTabChange,
+  activeColor: propColor,
+  activeLevel: propLevel,
+  activePrice: propPrice,
+  currentSort: propSort,
+  onFilterChange,
+  onSortChange,
 }: FilterSortBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -61,11 +76,11 @@ export default function FilterSortBar({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
 
-  // Active filters from URL
-  const activeColor = searchParams.get("color");
-  const activeLevel = searchParams.get("level");
-  const activePrice = searchParams.get("price");
-  const currentSort = searchParams.get("sort") || "";
+  // Active filters from props or URL
+  const activeColor = propColor !== undefined ? propColor : searchParams.get("color");
+  const activeLevel = propLevel !== undefined ? propLevel : searchParams.get("level");
+  const activePrice = propPrice !== undefined ? propPrice : searchParams.get("price");
+  const currentSort = propSort !== undefined ? propSort : (searchParams.get("sort") || "");
 
   // Local selection states inside the filter drawer
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -80,21 +95,30 @@ export default function FilterSortBar({
   };
 
   const applyFilters = () => {
-    const params = new URLSearchParams(searchParams.toString());
+    if (onFilterChange) {
+      onFilterChange({
+        color: selectedColor,
+        level: selectedLevel,
+        price: selectedPrice,
+      });
+      setIsFilterOpen(false);
+    } else {
+      const params = new URLSearchParams(searchParams.toString());
 
-    if (selectedColor) params.set("color", selectedColor);
-    else params.delete("color");
+      if (selectedColor) params.set("color", selectedColor);
+      else params.delete("color");
 
-    if (selectedLevel) params.set("level", selectedLevel);
-    else params.delete("level");
+      if (selectedLevel) params.set("level", selectedLevel);
+      else params.delete("level");
 
-    if (selectedPrice) params.set("price", selectedPrice);
-    else params.delete("price");
+      if (selectedPrice) params.set("price", selectedPrice);
+      else params.delete("price");
 
-    params.delete("page");
+      params.delete("page");
 
-    router.push(`${pathname}?${params.toString()}`);
-    setIsFilterOpen(false);
+      router.push(`${pathname}?${params.toString()}`);
+      setIsFilterOpen(false);
+    }
   };
 
   const clearLocalFilters = () => {
@@ -105,21 +129,35 @@ export default function FilterSortBar({
 
   // Helper to update URL params (for instant chips/sort updates outside drawer)
   const updateUrlParam = (key: string, value: string | null) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set(key, value);
+    if (key === "sort" && onSortChange) {
+      onSortChange(value || "");
+    } else if ((key === "color" || key === "level" || key === "price") && onFilterChange) {
+      onFilterChange({
+        color: key === "color" ? value : activeColor,
+        level: key === "level" ? value : activeLevel,
+        price: key === "price" ? value : activePrice,
+      });
     } else {
-      params.delete(key);
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+      router.push(`${pathname}?${params.toString()}`);
     }
-    router.push(`${pathname}?${params.toString()}`);
   };
 
   const clearAllFilters = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("color");
-    params.delete("level");
-    params.delete("price");
-    router.push(`${pathname}?${params.toString()}`);
+    if (onFilterChange) {
+      onFilterChange({ color: null, level: null, price: null });
+    } else {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("color");
+      params.delete("level");
+      params.delete("price");
+      router.push(`${pathname}?${params.toString()}`);
+    }
   };
 
   // Find active items for display
@@ -273,9 +311,9 @@ export default function FilterSortBar({
                           setIsSortOpen(false);
                         }}
                         className={clsx(
-                          "cursor-pointer w-full text-left px-4 py-2.5 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors",
+                          "cursor-pointer w-full text-left px-4 py-2.5 text-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors",
                           {
-                            "bg-neutral-50 font-bold dark:bg-neutral-800":
+                            "bg-neutral-100 font-bold dark:bg-neutral-800":
                               currentSort === (option.slug || ""),
                           },
                         )}
@@ -313,6 +351,13 @@ export default function FilterSortBar({
                   <Link
                     key={coll.handle}
                     href={linkHref}
+                    prefetch={true}
+                    onClick={(e) => {
+                      if (onTabChange) {
+                        e.preventDefault();
+                        onTabChange(coll.handle);
+                      }
+                    }}
                     className={clsx(
                       "px-3 py-2 md:px-6 md:py-3 rounded-[6px] text-[clamp(0.813rem,2vw,1rem)] font-medium whitespace-nowrap transition-all duration-200 border",
                       isActive

@@ -1,96 +1,160 @@
 "use client";
 
-import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-import { GridTileImage } from "components/grid/tile";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 export function Gallery({
   images,
 }: {
   images: { src: string; altText: string }[];
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const imageIndex = searchParams.has("image")
-    ? parseInt(searchParams.get("image")!)
-    : 0;
+  const [loadingStates, setLoadingStates] = useState<Record<number, boolean>>({
+    0: true,
+    1: true,
+    2: true,
+    3: true,
+    4: true,
+    5: true,
+  });
 
-  const updateImage = (index: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("image", index);
-    router.replace(`?${params.toString()}`, { scroll: false });
+  const handleImageLoad = (index: number) => {
+    setLoadingStates((prev) => ({ ...prev, [index]: false }));
   };
 
-  const nextImageIndex = imageIndex + 1 < images.length ? imageIndex + 1 : 0;
-  const previousImageIndex =
-    imageIndex === 0 ? images.length - 1 : imageIndex - 1;
+  if (images.length === 0) return null;
 
-  const buttonClassName =
-    "h-full px-6 transition-all ease-in-out hover:scale-110 hover:text-black dark:hover:text-white flex items-center justify-center";
+  const hasMoreThanOne = images.length > 1;
+
+  // Chunk images into blocks of 3
+  const blocks: { src: string; altText: string }[][] = [];
+  for (let i = 0; i < images.length; i += 3) {
+    blocks.push(images.slice(i, i + 3));
+  }
+
+  const renderSpinner = () => (
+    <div className="absolute inset-0 flex items-center justify-center z-10 bg-[#e5e5e5] dark:bg-neutral-900">
+      <svg className="animate-spin h-8 w-8 text-neutral-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
+  );
+
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    const scrollLeft = target.scrollLeft;
+    const maxScroll = target.scrollWidth - target.clientWidth;
+    if (maxScroll > 0) {
+      setScrollProgress(scrollLeft / maxScroll);
+    }
+  };
 
   return (
-    <form>
-      <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden">
-        {images[imageIndex] && (
-          <Image
-            className="h-full w-full object-contain"
-            fill
-            sizes="(min-width: 1024px) 66vw, 100vw"
-            alt={images[imageIndex]?.altText as string}
-            src={images[imageIndex]?.src as string}
-            priority={true}
-          />
-        )}
-
-        {images.length > 1 ? (
-          <div className="absolute bottom-[15%] flex w-full justify-center">
-            <div className="mx-auto flex h-11 items-center rounded-full border border-white bg-neutral-50/80 text-neutral-500 backdrop-blur-sm dark:border-black dark:bg-neutral-900/80">
-              <button
-                formAction={() => updateImage(previousImageIndex.toString())}
-                aria-label="Previous product image"
-                className={buttonClassName}
-              >
-                <ArrowLeftIcon className="h-5" />
-              </button>
-              <div className="mx-1 h-6 w-px bg-neutral-500"></div>
-              <button
-                formAction={() => updateImage(nextImageIndex.toString())}
-                aria-label="Next product image"
-                className={buttonClassName}
-              >
-                <ArrowRightIcon className="h-5" />
-              </button>
-            </div>
+    <div className="relative w-full overflow-hidden group">
+      {/* Mobile/Tablet Gallery (Horizontal Scroll) */}
+      <div
+        onScroll={handleScroll}
+        className="flex lg:hidden w-full overflow-x-auto snap-x snap-mandatory scrollbar-none gap-0 aspect-[393/451]"
+      >
+        {images.map((image, idx) => (
+          <div
+            key={idx}
+            className="relative w-full h-full snap-start snap-always shrink-0 bg-neutral-100 dark:bg-neutral-900 overflow-hidden"
+          >
+            {loadingStates[idx] && renderSpinner()}
+            <Image
+              className="h-full w-full object-contain"
+              fill
+              sizes="100vw"
+              alt={image.altText || "Product image"}
+              src={image.src}
+              priority={idx === 0}
+              onLoad={() => handleImageLoad(idx)}
+            />
           </div>
-        ) : null}
+        ))}
+
+        {/* Mobile Progress Bar */}
+        {images.length > 1 && (
+          <div className="absolute bottom-0 left-0 w-full h-[5px] bg-transparent dark:bg-neutral-800 z-30">
+            <div
+              className="h-full bg-black dark:bg-white transition-transform duration-75"
+              style={{
+                width: `${100 / images.length}%`,
+                transform: `translateX(${scrollProgress * (images.length - 1) * 100}%)`,
+              }}
+            />
+          </div>
+        )}
       </div>
 
-      {images.length > 1 ? (
-        <ul className="my-12 flex items-center flex-wrap justify-center gap-2 overflow-auto py-1 lg:mb-0">
-          {images.map((image, index) => {
-            const isActive = index === imageIndex;
+      {/* Desktop Gallery (Vertical Overlapping Sticky Blocks) */}
+      <div
+        className={`hidden lg:flex flex-col w-full overflow-y-auto snap-y snap-mandatory scrollbar-none gap-0 ${hasMoreThanOne ? "aspect-[1162/897]" : "aspect-[581/897]"
+          }`}
+      >
+        {blocks.map((block, blockIdx) => {
+          const blockHasMoreThanOne = block.length > 1;
+          const baseIdx = blockIdx * 3;
 
-            return (
-              <li key={image.src} className="h-20 w-20">
-                <button
-                  formAction={() => updateImage(index.toString())}
-                  aria-label="Select product image"
-                  className="h-full w-full"
-                >
-                  <GridTileImage
-                    alt={image.altText}
-                    src={image.src}
-                    width={80}
-                    height={80}
-                    active={isActive}
-                  />
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
-    </form>
+          return (
+            <div
+              key={blockIdx}
+              style={{ zIndex: (blockIdx + 1) * 10 }}
+              className={`w-full h-full sticky top-0 snap-start snap-always shrink-0 ${blockHasMoreThanOne ? "grid grid-cols-2 gap-0" : "max-w-[581px] mx-auto"
+                }`}
+            >
+              {/* Left Column: Image 1 */}
+              <div className="relative w-full aspect-[581/897] bg-[#e5e5e5] dark:bg-neutral-900 overflow-hidden">
+                {loadingStates[baseIdx] && renderSpinner()}
+                <Image
+                  className="h-full w-full object-contain"
+                  fill
+                  sizes="(min-width: 1024px) 35vw, 100vw"
+                  alt={block[0]?.altText || "Product image"}
+                  src={block[0]?.src || ""}
+                  priority={blockIdx === 0}
+                  onLoad={() => handleImageLoad(baseIdx)}
+                />
+              </div>
+
+              {/* Right Column: Stacked Images */}
+              {blockHasMoreThanOne && (
+                <div className="flex flex-col gap-0 justify-between">
+                  {block[1] && (
+                    <div className="relative w-full aspect-[581/448.5] bg-[#e5e5e5] dark:bg-neutral-900 overflow-hidden">
+                      {loadingStates[baseIdx + 1] && renderSpinner()}
+                      <Image
+                        className="h-full w-full object-cover"
+                        fill
+                        sizes="(min-width: 1024px) 35vw, 100vw"
+                        alt={block[1].altText || "Product image"}
+                        src={block[1].src}
+                        onLoad={() => handleImageLoad(baseIdx + 1)}
+                      />
+                    </div>
+                  )}
+                  {block[2] && (
+                    <div className="relative w-full aspect-[581/448.5] bg-[#e5e5e5] dark:bg-neutral-900 overflow-hidden">
+                      {loadingStates[baseIdx + 2] && renderSpinner()}
+                      <Image
+                        className="h-full w-full object-cover"
+                        fill
+                        sizes="(min-width: 1024px) 35vw, 100vw"
+                        alt={block[2].altText || "Product image"}
+                        src={block[2].src}
+                        onLoad={() => handleImageLoad(baseIdx + 2)}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }

@@ -6,6 +6,7 @@ import { useCart } from "components/cart/cart-context";
 import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
+import { toast } from "sonner";
 
 export function ProductActions({ product }: { product: Product }) {
   const { variants, availableForSale } = product;
@@ -14,6 +15,7 @@ export function ProductActions({ product }: { product: Product }) {
   const [isBuyNowPending, startBuyNowTransition] = useTransition();
   const [message, formAction] = useActionState(addItem, null);
   const [isAdded, setIsAdded] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   const variant = variants.find((variant: ProductVariant) =>
     variant.selectedOptions.every(
@@ -59,32 +61,52 @@ export function ProductActions({ product }: { product: Product }) {
       {/* Add To Cart Form */}
       <form
         action={async () => {
-          if (finalVariant) {
-            addCartItem(finalVariant, product);
-          }
-          if (selectedVariantId) {
+          if (!selectedVariantId) return;
+          setIsAdding(true);
+          try {
+            await addItemAction();
+            if (finalVariant) {
+              addCartItem(finalVariant, product);
+            }
+            toast.success(`${product.title} added to cart!`, {
+              position: "top-right",
+              style: {
+                backgroundColor: "#ffffff",
+                color: "#10b981",
+                borderColor: "#10b981",
+                position: "relative",
+                top: "60px",
+              },
+            });
             setIsAdded(true);
             setTimeout(() => setIsAdded(false), 2000);
-            await addItemAction();
+          } catch (e) {
+            console.error(e);
+          } finally {
+            setIsAdding(false);
           }
         }}
       >
         <button
           type="submit"
-          disabled={!selectedVariantId}
+          disabled={!selectedVariantId || isAdding || isAdded}
           className={clsx(
             buttonBaseClasses,
-            selectedVariantId
-              ? "bg-black text-white hover:bg-neutral-800 border-black dark:bg-white dark:text-black dark:hover:bg-neutral-100 dark:border-white"
-              : "bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed",
+            !selectedVariantId
+              ? "bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed"
+              : isAdding || isAdded
+                ? "bg-neutral-200 text-black border-neutral-300 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 cursor-not-allowed"
+                : "bg-black text-white hover:bg-neutral-800 border-black dark:bg-white dark:text-black dark:hover:bg-neutral-100 dark:border-white",
           )}
           style={{ fontFamily: "Archivo" }}
         >
-          {selectedVariantId
-            ? isAdded
-              ? "Added to Cart ✓"
-              : "Add To Cart"
-            : "Select Option"}
+          {!selectedVariantId
+            ? "Select Option"
+            : isAdding
+              ? "Adding to Cart..."
+              : isAdded
+                ? "Added to Cart ✓"
+                : "Add To Cart"}
         </button>
         <p aria-live="polite" className="sr-only" role="status">
           {message}
