@@ -558,7 +558,7 @@ function FilterDrawer({
                         setSelectedLevel(isSelected ? null : level.value)
                       }
                       className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
-                      style={{ fontFamily: "Archivo" }}
+                      style={{ fontFamily: "Archivo, sans-serif" }}
                     >
                       <Checkbox checked={isSelected} />
                       <span>{level.name}</span>
@@ -598,7 +598,7 @@ function FilterDrawer({
                         setSelectedColor(isSelected ? null : c.value)
                       }
                       className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
-                      style={{ fontFamily: "Archivo" }}
+                      style={{ fontFamily: "Archivo, sans-serif" }}
                     >
                       <Checkbox checked={isSelected} />
                       <span
@@ -642,7 +642,7 @@ function FilterDrawer({
                         setSelectedPrice(isSelected ? null : price.value)
                       }
                       className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
-                      style={{ fontFamily: "Archivo" }}
+                      style={{ fontFamily: "Archivo, sans-serif" }}
                     >
                       <Checkbox checked={isSelected} />
                       <span>{price.name}</span>
@@ -660,7 +660,7 @@ function FilterDrawer({
             type="button"
             onClick={applyFilters}
             className="w-full py-4 text-center bg-black text-white dark:bg-white dark:text-black rounded-lg text-sm font-bold uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
-            style={{ fontFamily: "Archivo" }}
+            style={{ fontFamily: "Archivo, sans-serif" }}
           >
             APPLY
           </button>
@@ -668,7 +668,7 @@ function FilterDrawer({
             type="button"
             onClick={clearLocalFilters}
             className="w-full py-4 text-center border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black text-black dark:text-white rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
-            style={{ fontFamily: "Archivo" }}
+            style={{ fontFamily: "Archivo, sans-serif" }}
           >
             CLEAR
           </button>

@@ -69,7 +69,7 @@ export function Navbar({ locale }: { locale?: string }) {
   return (
     <nav
       className="flex items-center justify-between h-[72px] mx-auto max-w-(--breakpoint-2xl) px-4 relative z-50"
-      style={{ fontFamily: "Archivo" }}
+      style={{ fontFamily: "Archivo, sans-serif" }}
     >
       {/* Left: Mobile hamburger + Logo */}
       <div className="w-[35%] flex items-center justify-start gap-4 z-50">

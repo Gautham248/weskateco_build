@@ -217,7 +217,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
         {product.vendor && (
           <p
             className="text-[clamp(0.625rem,1.5vw,0.75rem)] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-1"
-            style={{ fontFamily: "Archivo" }}
+            style={{ fontFamily: "Archivo, sans-serif" }}
           >
             {product.vendor}
           </p>

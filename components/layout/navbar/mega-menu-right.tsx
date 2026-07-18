@@ -94,8 +94,8 @@ export default function MegaMenuRight({
             {/* Horizontal Text Overlay */}
             <div
               className={`absolute bottom-6 left-6 z-10 max-w-[85%] transition-all duration-700 ease-in-out ${showPanel
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4 pointer-events-none"
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4 pointer-events-none"
                 }`}
             >
               <h3
@@ -118,9 +118,9 @@ export default function MegaMenuRight({
             <span
               className="text-black dark:text-white font-[700] text-[clamp(2rem,5vw,3rem)] tracking-[-0.01em] uppercase whitespace-nowrap select-none px-2"
               style={{
-                fontFamily: "Archivo",
                 transform: "rotate(-90deg)",
                 transformOrigin: "center",
+                fontFamily: "Archivo, sans-serif"
               }}
             >
               Newly Released

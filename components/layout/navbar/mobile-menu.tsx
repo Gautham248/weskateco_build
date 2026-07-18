@@ -186,7 +186,7 @@ export default function MobileMenu() {
                           <div
                             key={category.name}
                             className="border-b border-neutral-100 dark:border-neutral-900/60 py-3 last:border-0"
-                            style={{ fontFamily: "Archivo" }}
+                            style={{ fontFamily: "Archivo, sans-serif" }}
                           >
                             <div
                               onClick={() =>

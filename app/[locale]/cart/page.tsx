@@ -99,7 +99,7 @@ function CartPageContent() {
             <Link
               href={getLocalizedPath("/store/skateboards", locale)}
               className="rounded-xs bg-black text-white px-6 py-3 uppercase text-xs font-semibold tracking-wider hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 transition-colors"
-              style={{ fontFamily: "Archivo" }}
+              style={{ fontFamily: "Archivo, sans-serif" }}
             >
               Shop Now
             </Link>
@@ -117,7 +117,7 @@ function CartPageContent() {
               {/* Alert Sign In */}
               <div
                 className="flex items-center gap-3 bg-neutral-900 text-white rounded-lg p-4 text-sm font-normal"
-                style={{ fontFamily: "Archivo" }}
+                style={{ fontFamily: "Archivo, sans-serif" }}
               >
                 <svg
                   width="16"
@@ -187,7 +187,7 @@ function CartPageContent() {
                         {/* Right Column: Title, Details, Delivery, Remove */}
                         <div
                           className="flex-1 flex flex-col min-w-0"
-                          style={{ fontFamily: "Archivo" }}
+                          style={{ fontFamily: "Archivo, sans-serif" }}
                         >
                           <h3
                             className="text-[17px] font-bold text-neutral-900 dark:text-neutral-50 leading-tight tracking-[-1%] uppercase"
@@ -268,7 +268,7 @@ function CartPageContent() {
                         {/* Product details info & Actions */}
                         <div
                           className="flex-1 flex flex-col min-h-[110px]"
-                          style={{ fontFamily: "Archivo" }}
+                          style={{ fontFamily: "Archivo, sans-serif" }}
                         >
                           {/* Top row: Title/Vendor on left, Quantity on right */}
                           <div className="flex justify-between items-start gap-4">
@@ -340,7 +340,7 @@ function CartPageContent() {
                 <div></div>
                 <div
                   className="flex justify-between items-center w-full text-[14px] text-neutral-500 dark:text-neutral-400 md:justify-end md:gap-4"
-                  style={{ fontFamily: "Archivo" }}
+                  style={{ fontFamily: "Archivo, sans-serif" }}
                 >
                   <span>Subtotal ({cart.totalQuantity} items):</span>
                   <Price
@@ -365,7 +365,7 @@ function CartPageContent() {
                 </h2>
 
                 {/* Price Details breakdown */}
-                <div className="space-y-4" style={{ fontFamily: "Archivo" }}>
+                <div className="space-y-4" style={{ fontFamily: "Archivo, sans-serif" }}>
 
                   <div className="border-t border-neutral-200 dark:border-neutral-800 pt-4 mt-2 flex justify-between items-baseline">
                     <span
@@ -386,12 +386,12 @@ function CartPageContent() {
                 {/* Terms agreement checkbox */}
                 <div
                   className="mt-6 flex items-end gap-2 "
-                  style={{ fontFamily: "Archivo" }}
+                  style={{ fontFamily: "Archivo, sans-serif" }}
                 >
                   <label
                     htmlFor="terms"
                     className="text-[12px] text-black leading-tight"
-                    style={{ fontFamily: "Archivo" }}
+                    style={{ fontFamily: "Archivo, sans-serif" }}
                   >
                     Taxes included. Discounts and shipping calculated at checkout.
                   </label>
@@ -402,7 +402,7 @@ function CartPageContent() {
                   type="button"
                   onClick={handleCheckout}
                   className="w-full mt-6 h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-none cursor-pointer transition-colors"
-                  style={{ fontFamily: "Archivo" }}
+                  style={{ fontFamily: "Archivo, sans-serif" }}
                 >
                   Proceed to Checkout
                 </button>
@@ -410,7 +410,7 @@ function CartPageContent() {
                 {/* Secure payments indicator badge */}
                 <div
                   className="mt-4 p-3 flex items-center gap-2.5 text-[12px] text-black font-medium"
-                  style={{ fontFamily: "Archivo" }}
+                  style={{ fontFamily: "Archivo, sans-serif" }}
                 >
                   <img
                     src={secure.src || secure}
