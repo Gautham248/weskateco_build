@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export function Gallery({
   images,
@@ -40,14 +40,16 @@ export function Gallery({
     </div>
   );
 
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
     const scrollLeft = target.scrollLeft;
     const maxScroll = target.scrollWidth - target.clientWidth;
-    if (maxScroll > 0) {
-      setScrollProgress(scrollLeft / maxScroll);
+    if (maxScroll > 0 && progressBarRef.current) {
+      const progress = Math.max(0, Math.min(1, scrollLeft / maxScroll));
+      const translateX = progress * (images.length - 1) * 100;
+      progressBarRef.current.style.transform = `translateX(${translateX}%)`;
     }
   };
 
@@ -80,10 +82,11 @@ export function Gallery({
         {images.length > 1 && (
           <div className="absolute bottom-0 left-0 w-full h-[5px] bg-transparent dark:bg-neutral-800 z-30">
             <div
+              ref={progressBarRef}
               className="h-full bg-black dark:bg-white transition-transform duration-75"
               style={{
                 width: `${100 / images.length}%`,
-                transform: `translateX(${scrollProgress * (images.length - 1) * 100}%)`,
+                transform: "translateX(0%)",
               }}
             />
           </div>
@@ -103,7 +106,7 @@ export function Gallery({
             <div
               key={blockIdx}
               style={{ zIndex: (blockIdx + 1) * 10 }}
-              className={`w-full h-full sticky top-0 snap-start snap-always shrink-0 ${blockHasMoreThanOne ? "grid grid-cols-2 gap-0" : "max-w-[581px] mx-auto"
+              className={`w-full sticky top-0 snap-start snap-always shrink-0 ${blockHasMoreThanOne ? "grid grid-cols-2 gap-0 aspect-[1162/897]" : "max-w-[581px] mx-auto aspect-[581/897]"
                 }`}
             >
               {/* Left Column: Image 1 */}
