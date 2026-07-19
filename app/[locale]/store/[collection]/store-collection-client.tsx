@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import StoreBanner from "components/layout/search/banner";
 import FilterSortBar from "components/layout/search/filter-sort-bar";
 import ProductCard from "components/product/product-card";
@@ -38,6 +38,7 @@ export default function StoreCollectionClient({
 }: StoreCollectionClientProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   // Local state
   const [activeHandle, setActiveHandle] = useState(initialCollectionHandle);
@@ -55,7 +56,7 @@ export default function StoreCollectionClient({
 
     const filters: Record<string, string> = {};
     searchParams.forEach((value, key) => {
-      if (key !== "sort" && key !== "page") filters[key] = value;
+      if (key !== "sort" && key !== "page" && key !== "filter") filters[key] = value;
     });
     setActiveFilters(filters);
     setSort(searchParams.get("sort") || "");
@@ -95,6 +96,9 @@ export default function StoreCollectionClient({
     const newPath = pathParts.join("/");
 
     const params = new URLSearchParams();
+    const filterParam = searchParams.get("filter");
+    if (filterParam) params.set("filter", filterParam);
+
     Object.entries(newFilters).forEach(([k, v]) => {
       if (v) params.set(k, v);
     });
@@ -125,8 +129,24 @@ export default function StoreCollectionClient({
     updateParams(activeHandle, activeFilters, newSort, 1);
   };
 
+  /** Single atomic handler — prevents the two-call race that stales filters/sort */
+  const handleApplyAll = (filters: Record<string, string>, newSort: string) => {
+    updateParams(activeHandle, filters, newSort, 1);
+  };
+
   const handleCategoryChange = (handle: string) => {
-    updateParams(handle, {}, sort, 1);
+    const pathParts = pathname.split("/");
+    const storeIdx = pathParts.indexOf("store");
+    if (storeIdx !== -1) {
+      pathParts.splice(storeIdx + 1);
+      if (handle !== "") pathParts.push(handle);
+    }
+    const newPath = pathParts.join("/");
+    const params = new URLSearchParams();
+    const filterParam = searchParams.get("filter");
+    if (filterParam) params.set("filter", filterParam);
+    const searchStr = params.toString();
+    router.push(searchStr ? `${newPath}?${searchStr}` : newPath);
   };
 
   // Raw products for the active collection
@@ -137,78 +157,91 @@ export default function StoreCollectionClient({
 
   Object.entries(activeFilters).forEach(([key, value]) => {
     if (!value) return;
-    const valueLower = value.toLowerCase();
+    const values = value.split(",").filter(Boolean);
+    if (values.length === 0) return;
 
     if (key === "price") {
-      // Price range: "min-max"
-      const priceParts = value.split("-").map(Number);
-      const minPrice = priceParts[0];
-      const maxPrice = priceParts[1];
-      if (minPrice !== undefined && maxPrice !== undefined && !isNaN(minPrice) && !isNaN(maxPrice)) {
-        filteredProducts = filteredProducts.filter((product) => {
-          const productPrice = Number(product.priceRange.minVariantPrice.amount);
+      filteredProducts = filteredProducts.filter((product) => {
+        const productPrice = Number(product.priceRange.minVariantPrice.amount);
+        return values.some((val) => {
+          const parts = val.split("-").map(Number);
+          const minPrice = parts[0] ?? 0;
+          const maxPrice = parts[1] ?? Infinity;
           return productPrice >= minPrice && productPrice <= maxPrice;
         });
-      }
+      });
     } else if (key === "color") {
       filteredProducts = filteredProducts.filter((product) => {
-        const matchesOption = product.options?.some(
-          (opt) =>
-            opt.name.toLowerCase() === "color" &&
-            opt.values.some((val) => val.toLowerCase() === valueLower)
-        );
-        const matchesTag = product.tags?.some(
-          (tag) => tag.toLowerCase() === valueLower
-        );
-        const matchesTitle = product.title.toLowerCase().includes(valueLower);
-        const matchesDesc = product.description
-          ?.toLowerCase()
-          .includes(valueLower);
-        return matchesOption || matchesTag || matchesTitle || matchesDesc;
+        return values.some((val) => {
+          const valLower = val.toLowerCase();
+          const matchesOption = product.options?.some(
+            (opt) =>
+              opt.name.toLowerCase() === "color" &&
+              opt.values.some((v) => v.toLowerCase() === valLower)
+          );
+          const matchesTag = product.tags?.some(
+            (tag) => tag.toLowerCase() === valLower
+          );
+          const matchesTitle = product.title.toLowerCase().includes(valLower);
+          const matchesDesc = product.description
+            ?.toLowerCase()
+            .includes(valLower);
+          return matchesOption || matchesTag || matchesTitle || matchesDesc;
+        });
       });
     } else if (key === "level") {
       filteredProducts = filteredProducts.filter((product) => {
-        const matchesTag = product.tags?.some(
-          (tag) => tag.toLowerCase() === valueLower
-        );
-        const matchesTitle = product.title.toLowerCase().includes(valueLower);
-        const matchesDesc = product.description
-          ?.toLowerCase()
-          .includes(valueLower);
-        return matchesTag || matchesTitle || matchesDesc;
+        return values.some((val) => {
+          const valLower = val.toLowerCase();
+          const matchesTag = product.tags?.some(
+            (tag) => tag.toLowerCase() === valLower
+          );
+          const matchesTitle = product.title.toLowerCase().includes(valLower);
+          const matchesDesc = product.description
+            ?.toLowerCase()
+            .includes(valLower);
+          return matchesTag || matchesTitle || matchesDesc;
+        });
       });
     } else if (key === "size") {
-      // Size: match against product options (Size, Deck Width, etc.)
       filteredProducts = filteredProducts.filter((product) => {
-        const matchesOption = product.options?.some((opt) =>
-          opt.values.some((val) => val.toLowerCase() === valueLower)
-        );
-        const matchesTag = product.tags?.some(
-          (tag) => tag.toLowerCase().includes(valueLower)
-        );
-        return matchesOption || matchesTag;
+        return values.some((val) => {
+          const valLower = val.toLowerCase();
+          const matchesOption = product.options?.some((opt) =>
+            opt.values.some((v) => v.toLowerCase() === valLower)
+          );
+          const matchesTag = product.tags?.some((tag) =>
+            tag.toLowerCase().includes(valLower)
+          );
+          return matchesOption || matchesTag;
+        });
       });
     } else if (key === "brand") {
       filteredProducts = filteredProducts.filter((product) => {
-        const vendorMatch =
-          product.vendor?.toLowerCase().replace(/\s+/g, "-") === valueLower;
-        const tagMatch = product.tags?.some(
-          (tag) => tag.toLowerCase() === valueLower
-        );
-        const titleMatch = product.title.toLowerCase().includes(valueLower);
-        return vendorMatch || tagMatch || titleMatch;
+        return values.some((val) => {
+          const valLower = val.toLowerCase();
+          const vendorMatch =
+            product.vendor?.toLowerCase().replace(/\s+/g, "-") === valLower;
+          const tagMatch = product.tags?.some(
+            (tag) => tag.toLowerCase() === valLower
+          );
+          const titleMatch = product.title.toLowerCase().includes(valLower);
+          return vendorMatch || tagMatch || titleMatch;
+        });
       });
     } else {
-      // Generic: match against tags, title, or description
       filteredProducts = filteredProducts.filter((product) => {
-        const matchesTag = product.tags?.some((tag) =>
-          tag.toLowerCase().includes(valueLower)
-        );
-        const matchesTitle = product.title.toLowerCase().includes(valueLower);
-        const matchesOption = product.options?.some((opt) =>
-          opt.values.some((val) => val.toLowerCase().includes(valueLower))
-        );
-        return matchesTag || matchesTitle || matchesOption;
+        return values.some((val) => {
+          const valLower = val.toLowerCase();
+          const matchesTag = product.tags?.some((tag) =>
+            tag.toLowerCase().includes(valLower)
+          );
+          const matchesTitle = product.title.toLowerCase().includes(valLower);
+          const matchesOption = product.options?.some((opt) =>
+            opt.values.some((v) => v.toLowerCase().includes(valLower))
+          );
+          return matchesTag || matchesTitle || matchesOption;
+        });
       });
     }
   });
@@ -297,6 +330,7 @@ export default function StoreCollectionClient({
           currentSort={sort}
           onFilterChange={handleFilterChange}
           onSortChange={handleSortChange}
+          onApplyAll={handleApplyAll}
           onCategoryChange={handleCategoryChange}
         />
       </div>

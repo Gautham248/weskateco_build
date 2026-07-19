@@ -60,11 +60,7 @@ const PRICE_OPTIONS: FilterOption[] = [
   { label: "Over \u20b910,000", value: "10000-999999" },
 ];
 
-const SKILL_LEVEL_OPTIONS: FilterOption[] = [
-  { label: "Beginner", value: "beginner" },
-  { label: "Intermediate", value: "intermediate" },
-  { label: "Professional", value: "professional" },
-];
+
 
 const APPAREL_SIZE_OPTIONS: FilterOption[] = [
   { label: "XS", value: "xs" },
@@ -209,12 +205,7 @@ const BRAND_GROUP: FilterGroup = {
   options: BRAND_OPTIONS,
 };
 
-const SKILL_LEVEL_GROUP: FilterGroup = {
-  id: "level",
-  label: "Skill Level",
-  type: "checkbox",
-  options: SKILL_LEVEL_OPTIONS,
-};
+
 
 // ---------------------------------------------------------------------------
 // BASE_FILTERS — shown when no category is active (all-products /store)
@@ -287,7 +278,6 @@ const SKATEBOARD_COMPLETES_FILTERS: FilterGroup[] = [
     options: DECK_WIDTH_OPTIONS,
   },
   BRAND_GROUP,
-  SKILL_LEVEL_GROUP,
   COLOR_GROUP,
   PRICE_GROUP,
 ];
@@ -341,7 +331,6 @@ const SURFSKATE_COMPLETES_FILTERS: FilterGroup[] = [
     options: SURFSKATE_DECK_LENGTH_OPTIONS,
   },
   BRAND_GROUP,
-  SKILL_LEVEL_GROUP,
   COLOR_GROUP,
   PRICE_GROUP,
 ];
@@ -417,7 +406,6 @@ const SKATEBOARDS_PARENT_FILTERS: FilterGroup[] = [
   SORT_GROUP,
   CATEGORY_GROUP,
   BRAND_GROUP,
-  SKILL_LEVEL_GROUP,
   COLOR_GROUP,
   PRICE_GROUP,
 ];
@@ -426,7 +414,6 @@ const SURFSKATES_PARENT_FILTERS: FilterGroup[] = [
   SORT_GROUP,
   CATEGORY_GROUP,
   BRAND_GROUP,
-  SKILL_LEVEL_GROUP,
   COLOR_GROUP,
   PRICE_GROUP,
 ];
@@ -518,6 +505,14 @@ export function getLabelForFilterValue(
   value: string,
   filterGroups: FilterGroup[]
 ): string {
+  if (groupId === "price") {
+    const parts = value.split("-").map(Number);
+    const min = parts[0];
+    const max = parts[1];
+    if (min !== undefined && max !== undefined && !isNaN(min) && !isNaN(max)) {
+      return `₹${min.toLocaleString()} - ₹${max.toLocaleString()}`;
+    }
+  }
   const group = filterGroups.find((g) => g.id === groupId);
   if (!group) return value;
   const option = group.options.find((o) => o.value === value);
