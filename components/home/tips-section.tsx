@@ -61,7 +61,7 @@ export default function TipsSection() {
           <h2
             className="text-[clamp(1.25rem,4vw,2.5rem)] font-black leading-[120%] tracking-tight text-black dark:text-white sm:text-[clamp(1.5rem,3vw,2.5rem)] lg:text-[clamp(1.75rem,2.5vw,2.5rem)] uppercase"
             style={{
-              fontFamily: "Clash Display, sans-serif",
+              fontFamily: "'Clash Display', sans-serif",
               letterSpacing: "-0.01em",
             }}
           >
@@ -114,13 +114,12 @@ export default function TipsSection() {
               >
                 {/* Image Container Frame */}
                 <div
-                  className={`relative w-full aspect-[3/3.8] overflow-hidden shadow-sm flex-shrink-0 ${
-                    index === 0
-                      ? "rounded-md md:rounded-l-none md:rounded-r-md"
-                      : index === tips.length - 1
-                        ? "rounded-md md:rounded-r-none md:rounded-l-md"
-                        : "rounded-md"
-                  }`}
+                  className={`relative w-full aspect-[3/3.8] overflow-hidden shadow-sm flex-shrink-0 ${index === 0
+                    ? "rounded-md md:rounded-l-none md:rounded-r-md"
+                    : index === tips.length - 1
+                      ? "rounded-md md:rounded-r-none md:rounded-l-md"
+                      : "rounded-md"
+                    }`}
                 >
                   <img
                     src={tip.image.src || (tip.image as unknown as string)}
@@ -167,13 +166,12 @@ export default function TipsSection() {
                   className={`w-full h-14 pt-3 flex-shrink-0 transition-opacity duration-300 opacity-100 ${activeIndex === index ? "md:opacity-100" : "md:opacity-0 md:group-hover:opacity-100"}`}
                 >
                   <button
-                    className={`w-full h-full bg-black text-white font-bold text-xs uppercase tracking-wide flex items-center justify-between px-4 hover:bg-neutral-900 transition-colors ${
-                      index === 0
-                        ? "rounded-md md:rounded-l-none md:rounded-r-md"
-                        : index === tips.length - 1
-                          ? "rounded-md md:rounded-r-none md:rounded-l-md"
-                          : "rounded-md"
-                    }`}
+                    className={`w-full h-full bg-black text-white font-bold text-xs uppercase tracking-wide flex items-center justify-between px-4 hover:bg-neutral-900 transition-colors ${index === 0
+                      ? "rounded-md md:rounded-l-none md:rounded-r-md"
+                      : index === tips.length - 1
+                        ? "rounded-md md:rounded-r-none md:rounded-l-md"
+                        : "rounded-md"
+                      }`}
                   >
                     <span>View Post</span>
                     <div className="bg-white text-black rounded-full p-1">

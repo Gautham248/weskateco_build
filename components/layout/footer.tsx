@@ -14,12 +14,12 @@ export default function Footer() {
     <footer className="bg-black text-white w-full font-sans antialiased selection:bg-white selection:text-black">
       <div className="mx-auto max-w-7xl px-4 pt-16 pb-10 md:pt-25 md:px-12 xl:px-0">
         {/* DESKTOP TOP SECTION: Link Columns */}
-        <div className="hidden md:grid grid-cols-3 gap-10 lg:gap-24 mb-16">
+        <div className="hidden md:grid grid-cols-3 gap-10 lg:gap-24 mb-20">
           {/* Column 1: Shop Categories */}
           <div>
             <h3
               className="font-bold text-[clamp(0.75rem,2vw,1rem)] tracking-widest text-white mb-4 uppercase"
-              style={{ fontFamily: "ClashDisplay, sans-serif" }}
+              style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
               Shop
             </h3>
@@ -65,7 +65,7 @@ export default function Footer() {
           {/* Column 2: Info Links */}
           <div
             className="flex flex-col space-y-4 font-bold text-[clamp(0.75rem,2vw,1rem)] tracking-wider text-white"
-            style={{ fontFamily: "ClashDisplay, sans-serif" }}
+            style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             <Link
               href="/academy"
@@ -102,7 +102,7 @@ export default function Footer() {
           {/* Column 3: Legal & Support Links */}
           <div
             className="hidden md:flex flex-col space-y-4 font-bold text-[clamp(0.75rem,2vw,1rem)] tracking-wider text-white"
-            style={{ fontFamily: "ClashDisplay, sans-serif" }}
+            style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             <Link
               href="/contact"
@@ -128,7 +128,7 @@ export default function Footer() {
         {/* MOBILE TOP SECTION: Accordion Menu */}
         <div
           className="md:hidden flex flex-col mb-10 w-full"
-          style={{ fontFamily: "ClashDisplay, sans-serif" }}
+          style={{ fontFamily: "'Clash Display', sans-serif" }}
         >
           {/* SHOP Accordion */}
           <div className="border-b border-neutral-800">
@@ -272,7 +272,7 @@ export default function Footer() {
             viewBox="0 0 212 29"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="hidden md:flex w-48 sm:w-56 md:w-full lg:w-96 h-auto text-white"
+            className="hidden md:flex w-48 md:w-[75vw] h-auto text-white"
           >
             <path
               fillRule="evenodd"
