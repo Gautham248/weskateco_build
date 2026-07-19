@@ -23,7 +23,7 @@ export default function StoreAllClient({
 
   // Generalised filter map
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [sort, setSort] = useState<string>("");
   const [page, setPage] = useState<number>(1);
@@ -42,7 +42,8 @@ export default function StoreAllClient({
   useEffect(() => {
     const filters: Record<string, string> = {};
     searchParams.forEach((value, key) => {
-      if (key !== "sort" && key !== "page" && key !== "filter") filters[key] = value;
+      if (key !== "sort" && key !== "page" && key !== "filter")
+        filters[key] = value;
     });
     setActiveFilters(filters);
     setSort(searchParams.get("sort") || "");
@@ -53,7 +54,7 @@ export default function StoreAllClient({
   const updateParams = (
     newFilters: Record<string, string>,
     newSort: string,
-    newPage: number
+    newPage: number,
   ) => {
     const params = new URLSearchParams();
     const filterParam = searchParams.get("filter");
@@ -95,9 +96,14 @@ export default function StoreAllClient({
     const searchStr = params.toString();
 
     if (handle === "") {
-      router.push(searchStr ? `/store?${searchStr}` : `/store`);
+      router.push(searchStr ? `/store?${searchStr}` : `/store`, {
+        scroll: false,
+      });
     } else {
-      router.push(searchStr ? `/store/${handle}?${searchStr}` : `/store/${handle}`);
+      router.push(
+        searchStr ? `/store/${handle}?${searchStr}` : `/store/${handle}`,
+        { scroll: false },
+      );
     }
   };
 
@@ -126,10 +132,10 @@ export default function StoreAllClient({
           const matchesOption = product.options?.some(
             (opt) =>
               opt.name.toLowerCase() === "color" &&
-              opt.values.some((v) => v.toLowerCase() === valLower)
+              opt.values.some((v) => v.toLowerCase() === valLower),
           );
           const matchesTag = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower
+            (tag) => tag.toLowerCase() === valLower,
           );
           const matchesTitle = product.title.toLowerCase().includes(valLower);
           const matchesDesc = product.description
@@ -143,7 +149,7 @@ export default function StoreAllClient({
         return values.some((val) => {
           const valLower = val.toLowerCase();
           const matchesTag = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower
+            (tag) => tag.toLowerCase() === valLower,
           );
           const matchesTitle = product.title.toLowerCase().includes(valLower);
           const matchesDesc = product.description
@@ -157,10 +163,10 @@ export default function StoreAllClient({
         return values.some((val) => {
           const valLower = val.toLowerCase();
           const matchesOption = product.options?.some((opt) =>
-            opt.values.some((v) => v.toLowerCase() === valLower)
+            opt.values.some((v) => v.toLowerCase() === valLower),
           );
           const matchesTag = product.tags?.some((tag) =>
-            tag.toLowerCase().includes(valLower)
+            tag.toLowerCase().includes(valLower),
           );
           return matchesOption || matchesTag;
         });
@@ -172,7 +178,7 @@ export default function StoreAllClient({
           const vendorMatch =
             product.vendor?.toLowerCase().replace(/\s+/g, "-") === valLower;
           const tagMatch = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower
+            (tag) => tag.toLowerCase() === valLower,
           );
           const titleMatch = product.title.toLowerCase().includes(valLower);
           return vendorMatch || tagMatch || titleMatch;
@@ -183,11 +189,11 @@ export default function StoreAllClient({
         return values.some((val) => {
           const valLower = val.toLowerCase();
           const matchesTag = product.tags?.some((tag) =>
-            tag.toLowerCase().includes(valLower)
+            tag.toLowerCase().includes(valLower),
           );
           const matchesTitle = product.title.toLowerCase().includes(valLower);
           const matchesOption = product.options?.some((opt) =>
-            opt.values.some((v) => v.toLowerCase().includes(valLower))
+            opt.values.some((v) => v.toLowerCase().includes(valLower)),
           );
           return matchesTag || matchesTitle || matchesOption;
         });
@@ -201,13 +207,13 @@ export default function StoreAllClient({
     filteredProducts.sort(
       (a, b) =>
         Number(a.priceRange.minVariantPrice.amount) -
-        Number(b.priceRange.minVariantPrice.amount)
+        Number(b.priceRange.minVariantPrice.amount),
     );
   } else if (sort === "price-desc") {
     filteredProducts.sort(
       (a, b) =>
         Number(b.priceRange.minVariantPrice.amount) -
-        Number(a.priceRange.minVariantPrice.amount)
+        Number(a.priceRange.minVariantPrice.amount),
     );
   } else if (sort === "latest-desc") {
     filteredProducts.sort((a, b) => {
@@ -231,7 +237,7 @@ export default function StoreAllClient({
   const currentPage = Math.max(1, Math.min(page, totalPages || 1));
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   const createPageUrl = (pageNumber: number) => {

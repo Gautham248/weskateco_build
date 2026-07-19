@@ -43,7 +43,9 @@ export default function StoreCollectionClient({
   // Local state
   const [activeHandle, setActiveHandle] = useState(initialCollectionHandle);
   // Generalised filter map: { color: "blue", price: "0-2000", size: "8.0", ... }
-  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
+    {},
+  );
   const [sort, setSort] = useState<string>("");
   const [page, setPage] = useState<number>(1);
 
@@ -56,7 +58,8 @@ export default function StoreCollectionClient({
 
     const filters: Record<string, string> = {};
     searchParams.forEach((value, key) => {
-      if (key !== "sort" && key !== "page" && key !== "filter") filters[key] = value;
+      if (key !== "sort" && key !== "page" && key !== "filter")
+        filters[key] = value;
     });
     setActiveFilters(filters);
     setSort(searchParams.get("sort") || "");
@@ -85,7 +88,7 @@ export default function StoreCollectionClient({
     newHandle: string,
     newFilters: Record<string, string>,
     newSort: string,
-    newPage: number
+    newPage: number,
   ) => {
     const pathParts = pathname.split("/");
     const storeIdx = pathParts.indexOf("store");
@@ -146,7 +149,9 @@ export default function StoreCollectionClient({
     const filterParam = searchParams.get("filter");
     if (filterParam) params.set("filter", filterParam);
     const searchStr = params.toString();
-    router.push(searchStr ? `${newPath}?${searchStr}` : newPath);
+    router.push(searchStr ? `${newPath}?${searchStr}` : newPath, {
+      scroll: false,
+    });
   };
 
   // Raw products for the active collection
@@ -177,10 +182,10 @@ export default function StoreCollectionClient({
           const matchesOption = product.options?.some(
             (opt) =>
               opt.name.toLowerCase() === "color" &&
-              opt.values.some((v) => v.toLowerCase() === valLower)
+              opt.values.some((v) => v.toLowerCase() === valLower),
           );
           const matchesTag = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower
+            (tag) => tag.toLowerCase() === valLower,
           );
           const matchesTitle = product.title.toLowerCase().includes(valLower);
           const matchesDesc = product.description
@@ -194,7 +199,7 @@ export default function StoreCollectionClient({
         return values.some((val) => {
           const valLower = val.toLowerCase();
           const matchesTag = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower
+            (tag) => tag.toLowerCase() === valLower,
           );
           const matchesTitle = product.title.toLowerCase().includes(valLower);
           const matchesDesc = product.description
@@ -208,10 +213,10 @@ export default function StoreCollectionClient({
         return values.some((val) => {
           const valLower = val.toLowerCase();
           const matchesOption = product.options?.some((opt) =>
-            opt.values.some((v) => v.toLowerCase() === valLower)
+            opt.values.some((v) => v.toLowerCase() === valLower),
           );
           const matchesTag = product.tags?.some((tag) =>
-            tag.toLowerCase().includes(valLower)
+            tag.toLowerCase().includes(valLower),
           );
           return matchesOption || matchesTag;
         });
@@ -223,7 +228,7 @@ export default function StoreCollectionClient({
           const vendorMatch =
             product.vendor?.toLowerCase().replace(/\s+/g, "-") === valLower;
           const tagMatch = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower
+            (tag) => tag.toLowerCase() === valLower,
           );
           const titleMatch = product.title.toLowerCase().includes(valLower);
           return vendorMatch || tagMatch || titleMatch;
@@ -234,11 +239,11 @@ export default function StoreCollectionClient({
         return values.some((val) => {
           const valLower = val.toLowerCase();
           const matchesTag = product.tags?.some((tag) =>
-            tag.toLowerCase().includes(valLower)
+            tag.toLowerCase().includes(valLower),
           );
           const matchesTitle = product.title.toLowerCase().includes(valLower);
           const matchesOption = product.options?.some((opt) =>
-            opt.values.some((v) => v.toLowerCase().includes(valLower))
+            opt.values.some((v) => v.toLowerCase().includes(valLower)),
           );
           return matchesTag || matchesTitle || matchesOption;
         });
@@ -252,13 +257,13 @@ export default function StoreCollectionClient({
     filteredProducts.sort(
       (a, b) =>
         Number(a.priceRange.minVariantPrice.amount) -
-        Number(b.priceRange.minVariantPrice.amount)
+        Number(b.priceRange.minVariantPrice.amount),
     );
   } else if (sort === "price-desc") {
     filteredProducts.sort(
       (a, b) =>
         Number(b.priceRange.minVariantPrice.amount) -
-        Number(a.priceRange.minVariantPrice.amount)
+        Number(a.priceRange.minVariantPrice.amount),
     );
   } else if (sort === "latest-desc") {
     filteredProducts.sort((a, b) => {
@@ -281,7 +286,7 @@ export default function StoreCollectionClient({
   const currentPage = Math.max(1, Math.min(page, totalPages || 1));
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   const createPageUrl = (pageNumber: number) => {
@@ -364,7 +369,7 @@ export default function StoreCollectionClient({
                       activeHandle,
                       activeFilters,
                       sort,
-                      currentPage - 1
+                      currentPage - 1,
                     );
                   }}
                   className="flex items-center gap-1 text-sm font-medium text-black hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors mr-2"
@@ -396,7 +401,12 @@ export default function StoreCollectionClient({
                       href={createPageUrl(Number(p))}
                       onClick={(e) => {
                         e.preventDefault();
-                        updateParams(activeHandle, activeFilters, sort, Number(p));
+                        updateParams(
+                          activeHandle,
+                          activeFilters,
+                          sort,
+                          Number(p),
+                        );
                       }}
                       className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${
                         isCurrent
@@ -419,7 +429,7 @@ export default function StoreCollectionClient({
                       activeHandle,
                       activeFilters,
                       sort,
-                      currentPage + 1
+                      currentPage + 1,
                     );
                   }}
                   className="flex items-center gap-1 text-sm font-medium text-black hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors ml-2"

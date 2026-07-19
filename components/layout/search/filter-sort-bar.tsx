@@ -49,7 +49,7 @@ interface FilterSortBarProps {
 
 export function toggleFilterValue(
   currentVal: string | undefined,
-  optionVal: string
+  optionVal: string,
 ): string | null {
   const list = currentVal ? currentVal.split(",").filter(Boolean) : [];
   const idx = list.indexOf(optionVal);
@@ -63,7 +63,7 @@ export function toggleFilterValue(
 
 function applyFilterMap(
   products: Product[],
-  filters: Record<string, string>
+  filters: Record<string, string>,
 ): Product[] {
   let result = [...products];
 
@@ -90,7 +90,7 @@ function applyFilterMap(
             p.options?.some(
               (o) =>
                 o.name.toLowerCase() === "color" &&
-                o.values.some((v) => v.toLowerCase() === vl)
+                o.values.some((v) => v.toLowerCase() === vl),
             ) ||
             p.tags?.some((t) => t.toLowerCase() === vl) ||
             p.title.toLowerCase().includes(vl)
@@ -113,7 +113,7 @@ function applyFilterMap(
           const vl = val.toLowerCase();
           return (
             p.options?.some((o) =>
-              o.values.some((v) => v.toLowerCase() === vl)
+              o.values.some((v) => v.toLowerCase() === vl),
             ) || p.tags?.some((t) => t.toLowerCase().includes(vl))
           );
         });
@@ -137,7 +137,7 @@ function applyFilterMap(
             p.tags?.some((t) => t.toLowerCase().includes(vl)) ||
             p.title.toLowerCase().includes(vl) ||
             p.options?.some((o) =>
-              o.values.some((v) => v.toLowerCase().includes(vl))
+              o.values.some((v) => v.toLowerCase().includes(vl)),
             )
           );
         });
@@ -152,7 +152,7 @@ function simulateCount(
   products: Product[],
   activeFilters: Record<string, string>,
   groupId: string,
-  optionValue: string
+  optionValue: string,
 ): number {
   const testFilters = { ...activeFilters };
   testFilters[groupId] = optionValue;
@@ -192,7 +192,8 @@ export default function FilterSortBar({
       : (() => {
           const result: Record<string, string> = {};
           searchParams.forEach((value, key) => {
-            if (key !== "sort" && key !== "page" && key !== "filter") result[key] = value;
+            if (key !== "sort" && key !== "page" && key !== "filter")
+              result[key] = value;
           });
           return result;
         })();
@@ -203,20 +204,17 @@ export default function FilterSortBar({
   const openFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("filter", "open");
-    router.push(`${pathname}?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const closeFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("filter");
-    router.push(`${pathname}?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   // Instant update callback triggered on every option change
-  const handleUpdate = (
-    filters: Record<string, string>,
-    sort: string
-  ) => {
+  const handleUpdate = (filters: Record<string, string>, sort: string) => {
     if (onApplyAll) {
       onApplyAll(filters, sort);
     } else if (onFilterChange || onSortChange) {
@@ -233,7 +231,7 @@ export default function FilterSortBar({
       if (sort) params.set("sort", sort);
       else params.delete("sort");
       params.delete("page");
-      router.push(`${pathname}?${params.toString()}`);
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
     }
   };
 
@@ -248,7 +246,9 @@ export default function FilterSortBar({
   };
 
   const filterGroups = deriveFiltersForCategory(activeCollectionHandle);
-  const activeFilterEntries = Object.entries(activeFilters).filter(([, v]) => v);
+  const activeFilterEntries = Object.entries(activeFilters).filter(
+    ([, v]) => v,
+  );
   const activeFiltersCount = activeFilterEntries.length;
   const hasActiveFilters = activeFiltersCount > 0;
 
@@ -340,7 +340,7 @@ export default function FilterSortBar({
                       "px-3 py-2 md:px-6 md:py-3 rounded-[6px] text-[clamp(0.813rem,2vw,1rem)] font-medium whitespace-nowrap transition-all duration-200 border",
                       isActive
                         ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
-                        : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                        : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800",
                     )}
                   >
                     {coll.title}
@@ -371,7 +371,10 @@ export default function FilterSortBar({
                       {label}
                       <button
                         onClick={() => {
-                          const nextVal = toggleFilterValue(activeFilters[key], val);
+                          const nextVal = toggleFilterValue(
+                            activeFilters[key],
+                            val,
+                          );
                           const nextFilters = { ...activeFilters };
                           if (nextVal === null) {
                             delete nextFilters[key];
@@ -422,7 +425,13 @@ export default function FilterSortBar({
 // Checkbox
 // ---------------------------------------------------------------------------
 
-function Checkbox({ checked, disabled }: { checked: boolean; disabled?: boolean }) {
+function Checkbox({
+  checked,
+  disabled,
+}: {
+  checked: boolean;
+  disabled?: boolean;
+}) {
   return (
     <span
       className={clsx(
@@ -430,7 +439,7 @@ function Checkbox({ checked, disabled }: { checked: boolean; disabled?: boolean 
         checked
           ? "bg-rose-500 border-rose-500 text-white"
           : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black",
-        disabled && "opacity-40"
+        disabled && "opacity-40",
       )}
     >
       {checked && (
@@ -526,7 +535,7 @@ function FilterDrawer({
         pathParts.splice(storeIdx + 1);
         if (handle !== "") pathParts.push(handle);
       }
-      router.push(pathParts.join("/"));
+      router.push(pathParts.join("/"), { scroll: false });
     }
   };
 
@@ -541,11 +550,17 @@ function FilterDrawer({
   const previewCount = applyFilterMap(products, activeFilters).length;
 
   // Derive active tags for the drawer list
-  const activeDrawerFilters: { id: string; label: string; type: "category" | "filter" | "sort" }[] = [];
+  const activeDrawerFilters: {
+    id: string;
+    label: string;
+    type: "category" | "filter" | "sort";
+  }[] = [];
 
   if (activeCollectionHandle) {
     const catGroup = filterGroups.find((g) => g.id === "category");
-    const catOpt = catGroup?.options.find((o) => o.value === activeCollectionHandle);
+    const catOpt = catGroup?.options.find(
+      (o) => o.value === activeCollectionHandle,
+    );
     if (catOpt) {
       activeDrawerFilters.push({
         id: "category",
@@ -563,7 +578,9 @@ function FilterDrawer({
       } else {
         activeDrawerFilters.push({
           id: "category",
-          label: activeCollectionHandle.charAt(0).toUpperCase() + activeCollectionHandle.slice(1),
+          label:
+            activeCollectionHandle.charAt(0).toUpperCase() +
+            activeCollectionHandle.slice(1),
           type: "category",
         });
       }
@@ -595,7 +612,11 @@ function FilterDrawer({
     }
   }
 
-  const removeDrawerFilterTag = (tag: { id: string; label: string; type: "category" | "filter" | "sort" }) => {
+  const removeDrawerFilterTag = (tag: {
+    id: string;
+    label: string;
+    type: "category" | "filter" | "sort";
+  }) => {
     if (tag.type === "category") {
       handleCategorySelect("");
     } else if (tag.type === "sort") {
@@ -699,17 +720,23 @@ function FilterDrawer({
             const filterVal = activeFilters[group.id];
             const activeCount =
               group.id === "sort"
-                ? (currentSort ? 1 : 0)
+                ? currentSort
+                  ? 1
+                  : 0
                 : group.id === "category"
-                ? (activeCollectionHandle ? 1 : 0)
-                : (filterVal ? filterVal.split(",").filter(Boolean).length : 0);
+                  ? activeCollectionHandle
+                    ? 1
+                    : 0
+                  : filterVal
+                    ? filterVal.split(",").filter(Boolean).length
+                    : 0;
 
             return (
               <div
                 key={group.id}
                 className={clsx(
                   "border-b border-neutral-100 dark:border-neutral-900",
-                  isLast ? "border-b-0" : ""
+                  isLast ? "border-b-0" : "",
                 )}
               >
                 {/* Group header */}
@@ -720,7 +747,12 @@ function FilterDrawer({
                   style={{ fontFamily: "'Clash Display', sans-serif" }}
                 >
                   <span className="flex items-center gap-2">
-                    <span className={clsx(activeCount > 0 && "text-rose-600 dark:text-rose-400 font-bold")}>
+                    <span
+                      className={clsx(
+                        activeCount > 0 &&
+                          "text-rose-600 dark:text-rose-400 font-bold",
+                      )}
+                    >
                       {group.label}
                     </span>
                     {activeCount > 0 && (
@@ -856,23 +888,26 @@ function CheckboxGroup({
   return (
     <div className="flex flex-col gap-4 pl-1">
       {group.options.map((opt) => {
-        const isSelected = activeFilters[group.id]?.split(",").includes(opt.value) ?? false;
-        const count = simulateCount(products, activeFilters, group.id, opt.value);
+        const isSelected =
+          activeFilters[group.id]?.split(",").includes(opt.value) ?? false;
+        const count = simulateCount(
+          products,
+          activeFilters,
+          group.id,
+          opt.value,
+        );
         const isDisabled = count === 0 && !isSelected;
         return (
           <button
             type="button"
             key={opt.value}
-            onClick={() =>
-              !isDisabled &&
-              setFilterValue(group.id, opt.value)
-            }
+            onClick={() => !isDisabled && setFilterValue(group.id, opt.value)}
             disabled={isDisabled}
             className={clsx(
               "flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 transition-opacity",
               isDisabled
                 ? "opacity-35 cursor-not-allowed"
-                : "cursor-pointer hover:opacity-80"
+                : "cursor-pointer hover:opacity-80",
             )}
             style={{ fontFamily: "Archivo, sans-serif" }}
           >
@@ -904,23 +939,26 @@ function ColorSwatchGroup({
   return (
     <div className="flex flex-col gap-4 pl-1">
       {group.options.map((opt) => {
-        const isSelected = activeFilters[group.id]?.split(",").includes(opt.value) ?? false;
-        const count = simulateCount(products, activeFilters, group.id, opt.value);
+        const isSelected =
+          activeFilters[group.id]?.split(",").includes(opt.value) ?? false;
+        const count = simulateCount(
+          products,
+          activeFilters,
+          group.id,
+          opt.value,
+        );
         const isDisabled = count === 0 && !isSelected;
         return (
           <button
             type="button"
             key={opt.value}
-            onClick={() =>
-              !isDisabled &&
-              setFilterValue(group.id, opt.value)
-            }
+            onClick={() => !isDisabled && setFilterValue(group.id, opt.value)}
             disabled={isDisabled}
             className={clsx(
               "flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 transition-opacity",
               isDisabled
                 ? "opacity-35 cursor-not-allowed"
-                : "cursor-pointer hover:opacity-80"
+                : "cursor-pointer hover:opacity-80",
             )}
             style={{ fontFamily: "Archivo, sans-serif" }}
           >
@@ -953,7 +991,9 @@ function PriceSliderGroup({
   setFilterValue: (id: string, value: string | null) => void;
   products: Product[];
 }) {
-  const prices = products.map((p) => Number(p.priceRange.minVariantPrice.amount));
+  const prices = products.map((p) =>
+    Number(p.priceRange.minVariantPrice.amount),
+  );
   const absoluteMin = prices.length > 0 ? Math.min(...prices) : 0;
   const absoluteMax = prices.length > 0 ? Math.max(...prices) : 10000;
   const range = absoluteMax - absoluteMin || 1;
@@ -981,7 +1021,7 @@ function PriceSliderGroup({
   prices.forEach((price) => {
     const binIdx = Math.min(
       Math.floor(((price - absoluteMin) / range) * binCount),
-      binCount - 1
+      binCount - 1,
     );
     if (binIdx >= 0 && binIdx < binCount) {
       bins[binIdx]++;
@@ -1072,7 +1112,12 @@ function PriceSliderGroup({
               className="flex-1 rounded-[1px] transition-colors duration-150"
               style={{
                 height: `${Math.max(heightPct, 4)}%`,
-                backgroundColor: count === 0 ? "transparent" : (isSelected ? "#ef4444" : "#e5e5e5"),
+                backgroundColor:
+                  count === 0
+                    ? "transparent"
+                    : isSelected
+                      ? "#ef4444"
+                      : "#e5e5e5",
               }}
             />
           );
@@ -1083,7 +1128,7 @@ function PriceSliderGroup({
       <div className="slider-container mb-4">
         {/* Underlay Track */}
         <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-neutral-200 dark:bg-neutral-800 rounded-full" />
-        
+
         {/* Selected Fill Track */}
         <div
           className="absolute top-1/2 -translate-y-1/2 h-1 bg-black dark:bg-white rounded-full"
@@ -1115,10 +1160,19 @@ function PriceSliderGroup({
       </div>
 
       {/* Label and Matches count */}
-      <div className="mt-2 text-center text-xs font-semibold text-neutral-800 dark:text-neutral-200" style={{ fontFamily: "Archivo, sans-serif" }}>
+      <div
+        className="mt-2 text-center text-xs font-semibold text-neutral-800 dark:text-neutral-200"
+        style={{ fontFamily: "Archivo, sans-serif" }}
+      >
         <span>
-          ₹{tempMin.toLocaleString()} - ₹{tempMax.toLocaleString()}{" "}
-          ({applyFilterMap(products, { ...activeFilters, price: `${tempMin}-${tempMax}` }).length})
+          ₹{tempMin.toLocaleString()} - ₹{tempMax.toLocaleString()} (
+          {
+            applyFilterMap(products, {
+              ...activeFilters,
+              price: `${tempMin}-${tempMax}`,
+            }).length
+          }
+          )
         </span>
       </div>
     </div>
@@ -1154,4 +1208,3 @@ function CategoryGroup({
     </div>
   );
 }
-
