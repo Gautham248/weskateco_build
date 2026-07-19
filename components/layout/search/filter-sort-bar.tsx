@@ -4,13 +4,20 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   FunnelIcon,
-  XMarkIcon
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import {
+  FilterGroup,
+  deriveFiltersForCategory,
+  getLabelForFilterValue,
+  getHexForColorValue,
+} from "lib/filters/category-filter-config";
 import { sorting } from "lib/constants";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { Product } from "lib/shopify/types";
 
 interface CollectionItem {
   handle: string;
@@ -24,36 +31,15 @@ interface FilterSortBarProps {
   locale: string;
   collections: CollectionItem[];
   activeCollectionHandle?: string;
+  products?: Product[];
   // Optional controlled props for client-side state
   onTabChange?: (handle: string) => void;
-  activeColor?: string | null;
-  activeLevel?: string | null;
-  activePrice?: string | null;
+  activeFilters?: Record<string, string>;
   currentSort?: string;
-  onFilterChange?: (filters: { color: string | null; level: string | null; price: string | null }) => void;
+  onFilterChange?: (filters: Record<string, string>) => void;
   onSortChange?: (sort: string) => void;
+  onCategoryChange?: (handle: string) => void;
 }
-
-const COLORS = [
-  { name: "Orange", value: "orange", hex: "#f97316" },
-  { name: "Blue", value: "blue", hex: "#3b82f6" },
-  { name: "Yellow", value: "yellow", hex: "#eab308" },
-  { name: "Black", value: "black", hex: "#000000" },
-  { name: "White", value: "white", hex: "#ffffff" },
-];
-
-const SKILL_LEVELS = [
-  { name: "Beginner", value: "beginner" },
-  { name: "Intermediate", value: "intermediate" },
-  { name: "Professional", value: "professional" },
-];
-
-const PRICE_RANGES = [
-  { name: "Under ₹2,000", value: "0-2000" },
-  { name: "₹2,000 - ₹5,000", value: "2000-5000" },
-  { name: "₹5,000 - ₹10,000", value: "5000-10000" },
-  { name: "Over ₹10,000", value: "10000-999999" },
-];
 
 export default function FilterSortBar({
   title,
@@ -61,13 +47,13 @@ export default function FilterSortBar({
   locale,
   collections,
   activeCollectionHandle = "",
+  products = [],
   onTabChange,
-  activeColor: propColor,
-  activeLevel: propLevel,
-  activePrice: propPrice,
+  activeFilters: propFilters,
   currentSort: propSort,
   onFilterChange,
   onSortChange,
+  onCategoryChange,
 }: FilterSortBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -76,99 +62,98 @@ export default function FilterSortBar({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
 
-  // Active filters from props or URL
-  const activeColor = propColor !== undefined ? propColor : searchParams.get("color");
-  const activeLevel = propLevel !== undefined ? propLevel : searchParams.get("level");
-  const activePrice = propPrice !== undefined ? propPrice : searchParams.get("price");
-  const currentSort = propSort !== undefined ? propSort : (searchParams.get("sort") || "");
+  // Resolve active filters — from props (controlled) or from URL (uncontrolled)
+  const activeFilters: Record<string, string> = propFilters !== undefined
+    ? propFilters
+    : (() => {
+        const result: Record<string, string> = {};
+        searchParams.forEach((value, key) => {
+          if (key !== "sort" && key !== "page") result[key] = value;
+        });
+        return result;
+      })();
 
-  // Local selection states inside the filter drawer
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
-  const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
+  const currentSort =
+    propSort !== undefined
+      ? propSort
+      : searchParams.get("sort") || "";
+
+  // Local (pending) filter state inside the drawer — only applied on APPLY
+  const [pendingFilters, setPendingFilters] = useState<Record<string, string>>({});
 
   const openFilters = () => {
-    setSelectedColor(activeColor);
-    setSelectedLevel(activeLevel);
-    setSelectedPrice(activePrice);
+    setPendingFilters({ ...activeFilters });
     setIsFilterOpen(true);
   };
 
   const applyFilters = () => {
     if (onFilterChange) {
-      onFilterChange({
-        color: selectedColor,
-        level: selectedLevel,
-        price: selectedPrice,
-      });
+      onFilterChange(pendingFilters);
       setIsFilterOpen(false);
     } else {
       const params = new URLSearchParams(searchParams.toString());
-
-      if (selectedColor) params.set("color", selectedColor);
-      else params.delete("color");
-
-      if (selectedLevel) params.set("level", selectedLevel);
-      else params.delete("level");
-
-      if (selectedPrice) params.set("price", selectedPrice);
-      else params.delete("price");
-
+      // Remove all old filter params first
+      Array.from(searchParams.keys()).forEach((k) => {
+        if (k !== "sort" && k !== "page") params.delete(k);
+      });
+      // Apply pending filters
+      Object.entries(pendingFilters).forEach(([k, v]) => {
+        if (v) params.set(k, v);
+      });
       params.delete("page");
-
       router.push(`${pathname}?${params.toString()}`);
       setIsFilterOpen(false);
     }
   };
 
-  const clearLocalFilters = () => {
-    setSelectedColor(null);
-    setSelectedLevel(null);
-    setSelectedPrice(null);
-  };
-
-  // Helper to update URL params (for instant chips/sort updates outside drawer)
-  const updateUrlParam = (key: string, value: string | null) => {
-    if (key === "sort" && onSortChange) {
-      onSortChange(value || "");
-    } else if ((key === "color" || key === "level" || key === "price") && onFilterChange) {
-      onFilterChange({
-        color: key === "color" ? value : activeColor,
-        level: key === "level" ? value : activeLevel,
-        price: key === "price" ? value : activePrice,
-      });
-    } else {
-      const params = new URLSearchParams(searchParams.toString());
-      if (value) {
-        params.set(key, value);
-      } else {
-        params.delete(key);
-      }
-      router.push(`${pathname}?${params.toString()}`);
-    }
+  const clearPendingFilters = () => {
+    setPendingFilters({});
   };
 
   const clearAllFilters = () => {
     if (onFilterChange) {
-      onFilterChange({ color: null, level: null, price: null });
+      onFilterChange({});
     } else {
       const params = new URLSearchParams(searchParams.toString());
-      params.delete("color");
-      params.delete("level");
-      params.delete("price");
+      Array.from(searchParams.keys()).forEach((k) => {
+        if (k !== "sort" && k !== "page") params.delete(k);
+      });
       router.push(`${pathname}?${params.toString()}`);
     }
   };
 
-  // Find active items for display
-  const activeColorObj = COLORS.find((c) => c.value === activeColor);
-  const activeLevelObj = SKILL_LEVELS.find((l) => l.value === activeLevel);
-  const activePriceObj = PRICE_RANGES.find((p) => p.value === activePrice);
-  const activeSortObj =
-    sorting.find((s) => s.slug === currentSort) || sorting[0];
+  const removeFilter = (key: string) => {
+    if (onFilterChange) {
+      const next = { ...activeFilters };
+      delete next[key];
+      onFilterChange(next);
+    } else {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete(key);
+      router.push(`${pathname}?${params.toString()}`);
+    }
+  };
 
-  const hasActiveFilters = !!(activeColor || activeLevel || activePrice);
-  const activeFiltersCount = [activeColor, activeLevel, activePrice].filter(Boolean).length;
+  const updateSort = (value: string | null) => {
+    if (onSortChange) {
+      onSortChange(value || "");
+    } else {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) params.set("sort", value);
+      else params.delete("sort");
+      router.push(`${pathname}?${params.toString()}`);
+    }
+  };
+
+  // Derived display values
+  const filterGroups = deriveFiltersForCategory(activeCollectionHandle);
+  const activeSortObj = sorting.find((s) => s.slug === currentSort) || sorting[0];
+
+  const activeFilterEntries = Object.entries(activeFilters).filter(
+    ([, v]) => v
+  );
+  const activeFiltersCount = activeFilterEntries.length;
+  const hasActiveFilters = activeFiltersCount > 0;
 
   return (
     <div className="w-full bg-white text-black py-4 border-b border-neutral-100 dark:bg-neutral-950 dark:text-white dark:border-neutral-900">
@@ -221,8 +206,6 @@ export default function FilterSortBar({
                   />
                 </svg>
               </button>
-
-              {/* Sort Dropdown */}
               {isSortOpen && (
                 <>
                   <div
@@ -234,7 +217,7 @@ export default function FilterSortBar({
                       <button
                         key={option.slug || "default"}
                         onClick={() => {
-                          updateUrlParam("sort", option.slug);
+                          updateSort(option.slug);
                           setIsSortOpen(false);
                         }}
                         className={clsx(
@@ -242,7 +225,7 @@ export default function FilterSortBar({
                           {
                             "bg-neutral-50 font-bold dark:bg-neutral-800":
                               currentSort === (option.slug || ""),
-                          },
+                          }
                         )}
                       >
                         {option.title}
@@ -295,7 +278,6 @@ export default function FilterSortBar({
                 </span>
               </button>
 
-              {/* Sort Dropdown */}
               {isSortOpen && (
                 <>
                   <div
@@ -307,7 +289,7 @@ export default function FilterSortBar({
                       <button
                         key={option.slug || "default"}
                         onClick={() => {
-                          updateUrlParam("sort", option.slug);
+                          updateSort(option.slug);
                           setIsSortOpen(false);
                         }}
                         className={clsx(
@@ -315,7 +297,7 @@ export default function FilterSortBar({
                           {
                             "bg-neutral-100 font-bold dark:bg-neutral-800":
                               currentSort === (option.slug || ""),
-                          },
+                          }
                         )}
                       >
                         {option.title}
@@ -328,7 +310,7 @@ export default function FilterSortBar({
           </div>
         </div>
 
-        {/* Showing Count */}
+        {/* Mobile showing count */}
         <div className="mt-1 md:hidden">
           <span className="text-xs md:text-sm font-medium text-neutral-600 dark:text-neutral-400">
             (Showing 1 – {totalProducts} products of {totalProducts} products)
@@ -336,7 +318,7 @@ export default function FilterSortBar({
         </div>
       </div>
 
-      {/* Bottom Row: Subcollection pills + Active filters chips */}
+      {/* Bottom Row: Subcollection pills + Active filter chips */}
       {(collections.length > 0 || hasActiveFilters) && (
         <div className="mt-5 flex flex-col gap-4 px-0 md:px-2">
           {/* Subcollection pills */}
@@ -346,7 +328,6 @@ export default function FilterSortBar({
                 const isActive = activeCollectionHandle === coll.handle;
                 const linkHref =
                   coll.handle === "" ? `/store` : `/store/${coll.handle}`;
-
                 return (
                   <Link
                     key={coll.handle}
@@ -362,7 +343,7 @@ export default function FilterSortBar({
                       "px-3 py-2 md:px-6 md:py-3 rounded-[6px] text-[clamp(0.813rem,2vw,1rem)] font-medium whitespace-nowrap transition-all duration-200 border",
                       isActive
                         ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
-                        : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800",
+                        : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800"
                     )}
                   >
                     {coll.title}
@@ -372,48 +353,33 @@ export default function FilterSortBar({
             </div>
           )}
 
-          {/* Active filters chips */}
+          {/* Active filter chips */}
           {hasActiveFilters && (
             <div className="flex flex-wrap items-center gap-2.5">
-              {activeColorObj && (
-                <span className="flex items-center gap-2 px-2 py-1.5 md:px-3 md:py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium">
+              {activeFilterEntries.map(([key, value]) => {
+                const label = getLabelForFilterValue(key, value, filterGroups);
+                const hex = getHexForColorValue(value, filterGroups);
+                return (
                   <span
-                    className="w-3.5 h-3.5 rounded-full inline-block border border-black/10"
-                    style={{ backgroundColor: activeColorObj.hex }}
-                  />
-                  {activeColorObj.name} Color
-                  <button
-                    onClick={() => updateUrlParam("color", null)}
-                    className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
+                    key={key}
+                    className="flex items-center gap-2 px-2 py-1.5 md:px-3 md:py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium"
                   >
-                    &#x2715;
-                  </button>
-                </span>
-              )}
-
-              {activeLevelObj && (
-                <span className="flex items-center gap-2 px-2 py-1.5 md:px-3 md:py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium">
-                  {activeLevelObj.name}
-                  <button
-                    onClick={() => updateUrlParam("level", null)}
-                    className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
-                  >
-                    &#x2715;
-                  </button>
-                </span>
-              )}
-
-              {activePriceObj && (
-                <span className="flex items-center gap-2 px-3 py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium">
-                  {activePriceObj.name.replace("₹", "Rs. ")}
-                  <button
-                    onClick={() => updateUrlParam("price", null)}
-                    className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
-                  >
-                    &#x2715;
-                  </button>
-                </span>
-              )}
+                    {hex && (
+                      <span
+                        className="w-3.5 h-3.5 rounded-full inline-block border border-black/10 flex-shrink-0"
+                        style={{ backgroundColor: hex }}
+                      />
+                    )}
+                    {label}
+                    <button
+                      onClick={() => removeFilter(key)}
+                      className="ml-1 hover:text-black dark:hover:text-white cursor-pointer font-bold text-xs opacity-70 hover:opacity-100"
+                    >
+                      &#x2715;
+                    </button>
+                  </span>
+                );
+              })}
 
               <button
                 onClick={clearAllFilters}
@@ -429,20 +395,24 @@ export default function FilterSortBar({
       {/* Slide-over Filter Panel */}
       {isFilterOpen && (
         <FilterDrawer
-          selectedColor={selectedColor}
-          setSelectedColor={setSelectedColor}
-          selectedLevel={selectedLevel}
-          setSelectedLevel={setSelectedLevel}
-          selectedPrice={selectedPrice}
-          setSelectedPrice={setSelectedPrice}
+          filterGroups={filterGroups}
+          pendingFilters={pendingFilters}
+          setPendingFilters={setPendingFilters}
+          totalProducts={totalProducts}
           applyFilters={applyFilters}
-          clearLocalFilters={clearLocalFilters}
+          clearPendingFilters={clearPendingFilters}
           onClose={() => setIsFilterOpen(false)}
+          activeCollectionHandle={activeCollectionHandle}
+          onCategoryChange={onCategoryChange}
         />
       )}
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Checkbox component (unchanged from original)
+// ---------------------------------------------------------------------------
 
 function Checkbox({ checked }: { checked: boolean }) {
   return (
@@ -451,7 +421,7 @@ function Checkbox({ checked }: { checked: boolean }) {
         "w-5 h-5 rounded-[4px] border flex items-center justify-center transition-colors flex-shrink-0 pointer-events-none",
         checked
           ? "bg-rose-500 border-rose-500 text-white"
-          : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black",
+          : "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black"
       )}
     >
       {checked && (
@@ -474,32 +444,73 @@ function Checkbox({ checked }: { checked: boolean }) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// FilterDrawer — dynamic, config-driven
+// ---------------------------------------------------------------------------
+
 function FilterDrawer({
-  selectedColor,
-  setSelectedColor,
-  selectedLevel,
-  setSelectedLevel,
-  selectedPrice,
-  setSelectedPrice,
+  filterGroups,
+  pendingFilters,
+  setPendingFilters,
+  totalProducts,
   applyFilters,
-  clearLocalFilters,
+  clearPendingFilters,
   onClose,
+  activeCollectionHandle,
+  onCategoryChange,
 }: {
-  selectedColor: string | null;
-  setSelectedColor: (c: string | null) => void;
-  selectedLevel: string | null;
-  setSelectedLevel: (l: string | null) => void;
-  selectedPrice: string | null;
-  setSelectedPrice: (p: string | null) => void;
+  filterGroups: FilterGroup[];
+  pendingFilters: Record<string, string>;
+  setPendingFilters: (f: Record<string, string>) => void;
+  totalProducts: number;
   applyFilters: () => void;
-  clearLocalFilters: () => void;
+  clearPendingFilters: () => void;
   onClose: () => void;
+  activeCollectionHandle: string;
+  onCategoryChange?: (handle: string) => void;
 }) {
-  const [openGroups, setOpenGroups] = useState({
-    level: true,
-    color: true,
-    price: true,
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Track which groups are open (default: all open)
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    filterGroups.forEach((g) => {
+      initial[g.id] = true;
+    });
+    return initial;
   });
+
+  const toggleGroup = (id: string) => {
+    setOpenGroups((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const setFilterValue = (groupId: string, value: string | null) => {
+    const next = { ...pendingFilters };
+    if (value === null || value === "") {
+      delete next[groupId];
+    } else {
+      next[groupId] = value;
+    }
+    setPendingFilters(next);
+  };
+
+  const handleCategorySelect = (handle: string) => {
+    // Close drawer first, then navigate
+    onClose();
+    if (onCategoryChange) {
+      onCategoryChange(handle);
+    } else {
+      // Navigate to the collection route
+      const pathParts = pathname.split("/");
+      const storeIdx = pathParts.indexOf("store");
+      if (storeIdx !== -1) {
+        pathParts.splice(storeIdx + 1);
+        if (handle !== "") pathParts.push(handle);
+      }
+      router.push(pathParts.join("/"));
+    }
+  };
 
   return (
     <>
@@ -508,16 +519,19 @@ function FilterDrawer({
         className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 transition-opacity"
         onClick={onClose}
       />
-      {/* Drawer Content */}
+      {/* Drawer */}
       <div className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white dark:bg-neutral-950 shadow-2xl z-50 flex flex-col transition-transform duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-900">
-          <h3
-            className="text-xl font-bold uppercase tracking-wider"
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
-            Filters
-          </h3>
+          <div className="flex items-center gap-3">
+            <FunnelIcon className="h-5 w-5" />
+            <h3
+              className="text-xl font-bold uppercase tracking-wider"
+              style={{ fontFamily: "'Clash Display', sans-serif" }}
+            >
+              Filter Items
+            </h3>
+          </div>
           <button
             type="button"
             onClick={onClose}
@@ -527,153 +541,226 @@ function FilterDrawer({
           </button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* Skill Level Filter (Size equivalent) */}
-          <div className="border-b border-neutral-100 dark:border-neutral-900 pb-6">
-            <button
-              type="button"
-              onClick={() =>
-                setOpenGroups((prev) => ({ ...prev, level: !prev.level }))
-              }
-              className="flex w-full items-center justify-between text-base font-bold uppercase tracking-wider text-black dark:text-white py-2"
-              style={{ fontFamily: "'Clash Display', sans-serif" }}
-            >
-              <span>Size</span>
-              {openGroups.level ? (
-                <ChevronUpIcon className="w-4 h-4 stroke-[2.5]" />
-              ) : (
-                <ChevronDownIcon className="w-4 h-4 stroke-[2.5]" />
-              )}
-            </button>
-            {openGroups.level && (
-              <div className="mt-4 flex flex-col gap-4 pl-1">
-                {SKILL_LEVELS.map((level) => {
-                  const isSelected = selectedLevel === level.value;
-                  return (
-                    <button
-                      type="button"
-                      key={level.value}
-                      onClick={() =>
-                        setSelectedLevel(isSelected ? null : level.value)
-                      }
-                      className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
-                      style={{ fontFamily: "Archivo, sans-serif" }}
-                    >
-                      <Checkbox checked={isSelected} />
-                      <span>{level.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto">
+          {filterGroups.map((group, idx) => {
+            const isOpen = openGroups[group.id] ?? true;
+            const isLast = idx === filterGroups.length - 1;
 
-          {/* Color Filter */}
-          <div className="border-b border-neutral-100 dark:border-neutral-900 pb-6">
-            <button
-              type="button"
-              onClick={() =>
-                setOpenGroups((prev) => ({ ...prev, color: !prev.color }))
-              }
-              className="flex w-full items-center justify-between text-base font-bold uppercase tracking-wider text-black dark:text-white py-2"
-              style={{ fontFamily: "'Clash Display', sans-serif" }}
-            >
-              <span>Colour</span>
-              {openGroups.color ? (
-                <ChevronUpIcon className="w-4 h-4 stroke-[2.5]" />
-              ) : (
-                <ChevronDownIcon className="w-4 h-4 stroke-[2.5]" />
-              )}
-            </button>
-            {openGroups.color && (
-              <div className="mt-4 flex flex-col gap-4 pl-1">
-                {COLORS.map((c) => {
-                  const isSelected = selectedColor === c.value;
-                  return (
-                    <button
-                      type="button"
-                      key={c.value}
-                      onClick={() =>
-                        setSelectedColor(isSelected ? null : c.value)
-                      }
-                      className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
-                      style={{ fontFamily: "Archivo, sans-serif" }}
-                    >
-                      <Checkbox checked={isSelected} />
-                      <span
-                        className="w-5 h-5 rounded-full border border-black/10 inline-block flex-shrink-0"
-                        style={{ backgroundColor: c.hex }}
+            return (
+              <div
+                key={group.id}
+                className={clsx(
+                  "border-b border-neutral-100 dark:border-neutral-900",
+                  isLast ? "border-b-0" : ""
+                )}
+              >
+                {/* Group header */}
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(group.id)}
+                  className="flex w-full items-center justify-between px-6 py-4 text-base font-bold uppercase tracking-wider text-black dark:text-white"
+                  style={{ fontFamily: "'Clash Display', sans-serif" }}
+                >
+                  <span>{group.label}</span>
+                  {isOpen ? (
+                    <ChevronUpIcon className="w-4 h-4 stroke-[2.5] flex-shrink-0" />
+                  ) : (
+                    <ChevronDownIcon className="w-4 h-4 stroke-[2.5] flex-shrink-0" />
+                  )}
+                </button>
+
+                {/* Group content */}
+                {isOpen && (
+                  <div className="px-6 pb-5">
+                    {group.type === "color-swatch" ? (
+                      <ColorSwatchGroup
+                        group={group}
+                        pendingFilters={pendingFilters}
+                        setFilterValue={setFilterValue}
                       />
-                      <span>{c.name}</span>
-                    </button>
-                  );
-                })}
+                    ) : group.type === "range-radio" ? (
+                      <RangeRadioGroup
+                        group={group}
+                        pendingFilters={pendingFilters}
+                        setFilterValue={setFilterValue}
+                      />
+                    ) : group.type === "category" ? (
+                      <CategoryGroup
+                        group={group}
+                        activeCollectionHandle={activeCollectionHandle}
+                        onCategorySelect={handleCategorySelect}
+                      />
+                    ) : (
+                      <CheckboxGroup
+                        group={group}
+                        pendingFilters={pendingFilters}
+                        setFilterValue={setFilterValue}
+                      />
+                    )}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-
-          {/* Price Range Filter (Wheel size equivalent) */}
-          <div className="pb-6">
-            <button
-              type="button"
-              onClick={() =>
-                setOpenGroups((prev) => ({ ...prev, price: !prev.price }))
-              }
-              className="flex w-full items-center justify-between text-base font-bold uppercase tracking-wider text-black dark:text-white py-2"
-              style={{ fontFamily: "'Clash Display', sans-serif" }}
-            >
-              <span>Price Range</span>
-              {openGroups.price ? (
-                <ChevronUpIcon className="w-4 h-4 stroke-[2.5]" />
-              ) : (
-                <ChevronDownIcon className="w-4 h-4 stroke-[2.5]" />
-              )}
-            </button>
-            {openGroups.price && (
-              <div className="mt-4 flex flex-col gap-4 pl-1">
-                {PRICE_RANGES.map((price) => {
-                  const isSelected = selectedPrice === price.value;
-                  return (
-                    <button
-                      type="button"
-                      key={price.value}
-                      onClick={() =>
-                        setSelectedPrice(isSelected ? null : price.value)
-                      }
-                      className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
-                      style={{ fontFamily: "Archivo, sans-serif" }}
-                    >
-                      <Checkbox checked={isSelected} />
-                      <span>{price.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+            );
+          })}
         </div>
 
-        {/* Footer actions */}
-        <div className="p-6 border-t border-neutral-100 dark:border-neutral-900 flex flex-col gap-3">
-          <button
-            type="button"
-            onClick={applyFilters}
-            className="w-full py-4 text-center bg-black text-white dark:bg-white dark:text-black rounded-lg text-sm font-bold uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
-            style={{ fontFamily: "Archivo, sans-serif" }}
-          >
-            APPLY
-          </button>
-          <button
-            type="button"
-            onClick={clearLocalFilters}
-            className="w-full py-4 text-center border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black text-black dark:text-white rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
-            style={{ fontFamily: "Archivo, sans-serif" }}
-          >
-            CLEAR
-          </button>
+        {/* Footer */}
+        <div className="p-6 border-t border-neutral-100 dark:border-neutral-900">
+          {/* Results count */}
+          <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 mb-4">
+            &#x24D8;&nbsp;{totalProducts} items were found
+          </p>
+          <div className="flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={applyFilters}
+              className="w-full py-4 text-center bg-black text-white dark:bg-white dark:text-black rounded-lg text-sm font-bold uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
+              style={{ fontFamily: "Archivo, sans-serif" }}
+            >
+              APPLY
+            </button>
+            <button
+              type="button"
+              onClick={clearPendingFilters}
+              className="w-full py-4 text-center border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black text-black dark:text-white rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
+              style={{ fontFamily: "Archivo, sans-serif" }}
+            >
+              CLEAR
+            </button>
+          </div>
         </div>
       </div>
     </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Sub-group renderers
+// ---------------------------------------------------------------------------
+
+function CheckboxGroup({
+  group,
+  pendingFilters,
+  setFilterValue,
+}: {
+  group: FilterGroup;
+  pendingFilters: Record<string, string>;
+  setFilterValue: (id: string, value: string | null) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-4 pl-1">
+      {group.options.map((opt) => {
+        const isSelected = pendingFilters[group.id] === opt.value;
+        return (
+          <button
+            type="button"
+            key={opt.value}
+            onClick={() => setFilterValue(group.id, isSelected ? null : opt.value)}
+            className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
+            style={{ fontFamily: "Archivo, sans-serif" }}
+          >
+            <Checkbox checked={isSelected} />
+            <span>{opt.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function ColorSwatchGroup({
+  group,
+  pendingFilters,
+  setFilterValue,
+}: {
+  group: FilterGroup;
+  pendingFilters: Record<string, string>;
+  setFilterValue: (id: string, value: string | null) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-4 pl-1">
+      {group.options.map((opt) => {
+        const isSelected = pendingFilters[group.id] === opt.value;
+        return (
+          <button
+            type="button"
+            key={opt.value}
+            onClick={() => setFilterValue(group.id, isSelected ? null : opt.value)}
+            className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
+            style={{ fontFamily: "Archivo, sans-serif" }}
+          >
+            <Checkbox checked={isSelected} />
+            {opt.hex && (
+              <span
+                className="w-5 h-5 rounded-full border border-black/10 inline-block flex-shrink-0"
+                style={{ backgroundColor: opt.hex }}
+              />
+            )}
+            <span>{opt.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function RangeRadioGroup({
+  group,
+  pendingFilters,
+  setFilterValue,
+}: {
+  group: FilterGroup;
+  pendingFilters: Record<string, string>;
+  setFilterValue: (id: string, value: string | null) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-4 pl-1">
+      {group.options.map((opt) => {
+        const isSelected = pendingFilters[group.id] === opt.value;
+        return (
+          <button
+            type="button"
+            key={opt.value}
+            onClick={() => setFilterValue(group.id, isSelected ? null : opt.value)}
+            className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
+            style={{ fontFamily: "Archivo, sans-serif" }}
+          >
+            <Checkbox checked={isSelected} />
+            <span>{opt.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function CategoryGroup({
+  group,
+  activeCollectionHandle,
+  onCategorySelect,
+}: {
+  group: FilterGroup;
+  activeCollectionHandle: string;
+  onCategorySelect: (handle: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-4 pl-1">
+      {group.options.map((opt) => {
+        const isActive = activeCollectionHandle === opt.value;
+        return (
+          <button
+            type="button"
+            key={opt.value}
+            onClick={() => onCategorySelect(opt.value)}
+            className="flex items-center gap-3 w-full text-left text-sm font-medium text-neutral-800 dark:text-neutral-200 cursor-pointer hover:opacity-80 transition-opacity"
+            style={{ fontFamily: "Archivo, sans-serif" }}
+          >
+            <Checkbox checked={isActive} />
+            <span>{opt.label}</span>
+          </button>
+        );
+      })}
+    </div>
   );
 }
