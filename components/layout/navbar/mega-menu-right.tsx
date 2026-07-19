@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import shopImg1 from "components/icons/shop_image_1.png";
 import shopImg2 from "components/icons/shop_image_2.png";
 import shopImg3 from "components/icons/shop_image_3.png";
@@ -14,6 +15,11 @@ export default function MegaMenuRight({
   onCollapse?: () => void;
 }) {
   const showPanel = hasSubItems(activeCategory);
+  const [lastCategory, setLastCategory] = useState<string | null>(null);
+
+  if (activeCategory && hasSubItems(activeCategory) && activeCategory !== lastCategory) {
+    setLastCategory(activeCategory);
+  }
 
   return (
     <div className="flex flex-1 min-h-[451px]">
@@ -26,7 +32,7 @@ export default function MegaMenuRight({
           marginRight: showPanel ? "12px" : "0",
         }}
       >
-        {showPanel && <MegaMenuSubItems category={activeCategory} />}
+        <MegaMenuSubItems category={lastCategory} />
       </div>
 
       {/* Main Content Grid Container */}
