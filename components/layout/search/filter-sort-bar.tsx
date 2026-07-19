@@ -12,11 +12,12 @@ import {
   deriveFiltersForCategory,
   getLabelForFilterValue,
   getHexForColorValue,
+  getParentCategory,
 } from "lib/filters/category-filter-config";
 import { sorting } from "lib/constants";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Product } from "lib/shopify/types";
 
 interface CollectionItem {
@@ -462,9 +463,12 @@ function Checkbox({
   );
 }
 
-// ---------------------------------------------------------------------------
-// FilterDrawer
-// ---------------------------------------------------------------------------
+// Module-level cache to persist open groups across page transitions/re-mounts
+let persistedOpenGroups: Record<string, boolean> = {
+  category: true,
+  subcategory: true,
+};
+let persistedDrawerScrollTop = 0;
 
 function FilterDrawer({
   filterGroups,
@@ -490,17 +494,66 @@ function FilterDrawer({
   const router = useRouter();
   const pathname = usePathname();
 
-  // ALL sections collapsed by default
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    persistedDrawerScrollTop = e.currentTarget.scrollTop;
+  };
+
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = persistedDrawerScrollTop;
+    }
+    return () => {
+      setTimeout(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("filter") !== "open") {
+          persistedDrawerScrollTop = 0;
+          persistedOpenGroups = {
+            category: true,
+            subcategory: true,
+          };
+        }
+      }, 100);
+    };
+  }, []);
+
+  const renderedGroups = [...filterGroups];
+  if (collections && collections.length > 1) {
+    const subcategoryGroup: FilterGroup = {
+      id: "subcategory",
+      label: "Subcategory",
+      type: "category",
+      options: collections.map((c) => ({
+        label: c.title,
+        value: c.handle,
+      })),
+    };
+    const categoryIdx = renderedGroups.findIndex((g) => g.id === "category");
+    if (categoryIdx !== -1) {
+      renderedGroups.splice(categoryIdx + 1, 0, subcategoryGroup);
+    } else {
+      renderedGroups.push(subcategoryGroup);
+    }
+  }
+
+  // ALL sections collapsed by default except category and subcategory (unless persisted)
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
-    filterGroups.forEach((g) => {
-      initial[g.id] = false;
+    const initial: Record<string, boolean> = { ...persistedOpenGroups };
+    renderedGroups.forEach((g) => {
+      if (initial[g.id] === undefined) {
+        initial[g.id] = g.id === "category" || g.id === "subcategory";
+      }
     });
     return initial;
   });
 
   const toggleGroup = (id: string) =>
-    setOpenGroups((prev) => ({ ...prev, [id]: !prev[id] }));
+    setOpenGroups((prev) => {
+      const next = { ...prev, [id]: !prev[id] };
+      persistedOpenGroups = next;
+      return next;
+    });
 
   const setFilterValue = (groupId: string, value: string | null) => {
     if (value === null) {
@@ -667,7 +720,11 @@ function FilterDrawer({
         </div>
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto">
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="flex-1 overflow-y-auto"
+        >
           {/* Active Filters Panel */}
           {activeDrawerFilters.length > 0 && (
             <div className="px-6 py-5 border-b border-neutral-100 dark:border-neutral-900 bg-neutral-50/50 dark:bg-neutral-900/10">
@@ -712,9 +769,11 @@ function FilterDrawer({
             </div>
           )}
 
-          {filterGroups.map((group, idx) => {
-            const isOpen = openGroups[group.id] ?? false;
-            const isLast = idx === filterGroups.length - 1;
+          {renderedGroups.map((group, idx) => {
+            const isOpen =
+              openGroups[group.id] ??
+              (group.id === "category" || group.id === "subcategory");
+            const isLast = idx === renderedGroups.length - 1;
 
             // Compute active counts for number ticker beside heading (splits commas)
             const filterVal = activeFilters[group.id];
@@ -727,9 +786,15 @@ function FilterDrawer({
                   ? activeCollectionHandle
                     ? 1
                     : 0
-                  : filterVal
-                    ? filterVal.split(",").filter(Boolean).length
-                    : 0;
+                  : group.id === "subcategory"
+                    ? activeCollectionHandle &&
+                      activeCollectionHandle !==
+                        getParentCategory(activeCollectionHandle)
+                      ? 1
+                      : 0
+                    : filterVal
+                      ? filterVal.split(",").filter(Boolean).length
+                      : 0;
 
             return (
               <div
@@ -1188,10 +1253,15 @@ function CategoryGroup({
   activeCollectionHandle: string;
   onCategorySelect: (handle: string) => void;
 }) {
+  const activeParent = getParentCategory(activeCollectionHandle);
   return (
     <div className="flex flex-col gap-4 pl-1">
       {group.options.map((opt) => {
-        const isActive = activeCollectionHandle === opt.value;
+        const isActive =
+          group.id === "subcategory"
+            ? activeCollectionHandle === opt.value
+            : activeParent === opt.value ||
+              (opt.value === "" && activeCollectionHandle === "");
         return (
           <button
             type="button"

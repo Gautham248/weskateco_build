@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import FilterSortBar from "components/layout/search/filter-sort-bar";
-import ProductCard from "components/product/product-card";
+import ProductCard, {
+  ProductCardSkeleton,
+} from "components/product/product-card";
 import Link from "next/link";
 import { Product } from "lib/shopify/types";
 import { sorting } from "lib/constants";
@@ -27,6 +29,7 @@ export default function StoreAllClient({
   );
   const [sort, setSort] = useState<string>("");
   const [page, setPage] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Stable initial index map for relevance/trending sort
   const initialIndexMap = useRef<Record<string, number>>({});
@@ -70,9 +73,13 @@ export default function StoreAllClient({
     const fullUrl = searchStr ? `${pathname}?${searchStr}` : pathname;
     window.history.pushState(null, "", fullUrl);
 
-    setActiveFilters(newFilters);
-    setSort(newSort);
-    setPage(newPage);
+    setIsLoading(true);
+    setTimeout(() => {
+      setActiveFilters(newFilters);
+      setSort(newSort);
+      setPage(newPage);
+      setIsLoading(false);
+    }, 250);
   };
 
   const handleFilterChange = (filters: Record<string, string>) => {
@@ -95,6 +102,7 @@ export default function StoreAllClient({
     if (filterParam) params.set("filter", filterParam);
     const searchStr = params.toString();
 
+    setIsLoading(true);
     if (handle === "") {
       router.push(searchStr ? `/store?${searchStr}` : `/store`, {
         scroll: false,
@@ -283,7 +291,13 @@ export default function StoreAllClient({
         />
       </div>
 
-      {paginatedProducts.length === 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+          {Array.from({ length: 8 }).map((_, idx) => (
+            <ProductCardSkeleton key={idx} />
+          ))}
+        </div>
+      ) : paginatedProducts.length === 0 ? (
         <div className="flex min-h-[200px] flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 p-8 text-center dark:border-neutral-800">
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
             No products found

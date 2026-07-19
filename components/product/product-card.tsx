@@ -84,7 +84,9 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
           if (diffX < 0) {
             // Swiped left
             if (displayImages.length > 1) {
-              setShowIndex((prev) => Math.min(prev + 1, displayImages.length - 1));
+              setShowIndex((prev) =>
+                Math.min(prev + 1, displayImages.length - 1),
+              );
             }
           } else {
             // Swiped right
@@ -158,8 +160,9 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             {displayImages.map((_, idx) => (
               <span
                 key={idx}
-                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
-                  }`}
+                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
+                  idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
+                }`}
               />
             ))}
           </div>
@@ -246,5 +249,18 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
         </div>
       </div>
     </Link>
+  );
+}
+
+export function ProductCardSkeleton() {
+  return (
+    <div className="flex flex-col bg-transparent animate-pulse">
+      <div className="relative aspect-[2/3] w-full rounded-xl bg-neutral-200 dark:bg-neutral-800" />
+      <div className="flex flex-col pt-4 px-1">
+        <div className="h-3.5 w-16 bg-neutral-200 dark:bg-neutral-800 rounded-[4px] mb-2" />
+        <div className="h-4.5 w-3/4 bg-neutral-200 dark:bg-neutral-800 rounded-[4px] mb-3" />
+        <div className="h-4 w-1/3 bg-neutral-200 dark:bg-neutral-800 rounded-[4px]" />
+      </div>
+    </div>
   );
 }

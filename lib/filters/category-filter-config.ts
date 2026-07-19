@@ -6,7 +6,11 @@
  * no metafield queries needed.
  */
 
-export type FilterOptionType = "checkbox" | "color-swatch" | "range-radio" | "category";
+export type FilterOptionType =
+  | "checkbox"
+  | "color-swatch"
+  | "range-radio"
+  | "category";
 
 export interface FilterOption {
   label: string;
@@ -60,8 +64,6 @@ const PRICE_OPTIONS: FilterOption[] = [
   { label: "Over \u20b910,000", value: "10000-999999" },
 ];
 
-
-
 const APPAREL_SIZE_OPTIONS: FilterOption[] = [
   { label: "XS", value: "xs" },
   { label: "S", value: "s" },
@@ -76,15 +78,15 @@ const APPAREL_SIZE_OPTIONS: FilterOption[] = [
 // ---------------------------------------------------------------------------
 
 const DECK_WIDTH_OPTIONS: FilterOption[] = [
-  { label: "7.5\"", value: "7.5" },
-  { label: "7.75\"", value: "7.75" },
-  { label: "8.0\"", value: "8.0" },
-  { label: "8.125\"", value: "8.125" },
-  { label: "8.25\"", value: "8.25" },
-  { label: "8.375\"", value: "8.375" },
-  { label: "8.5\"", value: "8.5" },
-  { label: "8.75\"", value: "8.75" },
-  { label: "9.0\"", value: "9.0" },
+  { label: '7.5"', value: "7.5" },
+  { label: '7.75"', value: "7.75" },
+  { label: '8.0"', value: "8.0" },
+  { label: '8.125"', value: "8.125" },
+  { label: '8.25"', value: "8.25" },
+  { label: '8.375"', value: "8.375" },
+  { label: '8.5"', value: "8.5" },
+  { label: '8.75"', value: "8.75" },
+  { label: '9.0"', value: "9.0" },
 ];
 
 const DECK_SHAPE_OPTIONS: FilterOption[] = [
@@ -109,11 +111,11 @@ const DECK_CONSTRUCTION_OPTIONS: FilterOption[] = [
 ];
 
 const TRUCK_AXLE_WIDTH_OPTIONS: FilterOption[] = [
-  { label: "7.6\" (for 7.5\" deck)", value: "7.6" },
-  { label: "7.75\" (for 7.75\" deck)", value: "7.75" },
-  { label: "8.0\" (for 8.0\" deck)", value: "8.0" },
-  { label: "8.25\" (for 8.25\" deck)", value: "8.25" },
-  { label: "8.5\" (for 8.5\"+ deck)", value: "8.5" },
+  { label: '7.6" (for 7.5" deck)', value: "7.6" },
+  { label: '7.75" (for 7.75" deck)', value: "7.75" },
+  { label: '8.0" (for 8.0" deck)', value: "8.0" },
+  { label: '8.25" (for 8.25" deck)', value: "8.25" },
+  { label: '8.5" (for 8.5"+ deck)', value: "8.5" },
 ];
 
 const WHEEL_DIAMETER_OPTIONS: FilterOption[] = [
@@ -137,21 +139,21 @@ const WHEEL_HARDNESS_OPTIONS: FilterOption[] = [
 // ---------------------------------------------------------------------------
 
 const SURFSKATE_DECK_LENGTH_OPTIONS: FilterOption[] = [
-  { label: "28\"", value: "28" },
-  { label: "29\"", value: "29" },
-  { label: "30\"", value: "30" },
-  { label: "31\"", value: "31" },
-  { label: "32\"", value: "32" },
-  { label: "33\"", value: "33" },
-  { label: "34\"", value: "34" },
-  { label: "36\"", value: "36" },
+  { label: '28"', value: "28" },
+  { label: '29"', value: "29" },
+  { label: '30"', value: "30" },
+  { label: '31"', value: "31" },
+  { label: '32"', value: "32" },
+  { label: '33"', value: "33" },
+  { label: '34"', value: "34" },
+  { label: '36"', value: "36" },
 ];
 
 const SURFSKATE_DECK_WIDTH_OPTIONS: FilterOption[] = [
-  { label: "9.0\"", value: "9.0" },
-  { label: "9.5\"", value: "9.5" },
-  { label: "10.0\"", value: "10.0" },
-  { label: "10.5\"", value: "10.5" },
+  { label: '9.0"', value: "9.0" },
+  { label: '9.5"', value: "9.5" },
+  { label: '10.0"', value: "10.0" },
+  { label: '10.5"', value: "10.5" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -204,8 +206,6 @@ const BRAND_GROUP: FilterGroup = {
   type: "checkbox",
   options: BRAND_OPTIONS,
 };
-
-
 
 // ---------------------------------------------------------------------------
 // BASE_FILTERS — shown when no category is active (all-products /store)
@@ -503,7 +503,7 @@ export function deriveFiltersForCategory(handle: string): FilterGroup[] {
 export function getLabelForFilterValue(
   groupId: string,
   value: string,
-  filterGroups: FilterGroup[]
+  filterGroups: FilterGroup[],
 ): string {
   if (groupId === "price") {
     const parts = value.split("-").map(Number);
@@ -524,9 +524,65 @@ export function getLabelForFilterValue(
  */
 export function getHexForColorValue(
   value: string,
-  filterGroups: FilterGroup[]
+  filterGroups: FilterGroup[],
 ): string | undefined {
   const colorGroup = filterGroups.find((g) => g.type === "color-swatch");
   if (!colorGroup) return undefined;
   return colorGroup.options.find((o) => o.value === value)?.hex;
+}
+
+/**
+ * Resolves the parent category handle (e.g. 'skateboards') for a given collection handle.
+ */
+export function getParentCategory(handle: string): string {
+  if (!handle) return "";
+  const subToParent: Record<string, string> = {
+    // Skateboards
+    skateboards: "skateboards",
+    decks: "skateboards",
+    trucks: "skateboards",
+    wheels: "skateboards",
+    completes: "skateboards",
+    accessories: "skateboards",
+    "skateboard-completes": "skateboards",
+    "skateboard-decks": "skateboards",
+    "skateboard-trucks": "skateboards",
+    "skateboard-wheels": "skateboards",
+    "skateboard-accessories": "skateboards",
+
+    // Surfskates
+    surfskates: "surfskates",
+    "surfskate-completes": "surfskates",
+    "surfskate-decks": "surfskates",
+    "surfskate-trucks": "surfskates",
+    "surfskate-wheels": "surfskates",
+    "surfskate-accessories": "surfskates",
+
+    // Apparel
+    "apparel-1": "apparel-1",
+    apparel: "apparel-1",
+
+    // Protection Gears
+    "protection-gears": "protection-gears",
+    "protective-gears": "protection-gears",
+    helmets: "protection-gears",
+    pads: "protection-gears",
+    gloves: "protection-gears",
+  };
+
+  const exact = subToParent[handle];
+  if (exact) return exact;
+
+  const lower = handle.toLowerCase();
+  if (lower.includes("skateboard")) return "skateboards";
+  if (lower.includes("surfskate")) return "surfskates";
+  if (lower.includes("apparel")) return "apparel-1";
+  if (
+    lower.includes("protect") ||
+    lower.includes("helmet") ||
+    lower.includes("pad")
+  ) {
+    return "protection-gears";
+  }
+  return "";
 }
