@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import StoreBanner from "components/layout/search/banner";
 import FilterSortBar from "components/layout/search/filter-sort-bar";
 import ProductCard, {
   ProductCardSkeleton,
 } from "components/product/product-card";
-import Link from "next/link";
+import { createTranslator } from "lib/i18n";
 import { Product } from "lib/shopify/types";
-import { sorting } from "lib/constants";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 interface StoreAllClientProps {
   products: Product[];
@@ -21,6 +22,7 @@ export default function StoreAllClient({
 }: StoreAllClientProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const t = createTranslator(locale);
   const searchParams = useSearchParams();
 
   // Generalised filter map
@@ -29,7 +31,7 @@ export default function StoreAllClient({
   );
   const [sort, setSort] = useState<string>("");
   const [page, setPage] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   // Stable initial index map for relevance/trending sort
   const initialIndexMap = useRef<Record<string, number>>({});
@@ -73,13 +75,9 @@ export default function StoreAllClient({
     const fullUrl = searchStr ? `${pathname}?${searchStr}` : pathname;
     window.history.pushState(null, "", fullUrl);
 
-    setIsLoading(true);
-    setTimeout(() => {
-      setActiveFilters(newFilters);
-      setSort(newSort);
-      setPage(newPage);
-      setIsLoading(false);
-    }, 250);
+    setActiveFilters(newFilters);
+    setSort(newSort);
+    setPage(newPage);
   };
 
   const handleFilterChange = (filters: Record<string, string>) => {
@@ -102,17 +100,18 @@ export default function StoreAllClient({
     if (filterParam) params.set("filter", filterParam);
     const searchStr = params.toString();
 
-    setIsLoading(true);
-    if (handle === "") {
-      router.push(searchStr ? `/store?${searchStr}` : `/store`, {
-        scroll: false,
-      });
-    } else {
-      router.push(
-        searchStr ? `/store/${handle}?${searchStr}` : `/store/${handle}`,
-        { scroll: false },
-      );
-    }
+    startTransition(() => {
+      if (handle === "") {
+        router.push(searchStr ? `/store?${searchStr}` : `/store`, {
+          scroll: false,
+        });
+      } else {
+        router.push(
+          searchStr ? `/store/${handle}?${searchStr}` : `/store/${handle}`,
+          { scroll: false },
+        );
+      }
+    });
   };
 
   // Apply all active filters generically
@@ -274,9 +273,13 @@ export default function StoreAllClient({
 
   return (
     <section className="w-full">
+      <StoreBanner
+        title={t("collection.all_products")}
+        description={t("collection.all_products_description")}
+      />
       <div className="mb-6">
         <FilterSortBar
-          title="All Products"
+          title={t("collection.all_products")}
           totalProducts={totalProducts}
           locale={locale}
           collections={[]}
@@ -291,7 +294,7 @@ export default function StoreAllClient({
         />
       </div>
 
-      {isLoading ? (
+      {isPending ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
           {Array.from({ length: 8 }).map((_, idx) => (
             <ProductCardSkeleton key={idx} />
@@ -355,11 +358,10 @@ export default function StoreAllClient({
                         e.preventDefault();
                         updateParams(activeFilters, sort, Number(p));
                       }}
-                      className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${
-                        isCurrent
-                          ? "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-xs"
-                          : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                      }`}
+                      className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${isCurrent
+                        ? "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-xs"
+                        : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        }`}
                     >
                       {p}
                     </Link>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import StoreBanner from "components/layout/search/banner";
 import FilterSortBar from "components/layout/search/filter-sort-bar";
@@ -50,7 +50,7 @@ export default function StoreCollectionClient({
   );
   const [sort, setSort] = useState<string>("");
   const [page, setPage] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   // Sync state from URL (handles back/forward navigation)
   useEffect(() => {
@@ -116,14 +116,10 @@ export default function StoreCollectionClient({
 
     window.history.pushState(null, "", fullUrl);
 
-    setIsLoading(true);
-    setTimeout(() => {
-      setActiveHandle(newHandle);
-      setActiveFilters(newFilters);
-      setSort(newSort);
-      setPage(newPage);
-      setIsLoading(false);
-    }, 250);
+    setActiveHandle(newHandle);
+    setActiveFilters(newFilters);
+    setSort(newSort);
+    setPage(newPage);
   };
 
   // Callbacks for FilterSortBar
@@ -156,9 +152,10 @@ export default function StoreCollectionClient({
     const filterParam = searchParams.get("filter");
     if (filterParam) params.set("filter", filterParam);
     const searchStr = params.toString();
-    setIsLoading(true);
-    router.push(searchStr ? `${newPath}?${searchStr}` : newPath, {
-      scroll: false,
+    startTransition(() => {
+      router.push(searchStr ? `${newPath}?${searchStr}` : newPath, {
+        scroll: false,
+      });
     });
   };
 
@@ -348,7 +345,7 @@ export default function StoreCollectionClient({
         />
       </div>
 
-      {isLoading ? (
+      {isPending ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
           {Array.from({ length: 8 }).map((_, idx) => (
             <ProductCardSkeleton key={idx} />
