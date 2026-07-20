@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import shopImg1 from "components/icons/shop_image_1.png";
 import shopImg2 from "components/icons/shop_image_2.png";
 import shopImg3 from "components/icons/shop_image_3.png";
 import Image from "next/image";
+import { useState } from "react";
 import MegaMenuSubItems, { hasSubItems } from "./mega-menu-sub-items";
 
 export default function MegaMenuRight({
@@ -100,12 +100,12 @@ export default function MegaMenuRight({
             {/* Horizontal Text Overlay */}
             <div
               className={`absolute bottom-6 left-6 z-10 max-w-[85%] transition-all duration-700 ease-in-out ${showPanel
-                ? "opacity-100 translate-y-0"
+                ? "opacity-0 pointer-events-none xl:opacity-100 xl:pointer-events-auto translate-y-0"
                 : "opacity-0 translate-y-4 pointer-events-none"
                 }`}
             >
               <h3
-                className="text-white font-[700] text-[clamp(1rem,2.5vw,1.25rem)] uppercase leading-tight tracking-wide drop-shadow-md"
+                className="text-white font-[700] text-xs xl:text-[0.95rem] 2xl:text-[1.25rem] uppercase leading-tight tracking-wide drop-shadow-md"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 Newly <br /> Released

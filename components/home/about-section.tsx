@@ -48,9 +48,8 @@ export default function AboutSection() {
           viewBox="0 0 1082 716"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={`absolute top-0 left-[20%] right-0 w-[80%] h-[75%] overflow-visible pointer-events-none z-10 ${
-            isInView ? "animate-path" : ""
-          }`}
+          className={`absolute top-0 left-[20%] right-0 w-[80%] h-[75%] overflow-visible pointer-events-none z-10 ${isInView ? "animate-path" : ""
+            }`}
           preserveAspectRatio="none"
         >
           <style>{`
@@ -96,7 +95,7 @@ export default function AboutSection() {
       </div>
 
       {/* Content Overlay */}
-      <div className="relative z-10 mx-auto flex h-full flex-row items-end justify-between pl-4 pr-5 md:px-4 pb-8 pt-12 md:px-6 md:py-24 lg:px-12">
+      <div className="relative z-10 mx-auto flex h-full flex-row items-end justify-between pl-4 pr-5 md:px-4 pb-8 pt-12 md:px-6 md:py-24 lg:px-15">
         {/* Left Side: Description Text */}
         <div className="max-w-[45%] mb-0 md:max-w-md md:w-5/12">
           <h2 className="md:hidden font-normal leading-tight tracking-tight text-[#d4ff00] fluid-text-xl sm:fluid-text-2xl lg:fluid-text-3xl text-balance">
