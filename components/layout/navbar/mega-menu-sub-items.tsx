@@ -76,7 +76,7 @@ const ITEM_SLUGS: Record<string, (prefix: string) => string> = {
 
 function getStorePath(parentCategoryUrl: string, itemLower: string): string {
   const category = CATEGORY_PREFIXES.find((c) =>
-    parentCategoryUrl.includes(c.match)
+    parentCategoryUrl.includes(c.match),
   );
   const slugFn = category && ITEM_SLUGS[itemLower];
   const slug = slugFn ? slugFn(category.prefix) : itemLower;
@@ -113,8 +113,11 @@ export default function MegaMenuSubItems({
             <a
               key={item}
               href={getSubItemHref(category!, item)}
-              className="relative flex h-12 items-center justify-between gap-10 text-[clamp(1.125rem,2vw,1.375rem)] font-medium text-black dark:text-white whitespace-nowrap"
-              style={{ fontFamily: "Archivo, sans-serif", letterSpacing: "0em" }}
+              className="relative flex h-12 items-center justify-between gap-10 text-[20px] font-medium text-black dark:text-white whitespace-nowrap"
+              style={{
+                fontFamily: "Archivo, sans-serif",
+                letterSpacing: "0em",
+              }}
               onMouseEnter={() => setHoveredItem(item)}
               onMouseLeave={() => setHoveredItem(null)}
             >

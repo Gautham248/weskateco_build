@@ -5,7 +5,7 @@ export default function NewlyRelease() {
     <section className="h-auto md:h-screen w-full bg-white pt-10 md:pt-[120px] pb-10 md:mb-[100px]">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 h-auto md:h-full flex flex-col">
         <h2
-          className="text-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
+          className="text-[clamp(1.5rem,5vw,3.75rem)] leading-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
           style={{
             fontFamily: "'Clash Display', sans-serif",
             letterSpacing: "-0.01em",
