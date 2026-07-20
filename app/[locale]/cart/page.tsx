@@ -7,6 +7,7 @@ import Footer from "components/layout/footer";
 import Price from "components/price";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -38,6 +39,7 @@ export default function CartPage() {
 }
 
 function CartPageContent() {
+  const { t } = useTranslation();
   const { cart, updateCartItem } = useCart();
   const params = useParams();
   const locale = (params?.locale as string) || "en";
@@ -105,11 +107,10 @@ function CartPageContent() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-            {/* Left side: Cart items list */}
-            <div className="lg:col-span-2 space-y-6">
+          <>
+            <div className="space-y-6 mb-8">
               <h1
-                className="text-[32px] font-semibold font-black tracking-tighter uppercase mb-8 flex items-baseline gap-2"
+                className="text-[32px] font-semibold font-black tracking-tighter uppercase flex items-baseline gap-2"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 My Cart
@@ -146,6 +147,11 @@ function CartPageContent() {
                   .
                 </span>
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+              {/* Left side: Cart items list */}
+              <div className="lg:col-span-2 space-y-6">
 
               {/* Items Card List */}
               <div className="space-y-4">
@@ -383,18 +389,14 @@ function CartPageContent() {
                   </div>
                 </div>
 
-                {/* Terms agreement checkbox */}
-                <div
-                  className="mt-6 flex items-end gap-2 "
-                  style={{ fontFamily: "Archivo, sans-serif" }}
-                >
-                  <label
-                    htmlFor="terms"
-                    className="text-[12px] text-black leading-tight"
+                {/* Highlighted checkout notice */}
+                <div className="mt-6 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3 rounded-none text-center">
+                  <p
+                    className="text-[12px] text-neutral-600 dark:text-neutral-400 font-medium leading-tight"
                     style={{ fontFamily: "Archivo, sans-serif" }}
                   >
-                    Taxes included. Discounts and shipping calculated at checkout.
-                  </label>
+                    {t("cart.checkout_notice")}
+                  </p>
                 </div>
 
                 {/* Checkout button action */}
@@ -425,7 +427,8 @@ function CartPageContent() {
 
             </div>
           </div>
-        )}
+        </>
+      )}
       </main>
       <Footer />
     </div>

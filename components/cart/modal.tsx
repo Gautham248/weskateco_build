@@ -9,12 +9,14 @@ import { DEFAULT_OPTION } from "lib/constants";
 import { createUrl } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { Fragment, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { createCartAndSetCookie, redirectToCheckout } from "./actions";
 import { useCart } from "./cart-context";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { useTranslation } from "lib/i18n/TranslationProvider";
+import { getLocalizedPath } from "lib/i18n";
 import { DeleteItemButton } from "./delete-item-button";
 import { EditItemQuantityButton } from "./edit-item-quantity-button";
 import OpenCart from "./open-cart";
@@ -24,7 +26,8 @@ type MerchandiseSearchParams = {
 };
 
 export default function CartModal() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const pathname = usePathname();
   const { cart, updateCartItem } = useCart();
   const {
     isReady: gokwikReady,
@@ -36,8 +39,10 @@ export default function CartModal() {
     cartId: cart?.id,
   });
   const [isOpen, setIsOpen] = useState(false);
-  const quantityRef = useRef(cart?.totalQuantity);
-  const openCart = () => setIsOpen(true);
+  const openCart = () => {
+    if (pathname.endsWith("/cart")) return;
+    setIsOpen(true);
+  };
   const closeCart = () => setIsOpen(false);
 
   useEffect(() => {
@@ -45,19 +50,6 @@ export default function CartModal() {
       createCartAndSetCookie();
     }
   }, [cart]);
-
-  useEffect(() => {
-    if (
-      cart?.totalQuantity &&
-      cart?.totalQuantity !== quantityRef.current &&
-      cart?.totalQuantity > 0
-    ) {
-      if (!isOpen) {
-        setIsOpen(true);
-      }
-      quantityRef.current = cart?.totalQuantity;
-    }
-  }, [isOpen, cart?.totalQuantity, quantityRef]);
 
   return (
     <>
@@ -86,19 +78,34 @@ export default function CartModal() {
             leaveFrom="translate-x-0"
             leaveTo="translate-x-full"
           >
-            <Dialog.Panel className="fixed bottom-0 right-0 top-0 flex h-full w-full flex-col border-l border-neutral-200 bg-white/80 p-6 text-black backdrop-blur-xl md:w-[390px] dark:border-neutral-700 dark:bg-black/80 dark:text-white">
-              <div className="flex items-center justify-between">
-                <p className="text-lg font-semibold">My Cart</p>
-                <button aria-label="Close cart" onClick={closeCart}>
-                  <CloseCart />
+            <Dialog.Panel
+              className="fixed bottom-0 right-0 top-0 flex h-full w-full flex-col border-l border-neutral-200 bg-white/80 p-6 text-black backdrop-blur-xl md:w-[390px] dark:border-neutral-700 dark:bg-black/80 dark:text-white"
+              style={{ fontFamily: "Archivo, sans-serif" }}
+            >
+              <div className="flex items-center justify-between pb-4 border-b border-neutral-100 dark:border-neutral-900">
+                <p
+                  className="text-xl font-bold uppercase tracking-wider text-black dark:text-white"
+                  style={{ fontFamily: "'Clash Display', sans-serif" }}
+                >
+                  {t("cart.title")}
+                </p>
+                <button
+                  aria-label="Close cart"
+                  onClick={closeCart}
+                  className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 flex items-center justify-center transition-colors"
+                >
+                  <XMarkIcon className="h-5 w-5 text-black dark:text-white" />
                 </button>
               </div>
 
               {!cart || cart.lines.length === 0 ? (
                 <div className="mt-20 flex w-full flex-col items-center justify-center overflow-hidden">
-                  <ShoppingCartIcon className="h-16" />
-                  <p className="mt-6 text-center text-2xl font-bold">
-                    Your cart is empty.
+                  <ShoppingCartIcon className="h-16 text-black dark:text-white" />
+                  <p
+                    className="mt-6 text-center text-xl font-bold uppercase tracking-wider text-black dark:text-white"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
+                    {t("cart.empty")}
                   </p>
                 </div>
               ) : (
@@ -380,49 +387,60 @@ export default function CartModal() {
                       );
                     })()}
                   </ul>
-                  <div className="py-4 text-sm text-neutral-500 dark:text-neutral-400">
-                    <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 dark:border-neutral-700">
-                      <p>Taxes</p>
+                  <div className="py-4 border-t border-neutral-200 dark:border-neutral-800" style={{ fontFamily: "Archivo, sans-serif" }}>
+                    <div className="mb-4 flex items-baseline justify-between">
+                      <span
+                        className="text-[14px] font-bold uppercase text-neutral-900 dark:text-white tracking-wider"
+                        style={{ fontFamily: "'Clash Display', sans-serif" }}
+                      >
+                        {t("cart.estimated_total")}
+                      </span>
                       <Price
-                        className="text-right text-base text-black dark:text-white"
-                        amount={cart.cost.totalTaxAmount.amount}
-                        currencyCode={cart.cost.totalTaxAmount.currencyCode}
-                      />
-                    </div>
-                    <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
-                      <p>Shipping</p>
-                      <p className="text-right">Calculated at checkout</p>
-                    </div>
-                    <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
-                      <p>Total</p>
-                      <Price
-                        className="text-right text-base text-black dark:text-white"
+                        className="text-right text-lg font-bold text-neutral-900 dark:text-white"
                         amount={cart.cost.totalAmount.amount}
                         currencyCode={cart.cost.totalAmount.currencyCode}
+                        currencyCodeClassName="hidden"
                       />
                     </div>
+                    
+                    {/* Highlighted info box */}
+                    <div className="bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 p-3 mb-4 rounded-none text-center">
+                      <p className="text-[12px] text-neutral-600 dark:text-neutral-400 font-medium">
+                        {t("cart.checkout_notice")}
+                      </p>
+                    </div>
                   </div>
-                  {useFallback ? (
-                    <form action={redirectToCheckout}>
-                      <CheckoutButton />
-                    </form>
-                  ) : (
-                    <button
-                      onClick={triggerCheckout}
-                      disabled={!gokwikReady || isCheckingOut || !cart?.id}
-                      className={`block w-full rounded-full p-3 text-center text-sm font-medium text-white transition-opacity ${
-                        !gokwikReady || isCheckingOut || !cart?.id
-                          ? "cursor-not-allowed bg-blue-400 opacity-70"
-                          : "bg-blue-600 opacity-90 hover:opacity-100"
-                      }`}
+                  <div className="space-y-3">
+                    {useFallback ? (
+                      <form action={redirectToCheckout} className="w-full">
+                        <CheckoutButton />
+                      </form>
+                    ) : (
+                      <button
+                        onClick={triggerCheckout}
+                        disabled={!gokwikReady || isCheckingOut || !cart?.id}
+                        className={`w-full h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-none cursor-pointer transition-colors flex items-center justify-center ${
+                          !gokwikReady || isCheckingOut || !cart?.id ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        style={{ fontFamily: "Archivo, sans-serif" }}
+                      >
+                        {isCheckingOut
+                          ? t("cart.processing")
+                          : !gokwikReady
+                            ? t("cart.loading_checkout")
+                            : t("cart.proceed_to_checkout")}
+                      </button>
+                    )}
+
+                    <Link
+                      href={getLocalizedPath("/cart", locale)}
+                      onClick={closeCart}
+                      className="w-full h-14 bg-white text-black hover:bg-neutral-50 border border-black dark:bg-black dark:text-white dark:hover:bg-neutral-900 dark:border-white uppercase text-[13px] font-semibold tracking-wider rounded-none cursor-pointer transition-colors flex items-center justify-center"
+                      style={{ fontFamily: "Archivo, sans-serif" }}
                     >
-                      {isCheckingOut
-                        ? t("cart.processing")
-                        : !gokwikReady
-                          ? t("cart.loading_checkout")
-                          : t("cart.proceed_to_checkout")}
-                    </button>
-                  )}
+                      {t("cart.view_cart")}
+                    </Link>
+                  </div>
                 </div>
               )}
             </Dialog.Panel>
@@ -433,29 +451,18 @@ export default function CartModal() {
   );
 }
 
-function CloseCart({ className }: { className?: string }) {
-  return (
-    <div className="relative flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 text-black transition-colors dark:border-neutral-700 dark:text-white">
-      <XMarkIcon
-        className={clsx(
-          "h-6 transition-all ease-in-out hover:scale-110",
-          className,
-        )}
-      />
-    </div>
-  );
-}
-
 function CheckoutButton() {
   const { pending } = useFormStatus();
+  const { t } = useTranslation();
 
   return (
     <button
-      className="block w-full rounded-full bg-blue-600 p-3 text-center text-sm font-medium text-white opacity-90 hover:opacity-100"
+      className="w-full h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-none cursor-pointer transition-colors flex items-center justify-center"
       type="submit"
       disabled={pending}
+      style={{ fontFamily: "Archivo, sans-serif" }}
     >
-      {pending ? <LoadingDots className="bg-white" /> : "Proceed to Checkout"}
+      {pending ? <LoadingDots className="bg-white" /> : t("cart.proceed_to_checkout")}
     </button>
   );
 }

@@ -34,6 +34,9 @@
   "cart.loading_checkout": "चेकआउट लोड हो रहा है...",
   "cart.proceed_to_checkout": "चेकआउट करें",
   "cart.checkout_fallback": "चेकआउट (वैकल्पिक)",
+  "cart.estimated_total": "अनुमानित कुल",
+  "cart.view_cart": "कार्ट देखें",
+  "cart.checkout_notice": "कर शामिल। चेकआउट के समय छूट और शिपिंग की गणना की जाती है।",
 
   "product.add_to_cart": "कार्ट में जोड़ें",
   "product.out_of_stock": "स्टॉक में नहीं",

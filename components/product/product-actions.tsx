@@ -64,7 +64,6 @@ export function ProductActions({ product }: { product: Product }) {
           if (!selectedVariantId) return;
           setIsAdding(true);
           try {
-            await addItemAction();
             if (finalVariant) {
               addCartItem(finalVariant, product);
             }
@@ -80,6 +79,7 @@ export function ProductActions({ product }: { product: Product }) {
             });
             setIsAdded(true);
             setTimeout(() => setIsAdded(false), 2000);
+            await addItemAction();
           } catch (e) {
             console.error(e);
           } finally {
