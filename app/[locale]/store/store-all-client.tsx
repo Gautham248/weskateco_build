@@ -1,50 +1,31 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import StoreBanner from "components/layout/search/banner";
 import FilterSortBar from "components/layout/search/filter-sort-bar";
 import ProductCard, {
   ProductCardSkeleton,
 } from "components/product/product-card";
-import Link from "next/link";
+import { createTranslator } from "lib/i18n";
 import { Product } from "lib/shopify/types";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState, useTransition } from "react";
 
-interface CollectionItem {
-  handle: string;
-  title: string;
-  path: string;
-}
-
-interface CollectionMeta {
-  title: string;
-  description?: string;
-}
-
-interface StoreCollectionClientProps {
-  initialCollectionHandle: string;
-  productsByCollection: Record<string, Product[]>;
-  collections: CollectionItem[];
-  collectionsMeta: Record<string, CollectionMeta>;
+interface StoreAllClientProps {
+  products: Product[];
   locale: string;
-  noProductsText: string;
 }
 
-export default function StoreCollectionClient({
-  initialCollectionHandle,
-  productsByCollection,
-  collections,
-  collectionsMeta,
+export default function StoreAllClient({
+  products,
   locale,
-  noProductsText,
-}: StoreCollectionClientProps) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+}: StoreAllClientProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const t = createTranslator(locale);
+  const searchParams = useSearchParams();
 
-  // Local state
-  const [activeHandle, setActiveHandle] = useState(initialCollectionHandle);
-  // Generalised filter map: { color: "blue", price: "0-2000", size: "8.0", ... }
+  // Generalised filter map
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
     {},
   );
@@ -52,13 +33,18 @@ export default function StoreCollectionClient({
   const [page, setPage] = useState<number>(1);
   const [isPending, startTransition] = useTransition();
 
-  // Sync state from URL (handles back/forward navigation)
+  // Stable initial index map for relevance/trending sort
+  const initialIndexMap = useRef<Record<string, number>>({});
   useEffect(() => {
-    const parts = pathname.split("/");
-    const handle =
-      parts[parts.length - 1] === "store" ? "" : parts[parts.length - 1];
-    setActiveHandle(handle || "");
+    const map: Record<string, number> = {};
+    products.forEach((p, idx) => {
+      map[p.handle] = idx;
+    });
+    initialIndexMap.current = map;
+  }, [products]);
 
+  // Sync state from URL (back/forward navigation)
+  useEffect(() => {
     const filters: Record<string, string> = {};
     searchParams.forEach((value, key) => {
       if (key !== "sort" && key !== "page" && key !== "filter")
@@ -67,40 +53,14 @@ export default function StoreCollectionClient({
     setActiveFilters(filters);
     setSort(searchParams.get("sort") || "");
     setPage(Number(searchParams.get("page")) || 1);
-  }, [pathname, searchParams]);
+  }, [searchParams]);
 
-  // Store initial index map for stable sort order
-  const [initialIndexMap, setInitialIndexMap] = useState<
-    Record<string, Record<string, number>>
-  >({});
-
-  useEffect(() => {
-    const newMap: Record<string, Record<string, number>> = {};
-    Object.entries(productsByCollection).forEach(([handle, prods]) => {
-      const handleMap: Record<string, number> = {};
-      prods.forEach((p, idx) => {
-        handleMap[p.handle] = idx;
-      });
-      newMap[handle] = handleMap;
-    });
-    setInitialIndexMap(newMap);
-  }, [productsByCollection]);
-
-  // Sync all state and push to URL history
+  // Push updated URL without full navigation
   const updateParams = (
-    newHandle: string,
     newFilters: Record<string, string>,
     newSort: string,
     newPage: number,
   ) => {
-    const pathParts = pathname.split("/");
-    const storeIdx = pathParts.indexOf("store");
-    if (storeIdx !== -1) {
-      pathParts.splice(storeIdx + 1);
-      if (newHandle !== "") pathParts.push(newHandle);
-    }
-    const newPath = pathParts.join("/");
-
     const params = new URLSearchParams();
     const filterParam = searchParams.get("filter");
     if (filterParam) params.set("filter", filterParam);
@@ -112,58 +72,50 @@ export default function StoreCollectionClient({
     if (newPage > 1) params.set("page", String(newPage));
 
     const searchStr = params.toString();
-    const fullUrl = searchStr ? `${newPath}?${searchStr}` : newPath;
-
+    const fullUrl = searchStr ? `${pathname}?${searchStr}` : pathname;
     window.history.pushState(null, "", fullUrl);
 
-    setActiveHandle(newHandle);
     setActiveFilters(newFilters);
     setSort(newSort);
     setPage(newPage);
   };
 
-  // Callbacks for FilterSortBar
-  const handleTabChange = (handle: string) => {
-    updateParams(handle, activeFilters, sort, 1);
-  };
-
   const handleFilterChange = (filters: Record<string, string>) => {
-    updateParams(activeHandle, filters, sort, 1);
+    updateParams(filters, sort, 1);
   };
 
   const handleSortChange = (newSort: string) => {
-    updateParams(activeHandle, activeFilters, newSort, 1);
+    updateParams(activeFilters, newSort, 1);
   };
 
   /** Single atomic handler — prevents the two-call race that stales filters/sort */
   const handleApplyAll = (filters: Record<string, string>, newSort: string) => {
-    updateParams(activeHandle, filters, newSort, 1);
+    updateParams(filters, newSort, 1);
   };
 
+  // When a category is selected from within the drawer, navigate to that route
   const handleCategoryChange = (handle: string) => {
-    const pathParts = pathname.split("/");
-    const storeIdx = pathParts.indexOf("store");
-    if (storeIdx !== -1) {
-      pathParts.splice(storeIdx + 1);
-      if (handle !== "") pathParts.push(handle);
-    }
-    const newPath = pathParts.join("/");
     const params = new URLSearchParams();
     const filterParam = searchParams.get("filter");
     if (filterParam) params.set("filter", filterParam);
     const searchStr = params.toString();
+
     startTransition(() => {
-      router.push(searchStr ? `${newPath}?${searchStr}` : newPath, {
-        scroll: false,
-      });
+      if (handle === "") {
+        router.push(searchStr ? `/store?${searchStr}` : `/store`, {
+          scroll: false,
+        });
+      } else {
+        router.push(
+          searchStr ? `/store/${handle}?${searchStr}` : `/store/${handle}`,
+          { scroll: false },
+        );
+      }
     });
   };
 
-  // Raw products for the active collection
-  const rawProducts = productsByCollection[activeHandle] || [];
-
   // Apply all active filters generically
-  let filteredProducts = [...rawProducts];
+  let filteredProducts = [...products];
 
   Object.entries(activeFilters).forEach(([key, value]) => {
     if (!value) return;
@@ -257,7 +209,7 @@ export default function StoreCollectionClient({
   });
 
   // Sort
-  const activeIndexMap = initialIndexMap[activeHandle] || {};
+  const idxMap = initialIndexMap.current;
   if (sort === "price-asc") {
     filteredProducts.sort(
       (a, b) =>
@@ -277,9 +229,10 @@ export default function StoreCollectionClient({
       return dateB - dateA;
     });
   } else {
+    // Restore original order
     filteredProducts.sort((a, b) => {
-      const idxA = activeIndexMap[a.handle] ?? 9999;
-      const idxB = activeIndexMap[b.handle] ?? 9999;
+      const idxA = idxMap[a.handle] ?? 9999;
+      const idxB = idxMap[b.handle] ?? 9999;
       return idxA - idxB;
     });
   }
@@ -318,24 +271,20 @@ export default function StoreCollectionClient({
     return pages;
   };
 
-  const activeMeta = collectionsMeta[activeHandle] || { title: activeHandle };
-
   return (
     <section className="w-full">
       <StoreBanner
-        title={activeMeta.title}
-        description={activeMeta.description}
+        title={t("collection.all_products")}
+        description={t("collection.all_products_description")}
       />
-
       <div className="mb-6">
         <FilterSortBar
-          title={activeMeta.title}
+          title={t("collection.all_products")}
           totalProducts={totalProducts}
           locale={locale}
-          collections={collections}
-          activeCollectionHandle={activeHandle}
-          products={rawProducts}
-          onTabChange={handleTabChange}
+          collections={[]}
+          activeCollectionHandle=""
+          products={products}
           activeFilters={activeFilters}
           currentSort={sort}
           onFilterChange={handleFilterChange}
@@ -352,9 +301,9 @@ export default function StoreCollectionClient({
           ))}
         </div>
       ) : paginatedProducts.length === 0 ? (
-        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 p-8 text-center dark:border-neutral-800">
-          <p className="text-base text-neutral-500 dark:text-neutral-400">
-            {noProductsText}
+        <div className="flex min-h-[200px] flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 p-8 text-center dark:border-neutral-800">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            No products found
           </p>
         </div>
       ) : (
@@ -376,12 +325,7 @@ export default function StoreCollectionClient({
                   href={createPageUrl(currentPage - 1)}
                   onClick={(e) => {
                     e.preventDefault();
-                    updateParams(
-                      activeHandle,
-                      activeFilters,
-                      sort,
-                      currentPage - 1,
-                    );
+                    updateParams(activeFilters, sort, currentPage - 1);
                   }}
                   className="flex items-center gap-1 text-sm font-medium text-black hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors mr-2"
                 >
@@ -412,18 +356,12 @@ export default function StoreCollectionClient({
                       href={createPageUrl(Number(p))}
                       onClick={(e) => {
                         e.preventDefault();
-                        updateParams(
-                          activeHandle,
-                          activeFilters,
-                          sort,
-                          Number(p),
-                        );
+                        updateParams(activeFilters, sort, Number(p));
                       }}
-                      className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${
-                        isCurrent
-                          ? "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-xs"
-                          : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                      }`}
+                      className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${isCurrent
+                        ? "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-xs"
+                        : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        }`}
                     >
                       {p}
                     </Link>
@@ -436,12 +374,7 @@ export default function StoreCollectionClient({
                   href={createPageUrl(currentPage + 1)}
                   onClick={(e) => {
                     e.preventDefault();
-                    updateParams(
-                      activeHandle,
-                      activeFilters,
-                      sort,
-                      currentPage + 1,
-                    );
+                    updateParams(activeFilters, sort, currentPage + 1);
                   }}
                   className="flex items-center gap-1 text-sm font-medium text-black hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors ml-2"
                 >

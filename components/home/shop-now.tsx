@@ -234,26 +234,9 @@ function ProductCardGrid({
           ))}
         </div>
 
-        {/* Plus circle (visible when not hovered) */}
-        <div className="absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-[#00000050] backdrop-blur-md text-white opacity-100 group-hover/card:opacity-0 transition-opacity duration-300">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </div>
-
-        {/* Hover Action Button */}
-        <button className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-10 w-10 hover:w-[130px] items-center rounded-lg bg-[#00000050] backdrop-blur-md text-white opacity-0 group-hover/card:opacity-100 transition-all duration-300 active:scale-95 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 w-full">
+        {/* Add to Cart Hover Button (single element) */}
+        <button className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 md:hover:w-[120px] items-center rounded-full bg-[#00000050] backdrop-blur-md text-white transition-all duration-300 active:scale-95 overflow-hidden">
+          <div className="flex items-center justify-start gap-2 px-2 md:px-3 w-full h-full">
             <svg
               width="16"
               height="16"
@@ -265,9 +248,8 @@ function ProductCardGrid({
               strokeLinejoin="round"
               className="flex-shrink-0"
             >
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <path d="M16 10a4 4 0 0 1-8 0" />
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
             <span className="text-sm font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
               Add to Cart
