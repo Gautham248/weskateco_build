@@ -1,10 +1,7 @@
 "use client";
 
-import { useCart } from "components/cart/cart-context";
-import OpenCart from "components/cart/open-cart";
-import { getLocalizedPath } from "lib/i18n";
+import CartModal from "components/cart/modal";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import MobileMenu from "./mobile-menu";
 import NavLinks from "./nav-links";
@@ -51,17 +48,6 @@ export function WeskatecoIcon({ color }: { color: string }) {
   );
 }
 
-function CartLink() {
-  const { cart } = useCart();
-  const params = useParams();
-  const locale = (params?.locale as string) || "en";
-  return (
-    <Link href={getLocalizedPath("/cart", locale)} aria-label="Open cart">
-      <OpenCart quantity={cart?.totalQuantity} />
-    </Link>
-  );
-}
-
 export function Navbar({ locale }: { locale?: string }) {
   const scrolled = useNavbarScroll();
   const [isStoreOpen, setIsStoreOpen] = useState(false);
@@ -96,7 +82,7 @@ export function Navbar({ locale }: { locale?: string }) {
           <Search />
         </Suspense>
         <Suspense fallback={null}>
-          <CartLink />
+          <CartModal />
         </Suspense>
         <button
           aria-label="Account"

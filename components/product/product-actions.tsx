@@ -8,7 +8,15 @@ import { useSearchParams } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
 import { toast } from "sonner";
 
-export function ProductActions({ product }: { product: Product }) {
+export function ProductActions({
+  product,
+  selectedVariantId: customSelectedVariantId,
+  onAddedToCart,
+}: {
+  product: Product;
+  selectedVariantId?: string;
+  onAddedToCart?: () => void;
+}) {
   const { variants, availableForSale } = product;
   const { addCartItem } = useCart();
   const searchParams = useSearchParams();
@@ -17,14 +25,16 @@ export function ProductActions({ product }: { product: Product }) {
   const [isAdded, setIsAdded] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
-  const variant = variants.find((variant: ProductVariant) =>
-    variant.selectedOptions.every(
-      (option) => option.value === searchParams.get(option.name.toLowerCase()),
-    ),
-  );
+  const variant = customSelectedVariantId
+    ? variants.find((v) => v.id === customSelectedVariantId)
+    : variants.find((variant: ProductVariant) =>
+        variant.selectedOptions.every(
+          (option) => option.value === searchParams.get(option.name.toLowerCase()),
+        ),
+      );
 
   const defaultVariantId = variants.length === 1 ? variants[0]?.id : undefined;
-  const selectedVariantId = variant?.id || defaultVariantId;
+  const selectedVariantId = customSelectedVariantId || variant?.id || defaultVariantId;
   const finalVariant = variants.find((v) => v.id === selectedVariantId);
 
   const handleBuyNow = () => {
@@ -64,7 +74,6 @@ export function ProductActions({ product }: { product: Product }) {
           if (!selectedVariantId) return;
           setIsAdding(true);
           try {
-            await addItemAction();
             if (finalVariant) {
               addCartItem(finalVariant, product);
             }
@@ -80,6 +89,10 @@ export function ProductActions({ product }: { product: Product }) {
             });
             setIsAdded(true);
             setTimeout(() => setIsAdded(false), 2000);
+            if (onAddedToCart) {
+              onAddedToCart();
+            }
+            await addItemAction();
           } catch (e) {
             console.error(e);
           } finally {

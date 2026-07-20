@@ -2,15 +2,18 @@
 
 import { removeItem, updateItemQuantity } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
+import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
 import secure from "components/icons/secure.svg";
 import Footer from "components/layout/footer";
 import Price from "components/price";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Suspense, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
+import { QuickBuySidebar } from "components/product/quick-buy-sidebar";
 
 function CartSkeleton() {
   return (
@@ -38,7 +41,9 @@ export default function CartPage() {
 }
 
 function CartPageContent() {
+  const { t } = useTranslation();
   const { cart, updateCartItem } = useCart();
+  const [editingItem, setEditingItem] = useState<any>(null);
   const params = useParams();
   const locale = (params?.locale as string) || "en";
   const [isPending, startTransition] = useTransition();
@@ -105,11 +110,10 @@ function CartPageContent() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-            {/* Left side: Cart items list */}
-            <div className="lg:col-span-2 space-y-6">
+          <>
+            <div className="space-y-6 mb-8">
               <h1
-                className="text-[32px] font-semibold font-black tracking-tighter uppercase mb-8 flex items-baseline gap-2"
+                className="text-[32px] font-semibold font-black tracking-tighter uppercase flex items-baseline gap-2"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 My Cart
@@ -146,6 +150,11 @@ function CartPageContent() {
                   .
                 </span>
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+              {/* Left side: Cart items list */}
+              <div className="lg:col-span-2 space-y-6">
 
               {/* Items Card List */}
               <div className="space-y-4">
@@ -233,13 +242,22 @@ function CartPageContent() {
                             </span>
                           </div>
 
-                          {/* Remove Action */}
-                          <div className="mt-5">
+                           {/* Remove Action */}
+                          <div className="mt-5 flex items-center gap-4">
                             <CartPageRemoveButton
                               item={item}
                               updateCartItem={updateCartItem}
                               isMobile={true}
                             />
+                            <span className="text-neutral-300">|</span>
+                            <button
+                              type="button"
+                              onClick={() => setEditingItem(item)}
+                              className="text-[13px] font-semibold uppercase underline hover:text-neutral-500 transition-colors cursor-pointer"
+                              style={{ fontFamily: "Archivo, sans-serif" }}
+                            >
+                              Edit
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -315,11 +333,22 @@ function CartPageContent() {
 
                           {/* Bottom row: Remove on left, Price on right */}
                           <div className="mt-auto pt-6 flex justify-between items-end">
-                            <CartPageRemoveButton
-                              item={item}
-                              updateCartItem={updateCartItem}
-                              isMobile={false}
-                            />
+                            <div className="flex items-center gap-4">
+                              <CartPageRemoveButton
+                                item={item}
+                                updateCartItem={updateCartItem}
+                                isMobile={false}
+                              />
+                              <span className="text-neutral-300">|</span>
+                              <button
+                                type="button"
+                                onClick={() => setEditingItem(item)}
+                                className="text-[13px] font-semibold uppercase underline hover:text-neutral-500 transition-colors cursor-pointer"
+                                style={{ fontFamily: "Archivo, sans-serif" }}
+                              >
+                                Edit
+                              </button>
+                            </div>
 
                             <Price
                               amount={item.cost.totalAmount.amount}
@@ -383,18 +412,20 @@ function CartPageContent() {
                   </div>
                 </div>
 
-                {/* Terms agreement checkbox */}
-                <div
-                  className="mt-6 flex items-end gap-2 "
-                  style={{ fontFamily: "Archivo, sans-serif" }}
-                >
-                  <label
-                    htmlFor="terms"
-                    className="text-[12px] text-black leading-tight"
+                {/* Snapmint EMI Banner */}
+                <SnapmintEmiCartBanner
+                  totalAmount={cart.cost.totalAmount.amount}
+                  onBuyOnEmi={handleCheckout}
+                />
+
+                {/* Highlighted checkout notice */}
+                <div className="mt-6 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3 rounded-none text-center">
+                  <p
+                    className="text-[12px] text-neutral-600 dark:text-neutral-400 font-medium leading-tight"
                     style={{ fontFamily: "Archivo, sans-serif" }}
                   >
-                    Taxes included. Discounts and shipping calculated at checkout.
-                  </label>
+                    {t("cart.checkout_notice")}
+                  </p>
                 </div>
 
                 {/* Checkout button action */}
@@ -425,8 +456,24 @@ function CartPageContent() {
 
             </div>
           </div>
-        )}
+        </>
+      )}
       </main>
+      {editingItem && (
+        <QuickBuySidebar
+          isOpen={!!editingItem}
+          onClose={() => setEditingItem(null)}
+          product={editingItem.merchandise.product as any}
+          locale={locale}
+          isEdit={true}
+          lineId={editingItem.id}
+          initialOptions={editingItem.merchandise.selectedOptions.reduce((acc: any, option: any) => {
+            acc[option.name.toLowerCase()] = option.value;
+            return acc;
+          }, {})}
+          quantity={editingItem.quantity}
+        />
+      )}
       <Footer />
     </div>
   );
