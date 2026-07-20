@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { SnapmintEmiBadge } from "./snapmint-emi-badge";
+import { QuickBuySidebar } from "./quick-buy-sidebar";
 
 interface ProductCardProps {
   product: Product;
@@ -22,6 +23,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
 
   const imgRef = useRef<HTMLDivElement>(null);
   const [showIndex, setShowIndex] = useState(0);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
@@ -169,7 +171,14 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
         )}
 
         {/* Add to Cart Hover Button (single element) */}
-        <div className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 md:hover:w-[120px] items-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white transition-all duration-300 active:scale-95 overflow-hidden">
+        <div
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsSidebarOpen(true);
+          }}
+          className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 md:hover:w-[120px] items-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white transition-all duration-300 active:scale-95 overflow-hidden"
+        >
           <div className="flex items-center justify-start gap-2 px-2 md:px-3 w-full h-full">
             <svg
               width="16"
@@ -231,6 +240,12 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
         </div>
         <SnapmintEmiBadge priceAmount={priceRange.minVariantPrice.amount} />
       </div>
+      <QuickBuySidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        product={product}
+        locale={locale}
+      />
     </Link>
   );
 }

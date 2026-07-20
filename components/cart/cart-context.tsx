@@ -26,6 +26,10 @@ type CartAction =
   | {
       type: "ADD_ITEM";
       payload: { variant: ProductVariant; product: Product };
+    }
+  | {
+      type: "UPDATE_LINE_VARIANT";
+      payload: { lineId: string; newVariant: ProductVariant };
     };
 
 type CartContextType = {
@@ -190,6 +194,29 @@ function cartReducer(state: Cart | undefined, action: CartAction): Cart {
         lines: updatedLines,
       };
     }
+    case "UPDATE_LINE_VARIANT": {
+      const { lineId, newVariant } = action.payload;
+      const updatedLines = currentCart.lines.map((item) => {
+        if (item.id === lineId) {
+          return {
+            ...item,
+            merchandise: {
+              ...item.merchandise,
+              id: newVariant.id,
+              title: newVariant.title,
+              selectedOptions: newVariant.selectedOptions,
+            },
+          };
+        }
+        return item;
+      });
+
+      return {
+        ...currentCart,
+        ...updateCartTotals(updatedLines),
+        lines: updatedLines,
+      };
+    }
     default:
       return currentCart;
   }
@@ -252,11 +279,19 @@ export function useCart() {
     updateOptimisticCart({ type: "ADD_ITEM", payload: { variant, product } });
   };
 
+  const updateLineVariant = (lineId: string, newVariant: ProductVariant) => {
+    updateOptimisticCart({
+      type: "UPDATE_LINE_VARIANT",
+      payload: { lineId, newVariant },
+    });
+  };
+
   return useMemo(
     () => ({
       cart: optimisticCart,
       updateCartItem,
       addCartItem,
+      updateLineVariant,
     }),
     [optimisticCart],
   );

@@ -13,9 +13,13 @@ type Combination = {
 export function VariantSelector({
   options,
   variants,
+  selectedOptions,
+  onSelectOption,
 }: {
   options: ProductOption[];
   variants: ProductVariant[];
+  selectedOptions?: Record<string, string>;
+  onSelectOption?: (name: string, value: string) => void;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -78,7 +82,11 @@ export function VariantSelector({
 
             // Base option params on current searchParams so we can preserve any other param state.
             const optionParams: Record<string, string> = {};
-            searchParams.forEach((v, k) => (optionParams[k] = v));
+            if (selectedOptions) {
+              Object.assign(optionParams, selectedOptions);
+            } else {
+              searchParams.forEach((v, k) => (optionParams[k] = v));
+            }
             optionParams[optionNameLowerCase] = value;
 
             // Filter out invalid options and check if the option combination is available for sale.
@@ -98,11 +106,21 @@ export function VariantSelector({
             );
 
             // The option is active if it's in the selected options.
-            const isActive = searchParams.get(optionNameLowerCase) === value;
+            const isActive = selectedOptions
+              ? selectedOptions[optionNameLowerCase] === value
+              : searchParams.get(optionNameLowerCase) === value;
+
+            const handleSelect = () => {
+              if (onSelectOption) {
+                onSelectOption(optionNameLowerCase, value);
+              } else {
+                updateOption(optionNameLowerCase, value);
+              }
+            };
 
             return (
               <button
-                formAction={() => updateOption(optionNameLowerCase, value)}
+                formAction={handleSelect}
                 key={value}
                 aria-disabled={!isAvailableForSale}
                 disabled={!isAvailableForSale}

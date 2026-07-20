@@ -174,3 +174,34 @@ export async function buyNowAction(selectedVariantId: string | undefined) {
     redirect(cart.checkoutUrl);
   }
 }
+
+export async function editCartItemVariantAction(
+  payload: {
+    lineId: string;
+    newMerchandiseId: string;
+    quantity: number;
+  },
+) {
+  const { lineId, newMerchandiseId, quantity } = payload;
+
+  try {
+    const cart = await getCart();
+
+    if (!cart) {
+      return "Error fetching cart";
+    }
+
+    await updateCart([
+      {
+        id: lineId,
+        merchandiseId: newMerchandiseId,
+        quantity,
+      },
+    ]);
+
+    updateTag(TAGS.cart);
+  } catch (e) {
+    console.error(e);
+    return "Error updating item variant";
+  }
+}

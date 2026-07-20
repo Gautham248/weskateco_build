@@ -21,6 +21,8 @@ import { DeleteItemButton } from "./delete-item-button";
 import { EditItemQuantityButton } from "./edit-item-quantity-button";
 import OpenCart from "./open-cart";
 import { SnapmintEmiCartBanner } from "./snapmint-emi-cart-banner";
+import { QuickBuySidebar } from "../product/quick-buy-sidebar";
+import type { CartItem } from "lib/shopify/types";
 
 type MerchandiseSearchParams = {
   [key: string]: string;
@@ -40,6 +42,7 @@ export default function CartModal() {
     cartId: cart?.id,
   });
   const [isOpen, setIsOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<CartItem | null>(null);
   const openCart = () => {
     if (pathname.endsWith("/cart")) return;
     setIsOpen(true);
@@ -88,7 +91,7 @@ export default function CartModal() {
                   className="text-xl font-bold uppercase tracking-wider text-black dark:text-white"
                   style={{ fontFamily: "'Clash Display', sans-serif" }}
                 >
-                  {t("cart.title")}
+                  {t("cart.title")} {cart && cart.totalQuantity > 0 ? `(${cart.totalQuantity})` : ""}
                 </p>
                 <button
                   aria-label="Close cart"
@@ -110,7 +113,7 @@ export default function CartModal() {
                   </p>
                 </div>
               ) : (
-                <div className="flex h-full flex-col justify-between overflow-hidden p-1">
+                <div className="flex flex-1 min-h-0 flex-col justify-between p-1">
                   <ul className="grow overflow-auto py-4">
                     {(() => {
                       // Separate bundle items from regular items
@@ -143,247 +146,293 @@ export default function CartModal() {
                       return (
                         <>
                           {/* Configurator Bundles */}
-                          {bundles.map(([bundleId, items]) => {
-                            const bundleTotal = items.reduce(
-                              (sum, item) =>
-                                sum + Number(item.cost.totalAmount.amount),
-                              0,
-                            );
-                            const currencyCode =
-                              items[0]?.cost.totalAmount.currencyCode || "INR";
-
-                            return (
-                              <li
-                                key={bundleId}
-                                className="mb-4 rounded-lg border-2 border-blue-200 bg-blue-50/50 dark:border-blue-800 dark:bg-blue-950/30"
+                          {bundles.length > 0 && (
+                            <div className="mb-6">
+                              <h4
+                                className="text-[11px] font-bold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-3 px-1"
+                                style={{ fontFamily: "'Clash Display', sans-serif" }}
                               >
-                                {/* Bundle header */}
-                                <div className="flex items-center justify-between border-b border-blue-200 px-3 py-2 dark:border-blue-800">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                                      🛹 Custom Setup
-                                    </span>
-                                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-600 dark:bg-blue-900 dark:text-blue-400">
-                                      {items.length} items
-                                    </span>
-                                  </div>
-                                  <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
-                                    {currencyCode === "INR" ? "₹" : "$"}
-                                    {bundleTotal.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                    })}
-                                  </span>
-                                </div>
+                                Custom Setups ({bundles.length})
+                              </h4>
+                              <ul className="space-y-4">
+                                {bundles.map(([bundleId, items]) => {
+                                  const bundleTotal = items.reduce(
+                                    (sum, item) =>
+                                      sum + Number(item.cost.totalAmount.amount),
+                                    0,
+                                  );
+                                  const currencyCode =
+                                    items[0]?.cost.totalAmount.currencyCode || "INR";
 
-                                {/* Bundle items */}
-                                <ul className="divide-y divide-blue-100 dark:divide-blue-900">
-                                  {items.map((item, i) => {
-                                    const merchandiseSearchParams =
-                                      {} as MerchandiseSearchParams;
-
-                                    item.merchandise.selectedOptions.forEach(
-                                      ({ name, value }) => {
-                                        if (value !== DEFAULT_OPTION) {
-                                          merchandiseSearchParams[
-                                            name.toLowerCase()
-                                          ] = value;
-                                        }
-                                      },
-                                    );
-
-                                    const merchandiseUrl = createUrl(
-                                      `/product/${item.merchandise.product.handle}`,
-                                      new URLSearchParams(
-                                        merchandiseSearchParams,
-                                      ),
-                                    );
-
-                                    return (
-                                      <li
-                                        key={i}
-                                        className="relative flex w-full flex-row justify-between px-3 py-3"
-                                      >
-                                        <div className="absolute z-40 -ml-1 -mt-1">
-                                          <DeleteItemButton
-                                            item={item}
-                                            optimisticUpdate={updateCartItem}
-                                          />
+                                  return (
+                                    <li
+                                      key={bundleId}
+                                      className="rounded-lg border-2 border-blue-200 bg-blue-50/50 dark:border-blue-800 dark:bg-blue-950/30"
+                                    >
+                                      {/* Bundle header */}
+                                      <div className="flex items-center justify-between border-b border-blue-200 px-3 py-2 dark:border-blue-800">
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                                            🛹 Custom Setup
+                                          </span>
+                                          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-600 dark:bg-blue-900 dark:text-blue-400">
+                                            {items.length} items
+                                          </span>
                                         </div>
-                                        <div className="flex flex-row">
-                                          <div className="relative h-12 w-12 overflow-hidden rounded-md border border-neutral-300 bg-neutral-300 dark:border-neutral-700 dark:bg-neutral-900">
-                                            <Image
-                                              className="h-full w-full object-cover"
-                                              width={48}
-                                              height={48}
-                                              alt={
-                                                item.merchandise.product
-                                                  .featuredImage?.altText ||
-                                                item.merchandise.product.title
+                                        <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
+                                          {currencyCode === "INR" ? "₹" : "$"}
+                                          {bundleTotal.toLocaleString(undefined, {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                          })}
+                                        </span>
+                                      </div>
+
+                                      {/* Bundle items */}
+                                      <ul className="divide-y divide-blue-100 dark:divide-blue-900">
+                                        {items.map((item, i) => {
+                                          const merchandiseSearchParams =
+                                            {} as MerchandiseSearchParams;
+
+                                          item.merchandise.selectedOptions.forEach(
+                                            ({ name, value }) => {
+                                              if (value !== DEFAULT_OPTION) {
+                                                merchandiseSearchParams[
+                                                  name.toLowerCase()
+                                                ] = value;
                                               }
-                                              src={
-                                                item.merchandise.product
-                                                  .featuredImage?.url || ""
-                                              }
-                                            />
-                                          </div>
-                                          <Link
-                                            href={merchandiseUrl}
-                                            onClick={closeCart}
-                                            className="z-30 ml-2 flex flex-row space-x-4"
-                                          >
-                                            <div className="flex flex-1 flex-col text-sm">
-                                              <span className="leading-tight">
-                                                {item.merchandise.product.title}
-                                              </span>
-                                              {item.merchandise.title !==
-                                              DEFAULT_OPTION ? (
-                                                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                                                  {item.merchandise.title}
-                                                </p>
-                                              ) : null}
-                                            </div>
-                                          </Link>
-                                        </div>
-                                        <div className="flex h-12 flex-col justify-between">
-                                          <Price
-                                            className="flex justify-end text-right text-xs"
-                                            amount={
-                                              item.cost.totalAmount.amount
-                                            }
-                                            currencyCode={
-                                              item.cost.totalAmount.currencyCode
-                                            }
-                                          />
-                                          <div className="ml-auto flex h-8 flex-row items-center rounded-full border border-neutral-200 dark:border-neutral-700">
-                                            <EditItemQuantityButton
-                                              item={item}
-                                              type="minus"
-                                              optimisticUpdate={updateCartItem}
-                                            />
-                                            <p className="w-5 text-center">
-                                              <span className="w-full text-xs">
-                                                {item.quantity}
-                                              </span>
-                                            </p>
-                                            <EditItemQuantityButton
-                                              item={item}
-                                              type="plus"
-                                              optimisticUpdate={updateCartItem}
-                                            />
-                                          </div>
-                                        </div>
-                                      </li>
-                                    );
-                                  })}
-                                </ul>
-                              </li>
-                            );
-                          })}
+                                            },
+                                          );
+
+                                          const merchandiseUrl = createUrl(
+                                            `/product/${item.merchandise.product.handle}`,
+                                            new URLSearchParams(
+                                              merchandiseSearchParams,
+                                            ),
+                                          );
+
+                                          return (
+                                            <li
+                                              key={i}
+                                              className="relative flex w-full flex-row justify-between px-3 py-3"
+                                            >
+                                              <div className="absolute z-40 -ml-1 -mt-1">
+                                                <DeleteItemButton
+                                                  item={item}
+                                                  optimisticUpdate={updateCartItem}
+                                                />
+                                              </div>
+                                              <div className="flex flex-row">
+                                                <div className="relative h-12 w-12 overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-800 bg-[#e6e6e6] dark:bg-neutral-900 flex-shrink-0">
+                                                  <Image
+                                                    className="h-full w-full object-cover"
+                                                    width={48}
+                                                    height={48}
+                                                    alt={
+                                                      item.merchandise.product
+                                                        .featuredImage?.altText ||
+                                                      item.merchandise.product.title
+                                                    }
+                                                    src={
+                                                      item.merchandise.product
+                                                        .featuredImage?.url || ""
+                                                    }
+                                                  />
+                                                </div>
+                                                <div className="ml-2 flex flex-col justify-center">
+                                                  <Link
+                                                    href={merchandiseUrl}
+                                                    onClick={closeCart}
+                                                    className="z-30 flex flex-row"
+                                                  >
+                                                    <div className="flex flex-1 flex-col text-sm">
+                                                      <span className="leading-tight">
+                                                        {item.merchandise.product.title}
+                                                      </span>
+                                                      {item.merchandise.title !==
+                                                      DEFAULT_OPTION ? (
+                                                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                                                          {item.merchandise.title}
+                                                        </p>
+                                                      ) : null}
+                                                    </div>
+                                                  </Link>
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => setEditingItem(item)}
+                                                    className="text-[11px] font-semibold uppercase underline hover:text-neutral-500 transition-colors cursor-pointer mt-1 w-fit text-left text-neutral-500 dark:text-neutral-400"
+                                                    style={{ fontFamily: "Archivo, sans-serif" }}
+                                                  >
+                                                    Edit
+                                                  </button>
+                                                </div>
+                                              </div>
+                                              <div className="flex flex-col justify-between items-end flex-shrink-0 min-h-[48px] ml-4">
+                                                <Price
+                                                  className="flex justify-end text-right text-xs"
+                                                  amount={
+                                                    item.cost.totalAmount.amount
+                                                  }
+                                                  currencyCode={
+                                                    item.cost.totalAmount.currencyCode
+                                                  }
+                                                />
+                                                <div className="flex h-8 flex-row items-center rounded-full border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-black">
+                                                  <EditItemQuantityButton
+                                                    item={item}
+                                                    type="minus"
+                                                    optimisticUpdate={updateCartItem}
+                                                  />
+                                                  <p className="w-5 text-center">
+                                                    <span className="w-full text-xs">
+                                                      {item.quantity}
+                                                    </span>
+                                                  </p>
+                                                  <EditItemQuantityButton
+                                                    item={item}
+                                                    type="plus"
+                                                    optimisticUpdate={updateCartItem}
+                                                  />
+                                                </div>
+                                              </div>
+                                            </li>
+                                          );
+                                        })}
+                                      </ul>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          )}
 
                           {/* Regular (non-bundle) items */}
-                          {regularItems
-                            .sort((a, b) =>
-                              a.merchandise.product.title.localeCompare(
-                                b.merchandise.product.title,
-                              ),
-                            )
-                            .map((item, i) => {
-                              const merchandiseSearchParams =
-                                {} as MerchandiseSearchParams;
+                          {regularItems.length > 0 && (
+                            <div className="mb-6">
+                              <h4
+                                className="text-[11px] font-bold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-3 px-1"
+                                style={{ fontFamily: "'Clash Display', sans-serif" }}
+                              >
+                                Standard Products ({regularItems.length})
+                              </h4>
+                              <div className="rounded-xl border border-neutral-200 bg-neutral-50/20 p-1 dark:border-neutral-800 dark:bg-neutral-900/20">
+                                <ul className="divide-y divide-neutral-200 dark:divide-neutral-800">
+                                  {regularItems
+                                    .sort((a, b) =>
+                                      a.merchandise.product.title.localeCompare(
+                                        b.merchandise.product.title,
+                                      ),
+                                    )
+                                    .map((item, i) => {
+                                      const merchandiseSearchParams =
+                                        {} as MerchandiseSearchParams;
 
-                              item.merchandise.selectedOptions.forEach(
-                                ({ name, value }) => {
-                                  if (value !== DEFAULT_OPTION) {
-                                    merchandiseSearchParams[
-                                      name.toLowerCase()
-                                    ] = value;
-                                  }
-                                },
-                              );
-
-                              const merchandiseUrl = createUrl(
-                                `/product/${item.merchandise.product.handle}`,
-                                new URLSearchParams(merchandiseSearchParams),
-                              );
-
-                              return (
-                                <li
-                                  key={i}
-                                  className="flex w-full flex-col border-b border-neutral-300 dark:border-neutral-700"
-                                >
-                                  <div className="relative flex w-full flex-row justify-between px-1 py-4">
-                                    <div className="absolute z-40 -ml-1 -mt-2">
-                                      <DeleteItemButton
-                                        item={item}
-                                        optimisticUpdate={updateCartItem}
-                                      />
-                                    </div>
-                                    <div className="flex flex-row">
-                                      <div className="relative h-16 w-16 overflow-hidden rounded-md border border-neutral-300 bg-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800">
-                                        <Image
-                                          className="h-full w-full object-cover"
-                                          width={64}
-                                          height={64}
-                                          alt={
-                                            item.merchandise.product
-                                              .featuredImage?.altText ||
-                                            item.merchandise.product.title
+                                      item.merchandise.selectedOptions.forEach(
+                                        ({ name, value }) => {
+                                          if (value !== DEFAULT_OPTION) {
+                                            merchandiseSearchParams[
+                                              name.toLowerCase()
+                                            ] = value;
                                           }
-                                          src={
-                                            item.merchandise.product
-                                              .featuredImage?.url || ""
-                                          }
-                                        />
-                                      </div>
-                                      <Link
-                                        href={merchandiseUrl}
-                                        onClick={closeCart}
-                                        className="z-30 ml-2 flex flex-row space-x-4"
-                                      >
-                                        <div className="flex flex-1 flex-col text-base">
-                                          <span className="leading-tight">
-                                            {item.merchandise.product.title}
-                                          </span>
-                                          {item.merchandise.title !==
-                                          DEFAULT_OPTION ? (
-                                            <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                              {item.merchandise.title}
-                                            </p>
-                                          ) : null}
-                                        </div>
-                                      </Link>
-                                    </div>
-                                    <div className="flex h-16 flex-col justify-between">
-                                      <Price
-                                        className="flex justify-end space-y-2 text-right text-sm"
-                                        amount={item.cost.totalAmount.amount}
-                                        currencyCode={
-                                          item.cost.totalAmount.currencyCode
-                                        }
-                                      />
-                                      <div className="ml-auto flex h-9 flex-row items-center rounded-full border border-neutral-200 dark:border-neutral-700">
-                                        <EditItemQuantityButton
-                                          item={item}
-                                          type="minus"
-                                          optimisticUpdate={updateCartItem}
-                                        />
-                                        <p className="w-6 text-center">
-                                          <span className="w-full text-sm">
-                                            {item.quantity}
-                                          </span>
-                                        </p>
-                                        <EditItemQuantityButton
-                                          item={item}
-                                          type="plus"
-                                          optimisticUpdate={updateCartItem}
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
-                                </li>
-                              );
-                            })}
+                                        },
+                                      );
+
+                                      const merchandiseUrl = createUrl(
+                                        `/product/${item.merchandise.product.handle}`,
+                                        new URLSearchParams(merchandiseSearchParams),
+                                      );
+
+                                      return (
+                                        <li
+                                          key={i}
+                                          className="flex w-full flex-col"
+                                        >
+                                          <div className="relative flex w-full flex-row justify-between px-3 py-4">
+                                            <div className="absolute z-40 -ml-1 -mt-2">
+                                              <DeleteItemButton
+                                                item={item}
+                                                optimisticUpdate={updateCartItem}
+                                              />
+                                            </div>
+                                            <div className="flex flex-row">
+                                              <div className="relative h-16 w-16 overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-800 bg-[#e6e6e6] dark:bg-neutral-900 flex-shrink-0">
+                                                <Image
+                                                  className="h-full w-full object-cover"
+                                                  width={64}
+                                                  height={64}
+                                                  alt={
+                                                    item.merchandise.product
+                                                      .featuredImage?.altText ||
+                                                    item.merchandise.product.title
+                                                  }
+                                                  src={
+                                                    item.merchandise.product
+                                                      .featuredImage?.url || ""
+                                                  }
+                                                />
+                                              </div>
+                                              <div className="ml-2 flex flex-col justify-center">
+                                                <Link
+                                                  href={merchandiseUrl}
+                                                  onClick={closeCart}
+                                                  className="z-30 flex flex-row"
+                                                >
+                                                  <div className="flex flex-1 flex-col text-base">
+                                                    <span className="leading-tight font-medium">
+                                                      {item.merchandise.product.title}
+                                                    </span>
+                                                    {item.merchandise.title !==
+                                                    DEFAULT_OPTION ? (
+                                                      <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                                                        {item.merchandise.title}
+                                                      </p>
+                                                    ) : null}
+                                                  </div>
+                                                </Link>
+                                                <button
+                                                  type="button"
+                                                  onClick={() => setEditingItem(item)}
+                                                  className="text-xs font-semibold uppercase underline hover:text-neutral-500 transition-colors cursor-pointer mt-1.5 w-fit text-left text-neutral-500 dark:text-neutral-400"
+                                                  style={{ fontFamily: "Archivo, sans-serif" }}
+                                                >
+                                                  Edit
+                                                </button>
+                                              </div>
+                                            </div>
+                                            <div className="flex flex-col justify-between items-end flex-shrink-0 min-h-[64px] ml-4">
+                                              <Price
+                                                className="flex justify-end space-y-2 text-right text-sm font-semibold"
+                                                amount={item.cost.totalAmount.amount}
+                                                currencyCode={
+                                                  item.cost.totalAmount.currencyCode
+                                                }
+                                              />
+                                              <div className="ml-auto flex h-9 flex-row items-center rounded-full border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-black">
+                                                <EditItemQuantityButton
+                                                  item={item}
+                                                  type="minus"
+                                                  optimisticUpdate={updateCartItem}
+                                                />
+                                                <p className="w-6 text-center">
+                                                  <span className="w-full text-sm">
+                                                    {item.quantity}
+                                                  </span>
+                                                </p>
+                                                <EditItemQuantityButton
+                                                  item={item}
+                                                  type="plus"
+                                                  optimisticUpdate={updateCartItem}
+                                                />
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </li>
+                                      );
+                                    })}
+                                </ul>
+                              </div>
+                            </div>
+                          )}
                         </>
                       );
                     })()}
@@ -454,6 +503,21 @@ export default function CartModal() {
           </Transition.Child>
         </Dialog>
       </Transition>
+      {editingItem && (
+        <QuickBuySidebar
+          isOpen={!!editingItem}
+          onClose={() => setEditingItem(null)}
+          product={editingItem.merchandise.product as any}
+          locale={locale}
+          isEdit={true}
+          lineId={editingItem.id}
+          initialOptions={editingItem.merchandise.selectedOptions.reduce((acc: Record<string, string>, option: { name: string; value: string }) => {
+            acc[option.name.toLowerCase()] = option.value;
+            return acc;
+          }, {})}
+          quantity={editingItem.quantity}
+        />
+      )}
     </>
   );
 }

@@ -12,7 +12,8 @@ import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Suspense, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
+import { QuickBuySidebar } from "components/product/quick-buy-sidebar";
 
 function CartSkeleton() {
   return (
@@ -42,6 +43,7 @@ export default function CartPage() {
 function CartPageContent() {
   const { t } = useTranslation();
   const { cart, updateCartItem } = useCart();
+  const [editingItem, setEditingItem] = useState<any>(null);
   const params = useParams();
   const locale = (params?.locale as string) || "en";
   const [isPending, startTransition] = useTransition();
@@ -240,13 +242,22 @@ function CartPageContent() {
                             </span>
                           </div>
 
-                          {/* Remove Action */}
-                          <div className="mt-5">
+                           {/* Remove Action */}
+                          <div className="mt-5 flex items-center gap-4">
                             <CartPageRemoveButton
                               item={item}
                               updateCartItem={updateCartItem}
                               isMobile={true}
                             />
+                            <span className="text-neutral-300">|</span>
+                            <button
+                              type="button"
+                              onClick={() => setEditingItem(item)}
+                              className="text-[13px] font-semibold uppercase underline hover:text-neutral-500 transition-colors cursor-pointer"
+                              style={{ fontFamily: "Archivo, sans-serif" }}
+                            >
+                              Edit
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -322,11 +333,22 @@ function CartPageContent() {
 
                           {/* Bottom row: Remove on left, Price on right */}
                           <div className="mt-auto pt-6 flex justify-between items-end">
-                            <CartPageRemoveButton
-                              item={item}
-                              updateCartItem={updateCartItem}
-                              isMobile={false}
-                            />
+                            <div className="flex items-center gap-4">
+                              <CartPageRemoveButton
+                                item={item}
+                                updateCartItem={updateCartItem}
+                                isMobile={false}
+                              />
+                              <span className="text-neutral-300">|</span>
+                              <button
+                                type="button"
+                                onClick={() => setEditingItem(item)}
+                                className="text-[13px] font-semibold uppercase underline hover:text-neutral-500 transition-colors cursor-pointer"
+                                style={{ fontFamily: "Archivo, sans-serif" }}
+                              >
+                                Edit
+                              </button>
+                            </div>
 
                             <Price
                               amount={item.cost.totalAmount.amount}
@@ -437,6 +459,21 @@ function CartPageContent() {
         </>
       )}
       </main>
+      {editingItem && (
+        <QuickBuySidebar
+          isOpen={!!editingItem}
+          onClose={() => setEditingItem(null)}
+          product={editingItem.merchandise.product as any}
+          locale={locale}
+          isEdit={true}
+          lineId={editingItem.id}
+          initialOptions={editingItem.merchandise.selectedOptions.reduce((acc: any, option: any) => {
+            acc[option.name.toLowerCase()] = option.value;
+            return acc;
+          }, {})}
+          quantity={editingItem.quantity}
+        />
+      )}
       <Footer />
     </div>
   );
