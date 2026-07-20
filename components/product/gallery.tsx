@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 
 export function Gallery({
   images,
@@ -23,13 +23,7 @@ export function Gallery({
 
   if (images.length === 0) return null;
 
-  const hasMoreThanOne = images.length > 1;
 
-  // Chunk images into blocks of 3
-  const blocks: { src: string; altText: string }[][] = [];
-  for (let i = 0; i < images.length; i += 3) {
-    blocks.push(images.slice(i, i + 3));
-  }
 
   const renderSpinner = () => (
     <div className="absolute inset-0 flex items-center justify-center z-10 bg-[#e5e5e5] dark:bg-neutral-900">
@@ -93,70 +87,28 @@ export function Gallery({
         )}
       </div>
 
-      {/* Desktop Gallery (Vertical Overlapping Sticky Blocks) */}
+      {/* Desktop Gallery (Grid Layout with 3:4 Aspect Ratio Cards) */}
       <div
-        className={`hidden lg:flex flex-col w-full overflow-y-auto snap-y snap-mandatory scrollbar-none gap-0 ${hasMoreThanOne ? "aspect-[1162/897]" : "aspect-[581/897]"
+        className={`hidden lg:grid gap-4 w-full ${images.length > 1 ? "grid-cols-2" : "grid-cols-1 max-w-[581px] mx-auto"
           }`}
       >
-        {blocks.map((block, blockIdx) => {
-          const blockHasMoreThanOne = block.length > 1;
-          const baseIdx = blockIdx * 3;
-
-          return (
-            <div
-              key={blockIdx}
-              style={{ zIndex: (blockIdx + 1) * 10 }}
-              className={`w-full sticky top-0 snap-start snap-always shrink-0 ${blockHasMoreThanOne ? "grid grid-cols-2 gap-0 aspect-[1162/897]" : "max-w-[581px] mx-auto aspect-[581/897]"
-                }`}
-            >
-              {/* Left Column: Image 1 */}
-              <div className="relative w-full aspect-[581/897] bg-[#e5e5e5] dark:bg-neutral-900 overflow-hidden">
-                {loadingStates[baseIdx] && renderSpinner()}
-                <Image
-                  className="h-full w-full object-contain"
-                  fill
-                  sizes="(min-width: 1024px) 35vw, 100vw"
-                  alt={block[0]?.altText || "Product image"}
-                  src={block[0]?.src || ""}
-                  priority={blockIdx === 0}
-                  onLoad={() => handleImageLoad(baseIdx)}
-                />
-              </div>
-
-              {/* Right Column: Stacked Images */}
-              {blockHasMoreThanOne && (
-                <div className="flex flex-col gap-0 justify-between">
-                  {block[1] && (
-                    <div className="relative w-full aspect-[581/448.5] bg-[#e5e5e5] dark:bg-neutral-900 overflow-hidden">
-                      {loadingStates[baseIdx + 1] && renderSpinner()}
-                      <Image
-                        className="h-full w-full object-cover"
-                        fill
-                        sizes="(min-width: 1024px) 35vw, 100vw"
-                        alt={block[1].altText || "Product image"}
-                        src={block[1].src}
-                        onLoad={() => handleImageLoad(baseIdx + 1)}
-                      />
-                    </div>
-                  )}
-                  {block[2] && (
-                    <div className="relative w-full aspect-[581/448.5] bg-[#e5e5e5] dark:bg-neutral-900 overflow-hidden">
-                      {loadingStates[baseIdx + 2] && renderSpinner()}
-                      <Image
-                        className="h-full w-full object-cover"
-                        fill
-                        sizes="(min-width: 1024px) 35vw, 100vw"
-                        alt={block[2].altText || "Product image"}
-                        src={block[2].src}
-                        onLoad={() => handleImageLoad(baseIdx + 2)}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {images.map((image, idx) => (
+          <div
+            key={idx}
+            className="relative w-full aspect-[3/4] bg-neutral-100 dark:bg-neutral-900 rounded-md overflow-hidden"
+          >
+            {loadingStates[idx] && renderSpinner()}
+            <Image
+              className="h-full w-full object-contain"
+              fill
+              sizes="(min-width: 1024px) 35vw, 100vw"
+              alt={image.altText || "Product image"}
+              src={image.src}
+              priority={idx === 0}
+              onLoad={() => handleImageLoad(idx)}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
