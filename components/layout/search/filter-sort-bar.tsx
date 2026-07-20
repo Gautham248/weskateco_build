@@ -183,8 +183,10 @@ export default function FilterSortBar({
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  // Filter drawer state bound to URL parameter
-  const isFilterOpen = searchParams.get("filter") === "open";
+  // Filter drawer state — driven by local state to avoid router navigation on open/close
+  const [isFilterOpen, setIsFilterOpen] = useState(
+    () => searchParams.get("filter") === "open",
+  );
 
   // Resolve active values — from props (controlled) or URL (uncontrolled)
   const activeFilters: Record<string, string> =
@@ -205,13 +207,17 @@ export default function FilterSortBar({
   const openFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("filter", "open");
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    const searchStr = params.toString();
+    window.history.pushState(null, "", searchStr ? `${pathname}?${searchStr}` : pathname);
+    setIsFilterOpen(true);
   };
 
   const closeFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("filter");
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    const searchStr = params.toString();
+    window.history.pushState(null, "", searchStr ? `${pathname}?${searchStr}` : pathname);
+    setIsFilterOpen(false);
   };
 
   // Instant update callback triggered on every option change
