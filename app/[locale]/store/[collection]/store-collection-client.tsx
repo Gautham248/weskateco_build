@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useRef } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import StoreBanner from "components/layout/search/banner";
 import FilterSortBar from "components/layout/search/filter-sort-bar";
@@ -52,8 +52,16 @@ export default function StoreCollectionClient({
   const [page, setPage] = useState<number>(1);
   const [isPending, startTransition] = useTransition();
 
-  // Sync state from URL (handles back/forward navigation)
+  // Guards so URL-sync useEffect doesn't undo pushState-based state updates
+  const skipNextSyncRef = useRef(false);
+  const knownHandles = new Set(Object.keys(productsByCollection));
+
+  // Sync state from URL (only for back/forward navigation, not our own pushState)
   useEffect(() => {
+    if (skipNextSyncRef.current) {
+      skipNextSyncRef.current = false;
+      return;
+    }
     const parts = pathname.split("/");
     const handle =
       parts[parts.length - 1] === "store" ? "" : parts[parts.length - 1];
@@ -86,7 +94,7 @@ export default function StoreCollectionClient({
     setInitialIndexMap(newMap);
   }, [productsByCollection]);
 
-  // Sync all state and push to URL history
+  // Sync all state and push to URL history (no router navigation — no remount)
   const updateParams = (
     newHandle: string,
     newFilters: Record<string, string>,
@@ -114,6 +122,8 @@ export default function StoreCollectionClient({
     const searchStr = params.toString();
     const fullUrl = searchStr ? `${newPath}?${searchStr}` : newPath;
 
+    // Skip the next URL-sync effect so it doesn't re-apply state from URL
+    skipNextSyncRef.current = true;
     window.history.pushState(null, "", fullUrl);
 
     setActiveHandle(newHandle);
@@ -141,6 +151,13 @@ export default function StoreCollectionClient({
   };
 
   const handleCategoryChange = (handle: string) => {
+    // If the handle is already pre-fetched, switch inline without a router navigation
+    if (knownHandles.has(handle) || handle === "") {
+      // Clear filters that may not apply to new subcategory
+      updateParams(handle, {}, sort, 1);
+      return;
+    }
+    // Unknown handle — needs a full page load (e.g. different top-level collection)
     const pathParts = pathname.split("/");
     const storeIdx = pathParts.indexOf("store");
     if (storeIdx !== -1) {

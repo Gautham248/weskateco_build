@@ -33,6 +33,9 @@ export default function StoreAllClient({
   const [page, setPage] = useState<number>(1);
   const [isPending, startTransition] = useTransition();
 
+  // Guard against the searchParams effect undoing local pushState updates
+  const skipNextSyncRef = useRef(false);
+
   // Stable initial index map for relevance/trending sort
   const initialIndexMap = useRef<Record<string, number>>({});
   useEffect(() => {
@@ -43,8 +46,12 @@ export default function StoreAllClient({
     initialIndexMap.current = map;
   }, [products]);
 
-  // Sync state from URL (back/forward navigation)
+  // Sync state from URL (back/forward navigation only)
   useEffect(() => {
+    if (skipNextSyncRef.current) {
+      skipNextSyncRef.current = false;
+      return;
+    }
     const filters: Record<string, string> = {};
     searchParams.forEach((value, key) => {
       if (key !== "sort" && key !== "page" && key !== "filter")
@@ -73,6 +80,9 @@ export default function StoreAllClient({
 
     const searchStr = params.toString();
     const fullUrl = searchStr ? `${pathname}?${searchStr}` : pathname;
+
+    // Guard so the searchParams effect doesn't re-apply state from URL
+    skipNextSyncRef.current = true;
     window.history.pushState(null, "", fullUrl);
 
     setActiveFilters(newFilters);
