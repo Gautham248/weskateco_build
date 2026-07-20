@@ -1,7 +1,7 @@
 "use client";
-import wallet from "components/icons/wallet.svg";
 import Price from "components/price";
 import Prose from "components/prose";
+import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
 import { createTranslator } from "lib/i18n";
 import { Product } from "lib/shopify/types";
 import { ProductActions } from "./product-actions";
@@ -120,42 +120,18 @@ export function ProductDescription({
       {/* Options Selectors */}
       <VariantSelector options={product.options} variants={product.variants} />
 
-      {/* Explore EMI Options Banner */}
-      <div className="mb-6 flex items-center justify-between rounded-sm border border-sky-100 bg-sky-50/50 p-4 dark:border-sky-950/20 dark:bg-sky-950/10 cursor-pointer hover:bg-sky-100/50 dark:hover:bg-sky-950/20 transition-colors">
-        <div className="flex items-center gap-4">
-          <div className="flex p-3 items-center justify-center rounded-sm bg-sky-200 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400">
-            <img src={wallet.src || wallet} className="w-8 h-8" alt="wallet" />
-          </div>
-          <div>
-            <h4
-              className="text-sm font-semibold text-[#193F48]"
-              style={{ fontFamily: "Archivo, sans-serif" }}
-            >
-              Explore EMI Options
-            </h4>
-            <p
-              className="mt-2 text-[clamp(0.563rem,1.5vw,0.688rem)] text-[#193F48]"
-              style={{ fontFamily: "Archivo, sans-serif" }}
-            >
-              Explore EMI Options: Compare EMI plans <br /> to find one that
-              fits your budget.
-            </p>
-          </div>
-        </div>
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#193F48"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-sky-600 dark:text-sky-400"
-        >
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
-      </div>
+      {/* Snapmint EMI Banner */}
+      <SnapmintEmiCartBanner
+        totalAmount={product.priceRange.maxVariantPrice.amount}
+        onBuyOnEmi={() => {
+          if (
+            typeof window !== "undefined" &&
+            typeof window.triggerGokwikCustomCheckout === "function"
+          ) {
+            window.triggerGokwikCustomCheckout();
+          }
+        }}
+      />
 
       {/* Product Buttons Actions */}
       <ProductActions product={product} />

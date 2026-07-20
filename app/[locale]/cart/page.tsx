@@ -2,6 +2,7 @@
 
 import { removeItem, updateItemQuantity } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
+import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
 import secure from "components/icons/secure.svg";
 import Footer from "components/layout/footer";
 import Price from "components/price";
@@ -388,6 +389,12 @@ function CartPageContent() {
                     />
                   </div>
                 </div>
+
+                {/* Snapmint EMI Banner */}
+                <SnapmintEmiCartBanner
+                  totalAmount={cart.cost.totalAmount.amount}
+                  onBuyOnEmi={handleCheckout}
+                />
 
                 {/* Highlighted checkout notice */}
                 <div className="mt-6 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3 rounded-none text-center">

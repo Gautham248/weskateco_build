@@ -5,6 +5,7 @@ import { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { SnapmintEmiBadge } from "./snapmint-emi-badge";
 
 interface ProductCardProps {
   product: Product;
@@ -228,6 +229,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             />
           )}
         </div>
+        <SnapmintEmiBadge priceAmount={priceRange.minVariantPrice.amount} />
       </div>
     </Link>
   );

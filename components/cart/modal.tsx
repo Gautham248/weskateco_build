@@ -20,6 +20,7 @@ import { getLocalizedPath } from "lib/i18n";
 import { DeleteItemButton } from "./delete-item-button";
 import { EditItemQuantityButton } from "./edit-item-quantity-button";
 import OpenCart from "./open-cart";
+import { SnapmintEmiCartBanner } from "./snapmint-emi-cart-banner";
 
 type MerchandiseSearchParams = {
   [key: string]: string;
@@ -403,6 +404,12 @@ export default function CartModal() {
                       />
                     </div>
                     
+                    {/* Snapmint EMI Banner */}
+                    <SnapmintEmiCartBanner
+                      totalAmount={cart.cost.totalAmount.amount}
+                      onBuyOnEmi={triggerCheckout}
+                    />
+
                     {/* Highlighted info box */}
                     <div className="bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 p-3 mb-4 rounded-none text-center">
                       <p className="text-[12px] text-neutral-600 dark:text-neutral-400 font-medium">
