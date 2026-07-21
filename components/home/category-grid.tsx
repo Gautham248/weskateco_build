@@ -67,11 +67,10 @@ function CategoryTitle({
       </h3>
 
       <span
-        className={`absolute bg-[#C5FF1A] text-black rounded-full flex items-center justify-center font-bold transition-all duration-[1600ms] top-1/2 -translate-y-1/2 z-10 ${
-          !isExpanded
+        className={`absolute bg-[#C5FF1A] text-black rounded-full flex items-center justify-center font-bold transition-all duration-[1600ms] top-1/2 -translate-y-1/2 z-10 ${!isExpanded
             ? "text-[9px] w-5 h-5 -translate-x-1/2"
             : "text-[10px] w-6 h-6 left-full -translate-x-full"
-        }`}
+          }`}
         style={{
           transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
           left: !isExpanded ? `${oOffset}px` : undefined,
@@ -140,9 +139,9 @@ export default function CategoryGrid({ locale }: { locale: string }) {
 
   return (
     <section className="h-[fit-content] w-full bg-white pt-10 md:pt-30 pb-15 md:pb-5">
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 mb-6 md:mb-10">
+      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 mb-6 md:mb-10">
         <h2
-          className="text-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
+          className="text-[clamp(1.5rem,5vw,3.75rem)] leading-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
           style={{
             fontFamily: "'Clash Display', sans-serif",
             letterSpacing: "-0.01em",
@@ -201,11 +200,10 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                 key={`mobile-${index}`}
                 href={getLocalizedPath(category.href, locale)}
                 onClick={handleCardClick}
-                className={`absolute w-[68vw] aspect-[2/3] rounded-md overflow-hidden bg-neutral-100 shadow-xl transition-all ${
-                  isActive
+                className={`absolute w-[68vw] aspect-[2/3] rounded-md overflow-hidden bg-neutral-100 shadow-xl transition-all ${isActive
                     ? "cursor-pointer"
                     : "cursor-pointer pointer-events-auto"
-                }`}
+                  }`}
                 style={{
                   transform: transformStyle,
                   zIndex: zIndex,
@@ -242,11 +240,10 @@ export default function CategoryGrid({ locale }: { locale: string }) {
             <span
               key={`dot-${index}`}
               onClick={() => setActiveMobileIndex(index)}
-              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                activeMobileIndex === index
+              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${activeMobileIndex === index
                   ? "w-4 bg-black"
                   : "w-1.5 bg-neutral-300"
-              }`}
+                }`}
             />
           ))}
         </div>
@@ -254,7 +251,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
 
       {/* --- DESKTOP ACCORDION GRID VIEW --- */}
       <div
-        className="hidden md:flex w-full h-[560px] gap-4 items-stretch overflow-hidden mx-auto max-w-(--breakpoint-2xl) px-6 mb-6 md:mb-10"
+        className="hidden md:flex w-full h-[560px] gap-4 items-stretch overflow-hidden mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 mb-6 md:mb-10"
         onMouseLeave={() => setHoveredIndex(0)}
       >
         {categories.map((category, index) => {
@@ -276,11 +273,10 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                 <img
                   src={category.image.src}
                   alt={category.name}
-                  className={`w-full h-full object-cover transition-transform ${
-                    isExpanded
+                  className={`w-full h-full object-cover transition-transform ${isExpanded
                       ? category.imageExpandedClassName || "scale-100"
                       : category.imageClassName || "scale-100"
-                  }`}
+                    }`}
                   style={{
                     transitionDuration: "1600ms",
                     transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",

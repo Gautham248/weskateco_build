@@ -1,8 +1,8 @@
 import { defaultSort, sorting } from "lib/constants";
-import { getProducts } from "lib/shopify";
+import { getProducts, getCollections } from "lib/shopify";
 import { createTranslator } from "lib/i18n";
 import { Suspense } from "react";
-import StoreAllClient from "./store-all-client";
+import StoreCollectionClient from "./[collection]/store-collection-client";
 
 export const dynamicParams = true;
 
@@ -23,15 +23,36 @@ export default async function StorePage(props: {
   const { locale } = await props.params;
 
   const { sort } = (searchParams || {}) as { [key: string]: string };
-  const { sortKey, reverse } =
-    sorting.find((item) => item.slug === sort) || defaultSort;
+  const page = Number(searchParams?.page) || 1;
 
-  // Fetch all products server-side; client component handles all filter/sort/pagination
-  const products = await getProducts({ sortKey, reverse });
+  const initialFilters: Record<string, string> = {};
+  if (searchParams) {
+    Object.entries(searchParams).forEach(([key, value]) => {
+      if (key !== "sort" && key !== "page" && key !== "filter" && typeof value === "string") {
+        initialFilters[key] = value;
+      }
+    });
+  }
+
+  const [allProducts, allCollections] = await Promise.all([
+    getProducts({}),
+    getCollections(),
+  ]);
+
+  const t = createTranslator(locale);
 
   return (
     <Suspense fallback={null}>
-      <StoreAllClient products={products} locale={locale} />
+      <StoreCollectionClient
+        initialCollectionHandle=""
+        allProducts={allProducts}
+        allCollections={allCollections}
+        locale={locale}
+        noProductsText={t("collection.no_products")}
+        initialFilters={initialFilters}
+        initialSort={sort || ""}
+        initialPage={page}
+      />
     </Suspense>
   );
 }

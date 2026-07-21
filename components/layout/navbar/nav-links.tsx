@@ -43,7 +43,7 @@ export default function NavLinks({
     <>
       {isDropdownOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-black/60 backdrop z-40"
           onClick={() => {
             setIsDropdownOpen(false);
             setActiveCategory(null);
@@ -66,7 +66,7 @@ export default function NavLinks({
           </button>
 
           <div
-            className={`absolute left-6 right-6 z-50 shadow-lg top-full mt-5 ${isDropdownOpen
+            className={`absolute left-6 right-6 lg:left-12 lg:right-12 z-50 shadow-lg top-full mt-5 ${isDropdownOpen
                 ? "opacity-100 pointer-events-auto"
                 : "opacity-0 pointer-events-none"
               } transition-opacity duration-300`}

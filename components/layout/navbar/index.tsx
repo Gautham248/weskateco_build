@@ -54,11 +54,11 @@ export function Navbar({ locale }: { locale?: string }) {
 
   return (
     <nav
-      className="flex items-center justify-between h-[72px] mx-auto max-w-(--breakpoint-2xl) px-4 relative z-50"
+      className="flex items-center justify-between h-[72px] mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 relative z-50 gap-4 lg:gap-8"
       style={{ fontFamily: "Archivo, sans-serif" }}
     >
       {/* Left: Mobile hamburger + Logo */}
-      <div className="w-[35%] flex items-center justify-start gap-4 z-50">
+      <div className="flex-1 flex items-center justify-start gap-4 z-50">
         <div className="md:hidden">
           <Suspense fallback={null}>
             <MobileMenu />
@@ -70,13 +70,13 @@ export function Navbar({ locale }: { locale?: string }) {
       </div>
 
       {/* Center: Nav Links (desktop only) */}
-      <div className="hidden md:flex flex-grow justify-center">
+      <div className="hidden md:flex justify-center flex-shrink-0">
         <NavLinks onDropdownChange={setIsStoreOpen} />
       </div>
 
       {/* Right: Search, Cart, User */}
       <div
-        className={`w-[35%] flex items-center justify-end gap-3 md:gap-6 xl:gap-11 z-50 transition-opacity duration-300 ${isStoreOpen ? "opacity-50" : "opacity-100"}`}
+        className={`flex-1 flex items-center justify-end gap-3 md:gap-6 xl:gap-11 z-50 transition-opacity duration-300 ${isStoreOpen ? "opacity-50" : "opacity-100"}`}
       >
         <Suspense fallback={<SearchSkeleton />}>
           <Search />

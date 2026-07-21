@@ -57,7 +57,7 @@ export default function TipsSection() {
     <section className="min-h-full w-full bg-white py-10 md:py-[88px] overflow-hidden">
       <div>
         {/* Header with Navigation Controls */}
-        <div className="flex justify-between items-end mb-5 md:mb-10 mx-auto max-w-(--breakpoint-2xl) px-4">
+        <div className="flex justify-between items-end mb-5 md:mb-10 mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15">
           <h2
             className="text-[clamp(1.25rem,4vw,2.5rem)] font-black leading-[120%] tracking-tight text-black dark:text-white sm:text-[clamp(1.5rem,3vw,2.5rem)] lg:text-[clamp(1.75rem,2.5vw,2.5rem)] uppercase"
             style={{

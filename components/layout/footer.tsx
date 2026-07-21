@@ -12,7 +12,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-black text-white w-full font-sans antialiased selection:bg-white selection:text-black">
-      <div className="mx-auto max-w-7xl px-4 pt-16 pb-10 md:pt-25 md:px-12 xl:px-0">
+      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 pt-16 pb-10 md:pt-25">
         {/* DESKTOP TOP SECTION: Link Columns */}
         <div className="hidden md:grid grid-cols-3 gap-10 lg:gap-24 mb-20">
           {/* Column 1: Shop Categories */}
