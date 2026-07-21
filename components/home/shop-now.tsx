@@ -107,19 +107,17 @@ function ProductCardGrid({
 }) {
   const imgRef = useRef<HTMLDivElement>(null);
   const [showIndex, setShowIndex] = useState(0);
-  const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imgRef.current) return;
-    clearTimeout(moveTimer.current);
-    moveTimer.current = setTimeout(() => {
-      const rect = imgRef.current!.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const pct = x / rect.width;
-      setShowIndex(pct < 0.25 ? 0 : pct > 0.75 ? 2 : 1);
-    }, 80);
+    clearTimeout(leaveTimer.current);
+    const rect = imgRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = x / rect.width;
+    setShowIndex(pct < 0.25 ? 0 : pct > 0.75 ? 2 : 1);
   };
 
   const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -184,12 +182,15 @@ function ProductCardGrid({
         ref={imgRef}
         className="relative aspect-[3/4.5] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
         onMouseEnter={() => {
+          clearTimeout(leaveTimer.current);
           setShowIndex(1);
         }}
         onMouseMove={handleMouseMove}
         onMouseLeave={() => {
-          clearTimeout(moveTimer.current);
-          setShowIndex(0);
+          clearTimeout(leaveTimer.current);
+          leaveTimer.current = setTimeout(() => {
+            setShowIndex(0);
+          }, 800);
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}

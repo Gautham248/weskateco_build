@@ -30,7 +30,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
   const imgRef = useRef<HTMLDivElement>(null);
   const [showIndex, setShowIndex] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
 
@@ -63,14 +63,11 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imgRef.current || displayImages.length < 2) return;
-    clearTimeout(moveTimer.current);
-    moveTimer.current = setTimeout(() => {
-      if (!imgRef.current) return;
-      const rect = imgRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const pct = x / rect.width;
-      setShowIndex(pct < 0.5 ? 0 : 1);
-    }, 80);
+    clearTimeout(leaveTimer.current);
+    const rect = imgRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = x / rect.width;
+    setShowIndex(pct < 0.5 ? 0 : 1);
   };
 
   const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -145,12 +142,15 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
         ref={imgRef}
         className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
         onMouseEnter={() => {
+          clearTimeout(leaveTimer.current);
           if (displayImages.length > 1) setShowIndex(1);
         }}
         onMouseMove={handleMouseMove}
         onMouseLeave={() => {
-          clearTimeout(moveTimer.current);
-          setShowIndex(0);
+          clearTimeout(leaveTimer.current);
+          leaveTimer.current = setTimeout(() => {
+            setShowIndex(0);
+          }, 800);
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -189,8 +189,9 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             {displayImages.map((_, idx) => (
               <span
                 key={idx}
-                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
-                  }`}
+                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
+                  idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
+                }`}
               />
             ))}
           </div>
