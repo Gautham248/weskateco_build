@@ -396,7 +396,7 @@ function CartPageContent() {
                   {/* Price Details breakdown */}
                   <div className="space-y-4" style={{ fontFamily: "Archivo, sans-serif" }}>
 
-                    <div className="border-t border-neutral-200 dark:border-neutral-800 pt-4 mt-2 flex justify-between items-baseline">
+                    <div className="border-t border-neutral-200 dark:border-neutral-800 py-4 mt-2 flex justify-between items-baseline">
                       <span
                         className="text-[14px] font-bold uppercase text-neutral-900 dark:text-white"
                         style={{ fontFamily: "'Clash Display', sans-serif" }}

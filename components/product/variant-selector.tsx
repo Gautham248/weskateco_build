@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { ProductOption, ProductVariant } from "lib/shopify/types";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 type Combination = {
   id: string;
@@ -26,6 +27,69 @@ export function VariantSelector({
   const hasNoOptionsOrJustOneOption =
     !options.length ||
     (options.length === 1 && options[0]?.values.length === 1);
+
+  // Find the first variant available for sale, or fall back to the first variant
+  const defaultVariant =
+    variants.find((v) => v.availableForSale) || variants[0];
+
+  const defaultSelectedOptions = defaultVariant
+    ? defaultVariant.selectedOptions.reduce<Record<string, string>>(
+        (acc, opt) => {
+          acc[opt.name.toLowerCase()] = opt.value;
+          return acc;
+        },
+        {},
+      )
+    : {};
+
+  // Build the active selection (merging defaults with props or URL query state)
+  const activeOptions: Record<string, string> = { ...defaultSelectedOptions };
+  if (selectedOptions) {
+    Object.assign(activeOptions, selectedOptions);
+  } else {
+    searchParams.forEach((v, k) => {
+      activeOptions[k] = v;
+    });
+  }
+
+  useEffect(() => {
+    // If selectedOptions and onSelectOption are passed, sync defaults to parent state
+    if (selectedOptions && onSelectOption) {
+      if (defaultVariant) {
+        defaultVariant.selectedOptions.forEach((option) => {
+          const key = option.name.toLowerCase();
+          if (!selectedOptions[key]) {
+            onSelectOption(key, option.value);
+          }
+        });
+      }
+    }
+    // If searchParams is used, sync defaults to the URL parameters
+    else if (!selectedOptions && !onSelectOption) {
+      let hasChanges = false;
+      const params = new URLSearchParams(searchParams.toString());
+      if (defaultVariant) {
+        defaultVariant.selectedOptions.forEach((option) => {
+          const key = option.name.toLowerCase();
+          if (!params.has(key)) {
+            params.set(key, option.value);
+            hasChanges = true;
+          }
+        });
+      }
+      if (hasChanges) {
+        router.replace(`?${params.toString()}`, { scroll: false });
+      }
+    }
+  }, [
+    selectedOptions,
+    onSelectOption,
+    options,
+    variants,
+    searchParams,
+    router,
+    defaultVariant,
+  ]);
 
   if (hasNoOptionsOrJustOneOption) {
     return null;
@@ -80,14 +144,11 @@ export function VariantSelector({
           {option.values.map((value) => {
             const optionNameLowerCase = option.name.toLowerCase();
 
-            // Base option params on current searchParams so we can preserve any other param state.
-            const optionParams: Record<string, string> = {};
-            if (selectedOptions) {
-              Object.assign(optionParams, selectedOptions);
-            } else {
-              searchParams.forEach((v, k) => (optionParams[k] = v));
-            }
-            optionParams[optionNameLowerCase] = value;
+            // Base option params on activeOptions (selected + pre-selected defaults)
+            const optionParams = {
+              ...activeOptions,
+              [optionNameLowerCase]: value,
+            };
 
             // Filter out invalid options and check if the option combination is available for sale.
             const filtered = Object.entries(optionParams).filter(
@@ -105,10 +166,8 @@ export function VariantSelector({
               ),
             );
 
-            // The option is active if it's in the selected options.
-            const isActive = selectedOptions
-              ? selectedOptions[optionNameLowerCase] === value
-              : searchParams.get(optionNameLowerCase) === value;
+            // The option is active if it's in the selected/defaulted options.
+            const isActive = activeOptions[optionNameLowerCase] === value;
 
             const handleSelect = () => {
               if (onSelectOption) {

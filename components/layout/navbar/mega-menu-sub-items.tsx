@@ -142,7 +142,7 @@ export default function MegaMenuSubItems({
                   <svg
                     viewBox="0 0 73 56"
                     preserveAspectRatio="none"
-                    className="h-full w-16 fill-black dark:fill-white"
+                    className="h-full w-16 -ml-2 fill-black dark:fill-white"
                     style={{
                       transform: isHovered ? "scaleX(1)" : "scaleX(0)",
                       transformOrigin: "right",

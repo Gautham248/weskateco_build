@@ -34,7 +34,7 @@ export default function ShopNow({ locale }: { locale: string }) {
   const trackPadding = "var(--track-padding)";
 
   return (
-    <section className="shop-now-section w-full overflow-hidden py-12 md:py-30">
+    <section className="shop-now-section w-full overflow-hidden py-15 md:py-30">
       {/* Header aligned dynamically using trackPadding */}
       <div
         className="mb-6 md:mb-10 flex justify-between w-full items-center"
@@ -274,7 +274,7 @@ function ProductCardGrid({
           {product.brand}
         </p>
         <h3
-          className="line-clamp-2 text-[clamp(0.875rem,2.5vw,1.25rem)] font-medium leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2"
+          className="line-clamp-2 text-[clamp(0.875rem,2.5vw,1.25rem)] font-semibold leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2"
           style={{ fontFamily: "'Clash Display', sans-serif" }}
         >
           {product.name}

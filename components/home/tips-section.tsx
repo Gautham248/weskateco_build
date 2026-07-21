@@ -17,9 +17,14 @@ const tips = [
   { image: tip5 },
 ];
 
-export default function TipsSection() {
+export default function TipsSection({
+  variant = "default",
+}: {
+  variant?: "default" | "page";
+}) {
   const [activeIndex, setActiveIndex] = useState(2);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const trackPadding = "var(--track-padding)";
 
   // Smoothly center the active card in the viewport
   useEffect(() => {
@@ -54,22 +59,54 @@ export default function TipsSection() {
   };
 
   return (
-    <section className="min-h-full w-full bg-white py-10 md:py-[88px] overflow-hidden">
+    <section className="tips-section min-h-full w-full bg-white py-15 md:py-[88px] overflow-hidden">
       <div>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+          .tips-section {
+            --track-padding: 1rem;
+          }
+          @media (min-width: 1024px) {
+            .tips-section {
+              --track-padding: max(3.75rem, calc((100vw - 1536px) / 2 + 3.75rem));
+            }
+          }
+          div::-webkit-scrollbar {
+            display: none !important;
+          }
+        `,
+          }}
+        />
+
         {/* Header with Navigation Controls */}
         <div className="flex justify-between items-end mb-5 md:mb-10 mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15">
-          <h2
-            className="text-[clamp(1.25rem,4vw,2.5rem)] font-black leading-[120%] tracking-tight text-black dark:text-white sm:text-[clamp(1.5rem,3vw,2.5rem)] lg:text-[clamp(1.75rem,2.5vw,2.5rem)] uppercase"
-            style={{
-              fontFamily: "'Clash Display', sans-serif",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            Tips to stay connected
-            <br />
-            Anywhere!
-          </h2>
-          <div className="flex gap-3 pb-2">
+          {variant === "page" ? (
+            <h2
+              className="text-[clamp(1.5rem,5vw,3.75rem)] leading-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
+              style={{
+                fontFamily: "'Clash Display', sans-serif",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              stay connected
+              <br />
+              anywhere!
+            </h2>
+          ) : (
+            <h2
+              className="text-[clamp(1.25rem,4vw,2.5rem)] font-black leading-[120%] tracking-tight text-black dark:text-white sm:text-[clamp(1.5rem,3vw,2.5rem)] lg:text-[clamp(1.75rem,2.5vw,2.5rem)] uppercase"
+              style={{
+                fontFamily: "'Clash Display', sans-serif",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Tips to stay connected
+              <br />
+              Anywhere!
+            </h2>
+          )}
+          <div className="flex gap-3 pb-2 hidden md:flex">
             <button
               onClick={handlePrev}
               disabled={activeIndex === 0}
@@ -98,13 +135,19 @@ export default function TipsSection() {
         {/* Horizontal Scroll Row */}
         <div
           ref={scrollContainerRef}
-          className="px-4 md:px-0 flex gap-4 overflow-x-auto no-scrollbar scroll-smooth select-none snap-x mandatory"
-          style={{ WebkitOverflowScrolling: "touch" }}
+          className="flex gap-4 overflow-x-auto scrollbar-none scroll-smooth select-none snap-x snap-mandatory"
+          style={{
+            paddingLeft: trackPadding,
+            paddingRight: trackPadding,
+            msOverflowStyle: "none",
+            scrollbarWidth: "none",
+            WebkitOverflowScrolling: "touch",
+          }}
         >
           {tips.map((tip, index) => (
             <div
               key={index}
-              className="group relative pt-14 cursor-pointer overflow-hidden flex-shrink-0 w-[75vw] sm:w-[50vw] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-13px)] snap-center"
+              className="group relative pt-14 cursor-pointer overflow-hidden flex-shrink-0 w-[80vw] sm:w-[55vw] md:w-[calc(40%-12px)] lg:w-[calc(25%-12px)] snap-center"
               onMouseEnter={() => setActiveIndex(index)}
               onTouchStart={() => setActiveIndex(index)}
             >
@@ -114,12 +157,7 @@ export default function TipsSection() {
               >
                 {/* Image Container Frame */}
                 <div
-                  className={`relative w-full aspect-[3/3.8] overflow-hidden shadow-sm flex-shrink-0 ${index === 0
-                    ? "rounded-md md:rounded-l-none md:rounded-r-md"
-                    : index === tips.length - 1
-                      ? "rounded-md md:rounded-r-none md:rounded-l-md"
-                      : "rounded-md"
-                    }`}
+                  className={`relative w-full aspect-[3/3.8] overflow-hidden shadow-sm flex-shrink-0 rounded-md`}
                 >
                   <img
                     src={tip.image.src || (tip.image as unknown as string)}
@@ -166,12 +204,7 @@ export default function TipsSection() {
                   className={`w-full h-14 pt-3 flex-shrink-0 transition-opacity duration-300 opacity-100 ${activeIndex === index ? "md:opacity-100" : "md:opacity-0 md:group-hover:opacity-100"}`}
                 >
                   <button
-                    className={`w-full h-full bg-black text-white font-bold text-xs uppercase tracking-wide flex items-center justify-between px-4 hover:bg-neutral-900 transition-colors ${index === 0
-                      ? "rounded-md md:rounded-l-none md:rounded-r-md"
-                      : index === tips.length - 1
-                        ? "rounded-md md:rounded-r-none md:rounded-l-md"
-                        : "rounded-md"
-                      }`}
+                    className={`w-full h-full bg-black text-white font-bold text-xs uppercase tracking-wide flex items-center justify-between px-4 hover:bg-neutral-900 transition-colors rounded-md`}
                   >
                     <span>View Post</span>
                     <div className="bg-white text-black rounded-full p-1">
