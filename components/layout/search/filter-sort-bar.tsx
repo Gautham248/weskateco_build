@@ -7,18 +7,18 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { sorting } from "lib/constants";
 import {
   FilterGroup,
   deriveFiltersForCategory,
-  getLabelForFilterValue,
   getHexForColorValue,
+  getLabelForFilterValue,
   getParentCategory,
 } from "lib/filters/category-filter-config";
-import { sorting } from "lib/constants";
+import { Product } from "lib/shopify/types";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
-import { Product } from "lib/shopify/types";
+import { useEffect, useRef, useState } from "react";
 
 interface CollectionItem {
   handle: string;
@@ -193,13 +193,13 @@ export default function FilterSortBar({
     propFilters !== undefined
       ? propFilters
       : (() => {
-          const result: Record<string, string> = {};
-          searchParams.forEach((value, key) => {
-            if (key !== "sort" && key !== "page" && key !== "filter")
-              result[key] = value;
-          });
-          return result;
-        })();
+        const result: Record<string, string> = {};
+        searchParams.forEach((value, key) => {
+          if (key !== "sort" && key !== "page" && key !== "filter")
+            result[key] = value;
+        });
+        return result;
+      })();
 
   const currentSort =
     propSort !== undefined ? propSort : searchParams.get("sort") || "";
@@ -289,7 +289,7 @@ export default function FilterSortBar({
             >
               <FunnelIcon className="h-6 w-6 stroke-[1.8]" />
               {badgeCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#CCFF02] text-[10px] font-black text-black shadow-sm">
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[10px] font-black text-white shadow-sm">
                   {badgeCount}
                 </span>
               )}
@@ -305,7 +305,7 @@ export default function FilterSortBar({
               <div className="relative">
                 <FunnelIcon className="h-4 w-4" />
                 {badgeCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#CCFF02] text-[8px] font-black text-black shadow-sm">
+                  <span className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-blue-600 text-[8px] font-black text-white shadow-sm">
                     {badgeCount}
                   </span>
                 )}
@@ -708,12 +708,11 @@ function FilterDrawer({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-900">
           <div className="flex items-center gap-3">
-            <FunnelIcon className="h-5 w-5" />
             <h3
-              className="text-xl font-bold uppercase tracking-wider"
+              className="text-[32px] font-semibold uppercase tracking-[-1%]"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              Filter Items
+              Filters
             </h3>
           </div>
           <button
@@ -737,7 +736,7 @@ function FilterDrawer({
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <span
-                    className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                    className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
                     style={{ fontFamily: "Archivo, sans-serif" }}
                   >
                     Active Filters
@@ -749,7 +748,7 @@ function FilterDrawer({
                 <button
                   type="button"
                   onClick={clearPending}
-                  className="flex items-center gap-1 text-xs font-semibold text-neutral-500 hover:text-black dark:hover:text-white cursor-pointer"
+                  className="flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-black dark:hover:text-white cursor-pointer"
                 >
                   <span>Remove all filters</span>
                   <span className="text-[10px]">✕</span>
@@ -759,7 +758,7 @@ function FilterDrawer({
                 {activeDrawerFilters.map((tag) => (
                   <span
                     key={`${tag.type}-${tag.id}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[6px] text-xs font-medium text-neutral-800 dark:text-neutral-200"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-md text-xs font-medium text-neutral-800 dark:text-neutral-200"
                   >
                     <span>{tag.label}</span>
                     <button
@@ -795,7 +794,7 @@ function FilterDrawer({
                   : group.id === "subcategory"
                     ? activeCollectionHandle &&
                       activeCollectionHandle !==
-                        getParentCategory(activeCollectionHandle)
+                      getParentCategory(activeCollectionHandle)
                       ? 1
                       : 0
                     : filterVal
@@ -814,14 +813,14 @@ function FilterDrawer({
                 <button
                   type="button"
                   onClick={() => toggleGroup(group.id)}
-                  className="flex w-full items-center justify-between px-6 py-4 text-base font-bold uppercase tracking-wider text-black dark:text-white"
+                  className="flex w-full items-center justify-between px-6 py-4 text-base font-semibold uppercase tracking-[-1%] text-black dark:text-white"
                   style={{ fontFamily: "'Clash Display', sans-serif" }}
                 >
                   <span className="flex items-center gap-2">
                     <span
                       className={clsx(
                         activeCount > 0 &&
-                          "text-rose-600 dark:text-rose-400 font-bold",
+                        "text-rose-600 dark:text-rose-400 font-bold",
                       )}
                     >
                       {group.label}
@@ -882,11 +881,11 @@ function FilterDrawer({
           })}
         </div>
 
+        <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 my-4">
+          &#x24D8;&nbsp;{previewCount} items were found
+        </p>
         {/* Footer */}
-        <div className="p-6 border-t border-neutral-100 dark:border-neutral-900">
-          <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 mb-4">
-            &#x24D8;&nbsp;{previewCount} items were found
-          </p>
+        <div className="p-6 border-t border-neutral-200 dark:border-neutral-900" style={{ boxShadow: "0px -3px 44px 0px rgba(0, 0, 0, 0.15)" }}>
           <div className="flex flex-col gap-3">
             <button
               type="button"
@@ -1267,7 +1266,7 @@ function CategoryGroup({
           group.id === "subcategory"
             ? activeCollectionHandle === opt.value
             : activeParent === opt.value ||
-              (opt.value === "" && activeCollectionHandle === "");
+            (opt.value === "" && activeCollectionHandle === "");
         return (
           <button
             type="button"

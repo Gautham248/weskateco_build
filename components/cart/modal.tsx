@@ -1,28 +1,27 @@
 "use client";
 
-import clsx from "clsx";
 import { Dialog, Transition } from "@headlessui/react";
 import { ShoppingCartIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import LoadingDots from "components/loading-dots";
 import Price from "components/price";
 import { DEFAULT_OPTION } from "lib/constants";
+import { useGoKwikCheckout } from "lib/gokwik";
+import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
+import type { CartItem } from "lib/shopify/types";
 import { createUrl } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { QuickBuySidebar } from "../product/quick-buy-sidebar";
 import { createCartAndSetCookie, redirectToCheckout } from "./actions";
 import { useCart } from "./cart-context";
-import { useGoKwikCheckout } from "lib/gokwik";
-import { useTranslation } from "lib/i18n/TranslationProvider";
-import { getLocalizedPath } from "lib/i18n";
 import { DeleteItemButton } from "./delete-item-button";
 import { EditItemQuantityButton } from "./edit-item-quantity-button";
 import OpenCart from "./open-cart";
 import { SnapmintEmiCartBanner } from "./snapmint-emi-cart-banner";
-import { QuickBuySidebar } from "../product/quick-buy-sidebar";
-import type { CartItem } from "lib/shopify/types";
 
 type MerchandiseSearchParams = {
   [key: string]: string;
@@ -83,27 +82,30 @@ export default function CartModal() {
             leaveTo="translate-x-full"
           >
             <Dialog.Panel
-              className="fixed bottom-0 right-0 top-0 flex h-full w-full flex-col border-l border-neutral-200 bg-white/80 p-6 text-black backdrop-blur-xl md:w-[390px] dark:border-neutral-700 dark:bg-black/80 dark:text-white"
+              className="fixed bottom-0 right-0 top-0 flex h-full w-full flex-col bg-white text-black shadow-2xl md:w-[410px] dark:bg-black dark:text-white"
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
-              <div className="flex items-center justify-between pb-4 border-b border-neutral-100 dark:border-neutral-900">
-                <p
-                  className="text-xl font-bold uppercase tracking-wider text-black dark:text-white"
-                  style={{ fontFamily: "'Clash Display', sans-serif" }}
-                >
-                  {t("cart.title")} {cart && cart.totalQuantity > 0 ? `(${cart.totalQuantity})` : ""}
-                </p>
-                <button
-                  aria-label="Close cart"
-                  onClick={closeCart}
-                  className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 flex items-center justify-center transition-colors"
-                >
-                  <XMarkIcon className="h-5 w-5 text-black dark:text-white" />
-                </button>
+              {/* Header: Title and Close button matching Quick Buy */}
+              <div className="px-6 pt-6 pb-2">
+                <div className="flex items-center justify-between">
+                  <p
+                    className="text-[32px] font-semibold uppercase tracking-[-1%] text-black dark:text-white flex items-baseline gap-1"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
+                    <span>YOUR CART</span>
+                  </p>
+                  <button
+                    aria-label="Close cart"
+                    onClick={closeCart}
+                    className="w-10 h-10 rounded-md bg-[#f2f2f2] dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 flex items-center justify-center transition-colors cursor-pointer"
+                  >
+                    <XMarkIcon className="h-5 w-5 text-black dark:text-white" />
+                  </button>
+                </div>
               </div>
 
               {!cart || cart.lines.length === 0 ? (
-                <div className="mt-20 flex w-full flex-col items-center justify-center overflow-hidden">
+                <div className="mt-20 flex w-full flex-col items-center justify-center overflow-hidden px-6">
                   <ShoppingCartIcon className="h-16 text-black dark:text-white" />
                   <p
                     className="mt-6 text-center text-xl font-bold uppercase tracking-wider text-black dark:text-white"
@@ -113,8 +115,8 @@ export default function CartModal() {
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-1 min-h-0 flex-col justify-between p-1">
-                  <ul className="grow overflow-auto py-4">
+                <div className="flex flex-1 min-h-0 flex-col justify-between px-6 pb-6">
+                  <ul className="grow overflow-auto py-2">
                     {(() => {
                       // Separate bundle items from regular items
                       const bundleItems: Record<string, typeof cart.lines> = {};
@@ -250,7 +252,7 @@ export default function CartModal() {
                                                         {item.merchandise.product.title}
                                                       </span>
                                                       {item.merchandise.title !==
-                                                      DEFAULT_OPTION ? (
+                                                        DEFAULT_OPTION ? (
                                                         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
                                                           {item.merchandise.title}
                                                         </p>
@@ -277,7 +279,7 @@ export default function CartModal() {
                                                     item.cost.totalAmount.currencyCode
                                                   }
                                                 />
-                                                <div className="flex h-8 flex-row items-center rounded-full border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-black">
+                                                <div className="flex h-8 flex-row items-center gap-1">
                                                   <EditItemQuantityButton
                                                     item={item}
                                                     type="minus"
@@ -308,129 +310,117 @@ export default function CartModal() {
 
                           {/* Regular (non-bundle) items */}
                           {regularItems.length > 0 && (
-                            <div className="mb-6">
-                              <h4
-                                className="text-[11px] font-bold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-3 px-1"
-                                style={{ fontFamily: "'Clash Display', sans-serif" }}
-                              >
-                                Standard Products ({regularItems.length})
-                              </h4>
-                              <div className="rounded-xl border border-neutral-200 bg-neutral-50/20 p-1 dark:border-neutral-800 dark:bg-neutral-900/20">
-                                <ul className="divide-y divide-neutral-200 dark:divide-neutral-800">
-                                  {regularItems
-                                    .sort((a, b) =>
-                                      a.merchandise.product.title.localeCompare(
-                                        b.merchandise.product.title,
-                                      ),
-                                    )
-                                    .map((item, i) => {
-                                      const merchandiseSearchParams =
-                                        {} as MerchandiseSearchParams;
+                            <div className="mb-4">
+                              <ul className="divide-y divide-[#00000033] dark:divide-neutral-800">
+                                {regularItems
+                                  .sort((a, b) =>
+                                    a.merchandise.product.title.localeCompare(
+                                      b.merchandise.product.title,
+                                    ),
+                                  )
+                                  .map((item, i) => {
+                                    const merchandiseSearchParams =
+                                      {} as MerchandiseSearchParams;
 
-                                      item.merchandise.selectedOptions.forEach(
-                                        ({ name, value }) => {
-                                          if (value !== DEFAULT_OPTION) {
-                                            merchandiseSearchParams[
-                                              name.toLowerCase()
-                                            ] = value;
-                                          }
-                                        },
-                                      );
+                                    item.merchandise.selectedOptions.forEach(
+                                      ({ name, value }) => {
+                                        if (value !== DEFAULT_OPTION) {
+                                          merchandiseSearchParams[
+                                            name.toLowerCase()
+                                          ] = value;
+                                        }
+                                      },
+                                    );
 
-                                      const merchandiseUrl = createUrl(
-                                        `/product/${item.merchandise.product.handle}`,
-                                        new URLSearchParams(merchandiseSearchParams),
-                                      );
+                                    const merchandiseUrl = createUrl(
+                                      `/product/${item.merchandise.product.handle}`,
+                                      new URLSearchParams(merchandiseSearchParams),
+                                    );
 
-                                      return (
-                                        <li
-                                          key={i}
-                                          className="flex w-full flex-col"
-                                        >
-                                          <div className="relative flex w-full flex-row justify-between px-3 py-4">
-                                            <div className="absolute z-40 -ml-1 -mt-2">
-                                              <DeleteItemButton
+                                    return (
+                                      <li key={i} className="py-5">
+                                        <div className="flex gap-4 items-start justify-between">
+                                          {/* Product Image */}
+                                          <div className="relative aspect-square w-20 overflow-hidden rounded-md bg-[#f4f4f4] dark:bg-neutral-900 flex-shrink-0 flex items-center justify-center">
+                                            {item.merchandise.product.featuredImage ? (
+                                              <Image
+                                                src={item.merchandise.product.featuredImage.url}
+                                                alt={
+                                                  item.merchandise.product.featuredImage.altText ||
+                                                  item.merchandise.product.title
+                                                }
+                                                fill
+                                                sizes="80px"
+                                                className="object-contain p-1"
+                                              />
+                                            ) : (
+                                              <div className="text-neutral-400 text-xs">No Image</div>
+                                            )}
+                                          </div>
+
+                                          {/* Product Info */}
+                                          <div className="flex flex-1 flex-col justify-between self-stretch pr-1">
+                                            <div>
+                                              <Link
+                                                href={merchandiseUrl}
+                                                onClick={closeCart}
+                                                className="text-md font-semibold text-black dark:text-white uppercase line-clamp-1 hover:underline leading-snug"
+                                                style={{ fontFamily: "'Clash Display', sans-serif" }}
+                                              >
+                                                {item.merchandise.product.title}
+                                              </Link>
+                                              <p className="text-xs font-normal tracking-wide text-neutral-400 dark:text-neutral-500 uppercase mt-0.5" style={{ fontFamily: "Archivo, sans-serif" }}>
+                                                {item.merchandise.product.vendor ||
+                                                  (item.merchandise.title !== DEFAULT_OPTION
+                                                    ? item.merchandise.title
+                                                    : "")}
+                                              </p>
+                                            </div>
+
+                                            <div className="flex items-center gap-2 mt-3">
+                                              <EditItemQuantityButton
                                                 item={item}
+                                                type="minus"
                                                 optimisticUpdate={updateCartItem}
                                               />
-                                            </div>
-                                            <div className="flex flex-row">
-                                              <div className="relative h-16 w-16 overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-800 bg-[#e6e6e6] dark:bg-neutral-900 flex-shrink-0">
-                                                <Image
-                                                  className="h-full w-full object-cover"
-                                                  width={64}
-                                                  height={64}
-                                                  alt={
-                                                    item.merchandise.product
-                                                      .featuredImage?.altText ||
-                                                    item.merchandise.product.title
-                                                  }
-                                                  src={
-                                                    item.merchandise.product
-                                                      .featuredImage?.url || ""
-                                                  }
-                                                />
-                                              </div>
-                                              <div className="ml-2 flex flex-col justify-center">
-                                                <Link
-                                                  href={merchandiseUrl}
-                                                  onClick={closeCart}
-                                                  className="z-30 flex flex-row"
-                                                >
-                                                  <div className="flex flex-1 flex-col text-base">
-                                                    <span className="leading-tight font-medium">
-                                                      {item.merchandise.product.title}
-                                                    </span>
-                                                    {item.merchandise.title !==
-                                                    DEFAULT_OPTION ? (
-                                                      <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                                                        {item.merchandise.title}
-                                                      </p>
-                                                    ) : null}
-                                                  </div>
-                                                </Link>
-                                                <button
-                                                  type="button"
-                                                  onClick={() => setEditingItem(item)}
-                                                  className="text-xs font-semibold uppercase underline hover:text-neutral-500 transition-colors cursor-pointer mt-1.5 w-fit text-left text-neutral-500 dark:text-neutral-400"
-                                                  style={{ fontFamily: "Archivo, sans-serif" }}
-                                                >
-                                                  Edit
-                                                </button>
-                                              </div>
-                                            </div>
-                                            <div className="flex flex-col justify-between items-end flex-shrink-0 min-h-[64px] ml-4">
-                                              <Price
-                                                className="flex justify-end space-y-2 text-right text-sm font-semibold"
-                                                amount={item.cost.totalAmount.amount}
-                                                currencyCode={
-                                                  item.cost.totalAmount.currencyCode
-                                                }
+                                              <span className="w-5 text-center text-xs font-semibold text-black dark:text-white" style={{ fontFamily: "Archivo, sans-serif" }}>
+                                                {item.quantity < 10 ? `0${item.quantity}` : item.quantity}
+                                              </span>
+                                              <EditItemQuantityButton
+                                                item={item}
+                                                type="plus"
+                                                optimisticUpdate={updateCartItem}
                                               />
-                                              <div className="ml-auto flex h-9 flex-row items-center rounded-full border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-black">
-                                                <EditItemQuantityButton
-                                                  item={item}
-                                                  type="minus"
-                                                  optimisticUpdate={updateCartItem}
-                                                />
-                                                <p className="w-6 text-center">
-                                                  <span className="w-full text-sm">
-                                                    {item.quantity}
-                                                  </span>
-                                                </p>
-                                                <EditItemQuantityButton
-                                                  item={item}
-                                                  type="plus"
-                                                  optimisticUpdate={updateCartItem}
-                                                />
-                                              </div>
+                                              <button
+                                                type="button"
+                                                onClick={() => setEditingItem(item)}
+                                                className="text-xs font-medium uppercase underline hover:text-neutral-500 transition-colors cursor-pointer text-neutral-400 dark:text-neutral-500 ml-2"
+                                                style={{ fontFamily: "Archivo, sans-serif" }}
+                                              >
+                                                Edit
+                                              </button>
                                             </div>
                                           </div>
-                                        </li>
-                                      );
-                                    })}
-                                </ul>
-                              </div>
+
+                                          {/* Price & Delete */}
+                                          <div className="flex flex-col items-end justify-between self-stretch flex-shrink-0">
+                                            <Price
+                                              amount={item.cost.totalAmount.amount}
+                                              currencyCode={item.cost.totalAmount.currencyCode}
+                                              currencyCodeClassName="hidden"
+                                              className="text-base font-bold text-black dark:text-white"
+                                              style={{ fontFamily: "'Clash Display', sans-serif" }}
+                                            />
+                                            <DeleteItemButton
+                                              item={item}
+                                              optimisticUpdate={updateCartItem}
+                                            />
+                                          </div>
+                                        </div>
+                                      </li>
+                                    );
+                                  })}
+                              </ul>
                             </div>
                           )}
                         </>
@@ -452,7 +442,7 @@ export default function CartModal() {
                         currencyCodeClassName="hidden"
                       />
                     </div>
-                    
+
                     {/* Snapmint EMI Banner */}
                     <SnapmintEmiCartBanner
                       totalAmount={cart.cost.totalAmount.amount}
@@ -466,7 +456,7 @@ export default function CartModal() {
                       </p>
                     </div>
                   </div>
-                  <div className="space-y-3">
+                  <div className="-mx-6 px-6 space-y-3 pt-6 border-t border-neutral-200" style={{ boxShadow: "0px -3px 44px 0px rgba(0, 0, 0, 0.15)" }}>
                     {useFallback ? (
                       <form action={redirectToCheckout} className="w-full">
                         <CheckoutButton />
@@ -475,9 +465,8 @@ export default function CartModal() {
                       <button
                         onClick={triggerCheckout}
                         disabled={!gokwikReady || isCheckingOut || !cart?.id}
-                        className={`w-full h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-none cursor-pointer transition-colors flex items-center justify-center ${
-                          !gokwikReady || isCheckingOut || !cart?.id ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
+                        className={`w-full h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-none cursor-pointer transition-colors flex items-center justify-center ${!gokwikReady || isCheckingOut || !cart?.id ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
                         style={{ fontFamily: "Archivo, sans-serif" }}
                       >
                         {isCheckingOut

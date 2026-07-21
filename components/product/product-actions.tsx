@@ -46,7 +46,7 @@ export function ProductActions({
   };
 
   const buttonBaseClasses =
-    "flex w-full items-center justify-center rounded-xs h-14 uppercase text-[clamp(0.75rem,1.8vw,0.875rem)] font-semibold tracking-wider transition-colors duration-200 border cursor-pointer";
+    "flex w-full items-center justify-center rounded-md h-12 uppercase text-xs font-bold tracking-wider transition-colors duration-200 border cursor-pointer";
 
   if (!availableForSale) {
     return (

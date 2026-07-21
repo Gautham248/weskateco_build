@@ -16,12 +16,15 @@ export function VariantSelector({
   variants,
   selectedOptions,
   onSelectOption,
+  isQuickBuy: isQuickBuyProp,
 }: {
   options: ProductOption[];
   variants: ProductVariant[];
   selectedOptions?: Record<string, string>;
   onSelectOption?: (name: string, value: string) => void;
+  isQuickBuy?: boolean;
 }) {
+  const isQuickBuy = isQuickBuyProp ?? Boolean(onSelectOption);
   const router = useRouter();
   const searchParams = useSearchParams();
   const hasNoOptionsOrJustOneOption =
@@ -34,12 +37,12 @@ export function VariantSelector({
 
   const defaultSelectedOptions = defaultVariant
     ? defaultVariant.selectedOptions.reduce<Record<string, string>>(
-        (acc, opt) => {
-          acc[opt.name.toLowerCase()] = opt.value;
-          return acc;
-        },
-        {},
-      )
+      (acc, opt) => {
+        acc[opt.name.toLowerCase()] = opt.value;
+        return acc;
+      },
+      {},
+    )
     : {};
 
   // Build the active selection (merging defaults with props or URL query state)
@@ -115,10 +118,14 @@ export function VariantSelector({
 
   return options.map((option) => (
     <form key={option.id}>
-      <dl className="mb-6">
-        <div className="flex justify-between items-center mb-3">
+      <dl className={isQuickBuy ? "mb-2" : "mb-6"}>
+        <div className={clsx("flex justify-between items-center", isQuickBuy ? "mb-4" : "mb-3")}>
           <dt
-            className="text-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100"
+            className={clsx(
+              isQuickBuy
+                ? "text-xl font-semibold text-black dark:text-white tracking-[-1%]"
+                : "text-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100",
+            )}
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             {option.name}
@@ -126,7 +133,11 @@ export function VariantSelector({
           {option.name.toLowerCase() === "size" && (
             <a
               href="#buying-guide"
-              className="text-[clamp(0.563rem,1.5vw,0.688rem)] font-semibold uppercase tracking-wider text-black hover:text-neutral-400 dark:hover:text-white transition-colors underline"
+              className={clsx(
+                isQuickBuy
+                  ? "text-xs font-semibold uppercase tracking-wider text-black hover:text-neutral-500 dark:text-white dark:hover:text-neutral-400 transition-colors underline"
+                  : "text-[clamp(0.563rem,1.5vw,0.688rem)] font-semibold uppercase tracking-wider text-black hover:text-neutral-400 dark:hover:text-white transition-colors underline",
+              )}
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
               Buying Guide
@@ -185,13 +196,20 @@ export function VariantSelector({
                 disabled={!isAvailableForSale}
                 title={`${option.name} ${value}${!isAvailableForSale ? " (Out of Stock)" : ""}`}
                 className={clsx(
-                  "flex h-12 items-center justify-center rounded-xs text-[clamp(0.688rem,1.5vw,0.813rem)] font-medium transition-all duration-200 border-none",
+                  "flex h-12 items-center justify-center transition-all duration-200 border-none",
+                  isQuickBuy
+                    ? "rounded-sm text-sm font-medium"
+                    : "rounded-xs text-[clamp(0.688rem,1.5vw,0.813rem)] font-medium",
                   {
                     "bg-black text-white dark:bg-white dark:text-black cursor-pointer":
-                      isActive,
+                      !isQuickBuy && isActive,
+                    "bg-black text-white dark:bg-white dark:text-black cursor-pointer font-bold":
+                      isQuickBuy && isActive,
                     "bg-[#f2f2f2] text-black hover:bg-neutral-200 dark:bg-neutral-800/80 dark:text-white dark:hover:bg-neutral-700 cursor-pointer":
-                      !isActive && isAvailableForSale,
-                    "opacity-30 cursor-not-allowed bg-neutral-100 text-neutral-400 dark:bg-neutral-900 dark:text-neutral-600 ":
+                      !isQuickBuy && !isActive && isAvailableForSale,
+                    "bg-[#f2f2f2] text-black hover:bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700 cursor-pointer":
+                      isQuickBuy && !isActive && isAvailableForSale,
+                    "opacity-30 cursor-not-allowed bg-neutral-100 text-neutral-400 dark:bg-neutral-900 dark:text-neutral-600":
                       !isAvailableForSale,
                   },
                   {
@@ -199,6 +217,11 @@ export function VariantSelector({
                       option.name.toLowerCase() === "size" ||
                       option.values.length > 3,
                     "flex-1 min-w-[120px] max-w-[160px]":
+                      !isQuickBuy &&
+                      option.name.toLowerCase() !== "size" &&
+                      option.values.length <= 3,
+                    "flex-1 min-w-[100px] max-w-[140px]":
+                      isQuickBuy &&
                       option.name.toLowerCase() !== "size" &&
                       option.values.length <= 3,
                   },
@@ -211,6 +234,9 @@ export function VariantSelector({
           })}
         </dd>
       </dl>
+      {isQuickBuy && (
+        <div className="my-5 border-b border-[#00000033] dark:border-neutral-800" />
+      )}
     </form>
   ));
 }

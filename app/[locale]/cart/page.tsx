@@ -343,7 +343,7 @@ function CartPageContent() {
                                 <button
                                   type="button"
                                   onClick={() => setEditingItem(item)}
-                                  className="text-[13px] font-semibold uppercase underline hover:text-neutral-500 transition-colors cursor-pointer"
+                                  className="text-xs font-normal uppercase underline hover:text-neutral-500 transition-colors cursor-pointer"
                                   style={{ fontFamily: "Archivo, sans-serif" }}
                                 >
                                   Edit

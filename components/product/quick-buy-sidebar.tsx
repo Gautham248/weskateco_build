@@ -2,16 +2,16 @@
 
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import clsx from "clsx";
+import { editCartItemVariantAction } from "components/cart/actions";
+import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
 import { Product } from "lib/shopify/types";
 import Image from "next/image";
-import { Fragment, useState, useEffect, useTransition } from "react";
+import { Fragment, useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
 import { ProductActions } from "./product-actions";
 import { VariantSelector } from "./variant-selector";
-import { editCartItemVariantAction } from "components/cart/actions";
-import { useCart } from "components/cart/cart-context";
-import { toast } from "sonner";
-import clsx from "clsx";
 
 interface QuickBuySidebarProps {
   isOpen: boolean;
@@ -149,110 +149,112 @@ export function QuickBuySidebar({
           leaveTo="translate-x-full"
         >
           <Dialog.Panel
-            className="fixed bottom-0 right-0 top-0 flex h-full w-full flex-col border-l border-neutral-200 bg-white/80 p-6 text-black backdrop-blur-xl md:w-[390px] dark:border-neutral-700 dark:bg-black/80 dark:text-white"
+            className="fixed bottom-0 right-0 top-0 flex h-full w-full flex-col bg-white text-black shadow-2xl md:w-[410px] dark:bg-black dark:text-white"
             style={{ fontFamily: "Archivo, sans-serif" }}
           >
-            {/* Header: Title and Close button */}
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-100 dark:border-neutral-900">
-              <p
-                className="text-xl font-bold uppercase tracking-wider text-black dark:text-white"
-                style={{ fontFamily: "'Clash Display', sans-serif" }}
-              >
-                {isEdit ? "Edit Options" : "Quick Add"}
-              </p>
-              <button
-                aria-label="Close panel"
-                onClick={onClose}
-                className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 flex items-center justify-center transition-colors"
-              >
-                <XMarkIcon className="h-5 w-5 text-black dark:text-white" />
-              </button>
-            </div>
-
-            {/* Product Summary */}
-            <div className="flex gap-4 pt-6">
-              {product.featuredImage ? (
-                <div className="relative aspect-[2/3] w-20 overflow-hidden rounded-lg bg-[#e6e6e6] dark:bg-neutral-900 flex-shrink-0">
-                  <Image
-                    src={product.featuredImage.url}
-                    alt={product.featuredImage.altText || product.title}
-                    fill
-                    sizes="80px"
-                    className="object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="relative aspect-[2/3] w-20 overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-900 flex-shrink-0 flex items-center justify-center text-neutral-400 text-xs">
-                  No Image
-                </div>
-              )}
-
-              <div className="flex flex-col justify-start">
-                {product.vendor && (
-                  <p className="text-[clamp(0.625rem,1.5vw,0.75rem)] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-0.5">
-                    {product.vendor}
-                  </p>
-                )}
-                <h3
-                  className="text-[clamp(0.875rem,2vw,1.125rem)] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2 leading-snug"
+            {/* Padded Top Section: Header & Product Summary */}
+            <div className="px-6 pt-6 pb-2">
+              {/* Header: Title and Close button */}
+              <div className="flex items-center justify-between">
+                <p
+                  className="text-[32px] font-semibold uppercase tracking-[-1%] text-black dark:text-white"
                   style={{ fontFamily: "'Clash Display', sans-serif" }}
                 >
-                  {product.title}
-                </h3>
-                <div className="mt-1 flex items-baseline gap-1">
-                  <Price
-                    amount={product.priceRange.minVariantPrice.amount}
-                    currencyCode={product.priceRange.minVariantPrice.currencyCode}
-                    currencyCodeClassName="hidden"
-                    className="text-[clamp(0.875rem,1.8vw,1rem)] font-bold text-neutral-900 dark:text-neutral-50"
-                  />
+                  {isEdit ? "EDIT OPTIONS" : "SELECT"}
+                </p>
+                <button
+                  aria-label="Close panel"
+                  onClick={onClose}
+                  className="w-10 h-10 rounded-md bg-[#f2f2f2] dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 flex items-center justify-center transition-colors"
+                >
+                  <XMarkIcon className="h-5 w-5 text-black dark:text-white" />
+                </button>
+              </div>
+
+              {/* Product Summary */}
+              <div className="flex gap-4 py-6 items-start">
+                {product.featuredImage ? (
+                  <div className="relative aspect-square w-24 overflow-hidden rounded-sm bg-[#f4f4f4] dark:bg-neutral-900 flex-shrink-0 flex items-center justify-center">
+                    <Image
+                      src={product.featuredImage.url}
+                      alt={product.featuredImage.altText || product.title}
+                      fill
+                      sizes="96px"
+                      className="object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="relative aspect-square w-24 overflow-hidden rounded-lg bg-[#f4f4f4] dark:bg-neutral-900 flex-shrink-0 flex items-center justify-center text-neutral-400 text-xs">
+                    No Image
+                  </div>
+                )}
+
+                <div className="flex flex-col justify-center pt-0.5">
+                  <h3
+                    className="text-md font-semibold text-black dark:text-white uppercase line-clamp-2 leading-snug"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
+                    {product.title}
+                  </h3>
+                  {product.vendor && (
+                    <p className="text-sm font-normal tracking-wide text-neutral-500 dark:text-neutral-400 uppercase mt-1">
+                      {product.vendor}
+                    </p>
+                  )}
+                  <div className="mt-2 flex items-baseline gap-1">
+                    <Price
+                      amount={product.priceRange.minVariantPrice.amount}
+                      currencyCode={product.priceRange.minVariantPrice.currencyCode}
+                      currencyCodeClassName="hidden"
+                      className="text-xl font-bold text-black dark:text-white"
+                      style={{ fontFamily: "'Clash Display', sans-serif" }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="my-6 border-t border-neutral-100 dark:border-neutral-900" />
+            {/* Scrollable Variant Selectors */}
+            <div className="flex-1 overflow-y-auto px-6 py-2">
+              {!hasNoOptionsOrJustOneOption && (
+                <VariantSelector
+                  options={product.options}
+                  variants={variants}
+                  selectedOptions={selectedOptions}
+                  onSelectOption={handleSelectOption}
+                />
+              )}
+            </div>
 
-            {/* Variant Selectors & Actions Container */}
-            <div className="flex flex-1 flex-col justify-between overflow-hidden">
-              <div className="flex-1 overflow-y-auto pr-1">
-                {!hasNoOptionsOrJustOneOption && (
-                  <div className="rounded-xl border border-neutral-200 bg-neutral-50/20 p-4 dark:border-neutral-800 dark:bg-neutral-900/20 mb-6">
-                    <VariantSelector
-                      options={product.options}
-                      variants={variants}
-                      selectedOptions={selectedOptions}
-                      onSelectOption={handleSelectOption}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-6 border-t border-neutral-100 dark:border-neutral-900 mt-auto">
-                {isEdit ? (
-                  <button
-                    type="button"
-                    onClick={handleUpdateLineItem}
-                    disabled={!selectedVariantId || isUpdating}
-                    className={clsx(
-                      buttonBaseClasses,
-                      !selectedVariantId
-                        ? "bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed"
-                        : isUpdating
-                          ? "bg-neutral-200 text-black border-neutral-300 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 cursor-not-allowed"
-                          : "bg-black text-white hover:bg-neutral-800 border-black dark:bg-white dark:text-black dark:hover:bg-neutral-100 dark:border-white",
-                    )}
-                    style={{ fontFamily: "Archivo, sans-serif" }}
-                  >
-                    {isUpdating ? "Updating..." : "Update Item"}
-                  </button>
-                ) : (
-                  <ProductActions
-                    product={product}
-                    selectedVariantId={selectedVariantId}
-                    onAddedToCart={onClose}
-                  />
-                )}
-              </div>
+            {/* Full-width Footer Section with edge-to-edge top border */}
+            <div
+              className="border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black p-6 mt-auto"
+              style={{ boxShadow: "0px -3px 44px 0px #00000026" }}
+            >
+              {isEdit ? (
+                <button
+                  type="button"
+                  onClick={handleUpdateLineItem}
+                  disabled={!selectedVariantId || isUpdating}
+                  className={clsx(
+                    buttonBaseClasses,
+                    !selectedVariantId
+                      ? "bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed"
+                      : isUpdating
+                        ? "bg-neutral-200 text-black border-neutral-300 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 cursor-not-allowed"
+                        : "bg-black text-white hover:bg-neutral-800 border-black dark:bg-white dark:text-black dark:hover:bg-neutral-100 dark:border-white",
+                  )}
+                  style={{ fontFamily: "Archivo, sans-serif" }}
+                >
+                  {isUpdating ? "Updating..." : "Update Item"}
+                </button>
+              ) : (
+                <ProductActions
+                  product={product}
+                  selectedVariantId={selectedVariantId}
+                  onAddedToCart={onClose}
+                />
+              )}
             </div>
           </Dialog.Panel>
         </Transition.Child>
