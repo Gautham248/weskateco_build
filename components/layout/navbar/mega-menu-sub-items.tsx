@@ -126,28 +126,31 @@ export default function MegaMenuSubItems({
                 {/* Removed the gap here so the layers butt right up against each other */}
                 <div className="flex h-full">
                   {/* Left block (Text Background) */}
-                  <div
-                    className="flex-1 h-full bg-black dark:bg-white border-r-2 border-white dark:border-neutral-900" // Added thin white boundary
+                  <svg
+                    viewBox="0 0 194 56"
+                    preserveAspectRatio="none"
+                    className="flex-1 h-full fill-black dark:fill-white"
                     style={{
                       transform: isHovered ? "scaleX(1)" : "scaleX(0)",
                       transformOrigin: "left",
                       transition: "transform 0.3s ease-out",
-                      clipPath:
-                        "polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)",
-                      borderRadius: "8px",
                     }}
-                  />
+                  >
+                    <path d="M192.887 11.0342C195.045 5.77043 191.174 0 185.485 0H8.00001C3.58173 0 5.69038e-06 3.58172 5.69038e-06 8V48C5.69038e-06 52.4183 3.58173 56 8.00001 56H169.089C172.335 56 175.26 54.0381 176.491 51.0342L192.887 11.0342Z" />
+                  </svg>
                   {/* Right block (Icon Background) */}
-                  <div
-                    className="h-full w-16 bg-black dark:bg-white"
+                  <svg
+                    viewBox="0 0 73 56"
+                    preserveAspectRatio="none"
+                    className="h-full w-16 fill-black dark:fill-white"
                     style={{
                       transform: isHovered ? "scaleX(1)" : "scaleX(0)",
                       transformOrigin: "right",
                       transition: "transform 0.3s ease-out",
-                      clipPath: "polygon(12px 0, 100% 0, 100% 100%, 0 100%)",
-                      borderRadius: "8px",
                     }}
-                  />
+                  >
+                    <path d="M0.703104 44.7388C-1.65923 50.0304 2.21323 56 8.00821 56H64.5534C68.9717 56 72.5534 52.4183 72.5534 48V8C72.5534 3.58172 68.9717 2.63373e-07 64.5534 5.8826e-07L25.8654 3.43309e-06C22.7086 3.66522e-06 19.8471 1.85629 18.5602 4.7388L0.703104 44.7388Z" />
+                  </svg>
                 </div>
               </div>
 
