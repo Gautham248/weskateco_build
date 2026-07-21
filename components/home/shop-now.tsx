@@ -180,7 +180,7 @@ function ProductCardGrid({
       {/* Image Block */}
       <div
         ref={imgRef}
-        className="relative aspect-[3/4.5] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
+        className="relative aspect-[3/4.5] w-full overflow-hidden rounded-md bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
         onMouseEnter={() => {
           clearTimeout(leaveTimer.current);
           setShowIndex(1);

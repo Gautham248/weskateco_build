@@ -242,7 +242,7 @@ export function QuickBuySidebar({
                       ? "bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed"
                       : isUpdating
                         ? "bg-neutral-200 text-black border-neutral-300 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 cursor-not-allowed"
-                        : "bg-black text-white hover:bg-neutral-800 border-black dark:bg-white dark:text-black dark:hover:bg-neutral-100 dark:border-white",
+                        : "bg-black text-white hover:bg-neutral-800 border-neutral-300 dark:bg-white dark:text-black dark:hover:bg-neutral-100 dark:border-white",
                   )}
                   style={{ fontFamily: "Archivo, sans-serif" }}
                 >

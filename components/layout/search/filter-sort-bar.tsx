@@ -344,7 +344,7 @@ export default function FilterSortBar({
                       }
                     }}
                     className={clsx(
-                      "px-3 py-2 md:px-6 md:py-3 rounded-[6px] text-[clamp(0.813rem,2vw,1rem)] font-medium whitespace-nowrap transition-all duration-200 border",
+                      "px-3 py-2 md:px-6 md:py-3 rounded-md text-[clamp(0.813rem,2vw,1rem)] font-medium whitespace-nowrap transition-all duration-200 border",
                       isActive
                         ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
                         : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800",
@@ -890,7 +890,7 @@ function FilterDrawer({
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-4 text-center bg-black text-white dark:bg-white dark:text-black rounded-lg text-sm font-bold uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
+              className="w-full py-4 text-center bg-black text-white dark:bg-white dark:text-black rounded-sm text-sm font-bold uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
               DONE
@@ -898,7 +898,7 @@ function FilterDrawer({
             <button
               type="button"
               onClick={clearPending}
-              className="w-full py-4 text-center border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black text-black dark:text-white rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
+              className="w-full py-4 text-center border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black text-black dark:text-white rounded-sm text-sm font-bold uppercase tracking-widest hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
               CLEAR ALL

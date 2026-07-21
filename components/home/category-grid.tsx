@@ -263,7 +263,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
       </div>
 
       {/* --- DESKTOP ACCORDION GRID VIEW --- */}
-      <div className="hidden md:flex w-full h-[560px] gap-4 items-stretch overflow-hidden mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 mb-6 md:mb-10">
+      <div className="hidden md:flex w-full h-[560px] gap-2.5 items-stretch overflow-hidden mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 mb-6 md:mb-10">
         {categories.map((category, index) => {
           const isExpanded = hoveredIndex === index;
           const flexClass = isExpanded ? "flex-[3.5]" : "flex-[1.5]";
@@ -273,7 +273,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
               key={category.name}
               href={getLocalizedPath(category.href, locale)}
               onMouseEnter={() => setHoveredIndex(index)}
-              className={`group relative h-full rounded-2xl overflow-hidden transition-all dynamic-accordion-card ${flexClass}`}
+              className={`group relative h-full rounded-md overflow-hidden transition-all dynamic-accordion-card ${flexClass}`}
               style={{
                 transitionDuration: "1600ms",
                 transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",

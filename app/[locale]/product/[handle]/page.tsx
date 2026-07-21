@@ -166,7 +166,7 @@ async function RelatedProducts({ id, locale }: { id: string; locale: string }) {
       >
         {t("product.related_products").toUpperCase()}
       </h2>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+      <div className="grid grid-cols-2 gap-x-2.5 gap-y-11 sm:grid-cols-3 lg:grid-cols-4 md:gap-x-2.5 md:gap-y-20">
         {relatedProducts.slice(0, 4).map((product) => (
           <ProductCard key={product.handle} product={product} locale={locale} />
         ))}

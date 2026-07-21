@@ -58,7 +58,7 @@ export default function TipsSection({
   };
 
   return (
-    <section className="tips-section min-h-full w-full bg-white py-15 md:py-[88px] overflow-hidden">
+    <section className="tips-section min-h-full w-full bg-white pt-15 pb-5 md:py-[88px] overflow-hidden">
       <div>
         <style
           dangerouslySetInnerHTML={{

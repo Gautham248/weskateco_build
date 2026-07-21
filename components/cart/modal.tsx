@@ -465,7 +465,7 @@ export default function CartModal() {
                       <button
                         onClick={triggerCheckout}
                         disabled={!gokwikReady || isCheckingOut || !cart?.id}
-                        className={`w-full h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-none cursor-pointer transition-colors flex items-center justify-center ${!gokwikReady || isCheckingOut || !cart?.id ? "opacity-50 cursor-not-allowed" : ""
+                        className={`w-full h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors flex items-center justify-center ${!gokwikReady || isCheckingOut || !cart?.id ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                         style={{ fontFamily: "Archivo, sans-serif" }}
                       >
@@ -480,7 +480,7 @@ export default function CartModal() {
                     <Link
                       href={getLocalizedPath("/cart", locale)}
                       onClick={closeCart}
-                      className="w-full h-14 bg-white text-black hover:bg-neutral-50 border border-black dark:bg-black dark:text-white dark:hover:bg-neutral-900 dark:border-white uppercase text-[13px] font-semibold tracking-wider rounded-none cursor-pointer transition-colors flex items-center justify-center"
+                      className="w-full h-14 bg-white text-black hover:bg-neutral-50 border border-neutral-300 dark:bg-black dark:text-white dark:hover:bg-neutral-900 dark:border-white uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors flex items-center justify-center"
                       style={{ fontFamily: "Archivo, sans-serif" }}
                     >
                       {t("cart.view_cart")}

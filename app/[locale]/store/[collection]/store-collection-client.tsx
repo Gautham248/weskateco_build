@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect, useTransition, useRef, useMemo } from "react";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import StoreBanner from "components/layout/search/banner";
 import FilterSortBar from "components/layout/search/filter-sort-bar";
 import ProductCard, {
   ProductCardSkeleton,
 } from "components/product/product-card";
-import Link from "next/link";
-import { Product, Collection } from "lib/shopify/types";
 import { createTranslator } from "lib/i18n";
+import { Collection, Product } from "lib/shopify/types";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 interface CollectionItem {
   handle: string;
@@ -525,7 +525,7 @@ export default function StoreCollectionClient({
       </div>
 
       {isPending ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+        <div className="grid grid-cols-2 gap-x-2.5 gap-y-11 sm:grid-cols-3 lg:grid-cols-4 md:gap-x-2.5 md:gap-y-20">
           {Array.from({ length: 8 }).map((_, idx) => (
             <ProductCardSkeleton key={idx} />
           ))}
@@ -538,7 +538,7 @@ export default function StoreCollectionClient({
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+          <div className="grid grid-cols-2 gap-x-2.5 gap-y-11 sm:grid-cols-3 lg:grid-cols-4 md:gap-x-2.5 md:gap-y-20">
             {paginatedProducts.map((product) => (
               <ProductCard
                 key={product.handle}
@@ -598,11 +598,10 @@ export default function StoreCollectionClient({
                           Number(p),
                         );
                       }}
-                      className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${
-                        isCurrent
-                          ? "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-xs"
-                          : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                      }`}
+                      className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${isCurrent
+                        ? "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-xs"
+                        : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        }`}
                     >
                       {p}
                     </Link>

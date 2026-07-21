@@ -1,5 +1,5 @@
 "use client";
-import { addItem, createSingleItemCartAction } from "components/cart/actions";
+import { createSingleItemCartAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
 import { useGoKwikCheckout } from "lib/gokwik";
@@ -8,8 +8,8 @@ import { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
-import { SnapmintEmiBadge } from "./snapmint-emi-badge";
 import { QuickBuySidebar } from "./quick-buy-sidebar";
+import { SnapmintEmiBadge } from "./snapmint-emi-badge";
 
 interface ProductCardProps {
   product: Product;
@@ -140,7 +140,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
     >
       <div
         ref={imgRef}
-        className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
+        className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
         onMouseEnter={() => {
           clearTimeout(leaveTimer.current);
           if (displayImages.length > 1) setShowIndex(1);
@@ -189,9 +189,8 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             {displayImages.map((_, idx) => (
               <span
                 key={idx}
-                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
-                  idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
-                }`}
+                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
+                  }`}
               />
             ))}
           </div>

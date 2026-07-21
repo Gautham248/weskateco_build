@@ -120,7 +120,7 @@ function CartPageContent() {
               </h1>
               {/* Alert Sign In */}
               <div
-                className="flex items-center gap-3 bg-neutral-900 text-white rounded-lg p-4 text-sm font-normal"
+                className="flex items-center gap-3 bg-neutral-900 text-white rounded-md p-4 text-sm font-normal"
                 style={{ fontFamily: "Archivo, sans-serif" }}
               >
                 <svg
@@ -419,7 +419,7 @@ function CartPageContent() {
                   />
 
                   {/* Highlighted checkout notice */}
-                  <div className="mt-6 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3 rounded-none text-center">
+                  <div className="mt-6 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3 rounded-sm text-center">
                     <p
                       className="text-[12px] text-neutral-600 dark:text-neutral-400 font-medium leading-tight"
                       style={{ fontFamily: "Archivo, sans-serif" }}
@@ -432,7 +432,7 @@ function CartPageContent() {
                   <button
                     type="button"
                     onClick={handleCheckout}
-                    className="w-full mt-6 h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-none cursor-pointer transition-colors"
+                    className="w-full mt-6 h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors"
                     style={{ fontFamily: "Archivo, sans-serif" }}
                   >
                     Proceed to Checkout
