@@ -36,7 +36,7 @@ export function SnapmintEmiCartBanner({
           </strong>{" "}
           Monthly Payments of{" "}
           <strong className="text-neutral-900 dark:text-white font-bold">
-            ₹{monthlyEmi.toLocaleString("en-IN")}
+            ₹{monthlyEmi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           </strong>
         </p>
         <div className="text-[10px] text-neutral-400 dark:text-neutral-500 font-normal leading-normal flex items-center gap-1 flex-wrap">

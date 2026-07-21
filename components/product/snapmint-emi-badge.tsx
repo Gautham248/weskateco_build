@@ -5,6 +5,8 @@ import snapmintLogo from "components/icons/snapmint_logo.svg";
 interface SnapmintEmiBadgeProps {
   /** Product price string from Shopify (e.g. "10283.79") */
   priceAmount: string;
+  /** Custom click handler for Buy on EMI button */
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 /**
@@ -13,13 +15,19 @@ interface SnapmintEmiBadgeProps {
  * Clicking "Buy on EMI>" triggers the GoKwik checkout modal.
  * Propagation is stopped so the parent card <Link> does not navigate.
  */
-export function SnapmintEmiBadge({ priceAmount }: SnapmintEmiBadgeProps) {
+export function SnapmintEmiBadge({ priceAmount, onClick }: SnapmintEmiBadgeProps) {
   const price = parseFloat(priceAmount);
   const monthlyEmi = Math.ceil(price / 3);
 
   const handleBuyOnEmi = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (onClick) {
+      onClick(e);
+      return;
+    }
+
     if (
       typeof window !== "undefined" &&
       typeof window.triggerGokwikCustomCheckout === "function"
@@ -34,7 +42,7 @@ export function SnapmintEmiBadge({ priceAmount }: SnapmintEmiBadgeProps) {
       style={{ fontFamily: "Archivo, sans-serif" }}
     >
       <span className="text-[12px] font-medium text-neutral-900 dark:text-neutral-100">
-        or ₹{monthlyEmi.toLocaleString("en-IN")}/Month
+        or ₹{monthlyEmi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}/Month
       </span>
       <div className="w-4 h-4 rounded-full flex items-center justify-center bg-[#013542] shrink-0">
         <img

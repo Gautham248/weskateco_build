@@ -122,6 +122,19 @@ export async function createCartAndSetCookie() {
   (await cookies()).set("cartId", cart.id!);
 }
 
+export async function createSingleItemCartAction(selectedVariantId: string) {
+  if (!selectedVariantId) return null;
+  try {
+    const cart = await createCart([
+      { merchandiseId: selectedVariantId, quantity: 1 },
+    ]);
+    return cart.id;
+  } catch (e) {
+    console.error("Error creating single item cart:", e);
+    return null;
+  }
+}
+
 export async function addConfiguratorBundle(
   prevState: any,
   items: {

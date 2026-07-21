@@ -1,9 +1,14 @@
 "use client";
+import { addItem, createSingleItemCartAction } from "components/cart/actions";
+import { useCart } from "components/cart/cart-context";
+import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
 import Price from "components/price";
 import Prose from "components/prose";
-import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
+import { useGoKwikCheckout } from "lib/gokwik";
 import { createTranslator } from "lib/i18n";
 import { Product } from "lib/shopify/types";
+import { useSearchParams } from "next/navigation";
+import { useTransition } from "react";
 import { ProductActions } from "./product-actions";
 import { VariantSelector } from "./variant-selector";
 
@@ -15,6 +20,34 @@ export function ProductDescription({
   locale: string;
 }) {
   const t = createTranslator(locale);
+  const { cart, addCartItem } = useCart();
+  const searchParams = useSearchParams();
+  const [, startTransition] = useTransition();
+  const { triggerCheckout } = useGoKwikCheckout({ cartId: cart?.id });
+
+  const handleEmiCheckout = () => {
+    const variant =
+      product.variants.find((v) =>
+        v.selectedOptions.every(
+          (option) =>
+            option.value === searchParams.get(option.name.toLowerCase()),
+        ),
+      ) || product.variants[0];
+
+    if (!variant) return;
+
+    startTransition(async () => {
+      const singleCartId = await createSingleItemCartAction(variant.id);
+      if (singleCartId) {
+        if (window.merchantInfo) {
+          window.merchantInfo.cart = { id: singleCartId };
+        }
+        if (typeof window.triggerGokwikCustomCheckout === "function") {
+          window.triggerGokwikCustomCheckout();
+        }
+      }
+    });
+  };
 
   // Extract artist name if exists
   const getArtistName = (html: string, text: string) => {
@@ -123,14 +156,7 @@ export function ProductDescription({
       {/* Snapmint EMI Banner */}
       <SnapmintEmiCartBanner
         totalAmount={product.priceRange.maxVariantPrice.amount}
-        onBuyOnEmi={() => {
-          if (
-            typeof window !== "undefined" &&
-            typeof window.triggerGokwikCustomCheckout === "function"
-          ) {
-            window.triggerGokwikCustomCheckout();
-          }
-        }}
+        onBuyOnEmi={handleEmiCheckout}
       />
 
       {/* Product Buttons Actions */}

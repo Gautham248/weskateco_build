@@ -1,10 +1,13 @@
 "use client";
+import { addItem, createSingleItemCartAction } from "components/cart/actions";
+import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
+import { useGoKwikCheckout } from "lib/gokwik";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 import { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { SnapmintEmiBadge } from "./snapmint-emi-badge";
 import { QuickBuySidebar } from "./quick-buy-sidebar";
 
@@ -15,6 +18,9 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, locale }: ProductCardProps) {
   const t = createTranslator(locale);
+  const { cart, addCartItem } = useCart();
+  const [, startTransition] = useTransition();
+  const { triggerCheckout } = useGoKwikCheckout({ cartId: cart?.id });
   const { title, handle, availableForSale, priceRange, featuredImage, images } =
     product;
   const isSoldOut = !availableForSale;
@@ -27,6 +33,26 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
   const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
+
+  const handleEmiCheckout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const variant = product.variants[0];
+    if (!variant) return;
+
+    startTransition(async () => {
+      const singleCartId = await createSingleItemCartAction(variant.id);
+      if (singleCartId) {
+        if (window.merchantInfo) {
+          window.merchantInfo.cart = { id: singleCartId };
+        }
+        if (typeof window.triggerGokwikCustomCheckout === "function") {
+          window.triggerGokwikCustomCheckout();
+        }
+      }
+    });
+  };
 
   const displayImages =
     images && images.length > 0
@@ -238,7 +264,10 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             />
           )}
         </div>
-        <SnapmintEmiBadge priceAmount={priceRange.minVariantPrice.amount} />
+        <SnapmintEmiBadge
+          priceAmount={priceRange.minVariantPrice.amount}
+          onClick={handleEmiCheckout}
+        />
       </div>
       <QuickBuySidebar
         isOpen={isSidebarOpen}
