@@ -1,6 +1,5 @@
 "use client";
 
-import arrowClosed from "components/icons/arrow-closed.svg";
 import arrow from "components/icons/arrow.svg";
 import tip1 from "components/icons/tip1.png";
 import tip2 from "components/icons/tip2.png";
@@ -112,22 +111,20 @@ export default function TipsSection({
               disabled={activeIndex === 0}
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              <img
-                src={arrowClosed.src || arrowClosed}
-                className="w-3 h-3 text-neutral-700 rotate-180"
-                alt="previous"
-              />
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.0942 12H5.90576" stroke="#1D6A2B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M12 5.90625L5.90576 12.0005L12 18.0947" stroke="#1D6A2B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             </button>
             <button
               onClick={handleNext}
               disabled={activeIndex === tips.length - 1}
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              <img
-                src={arrowClosed.src || arrowClosed}
-                className="w-3 h-3 text-neutral-700"
-                alt="next"
-              />
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5.90576 12H18.0942" stroke="#1D6A2B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M12 5.90625L18.0942 12.0005L12 18.0947" stroke="#1D6A2B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             </button>
           </div>
         </div>
