@@ -323,6 +323,35 @@ export default function NewlyReleaseContent() {
             <polyline points="12 5 19 12 12 19" />
           </svg>
         </button>
+
+        {/* Add to Cart Hover Button (Mobile) */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          className="cursor-pointer group/btn absolute bottom-6 right-6 z-20 flex h-8 w-8 hover:w-[100px] items-center rounded-full bg-[#00000050] backdrop-blur-md text-white transition-all duration-300 active:scale-95 overflow-hidden"
+        >
+          <div className="flex items-center justify-start gap-1.5 px-2 w-full h-full">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="flex-shrink-0"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span className="text-xs font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
+              Add to Cart
+            </span>
+          </div>
+        </button>
       </div>
 
       {/* Vertical Slide Indicators */}
