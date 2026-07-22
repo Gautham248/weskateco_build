@@ -13,6 +13,7 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/favicon.ico") ||
     pathname.startsWith("/robots.txt") ||
     pathname.startsWith("/sitemap.xml") ||
+    pathname.startsWith("/fonts") ||
     pathname.startsWith("/studio") // Sanity Studio (future)
   ) {
     return NextResponse.next();
@@ -43,6 +44,6 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
+    "/((?!api|_next/static|_next/image|fonts|favicon.ico|robots.txt|sitemap.xml).*)",
   ],
 };
