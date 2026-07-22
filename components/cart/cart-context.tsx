@@ -20,17 +20,22 @@ type UpdateType = "plus" | "minus" | "delete";
 
 type CartAction =
   | {
-    type: "UPDATE_ITEM";
-    payload: { merchandiseId: string; updateType: UpdateType };
-  }
+      type: "UPDATE_ITEM";
+      payload: { merchandiseId: string; updateType: UpdateType };
+    }
   | {
-    type: "ADD_ITEM";
-    payload: { variant: ProductVariant; product: Product };
-  };
+      type: "ADD_ITEM";
+      payload: { variant: ProductVariant; product: Product };
+    }
+  | {
+      type: "UPDATE_LINE_VARIANT";
+      payload: { lineId: string; newVariant: ProductVariant };
+    };
 
 type CartContextType = {
   cartPromise: Promise<Cart | undefined>;
   resolvedCart: Cart | undefined | null;
+  resolvedPromise: Promise<Cart | undefined> | null;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -94,6 +99,7 @@ function createOrUpdateCartItem(
         handle: product.handle,
         title: product.title,
         featuredImage: product.featuredImage,
+        vendor: product.vendor,
       },
     },
   };
@@ -178,9 +184,32 @@ function cartReducer(state: Cart | undefined, action: CartAction): Cart {
 
       const updatedLines = existingItem
         ? currentCart.lines.map((item) =>
-          item.merchandise.id === variant.id ? updatedItem : item,
-        )
+            item.merchandise.id === variant.id ? updatedItem : item,
+          )
         : [...currentCart.lines, updatedItem];
+
+      return {
+        ...currentCart,
+        ...updateCartTotals(updatedLines),
+        lines: updatedLines,
+      };
+    }
+    case "UPDATE_LINE_VARIANT": {
+      const { lineId, newVariant } = action.payload;
+      const updatedLines = currentCart.lines.map((item) => {
+        if (item.id === lineId) {
+          return {
+            ...item,
+            merchandise: {
+              ...item.merchandise,
+              id: newVariant.id,
+              title: newVariant.title,
+              selectedOptions: newVariant.selectedOptions,
+            },
+          };
+        }
+        return item;
+      });
 
       return {
         ...currentCart,
@@ -199,13 +228,17 @@ export function CartProvider({
   children: React.ReactNode;
   cartPromise: Promise<Cart | undefined>;
 }) {
-  const [resolvedCart, setResolvedCart] = useState<Cart | undefined | null>(null);
+  const [resolvedCart, setResolvedCart] = useState<Cart | undefined | null>(
+    null,
+  );
+  const [resolvedPromise, setResolvedPromise] = useState<Promise<Cart | undefined> | null>(null);
 
   useEffect(() => {
     let active = true;
     cartPromise.then((cart) => {
       if (active) {
         setResolvedCart(cart);
+        setResolvedPromise(cartPromise);
       }
     });
     return () => {
@@ -214,7 +247,7 @@ export function CartProvider({
   }, [cartPromise]);
 
   return (
-    <CartContext.Provider value={{ cartPromise, resolvedCart }}>
+    <CartContext.Provider value={{ cartPromise, resolvedCart, resolvedPromise }}>
       {children}
     </CartContext.Provider>
   );
@@ -227,7 +260,7 @@ export function useCart() {
   }
 
   const initialCart =
-    context.resolvedCart !== null
+    context.resolvedCart !== null && context.resolvedPromise === context.cartPromise
       ? context.resolvedCart
       : use(context.cartPromise);
   const [optimisticCart, updateOptimisticCart] = useOptimistic(
@@ -246,11 +279,19 @@ export function useCart() {
     updateOptimisticCart({ type: "ADD_ITEM", payload: { variant, product } });
   };
 
+  const updateLineVariant = (lineId: string, newVariant: ProductVariant) => {
+    updateOptimisticCart({
+      type: "UPDATE_LINE_VARIANT",
+      payload: { lineId, newVariant },
+    });
+  };
+
   return useMemo(
     () => ({
       cart: optimisticCart,
       updateCartItem,
       addCartItem,
+      updateLineVariant,
     }),
     [optimisticCart],
   );

@@ -14,7 +14,7 @@ export default async function SearchLayout(props: {
 
   return (
     <>
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-6 pb-4 text-black dark:text-white min-h-screen w-full">
+      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 pb-4 text-black dark:text-white min-h-screen w-full">
         <Suspense fallback={null}>
           <ChildrenWrapper>{children}</ChildrenWrapper>
         </Suspense>

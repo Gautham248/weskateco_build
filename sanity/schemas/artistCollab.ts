@@ -57,7 +57,8 @@ export default defineType({
     defineField({
       name: "shopifyProductHandles",
       title: "Shopify Product Handles",
-      description: "Enter the Shopify handle for each product in this collaboration",
+      description:
+        "Enter the Shopify handle for each product in this collaboration",
       type: "array",
       of: [{ type: "string" }],
     }),

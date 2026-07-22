@@ -14,7 +14,7 @@ import { redirect } from "next/navigation";
 
 export async function addItem(
   prevState: any,
-  selectedVariantId: string | undefined
+  selectedVariantId: string | undefined,
 ) {
   if (!selectedVariantId) {
     return "Error adding item to cart";
@@ -54,7 +54,7 @@ export async function removeItem(prevState: any, merchandiseId: string) {
     }
 
     const lineItem = cart.lines.find(
-      (line) => line.merchandise.id === merchandiseId
+      (line) => line.merchandise.id === merchandiseId,
     );
 
     if (lineItem && lineItem.id) {
@@ -73,7 +73,7 @@ export async function updateItemQuantity(
   payload: {
     merchandiseId: string;
     quantity: number;
-  }
+  },
 ) {
   const { merchandiseId, quantity } = payload;
 
@@ -85,7 +85,7 @@ export async function updateItemQuantity(
     }
 
     const lineItem = cart.lines.find(
-      (line) => line.merchandise.id === merchandiseId
+      (line) => line.merchandise.id === merchandiseId,
     );
 
     if (lineItem && lineItem.id) {
@@ -122,13 +122,26 @@ export async function createCartAndSetCookie() {
   (await cookies()).set("cartId", cart.id!);
 }
 
+export async function createSingleItemCartAction(selectedVariantId: string) {
+  if (!selectedVariantId) return null;
+  try {
+    const cart = await createCart([
+      { merchandiseId: selectedVariantId, quantity: 1 },
+    ]);
+    return cart.id;
+  } catch (e) {
+    console.error("Error creating single item cart:", e);
+    return null;
+  }
+}
+
 export async function addConfiguratorBundle(
   prevState: any,
   items: {
     merchandiseId: string;
     quantity: number;
     attributes?: { key: string; value: string }[];
-  }[]
+  }[],
 ) {
   if (!items || items.length === 0) {
     return "No items to add";
@@ -172,5 +185,36 @@ export async function buyNowAction(selectedVariantId: string | undefined) {
   const cart = await getCart();
   if (cart?.checkoutUrl) {
     redirect(cart.checkoutUrl);
+  }
+}
+
+export async function editCartItemVariantAction(
+  payload: {
+    lineId: string;
+    newMerchandiseId: string;
+    quantity: number;
+  },
+) {
+  const { lineId, newMerchandiseId, quantity } = payload;
+
+  try {
+    const cart = await getCart();
+
+    if (!cart) {
+      return "Error fetching cart";
+    }
+
+    await updateCart([
+      {
+        id: lineId,
+        merchandiseId: newMerchandiseId,
+        quantity,
+      },
+    ]);
+
+    updateTag(TAGS.cart);
+  } catch (e) {
+    console.error(e);
+    return "Error updating item variant";
   }
 }

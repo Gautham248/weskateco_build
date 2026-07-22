@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
+import Link from "next/link";
 
 interface LinkItem {
   title: string;
@@ -22,10 +22,18 @@ export default function MegaMenuLeft({
   const { t, locale } = useTranslation();
 
   const links: LinkItem[] = [
-    { title: t("nav.skateboards"), href: "/store/skateboards", id: "skateboards" },
+    {
+      title: t("nav.skateboards"),
+      href: "/store/skateboards",
+      id: "skateboards",
+    },
     { title: t("nav.surfskates"), href: "/store/surfskates", id: "surfskates" },
     { title: t("nav.apparel"), href: "/store/apparel-1", id: "apparel" },
-    { title: t("nav.protective_gear"), href: "/store/protection-gears", id: "protective_gear" },
+    {
+      title: t("nav.protective_gear"),
+      href: "/store/protection-gears",
+      id: "protective_gear",
+    },
     { title: t("nav.brands"), href: "/store", id: "brands" },
   ];
 
@@ -36,8 +44,11 @@ export default function MegaMenuLeft({
           <Link
             key={link.id}
             href={getLocalizedPath(link.href, locale)}
-            className={`block text-xl font-semibold hover:text-black dark:hover:text-white ${activeCategory === null || activeCategory === link.href ? "!text-black dark:!text-white" : "!text-[#717171] dark:!text-neutral-400"}`}
-            style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "0em" }}
+            className={`block text-[20px] font-semibold hover:text-black dark:hover:text-white ${activeCategory === null || activeCategory === link.href ? "!text-black dark:!text-white !font-bold" : "!text-[#717171] dark:!text-neutral-400"}`}
+            style={{
+              fontFamily: "'Clash Display', sans-serif",
+              letterSpacing: "0em",
+            }}
             onClick={onLinkClick}
             onMouseEnter={() => onCategoryHover(link.href)}
           >

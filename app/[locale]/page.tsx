@@ -65,7 +65,7 @@ export default async function HomePage(props: {
       /> */}
       <ShopNow locale={locale} />
       <AcademySection />
-      <TipsSection />
+      <TipsSection variant="page" />
       {/* <ConfiguratorCTA locale={locale} />
       <BrandsSection locale={locale} /> */}
       <Footer />

@@ -2,16 +2,18 @@
 
 import { removeItem, updateItemQuantity } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
-import percent from "components/icons/percent.svg";
+import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
 import secure from "components/icons/secure.svg";
 import Footer from "components/layout/footer";
 import Price from "components/price";
+import { QuickBuySidebar } from "components/product/quick-buy-sidebar";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Suspense, useActionState, useState, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
 
 function CartSkeleton() {
   return (
@@ -39,10 +41,11 @@ export default function CartPage() {
 }
 
 function CartPageContent() {
+  const { t } = useTranslation();
   const { cart, updateCartItem } = useCart();
+  const [editingItem, setEditingItem] = useState<any>(null);
   const params = useParams();
   const locale = (params?.locale as string) || "en";
-  const [isChecked, setIsChecked] = useState(true);
   const [isPending, startTransition] = useTransition();
 
   const {
@@ -54,10 +57,6 @@ function CartPageContent() {
   });
 
   const handleCheckout = () => {
-    if (!isChecked) {
-      alert("Please agree to our T&C to proceed.");
-      return;
-    }
     if (gokwikReady && !gokwikError) {
       triggerCheckout();
     } else if (cart?.checkoutUrl) {
@@ -71,21 +70,19 @@ function CartPageContent() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-black dark:bg-neutral-950 dark:text-white">
       {/* Main Cart Body */}
-      <main className="flex-1 mx-auto max-w-(--breakpoint-2xl) w-full px-6 py-12">
-        {!cart || cart.lines.length === 0 && <h1
-          className="text-[32px] font-semibold font-black tracking-tighter uppercase mb-8 flex items-baseline gap-2"
-          style={{ fontFamily: "'Clash Display', sans-serif" }}
-        >
-          My Cart
-          {cart && cart.totalQuantity > 0 && (
-            <span className="text-lg font-semibold text-black relative -top-[20px]" style={{ fontFamily: "'Clash Display', sans-serif" }}>
-              ({cart.totalQuantity})
-            </span>
-          )}
-        </h1>}
+      <main className="flex-1 mx-auto max-w-(--breakpoint-2xl) w-full px-4 lg:px-15 py-12">
+        {!cart ||
+          (cart.lines.length === 0 && (
+            <h1
+              className="text-[32px] font-semibold font-black tracking-tighter uppercase mb-8 flex items-baseline gap-2"
+              style={{ fontFamily: "'Clash Display', sans-serif" }}
+            >
+              My Cart
+            </h1>
+          ))}
 
         {!cart || cart.lines.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-xl">
+          <div className="flex flex-col items-center justify-center px-2 py-20 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-xl">
             <svg
               className="h-16 w-16 text-neutral-400 mb-4"
               fill="none"
@@ -101,35 +98,30 @@ function CartPageContent() {
             </svg>
             <h2 className="text-xl font-bold mb-2">Your cart is empty</h2>
             <p className="text-neutral-500 mb-6 max-w-sm text-sm">
-              Looks like you haven't added anything to your cart yet. Let's find some setups!
+              Looks like you haven't added anything to your cart yet. Let's find
+              some setups!
             </p>
             <Link
-              href={getLocalizedPath("/search", locale)}
+              href={getLocalizedPath("/store/skateboards", locale)}
               className="rounded-xs bg-black text-white px-6 py-3 uppercase text-xs font-semibold tracking-wider hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 transition-colors"
-              style={{ fontFamily: "Archivo" }}
+              style={{ fontFamily: "Archivo, sans-serif" }}
             >
               Shop Now
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-            {/* Left side: Cart items list */}
-            <div className="lg:col-span-2 space-y-6">
+          <>
+            <div className="space-y-6 mb-8">
               <h1
-                className="text-[32px] font-semibold font-black tracking-tighter uppercase mb-8 flex items-baseline gap-2"
+                className="text-[32px] font-semibold font-black tracking-tighter uppercase flex items-baseline gap-2"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 My Cart
-                {cart && cart.totalQuantity > 0 && (
-                  <span className="text-lg font-semibold text-black relative -top-[20px]" style={{ fontFamily: "'Clash Display', sans-serif" }}>
-                    ({cart.totalQuantity})
-                  </span>
-                )}
               </h1>
               {/* Alert Sign In */}
               <div
-                className="flex items-center gap-3 bg-neutral-900 text-white rounded-lg p-4 text-xs font-medium"
-                style={{ fontFamily: "Archivo" }}
+                className="flex items-center gap-3 bg-neutral-900 text-white rounded-md p-4 text-sm font-normal"
+                style={{ fontFamily: "Archivo, sans-serif" }}
               >
                 <svg
                   width="16"
@@ -147,29 +139,140 @@ function CartPageContent() {
                   <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
                 <span>
-                  You're signed out right now. To save these items or see your previously saved items,{" "}
-                  <Link href="#" className="underline font-bold hover:text-neutral-300">
+                  You're signed out right now. To save these items or see your
+                  previously saved items,{" "}
+                  <Link
+                    href="#"
+                    className="underline font-bold hover:text-neutral-300"
+                  >
                     Sign in
                   </Link>
                   .
                 </span>
               </div>
+            </div>
 
-              {/* Items Card List */}
-              <div className="space-y-4">
-                {cart.lines.map((item) => {
-                  const hasImage = !!item.merchandise.product.featuredImage?.url;
-                  return (
-                    <div key={item.id}>
-                      {/* Mobile View */}
-                      <div className="flex md:hidden gap-6 p-4 bg-white dark:bg-black rounded-sm relative border-b border-neutral-100 dark:border-neutral-900">
-                        {/* Left Column: Image & Quantity Selector */}
-                        <div className="flex flex-col items-center gap-4 flex-shrink-0">
-                          <div className="relative aspect-square w-24 h-24 overflow-hidden rounded-md bg-neutral-50 dark:bg-neutral-900 flex-shrink-0 border border-neutral-100 dark:border-neutral-800">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+              {/* Left side: Cart items list */}
+              <div className="lg:col-span-2 space-y-6">
+
+                {/* Items Card List */}
+                <div className="space-y-4">
+                  {cart.lines.map((item) => {
+                    const hasImage =
+                      !!item.merchandise.product.featuredImage?.url;
+                    return (
+                      <div key={item.id}>
+                        {/* Mobile View */}
+                        <div className="flex md:hidden gap-6 p-4 bg-white dark:bg-black rounded-sm relative border-b border-neutral-100 dark:border-neutral-900">
+                          {/* Left Column: Image & Quantity Selector */}
+                          <div className="flex flex-col items-center gap-4 flex-shrink-0">
+                            <div className="relative aspect-square w-24 h-24 overflow-hidden rounded-md bg-neutral-50 dark:bg-neutral-900 flex-shrink-0 border border-neutral-100 dark:border-neutral-800">
+                              {hasImage ? (
+                                <Image
+                                  src={item.merchandise.product.featuredImage.url}
+                                  alt={
+                                    item.merchandise.product.featuredImage
+                                      .altText || item.merchandise.product.title
+                                  }
+                                  fill
+                                  className="object-cover object-top"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
+                                  No image
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Quantity Selector */}
+                            <CartPageQuantitySelector
+                              item={item}
+                              updateCartItem={updateCartItem}
+                              isMobile={true}
+                            />
+                          </div>
+
+                          {/* Right Column: Title, Details, Delivery, Remove */}
+                          <div
+                            className="flex-1 flex flex-col min-w-0"
+                            style={{ fontFamily: "Archivo, sans-serif" }}
+                          >
+                            <h3
+                              className="text-[17px] font-bold text-neutral-900 dark:text-neutral-50 leading-tight tracking-[-1%] uppercase"
+                              style={{
+                                fontFamily: "'Clash Display', sans-serif",
+                              }}
+                            >
+                              {item.merchandise.product.title}
+                            </h3>
+
+                            {/* Price */}
+                            <div className="mt-2">
+                              <Price
+                                amount={item.cost.totalAmount.amount}
+                                currencyCode={item.cost.totalAmount.currencyCode}
+                                currencyCodeClassName="hidden"
+                                className="text-[20px] font-extrabold text-neutral-900 dark:text-neutral-50"
+                              />
+                            </div>
+
+                            {/* Selected Options / Attributes */}
+                            <div className="mt-4 flex flex-col gap-1.5 text-sm uppercase">
+                              {item.merchandise.selectedOptions.map((opt) => (
+                                <div
+                                  key={opt.name}
+                                  className="flex gap-1.5 items-baseline"
+                                >
+                                  <span className="font-normal text-neutral-600 dark:text-neutral-400">
+                                    {opt.name}:
+                                  </span>
+                                  <span className="font-semibold text-neutral-900 dark:text-neutral-100">
+                                    {opt.value}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Delivery by Today */}
+                            <div className="mt-4 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                              Delivery by{" "}
+                              <span className="text-[#3f6212] dark:text-[#84cc16] font-bold">
+                                Today
+                              </span>
+                            </div>
+
+                            {/* Remove Action */}
+                            <div className="mt-5 flex items-center gap-4">
+                              <CartPageRemoveButton
+                                item={item}
+                                updateCartItem={updateCartItem}
+                                isMobile={true}
+                              />
+                              <span className="text-neutral-300">|</span>
+                              <button
+                                type="button"
+                                onClick={() => setEditingItem(item)}
+                                className="text-[13px] font-semibold uppercase underline hover:text-neutral-500 transition-colors cursor-pointer"
+                                style={{ fontFamily: "Archivo, sans-serif" }}
+                              >
+                                Edit
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Desktop View */}
+                        <div className="hidden md:flex gap-4 p-4 md:p-6 bg-neutral-50 dark:bg-neutral-900/40 rounded-sm relative border border-neutral-100 dark:border-neutral-900">
+                          {/* Product image */}
+                          <div className="relative aspect-square w-24 h-24 sm:w-28 sm:h-28 overflow-hidden rounded-md bg-neutral-100 dark:bg-neutral-800 flex-shrink-0 border border-neutral-200/50 dark:border-neutral-800">
                             {hasImage ? (
                               <Image
                                 src={item.merchandise.product.featuredImage.url}
-                                alt={item.merchandise.product.featuredImage.altText || item.merchandise.product.title}
+                                alt={
+                                  item.merchandise.product.featuredImage
+                                    .altText || item.merchandise.product.title
+                                }
                                 fill
                                 className="object-cover object-top"
                               />
@@ -180,275 +283,197 @@ function CartPageContent() {
                             )}
                           </div>
 
-                          {/* Quantity Selector */}
-                          <CartPageQuantitySelector
-                            item={item}
-                            updateCartItem={updateCartItem}
-                            isMobile={true}
-                          />
-                        </div>
-
-                        {/* Right Column: Title, Details, Delivery, Remove */}
-                        <div className="flex-1 flex flex-col min-w-0" style={{ fontFamily: "Archivo" }}>
-                          <h3 className="text-[17px] font-bold text-neutral-900 dark:text-neutral-50 leading-tight tracking-[-1%] uppercase" style={{ fontFamily: "'Clash Display', sans-serif" }}>
-                            {item.merchandise.product.title}
-                          </h3>
-
-                          {/* Price */}
-                          <div className="mt-2">
-                            <Price
-                              amount={item.cost.totalAmount.amount}
-                              currencyCode={item.cost.totalAmount.currencyCode}
-                              currencyCodeClassName="hidden"
-                              className="text-[20px] font-extrabold text-neutral-900 dark:text-neutral-50"
-                            />
-                          </div>
-
-                          {/* Selected Options / Attributes */}
-                          <div className="mt-4 flex flex-col gap-1.5 text-sm uppercase">
-                            {item.merchandise.selectedOptions.map((opt) => (
-                              <div key={opt.name} className="flex gap-1.5 items-baseline">
-                                <span className="font-normal text-neutral-600 dark:text-neutral-400">{opt.name}:</span>
-                                <span className="font-semibold text-neutral-900 dark:text-neutral-100">{opt.value}</span>
+                          {/* Product details info & Actions */}
+                          <div
+                            className="flex-1 flex flex-col min-h-[110px]"
+                            style={{ fontFamily: "Archivo, sans-serif" }}
+                          >
+                            {/* Top row: Title/Vendor on left, Quantity on right */}
+                            <div className="flex justify-between items-start gap-4">
+                              <div>
+                                <h3
+                                  className="text-[16px] font-bold uppercase text-black dark:text-white leading-tight tracking-[-1%]"
+                                  style={{
+                                    fontFamily: "'Clash Display', sans-serif",
+                                  }}
+                                >
+                                  {item.merchandise.product.title}
+                                </h3>
+                                <p
+                                  className="text-[14px] font-normal text-black dark:text-neutral-500 uppercase mt-0.5 tracking-[-1%]"
+                                  style={{
+                                    fontFamily: "'Clash Display', sans-serif",
+                                  }}
+                                >
+                                  {item.merchandise.product.vendor || ""}
+                                </p>
                               </div>
-                            ))}
-                          </div>
 
-                          {/* Delivery by Today */}
-                          <div className="mt-4 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-                            Delivery by <span className="text-[#3f6212] dark:text-[#84cc16] font-bold">Today</span>
-                          </div>
+                              {/* Quantity Selector */}
+                              <CartPageQuantitySelector
+                                item={item}
+                                updateCartItem={updateCartItem}
+                                isMobile={false}
+                              />
+                            </div>
 
-                          {/* Remove Action */}
-                          <div className="mt-5">
-                            <CartPageRemoveButton
-                              item={item}
-                              updateCartItem={updateCartItem}
-                              isMobile={true}
-                            />
+                            {/* Middle row: Attributes */}
+                            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-[12px] text-black uppercase">
+                              {item.merchandise.selectedOptions.map((opt) => (
+                                <span key={opt.name}>
+                                  <span className="font-normal text-black mr-1">
+                                    {opt.name}:
+                                  </span>
+                                  <span className="font-bold text-black dark:text-white">
+                                    {opt.value}
+                                  </span>
+                                </span>
+                              ))}
+                            </div>
+
+                            {/* Bottom row: Remove on left, Price on right */}
+                            <div className="mt-auto pt-6 flex justify-between items-end">
+                              <div className="flex items-center gap-4">
+                                <CartPageRemoveButton
+                                  item={item}
+                                  updateCartItem={updateCartItem}
+                                  isMobile={false}
+                                />
+                                <span className="text-neutral-300">|</span>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingItem(item)}
+                                  className="text-xs font-normal uppercase underline hover:text-neutral-500 transition-colors cursor-pointer"
+                                  style={{ fontFamily: "Archivo, sans-serif" }}
+                                >
+                                  Edit
+                                </button>
+                              </div>
+
+                              <Price
+                                amount={item.cost.totalAmount.amount}
+                                currencyCode={item.cost.totalAmount.currencyCode}
+                                currencyCodeClassName="hidden"
+                                className="text-[20px] font-extrabold text-black dark:text-white"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
-
-                      {/* Desktop View */}
-                      <div className="hidden md:flex gap-4 p-4 md:p-6 bg-neutral-50 dark:bg-neutral-900/40 rounded-sm relative border border-neutral-100 dark:border-neutral-900">
-                        {/* Product image */}
-                        <div className="relative aspect-square w-24 h-24 sm:w-28 sm:h-28 overflow-hidden rounded-md bg-neutral-100 dark:bg-neutral-800 flex-shrink-0 border border-neutral-200/50 dark:border-neutral-800">
-                          {hasImage ? (
-                            <Image
-                              src={item.merchandise.product.featuredImage.url}
-                              alt={item.merchandise.product.featuredImage.altText || item.merchandise.product.title}
-                              fill
-                              className="object-cover object-top"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
-                              No image
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Product details info & Actions */}
-                        <div className="flex-1 flex flex-col min-h-[110px]" style={{ fontFamily: "Archivo" }}>
-                          {/* Top row: Title/Vendor on left, Quantity on right */}
-                          <div className="flex justify-between items-start gap-4">
-                            <div>
-                              <h3 className="text-[16px] font-bold uppercase text-black dark:text-white leading-tight tracking-[-1%]" style={{ fontFamily: "'Clash Display', sans-serif" }}>
-                                {item.merchandise.product.title}
-                              </h3>
-                              <p className="text-[12px] font-normal text-black dark:text-neutral-500 uppercase mt-0.5 tracking-[-1%]" style={{ fontFamily: "'Clash Display', sans-serif" }}>
-                                {item.merchandise.product.vendor || ""}
-                              </p>
-                            </div>
-
-                            {/* Quantity Selector */}
-                            <CartPageQuantitySelector
-                              item={item}
-                              updateCartItem={updateCartItem}
-                              isMobile={false}
-                            />
-                          </div>
-
-                          {/* Middle row: Attributes */}
-                          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-black uppercase">
-                            {item.merchandise.selectedOptions.map((opt) => (
-                              <span key={opt.name}>
-                                <span className="font-normal text-black mr-1">{opt.name}:</span>
-                                <span className="font-bold text-black dark:text-white">{opt.value}</span>
-                              </span>
-                            ))}
-                          </div>
-
-                          {/* Bottom row: Remove on left, Price on right */}
-                          <div className="mt-auto pt-6 flex justify-between items-end">
-                            <CartPageRemoveButton
-                              item={item}
-                              updateCartItem={updateCartItem}
-                              isMobile={false}
-                            />
-
-                            <Price
-                              amount={item.cost.totalAmount.amount}
-                              currencyCode={item.cost.totalAmount.currencyCode}
-                              currencyCodeClassName="hidden"
-                              className="text-[20px] font-extrabold text-black dark:text-white"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Bottom Card Actions */}
-              <div className="pt-6 border-t border-neutral-100 dark:border-neutral-900 flex flex-col sm:flex-row items-center justify-between gap-4">
-                {/* <Link
-                  href={getLocalizedPath("/store", locale)}
-                  className="w-full sm:w-auto px-6 h-12 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-sm flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider transition-colors"
-                  style={{ fontFamily: "Archivo" }}
-                >
-                  <span className="text-sm">+</span> Add from Wishlist
-                </Link> */}
-                <div>
-
-                </div>
-                <div
-                  className="flex justify-between items-center w-full text-[14px] text-neutral-500 dark:text-neutral-400 md:justify-end md:gap-4"
-                  style={{ fontFamily: "Archivo" }}
-                >
-                  <span>Subtotal ({cart.totalQuantity} items):</span>
-                  <Price
-                    amount={cart.cost.subtotalAmount.amount}
-                    currencyCode={cart.cost.subtotalAmount.currencyCode}
-                    currencyCodeClassName="hidden"
-                    className="text-base font-bold text-neutral-900 dark:text-neutral-50"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Right side: Summary panel */}
-            <div className="space-y-6">
-              {/* Order Summary Box */}
-              <div className="border border-neutral-100 dark:border-neutral-900 rounded-md p-6 bg-neutral-50/50 dark:bg-neutral-900/20">
-                <h2
-                  className="text-[20px] font-semibold font-black uppercase tracking-tight mb-6"
-                  style={{ fontFamily: "'Clash Display', sans-serif" }}
-                >
-                  Order Summary
-                </h2>
-
-                {/* Offer alert promo */}
-                <div className="mb-6 p-3.5 bg-rose-50/60 dark:bg-rose-950/10 border border-rose-100 dark:border-rose-950/20 rounded-md flex items-center justify-between text-xs cursor-pointer hover:bg-rose-100/50 dark:hover:bg-rose-950/20 transition-colors">
-                  <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-semibold animate-pulse" style={{ fontFamily: "Archivo" }}>
-                    <img src={percent.src || percent} className="w-5 h-5" alt="percent" />
-                    <span>View available offer</span>
-                  </div>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-rose-600 dark:text-rose-400">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
+                    );
+                  })}
                 </div>
 
-                {/* Price Details breakdown */}
-                <div className="space-y-4" style={{ fontFamily: "Archivo" }}>
-                  <h3 className="text-[14px] font-bold uppercase tracking-wider text-black" style={{ fontFamily: "'Clash Display', sans-serif" }}>
-                    Price Details
-                  </h3>
-                  <div className="flex justify-between text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                    <span>Subtotal</span>
+                {/* Bottom Card Actions */}
+                <div className="pt-6 border-t border-neutral-100 dark:border-neutral-900 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div></div>
+                  <div
+                    className="flex justify-between items-center w-full text-[14px] text-neutral-500 dark:text-neutral-400 md:justify-end md:gap-4"
+                    style={{ fontFamily: "Archivo, sans-serif" }}
+                  >
+                    <span>Subtotal ({cart.totalQuantity} items):</span>
                     <Price
                       amount={cart.cost.subtotalAmount.amount}
                       currencyCode={cart.cost.subtotalAmount.currencyCode}
                       currencyCodeClassName="hidden"
-                      className="text-neutral-900 dark:text-white"
+                      className="text-base font-bold text-neutral-900 dark:text-neutral-50"
                     />
                   </div>
-                  <div className="flex justify-between text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                    <span>Discount</span>
-                    <span className="text-green-600 dark:text-green-400 font-semibold">₹ 0</span>
-                  </div>
-                  <div className="flex justify-between text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                    <span>Shipping</span>
-                    <span className="text-green-600 dark:text-green-400 font-semibold uppercase">Free</span>
-                  </div>
-
-                  <div className="border-t border-neutral-200 dark:border-neutral-800 pt-4 mt-2 flex justify-between items-baseline">
-                    <span className="text-[14px] font-bold uppercase text-neutral-900 dark:text-white" style={{ fontFamily: "'Clash Display', sans-serif" }}>
-                      Grand Total
-                    </span>
-                    <Price
-                      amount={cart.cost.totalAmount.amount}
-                      currencyCode={cart.cost.totalAmount.currencyCode}
-                      currencyCodeClassName="hidden"
-                      className="text-lg font-bold text-neutral-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-
-                {/* Terms agreement checkbox */}
-                <div className="mt-6 flex items-end gap-2 " style={{ fontFamily: "Archivo" }}>
-                  <input
-                    type="checkbox"
-                    id="terms"
-                    checked={isChecked}
-                    onChange={(e) => setIsChecked(e.target.checked)}
-                    className="mt-0.5 rounded-xs border-neutral-300 dark:border-neutral-700 text-black focus:ring-black h-3.5 w-3.5"
-                  />
-                  <label htmlFor="terms" className="text-[12px] text-black leading-tight" style={{ fontFamily: "Archivo" }}>
-                    By clicking "Checkout" button to agree to our{" "}
-                    <Link href="#" className="underline text-rose-500 font-medium">
-                      T&C
-                    </Link>
-                  </label>
-                </div>
-
-                {/* Checkout button action */}
-                <button
-                  type="button"
-                  onClick={handleCheckout}
-                  className="w-full mt-6 h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-none cursor-pointer transition-colors"
-                  style={{ fontFamily: "Archivo" }}
-                >
-                  Proceed to Checkout
-                </button>
-
-                {/* Secure payments indicator badge */}
-                <div className="mt-4 p-3 flex items-center gap-2.5 text-[12px] text-black font-medium" style={{ fontFamily: "Archivo" }}>
-                  <img src={secure.src || secure} className="bg-green-50 dark:bg-green-950/10 p-2 w-9 h-9 rounded-md flex-shrink-0" alt="secure" />
-                  <span>Secure Encrypted Payments | Genuine Weskateco Products</span>
                 </div>
               </div>
 
-              {/* COD / Free Ship badges under summary card */}
-              <div className="grid grid-cols-3 gap-2 p-4 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-100 dark:border-neutral-900 rounded-xl text-[9px] font-medium text-neutral-800 dark:text-neutral-300" style={{ fontFamily: "Archivo" }}>
-                <div className="flex flex-col items-center text-center gap-1.5">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="2" y="5" width="20" height="14" rx="2" />
-                    <line x1="2" y1="10" x2="22" y2="10" />
-                  </svg>
-                  <span>Cash on Delivery</span>
+              {/* Right side: Summary panel */}
+              <div className="space-y-6">
+                {/* Order Summary Box */}
+                <div className="border border-neutral-100 dark:border-neutral-900 rounded-md p-6 bg-neutral-50/50 dark:bg-neutral-900/20">
+                  <h2
+                    className="text-[20px] font-semibold font-black uppercase tracking-tight mb-6"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
+                    Order Summary
+                  </h2>
+
+                  {/* Price Details breakdown */}
+                  <div className="space-y-4" style={{ fontFamily: "Archivo, sans-serif" }}>
+
+                    <div className="border-t border-neutral-200 dark:border-neutral-800 py-4 mt-2 flex justify-between items-baseline">
+                      <span
+                        className="text-[14px] font-bold uppercase text-neutral-900 dark:text-white"
+                        style={{ fontFamily: "'Clash Display', sans-serif" }}
+                      >
+                        Subtotal
+                      </span>
+                      <Price
+                        amount={cart.cost.totalAmount.amount}
+                        currencyCode={cart.cost.totalAmount.currencyCode}
+                        currencyCodeClassName="hidden"
+                        className="text-lg font-bold text-neutral-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Snapmint EMI Banner */}
+                  <SnapmintEmiCartBanner
+                    totalAmount={cart.cost.totalAmount.amount}
+                    onBuyOnEmi={handleCheckout}
+                  />
+
+                  {/* Highlighted checkout notice */}
+                  <div className="mt-6 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3 rounded-sm text-center">
+                    <p
+                      className="text-[12px] text-neutral-600 dark:text-neutral-400 font-medium leading-tight"
+                      style={{ fontFamily: "Archivo, sans-serif" }}
+                    >
+                      {t("cart.checkout_notice")}
+                    </p>
+                  </div>
+
+                  {/* Checkout button action */}
+                  <button
+                    type="button"
+                    onClick={handleCheckout}
+                    className="w-full mt-6 h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors"
+                    style={{ fontFamily: "Archivo, sans-serif" }}
+                  >
+                    Proceed to Checkout
+                  </button>
+
+                  {/* Secure payments indicator badge */}
+                  <div
+                    className="mt-4 p-3 flex items-center gap-2.5 text-[12px] text-black font-medium"
+                    style={{ fontFamily: "Archivo, sans-serif" }}
+                  >
+                    <img
+                      src={secure.src || secure}
+                      className="bg-green-50 dark:bg-green-950/10 p-2 w-9 h-9 rounded-md flex-shrink-0"
+                      alt="secure"
+                    />
+                    <span>
+                      Secure Encrypted Payments | Genuine Weskateco Products
+                    </span>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center text-center gap-1.5 border-x border-neutral-200 dark:border-neutral-800 px-1">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="1" y="3" width="15" height="13" />
-                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                    <circle cx="5.5" cy="18.5" r="2.5" />
-                    <circle cx="18.5" cy="18.5" r="2.5" />
-                  </svg>
-                  <span>Free Shipping Within India</span>
-                </div>
-                <div className="flex flex-col items-center text-center gap-1.5">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-                  </svg>
-                  <span>Return Policy</span>
-                </div>
+
               </div>
             </div>
-          </div>
+          </>
         )}
       </main>
+      {editingItem && (
+        <QuickBuySidebar
+          isOpen={!!editingItem}
+          onClose={() => setEditingItem(null)}
+          product={editingItem.merchandise.product as any}
+          locale={locale}
+          isEdit={true}
+          lineId={editingItem.id}
+          initialOptions={editingItem.merchandise.selectedOptions.reduce((acc: any, option: any) => {
+            acc[option.name.toLowerCase()] = option.value;
+            return acc;
+          }, {})}
+          quantity={editingItem.quantity}
+        />
+      )}
       <Footer />
     </div>
   );
@@ -463,33 +488,34 @@ function CartPageQuantitySelector({
   updateCartItem: any;
   isMobile: boolean;
 }) {
-  const [message, formAction] = useActionState(updateItemQuantity, null);
+  const [isPending, startTransition] = useTransition();
 
   const handleDecrease = () => {
-    if (item.quantity > 1) {
-      updateCartItem(item.merchandise.id, "minus");
-      const action = formAction.bind(null, {
-        merchandiseId: item.merchandise.id,
-        quantity: item.quantity - 1,
-      });
-      action();
-    } else {
-      updateCartItem(item.merchandise.id, "delete");
-      const action = formAction.bind(null, {
-        merchandiseId: item.merchandise.id,
-        quantity: 0,
-      });
-      action();
-    }
+    startTransition(async () => {
+      if (item.quantity > 1) {
+        updateCartItem(item.merchandise.id, "minus");
+        await updateItemQuantity(null, {
+          merchandiseId: item.merchandise.id,
+          quantity: item.quantity - 1,
+        });
+      } else {
+        updateCartItem(item.merchandise.id, "delete");
+        await updateItemQuantity(null, {
+          merchandiseId: item.merchandise.id,
+          quantity: 0,
+        });
+      }
+    });
   };
 
   const handleIncrease = () => {
-    updateCartItem(item.merchandise.id, "plus");
-    const action = formAction.bind(null, {
-      merchandiseId: item.merchandise.id,
-      quantity: item.quantity + 1,
+    startTransition(async () => {
+      updateCartItem(item.merchandise.id, "plus");
+      await updateItemQuantity(null, {
+        merchandiseId: item.merchandise.id,
+        quantity: item.quantity + 1,
+      });
     });
-    action();
   };
 
   const btnClass = isMobile
@@ -506,13 +532,23 @@ function CartPageQuantitySelector({
 
   return (
     <div className={containerClass}>
-      <button type="button" onClick={handleDecrease} className={btnClass}>
+      <button
+        type="button"
+        onClick={handleDecrease}
+        disabled={isPending}
+        className={btnClass}
+      >
         -
       </button>
       <span className={textClass}>
         {String(item.quantity).padStart(2, "0")}
       </span>
-      <button type="button" onClick={handleIncrease} className={btnClass}>
+      <button
+        type="button"
+        onClick={handleIncrease}
+        disabled={isPending}
+        className={btnClass}
+      >
         +
       </button>
     </div>
@@ -528,20 +564,26 @@ function CartPageRemoveButton({
   updateCartItem: any;
   isMobile: boolean;
 }) {
-  const [message, formAction] = useActionState(removeItem, null);
+  const [isPending, startTransition] = useTransition();
 
   const handleRemove = () => {
-    updateCartItem(item.merchandise.id, "delete");
-    const action = formAction.bind(null, item.merchandise.id);
-    action();
+    startTransition(async () => {
+      updateCartItem(item.merchandise.id, "delete");
+      await removeItem(null, item.merchandise.id);
+    });
   };
 
   const btnClass = isMobile
-    ? "text-[12px] font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 underline cursor-pointer hover:text-neutral-600"
-    : "text-[10px] font-bold uppercase tracking-wider text-black dark:text-white underline cursor-pointer hover:text-neutral-600";
+    ? "text-[12px] font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 underline cursor-pointer hover:text-neutral-600 disabled:opacity-50"
+    : "text-[12px] font-normal uppercase tracking-wider text-black dark:text-white underline cursor-pointer hover:text-neutral-600 disabled:opacity-50";
 
   return (
-    <button type="button" onClick={handleRemove} className={btnClass}>
+    <button
+      type="button"
+      onClick={handleRemove}
+      disabled={isPending}
+      className={btnClass}
+    >
       REMOVE
     </button>
   );

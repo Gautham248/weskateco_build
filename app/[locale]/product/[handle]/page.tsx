@@ -90,7 +90,7 @@ export default async function ProductPage(props: {
           __html: JSON.stringify(productJsonLd),
         }}
       />
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 py-4">
+      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 py-4">
         {/* Breadcrumb */}
         {/* <div className="mb-6 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
           <Link
@@ -117,15 +117,15 @@ export default async function ProductPage(props: {
         </div> */}
 
         {/* Main Product Layout */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:gap-12 py-8 md:py-12">
-          <div className="w-full basis-full lg:basis-7/12 lg:sticky lg:top-24">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:gap-12 py-6 md:py-8">
+          <div className="-mx-4 w-[calc(100%+32px)] lg:mx-0 lg:w-full basis-full lg:basis-7/12 lg:sticky lg:top-24 mb-5 lg:mb-0">
             <Suspense
               fallback={
-                <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden" />
+                <div className="relative aspect-[581/897] w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900" />
               }
             >
               <Gallery
-                images={product.images.slice(0, 5).map((image: Image) => ({
+                images={product.images.slice(0, 6).map((image: Image) => ({
                   src: image.url,
                   altText: image.altText,
                 }))}
@@ -157,10 +157,16 @@ async function RelatedProducts({ id, locale }: { id: string; locale: string }) {
 
   return (
     <div className="mt-16 border-t border-neutral-200 py-12 dark:border-neutral-800">
-      <h2 className="mb-8 text-4xl font-black tracking-tight text-black dark:text-white sm:text-5xl lg:text-[60px]" style={{ fontFamily: "'Clash Display', sans-serif", letterSpacing: "-0.01em" }}>
+      <h2
+        className="mb-8 text-4xl font-black tracking-tight text-black dark:text-white sm:text-5xl lg:text-[60px]"
+        style={{
+          fontFamily: "'Clash Display', sans-serif",
+          letterSpacing: "-0.01em",
+        }}
+      >
         {t("product.related_products").toUpperCase()}
       </h2>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+      <div className="grid grid-cols-2 gap-x-2.5 gap-y-11 sm:grid-cols-3 lg:grid-cols-4 md:gap-x-2.5 md:gap-y-20">
         {relatedProducts.slice(0, 4).map((product) => (
           <ProductCard key={product.handle} product={product} locale={locale} />
         ))}

@@ -16,7 +16,8 @@ const Price = ({
       style: "currency",
       currency: currencyCode,
       currencyDisplay: "narrowSymbol",
-    }).format(parseFloat(amount))
+    })
+      .format(parseFloat(amount))
       .replace(/([^\d\s])(\d)/, "$1 $2")}`}
     {currencyCodeClassName !== "hidden" && (
       <span

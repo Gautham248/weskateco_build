@@ -1,326 +1,322 @@
 {
-    "_note": "Mock configurator metafields derived from the live WeSkate store. Replaces real Shopify metafields until Arun returns the product data spreadsheet and we run the sync script. Handles must match Shopify product handles exactly.",
-    "_categories": {
-        "configurator_products": "Only products that appear as individual components in the configurator. Completes (pre-built setups), apparel, and protection gear are excluded.",
-        "excluded": "Completes (bubblegum-sphere-skateboard-complete-left, etc.), surfskate completes, apparel, protection gear — these are finished products, not configurator components."
+  "_note": "Mock configurator metafields derived from the live WeSkate store. Replaces real Shopify metafields until Arun returns the product data spreadsheet and we run the sync script. Handles must match Shopify product handles exactly.",
+  "_categories": {
+    "configurator_products": "Only products that appear as individual components in the configurator. Completes (pre-built setups), apparel, and protection gear are excluded.",
+    "excluded": "Completes (bubblegum-sphere-skateboard-complete-left, etc.), surfskate completes, apparel, protection gear — these are finished products, not configurator components."
+  },
+  "decks": {
+    "sphere-bubblegum-left-skateboard-deck": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "7 / Regular": 7.0,
+        "7.25 / Regular": 7.25,
+        "7.5 / Regular": 7.5,
+        "7.75 / Regular": 7.75,
+        "8 / Regular": 8.0,
+        "8.125 / Regular": 8.125,
+        "8.25 / Regular": 8.25,
+        "8.5 / Regular": 8.5,
+        "8.875 / Regular": 8.875
+      },
+      "brand": "Sphere"
     },
-    "decks": {
-        "sphere-bubblegum-left-skateboard-deck": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "7 / Regular": 7.0,
-                "7.25 / Regular": 7.25,
-                "7.5 / Regular": 7.5,
-                "7.75 / Regular": 7.75,
-                "8 / Regular": 8.0,
-                "8.125 / Regular": 8.125,
-                "8.25 / Regular": 8.25,
-                "8.5 / Regular": 8.5,
-                "8.875 / Regular": 8.875
-            },
-            "brand": "Sphere"
-        },
-        "oldman-sphere-x-akil-deck": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "8 / Regular": 8.0,
-                "8.25 / Regular": 8.25,
-                "8.5 / Regular": 8.5,
-                "8.875 / Regular": 8.875
-            },
-            "brand": "Sphere"
-        },
-        "twisted-human-deck": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "7 / Regular": 7.0,
-                "7.25 / Regular": 7.25,
-                "7.5 / Regular": 7.5,
-                "7.75 / Regular": 7.75,
-                "8 / Regular": 8.0,
-                "8.125 / Regular": 8.125,
-                "8.25 / Regular": 8.25,
-                "8.5 / Regular": 8.5,
-                "8.875 / Regular": 8.875
-            },
-            "brand": "Sphere"
-        },
-        "summer-skateboard-deck": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "7 / Regular": 7.0,
-                "7.25 / Regular": 7.25,
-                "7.5 / Regular": 7.5,
-                "7.75 / Regular": 7.75,
-                "8 / Regular": 8.0,
-                "8.25 / Regular": 8.25
-            },
-            "brand": "Sphere"
-        },
-        "skateboard-deck-special-edition-left-old-school": {
-            "deck_board_type": "Old School",
-            "deck_width_by_variant": {
-                "Default Title": 9.0
-            },
-            "_note": "Special edition old school shape. Width estimated at 9.0 based on old school convention. Confirm with Arun.",
-            "brand": "Sphere"
-        },
-        "skateboard-deck-special-edition-akil": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "Default Title": 8.25
-            },
-            "_note": "Single variant, no width in title. 8.25 estimated — confirm with Arun.",
-            "brand": "Sphere"
-        },
-        "twisted-man-skateboard-deck": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "Default Title": 8.25
-            },
-            "_note": "Single variant, no width in title. 8.25 estimated — confirm with Arun.",
-            "brand": "Sphere"
-        },
-        "nyjah-huston-gradient-deck-only": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "8": 8.0,
-                "8.25": 8.25
-            },
-            "brand": "Disorder"
-        },
-        "disorder-hands-of-chaos": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "8": 8.0
-            },
-            "brand": "Disorder"
-        },
-        "girl-skateboards-malto-93-til": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "8": 8.0,
-                "8.25": 8.25
-            },
-            "brand": "Girl"
-        },
-        "girl-deck-93-till-infinity-cory-kennedy": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "8.25": 8.25,
-                "8.5": 8.5
-            },
-            "brand": "Girl"
-        },
-        "palm-tree-macba-life-deck": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "8": 8.0,
-                "8.25": 8.25
-            },
-            "brand": "MACBA Life"
-        },
-        "wasted-angels-x-sphere-pro-deck": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "Mellow / 8\"": 8.0,
-                "Mellow / 8.25\"": 8.25,
-                "Medium / 8\"": 8.0,
-                "Medium / 8.25\"": 8.25
-            },
-            "_note": "Mellow/Medium refers to concave profile, not width. Width extracted from variant title.",
-            "brand": "Wasted Angels x Sphere"
-        },
-        "shake-junt-sucka-free-skateboard-deck": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "8": 8.0
-            },
-            "brand": "Shake Junt"
-        },
-        "sphere-red-white-grafitti-mode": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "8": 8.0,
-                "8.125": 8.125,
-                "8.25": 8.25
-            },
-            "brand": "Sphere"
-        },
-        "sphere-lovers-deck": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "8 / without wheel well": 8.0,
-                "8 / wheel well": 8.0,
-                "8.125 / without wheel well": 8.125,
-                "8.125 / wheel well": 8.125,
-                "8.25 / without wheel well": 8.25,
-                "8.25 / wheel well": 8.25,
-                "7.75 / without wheel well": 7.75,
-                "7.75 / wheel well": 7.75
-            },
-            "_note": "wheel well / without wheel well is a shape variant, not a width variant. Width extracted from first number.",
-            "brand": "Sphere"
-        },
-        "bubblegum-magnified-sphere-deck": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "8": 8.0,
-                "8.25": 8.25
-            },
-            "brand": "Sphere"
-        },
-        "baker-brand-logo-white-deck": {
-            "deck_board_type": "Skateboard",
-            "deck_width_by_variant": {
-                "8.25\"": 8.25
-            },
-            "brand": "Baker"
-        }
+    "oldman-sphere-x-akil-deck": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "8 / Regular": 8.0,
+        "8.25 / Regular": 8.25,
+        "8.5 / Regular": 8.5,
+        "8.875 / Regular": 8.875
+      },
+      "brand": "Sphere"
     },
-    "trucks": {
-        "double-hollow-skateboard-trucks": {
-            "truck_type": "Standard (TKP)",
-            "truck_hanger_size_by_variant": {
-                "5": 5.0,
-                "5.25\"": 5.25,
-                "5.5\"": 5.5
-            },
-            "truck_sold_as": "Pair",
-            "truck_compatible_board_types": "Skateboard,Old School",
-            "brand": "Toucan"
-        },
-        "toucan-trucks-kids": {
-            "truck_type": "Standard (TKP)",
-            "truck_hanger_size_by_variant": {
-                "4\"": 4.0,
-                "4.75\"": 4.75
-            },
-            "truck_sold_as": "Pair",
-            "truck_compatible_board_types": "Skateboard",
-            "_note": "Kids trucks. 4\" hanger = 6.75\" axle (fits 6.5-7.0 decks). 4.75\" hanger = 7.5\" axle (fits 7.25-7.75 decks).",
-            "brand": "Toucan"
-        },
-        "surfskate-trucks-tc-07": {
-            "truck_type": "Surfskate",
-            "truck_hanger_size_by_variant": {
-                "Default Title": null
-            },
-            "truck_sold_as": "Set (front+rear)",
-            "truck_compatible_board_types": "Surfskate",
-            "_note": "Sold as a matched front+rear set. No width matching — surfskate trucks are universal for surfskate decks.",
-            "brand": "Toucan"
-        }
+    "twisted-human-deck": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "7 / Regular": 7.0,
+        "7.25 / Regular": 7.25,
+        "7.5 / Regular": 7.5,
+        "7.75 / Regular": 7.75,
+        "8 / Regular": 8.0,
+        "8.125 / Regular": 8.125,
+        "8.25 / Regular": 8.25,
+        "8.5 / Regular": 8.5,
+        "8.875 / Regular": 8.875
+      },
+      "brand": "Sphere"
     },
-    "wheels": {
-        "toucan-tropical-wheels": {
-            "wheel_diameter_by_variant": {
-                "51": 51,
-                "52": 52
-            },
-            "wheel_hardness": "99A",
-            "wheel_type": "Street/Park",
-            "wheel_compatible_board_types": "Skateboard,Old School",
-            "_note": "Hardness estimated at 99A based on street/park classification. Confirm with Arun.",
-            "brand": "Toucan"
-        },
-        "toucan-tropical-wheels-53mm-55mm-85bd": {
-            "wheel_diameter_by_variant": {
-                "53mm": 53,
-                "55mm": 55
-            },
-            "wheel_hardness": "85BD",
-            "wheel_type": "Street/Park",
-            "wheel_compatible_board_types": "Skateboard,Old School",
-            "brand": "Toucan"
-        },
-        "surfskate-wheels-66-x-58mm": {
-            "wheel_diameter_by_variant": {
-                "Default Title": 66
-            },
-            "wheel_hardness": "78A",
-            "wheel_type": "Surfskate",
-            "wheel_compatible_board_types": "Surfskate,Cruiser",
-            "_note": "66mm x 58mm. Hardness estimated at 78A (soft, typical for surfskate). Confirm with Arun.",
-            "brand": "Toucan"
-        }
+    "summer-skateboard-deck": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "7 / Regular": 7.0,
+        "7.25 / Regular": 7.25,
+        "7.5 / Regular": 7.5,
+        "7.75 / Regular": 7.75,
+        "8 / Regular": 8.0,
+        "8.25 / Regular": 8.25
+      },
+      "brand": "Sphere"
     },
-    "bearings": {
-        "steel-ball-skate-bearings-toucan": {
-            "bearing_type": "Steel",
-            "brand": "Toucan",
-            "_note": "Universal — fits all setups"
-        },
-        "ceramic-ball-skate-bearings-toucan": {
-            "bearing_type": "Ceramic",
-            "brand": "Toucan",
-            "_note": "Universal — fits all setups"
-        }
+    "skateboard-deck-special-edition-left-old-school": {
+      "deck_board_type": "Old School",
+      "deck_width_by_variant": {
+        "Default Title": 9.0
+      },
+      "_note": "Special edition old school shape. Width estimated at 9.0 based on old school convention. Confirm with Arun.",
+      "brand": "Sphere"
     },
-    "griptape": {
-        "skateboard-griptape-sphere": {
-            "griptape_width": 9,
-            "griptape_type": "Standard",
-            "brand": "Sphere",
-            "_note": "Standard 9\" grip. Fits decks up to 8.75\"."
-        },
-        "skateboard-griptape-sphere-letters": {
-            "griptape_width": 9,
-            "griptape_type": "Graphic",
-            "brand": "Sphere",
-            "_note": "Standard 9\" grip with graphic print."
-        },
-        "shake-junt-griptape-neen-williams-pro": {
-            "griptape_width": 9,
-            "griptape_type": "Standard",
-            "brand": "Shake Junt"
-        },
-        "shake-junt-red-black-grip": {
-            "griptape_width": 9,
-            "griptape_type": "Graphic",
-            "brand": "Shake Junt"
-        },
-        "wasted-angels-x-mon-amour-griptape": {
-            "griptape_width": 9,
-            "griptape_type": "Graphic",
-            "brand": "Wasted Angels x Mon Amour"
-        }
+    "skateboard-deck-special-edition-akil": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "Default Title": 8.25
+      },
+      "_note": "Single variant, no width in title. 8.25 estimated — confirm with Arun.",
+      "brand": "Sphere"
     },
-    "hardware": {
-        "_note": "WeSkate does not currently sell hardware (bolts) as separate products. The configurator should show a 'Hardware included with trucks' note or skip this step. When WeSkate adds hardware products, add them here."
+    "twisted-man-skateboard-deck": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "Default Title": 8.25
+      },
+      "_note": "Single variant, no width in title. 8.25 estimated — confirm with Arun.",
+      "brand": "Sphere"
     },
-    "riser_pads": {
-        "_note": "Arun confirmed riser pads will be added later. For now, the configurator should treat the riser pad step as 'Coming soon' or skip it."
+    "nyjah-huston-gradient-deck-only": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "8": 8.0,
+        "8.25": 8.25
+      },
+      "brand": "Disorder"
     },
-    "excluded_from_configurator": {
-        "_reason": "These are complete setups (pre-built boards) or non-hardware products. They should NOT appear in the configurator — they are finished products the customer buys as-is.",
-        "completes": [
-            "bubblegum-sphere-skateboard-complete-left",
-            "twisted-human-skateboard-complete",
-            "pookie-forest-sphere-skateboard-complete",
-            "old-man-sphere-skateboard-complete",
-            "wasted-angels-x-sphere-skateboard-complete",
-            "bubblegum-magnified-sphere-complete",
-            "beginner-skateboard-canadian-maple-wood-complete"
-        ],
-        "surfskate_completes": [
-            "coral-surfskates",
-            "fish-tale-surfskate-blue",
-            "fish-tale-surfskate-yellow"
-        ],
-        "apparel": [
-            "sphere-tshirt-sunflower"
-        ],
-        "protection": [
-            "skateboarding-protection-gear-1080-pads-pro"
-        ]
+    "disorder-hands-of-chaos": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "8": 8.0
+      },
+      "brand": "Disorder"
     },
-    "configurator_gaps": {
-        "no_surfskate_decks_sold_separately": "WeSkate sells surfskate completes but no standalone surfskate decks. The configurator cannot build a surfskate from components until surfskate decks are added to the catalog. Show 'Surfskate decks coming soon — check out our complete surfskates instead' with a link to the surfskate completes collection.",
-        "no_longboard_products": "WeSkate has no longboard decks, trucks, or wheels. The configurator should show 'Longboard components coming soon' for this board type.",
-        "no_cruiser_products": "No dedicated cruiser components. Show 'Cruiser components coming soon'.",
-        "no_hardware_sold_separately": "No bolt/hardware products in the store. Skip the hardware step or show 'Hardware included with your trucks'.",
-        "no_riser_pads": "Arun confirmed these will be added later. Skip this step for now.",
-        "old_school_limited": "Only 1 old school deck (skateboard-deck-special-edition-left-old-school). Trucks and wheels are shared with the Skateboard category."
+    "girl-skateboards-malto-93-til": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "8": 8.0,
+        "8.25": 8.25
+      },
+      "brand": "Girl"
+    },
+    "girl-deck-93-till-infinity-cory-kennedy": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "8.25": 8.25,
+        "8.5": 8.5
+      },
+      "brand": "Girl"
+    },
+    "palm-tree-macba-life-deck": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "8": 8.0,
+        "8.25": 8.25
+      },
+      "brand": "MACBA Life"
+    },
+    "wasted-angels-x-sphere-pro-deck": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "Mellow / 8\"": 8.0,
+        "Mellow / 8.25\"": 8.25,
+        "Medium / 8\"": 8.0,
+        "Medium / 8.25\"": 8.25
+      },
+      "_note": "Mellow/Medium refers to concave profile, not width. Width extracted from variant title.",
+      "brand": "Wasted Angels x Sphere"
+    },
+    "shake-junt-sucka-free-skateboard-deck": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "8": 8.0
+      },
+      "brand": "Shake Junt"
+    },
+    "sphere-red-white-grafitti-mode": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "8": 8.0,
+        "8.125": 8.125,
+        "8.25": 8.25
+      },
+      "brand": "Sphere"
+    },
+    "sphere-lovers-deck": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "8 / without wheel well": 8.0,
+        "8 / wheel well": 8.0,
+        "8.125 / without wheel well": 8.125,
+        "8.125 / wheel well": 8.125,
+        "8.25 / without wheel well": 8.25,
+        "8.25 / wheel well": 8.25,
+        "7.75 / without wheel well": 7.75,
+        "7.75 / wheel well": 7.75
+      },
+      "_note": "wheel well / without wheel well is a shape variant, not a width variant. Width extracted from first number.",
+      "brand": "Sphere"
+    },
+    "bubblegum-magnified-sphere-deck": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "8": 8.0,
+        "8.25": 8.25
+      },
+      "brand": "Sphere"
+    },
+    "baker-brand-logo-white-deck": {
+      "deck_board_type": "Skateboard",
+      "deck_width_by_variant": {
+        "8.25\"": 8.25
+      },
+      "brand": "Baker"
     }
+  },
+  "trucks": {
+    "double-hollow-skateboard-trucks": {
+      "truck_type": "Standard (TKP)",
+      "truck_hanger_size_by_variant": {
+        "5": 5.0,
+        "5.25\"": 5.25,
+        "5.5\"": 5.5
+      },
+      "truck_sold_as": "Pair",
+      "truck_compatible_board_types": "Skateboard,Old School",
+      "brand": "Toucan"
+    },
+    "toucan-trucks-kids": {
+      "truck_type": "Standard (TKP)",
+      "truck_hanger_size_by_variant": {
+        "4\"": 4.0,
+        "4.75\"": 4.75
+      },
+      "truck_sold_as": "Pair",
+      "truck_compatible_board_types": "Skateboard",
+      "_note": "Kids trucks. 4\" hanger = 6.75\" axle (fits 6.5-7.0 decks). 4.75\" hanger = 7.5\" axle (fits 7.25-7.75 decks).",
+      "brand": "Toucan"
+    },
+    "surfskate-trucks-tc-07": {
+      "truck_type": "Surfskate",
+      "truck_hanger_size_by_variant": {
+        "Default Title": null
+      },
+      "truck_sold_as": "Set (front+rear)",
+      "truck_compatible_board_types": "Surfskate",
+      "_note": "Sold as a matched front+rear set. No width matching — surfskate trucks are universal for surfskate decks.",
+      "brand": "Toucan"
+    }
+  },
+  "wheels": {
+    "toucan-tropical-wheels": {
+      "wheel_diameter_by_variant": {
+        "51": 51,
+        "52": 52
+      },
+      "wheel_hardness": "99A",
+      "wheel_type": "Street/Park",
+      "wheel_compatible_board_types": "Skateboard,Old School",
+      "_note": "Hardness estimated at 99A based on street/park classification. Confirm with Arun.",
+      "brand": "Toucan"
+    },
+    "toucan-tropical-wheels-53mm-55mm-85bd": {
+      "wheel_diameter_by_variant": {
+        "53mm": 53,
+        "55mm": 55
+      },
+      "wheel_hardness": "85BD",
+      "wheel_type": "Street/Park",
+      "wheel_compatible_board_types": "Skateboard,Old School",
+      "brand": "Toucan"
+    },
+    "surfskate-wheels-66-x-58mm": {
+      "wheel_diameter_by_variant": {
+        "Default Title": 66
+      },
+      "wheel_hardness": "78A",
+      "wheel_type": "Surfskate",
+      "wheel_compatible_board_types": "Surfskate,Cruiser",
+      "_note": "66mm x 58mm. Hardness estimated at 78A (soft, typical for surfskate). Confirm with Arun.",
+      "brand": "Toucan"
+    }
+  },
+  "bearings": {
+    "steel-ball-skate-bearings-toucan": {
+      "bearing_type": "Steel",
+      "brand": "Toucan",
+      "_note": "Universal — fits all setups"
+    },
+    "ceramic-ball-skate-bearings-toucan": {
+      "bearing_type": "Ceramic",
+      "brand": "Toucan",
+      "_note": "Universal — fits all setups"
+    }
+  },
+  "griptape": {
+    "skateboard-griptape-sphere": {
+      "griptape_width": 9,
+      "griptape_type": "Standard",
+      "brand": "Sphere",
+      "_note": "Standard 9\" grip. Fits decks up to 8.75\"."
+    },
+    "skateboard-griptape-sphere-letters": {
+      "griptape_width": 9,
+      "griptape_type": "Graphic",
+      "brand": "Sphere",
+      "_note": "Standard 9\" grip with graphic print."
+    },
+    "shake-junt-griptape-neen-williams-pro": {
+      "griptape_width": 9,
+      "griptape_type": "Standard",
+      "brand": "Shake Junt"
+    },
+    "shake-junt-red-black-grip": {
+      "griptape_width": 9,
+      "griptape_type": "Graphic",
+      "brand": "Shake Junt"
+    },
+    "wasted-angels-x-mon-amour-griptape": {
+      "griptape_width": 9,
+      "griptape_type": "Graphic",
+      "brand": "Wasted Angels x Mon Amour"
+    }
+  },
+  "hardware": {
+    "_note": "WeSkate does not currently sell hardware (bolts) as separate products. The configurator should show a 'Hardware included with trucks' note or skip this step. When WeSkate adds hardware products, add them here."
+  },
+  "riser_pads": {
+    "_note": "Arun confirmed riser pads will be added later. For now, the configurator should treat the riser pad step as 'Coming soon' or skip it."
+  },
+  "excluded_from_configurator": {
+    "_reason": "These are complete setups (pre-built boards) or non-hardware products. They should NOT appear in the configurator — they are finished products the customer buys as-is.",
+    "completes": [
+      "bubblegum-sphere-skateboard-complete-left",
+      "twisted-human-skateboard-complete",
+      "pookie-forest-sphere-skateboard-complete",
+      "old-man-sphere-skateboard-complete",
+      "wasted-angels-x-sphere-skateboard-complete",
+      "bubblegum-magnified-sphere-complete",
+      "beginner-skateboard-canadian-maple-wood-complete"
+    ],
+    "surfskate_completes": [
+      "coral-surfskates",
+      "fish-tale-surfskate-blue",
+      "fish-tale-surfskate-yellow"
+    ],
+    "apparel": ["sphere-tshirt-sunflower"],
+    "protection": ["skateboarding-protection-gear-1080-pads-pro"]
+  },
+  "configurator_gaps": {
+    "no_surfskate_decks_sold_separately": "WeSkate sells surfskate completes but no standalone surfskate decks. The configurator cannot build a surfskate from components until surfskate decks are added to the catalog. Show 'Surfskate decks coming soon — check out our complete surfskates instead' with a link to the surfskate completes collection.",
+    "no_longboard_products": "WeSkate has no longboard decks, trucks, or wheels. The configurator should show 'Longboard components coming soon' for this board type.",
+    "no_cruiser_products": "No dedicated cruiser components. Show 'Cruiser components coming soon'.",
+    "no_hardware_sold_separately": "No bolt/hardware products in the store. Skip the hardware step or show 'Hardware included with your trucks'.",
+    "no_riser_pads": "Arun confirmed these will be added later. Skip this step for now.",
+    "old_school_limited": "Only 1 old school deck (skateboard-deck-special-edition-left-old-school). Trucks and wheels are shared with the Skateboard category."
+  }
 }

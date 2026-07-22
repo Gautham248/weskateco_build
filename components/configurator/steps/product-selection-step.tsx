@@ -70,7 +70,8 @@ export function ProductSelectionStep({
       {incompatibleItems.length > 0 && (
         <div className="mt-8">
           <h3 className="mb-4 text-sm font-medium uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
-            {t("configurator.incompatible") || "Not compatible"} ({incompatibleItems.length})
+            {t("configurator.incompatible") || "Not compatible"} (
+            {incompatibleItems.length})
           </h3>
           <div className="grid grid-cols-1 gap-4 opacity-40 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {incompatibleItems.slice(0, 8).map((item) => (

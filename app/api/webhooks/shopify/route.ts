@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     encoder.encode(secret),
     { name: "HMAC", hash: "SHA-256" },
     false,
-    ["sign"]
+    ["sign"],
   );
   const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
   const computedHmac = Buffer.from(signature).toString("base64");

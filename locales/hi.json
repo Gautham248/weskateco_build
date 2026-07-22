@@ -34,6 +34,9 @@
   "cart.loading_checkout": "चेकआउट लोड हो रहा है...",
   "cart.proceed_to_checkout": "चेकआउट करें",
   "cart.checkout_fallback": "चेकआउट (वैकल्पिक)",
+  "cart.estimated_total": "अनुमानित कुल",
+  "cart.view_cart": "कार्ट देखें",
+  "cart.checkout_notice": "कर शामिल। चेकआउट के समय छूट और शिपिंग की गणना की जाती है।",
 
   "product.add_to_cart": "कार्ट में जोड़ें",
   "product.out_of_stock": "स्टॉक में नहीं",
@@ -154,6 +157,7 @@
   "collection.filter": "फ़िल्टर",
   "collection.no_products": "इस संग्रह में कोई उत्पाद नहीं मिला",
   "collection.all_products": "सभी उत्पाद",
+  "collection.all_products_description": "स्केटबोर्ड, सर्फस्केट, परिधान और सुरक्षा गियर के हमारे संपूर्ण संग्रह को ब्राउज़ करें।",
   "collection.price_low_high": "कीमत: कम से अधिक",
   "collection.price_high_low": "कीमत: अधिक से कम",
   "collection.newest": "नवीनतम",

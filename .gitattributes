@@ -1,0 +1,5 @@
+# Normalize all text files to LF on commit, CRLF on Windows checkout
+* text=auto
+
+# Explicitly declare files that should always use LF (like shell scripts)
+*.sh text eol=lf

@@ -97,7 +97,12 @@ export default defineType({
         {
           type: "object",
           fields: [
-            { name: "image", title: "Image", type: "image", options: { hotspot: true } },
+            {
+              name: "image",
+              title: "Image",
+              type: "image",
+              options: { hotspot: true },
+            },
             { name: "caption", title: "Caption", type: "string" },
             {
               name: "stage",

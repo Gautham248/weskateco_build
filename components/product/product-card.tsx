@@ -1,10 +1,15 @@
-'use client'
+"use client";
+import { createSingleItemCartAction } from "components/cart/actions";
+import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
+import { useGoKwikCheckout } from "lib/gokwik";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 import { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
+import { QuickBuySidebar } from "./quick-buy-sidebar";
+import { SnapmintEmiBadge } from "./snapmint-emi-badge";
 
 interface ProductCardProps {
   product: Product;
@@ -13,42 +18,143 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, locale }: ProductCardProps) {
   const t = createTranslator(locale);
-  const { title, handle, availableForSale, priceRange, featuredImage, images } = product;
+  const { cart, addCartItem } = useCart();
+  const [, startTransition] = useTransition();
+  const { triggerCheckout } = useGoKwikCheckout({ cartId: cart?.id });
+  const { title, handle, availableForSale, priceRange, featuredImage, images } =
+    product;
   const isSoldOut = !availableForSale;
 
   const productPath = getLocalizedPath(`/product/${handle}`, locale);
 
   const imgRef = useRef<HTMLDivElement>(null);
   const [showIndex, setShowIndex] = useState(0);
-  const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
-  const displayImages = images && images.length > 0
-    ? images.slice(0, 2)
-    : featuredImage ? [featuredImage] : [];
+  const handleEmiCheckout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const variant = product.variants[0];
+    if (!variant) return;
+
+    startTransition(async () => {
+      const singleCartId = await createSingleItemCartAction(variant.id);
+      if (singleCartId) {
+        if (window.merchantInfo) {
+          window.merchantInfo.cart = { id: singleCartId };
+        }
+        if (typeof window.triggerGokwikCustomCheckout === "function") {
+          window.triggerGokwikCustomCheckout();
+        }
+      }
+    });
+  };
+
+  const displayImages =
+    images && images.length > 0
+      ? images.slice(0, 2)
+      : featuredImage
+        ? [featuredImage]
+        : [];
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imgRef.current || displayImages.length < 2) return;
-    clearTimeout(moveTimer.current);
-    moveTimer.current = setTimeout(() => {
-      if (!imgRef.current) return;
-      const rect = imgRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const pct = x / rect.width;
-      setShowIndex(pct < 0.5 ? 0 : 1);
-    }, 80);
+    clearTimeout(leaveTimer.current);
+    const rect = imgRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = x / rect.width;
+    setShowIndex(pct < 0.5 ? 0 : 1);
+  };
+
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const isSwiping = useRef(false);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches[0]) {
+      touchStart.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+      isSwiping.current = false;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+
+    const diffX = touch.clientX - touchStart.current.x;
+    const diffY = touch.clientY - touchStart.current.y;
+
+    if (Math.abs(diffX) > 10 && Math.abs(diffX) > Math.abs(diffY)) {
+      isSwiping.current = true;
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current) return;
+    const touch = e.changedTouches[0];
+    if (touch) {
+      const diffX = touch.clientX - touchStart.current.x;
+      const diffY = touch.clientY - touchStart.current.y;
+
+      const threshold = 40; // minimum distance for swipe in px
+
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        if (Math.abs(diffX) > threshold) {
+          if (diffX < 0) {
+            // Swiped left
+            if (displayImages.length > 1) {
+              setShowIndex((prev) =>
+                Math.min(prev + 1, displayImages.length - 1),
+              );
+            }
+          } else {
+            // Swiped right
+            setShowIndex((prev) => Math.max(prev - 1, 0));
+          }
+        }
+      }
+    }
+    touchStart.current = null;
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (isSwiping.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      isSwiping.current = false;
+    }
   };
 
   return (
     <Link
       href={productPath}
       className="group flex flex-col bg-transparent"
+      onClick={handleClick}
     >
       <div
         ref={imgRef}
-        className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900"
-        onMouseEnter={() => { if (displayImages.length > 1) setShowIndex(1); }}
+        className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
+        onMouseEnter={() => {
+          clearTimeout(leaveTimer.current);
+          if (displayImages.length > 1) setShowIndex(1);
+        }}
         onMouseMove={handleMouseMove}
-        onMouseLeave={() => { clearTimeout(moveTimer.current); setShowIndex(0); }}
+        onMouseLeave={() => {
+          clearTimeout(leaveTimer.current);
+          leaveTimer.current = setTimeout(() => {
+            setShowIndex(0);
+          }, 800);
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {displayImages.length > 0 ? (
           <div
@@ -56,7 +162,10 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             style={{ transform: `translateX(-${showIndex * 100}%)` }}
           >
             {displayImages.map((img, index) => (
-              <div key={img.url || index} className="relative h-full w-full flex-shrink-0">
+              <div
+                key={img.url || index}
+                className="relative h-full w-full flex-shrink-0"
+              >
                 <Image
                   src={img.url}
                   alt={img.altText || title}
@@ -80,24 +189,23 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             {displayImages.map((_, idx) => (
               <span
                 key={idx}
-                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-1.5 opacity-100" : "w-1.5 opacity-50"
+                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
                   }`}
               />
             ))}
           </div>
         )}
 
-        {/* Plus circle (visible when not hovered) */}
-        <div className="absolute bottom-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white opacity-100 group-hover:opacity-0 transition-opacity duration-300">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </div>
-
-        {/* Hover Action Button */}
-        <div className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-10 w-10 hover:w-[130px] items-center rounded-lg bg-black/30 dark:bg-white/20 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all duration-300 active:scale-95 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 w-full">
+        {/* Add to Cart Hover Button (single element) */}
+        <div
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsSidebarOpen(true);
+          }}
+          className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 md:hover:w-[120px] items-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white transition-all duration-300 active:scale-95 overflow-hidden"
+        >
+          <div className="flex items-center justify-start gap-2 px-2 md:px-3 w-full h-full">
             <svg
               width="16"
               height="16"
@@ -109,9 +217,8 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
               strokeLinejoin="round"
               className="flex-shrink-0"
             >
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <path d="M16 10a4 4 0 0 1-8 0" />
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
             <span className="text-sm font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
               Add to Cart
@@ -128,11 +235,17 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
 
       <div className="flex flex-1 flex-col pt-4 px-1">
         {product.vendor && (
-          <p className="text-[12px] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-1" style={{ fontFamily: "Archivo" }}>
+          <p
+            className="text-[clamp(0.625rem,1.5vw,0.75rem)] font-normal tracking-tight text-neutral-400 dark:text-neutral-500 uppercase mb-1"
+            style={{ fontFamily: "Archivo, sans-serif" }}
+          >
             {product.vendor}
           </p>
         )}
-        <h3 className="mb-2 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2" style={{ fontFamily: "'Clash Display', sans-serif" }}>
+        <h3
+          className="mb-2 text-[clamp(0.8125rem,2vw,1rem)] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2"
+          style={{ fontFamily: "'Clash Display', sans-serif" }}
+        >
           {title}
         </h3>
         <div className="flex items-center gap-3">
@@ -140,7 +253,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             amount={priceRange.minVariantPrice.amount}
             currencyCode={priceRange.minVariantPrice.currencyCode}
             currencyCodeClassName="hidden"
-            className="text-[14px] font-normal text-neutral-900 dark:text-neutral-100"
+            className="text-[clamp(0.75rem,1.8vw,0.875rem)] font-normal text-neutral-900 dark:text-neutral-100"
           />
           {product.variants[0]?.compareAtPrice && (
             <Price
@@ -151,7 +264,30 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             />
           )}
         </div>
+        <SnapmintEmiBadge
+          priceAmount={priceRange.minVariantPrice.amount}
+          onClick={handleEmiCheckout}
+        />
       </div>
+      <QuickBuySidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        product={product}
+        locale={locale}
+      />
     </Link>
+  );
+}
+
+export function ProductCardSkeleton() {
+  return (
+    <div className="flex flex-col bg-transparent animate-pulse">
+      <div className="relative aspect-[2/3] w-full rounded-xl bg-neutral-200 dark:bg-neutral-800" />
+      <div className="flex flex-col pt-4 px-1">
+        <div className="h-3.5 w-16 bg-neutral-200 dark:bg-neutral-800 rounded-[4px] mb-2" />
+        <div className="h-4.5 w-3/4 bg-neutral-200 dark:bg-neutral-800 rounded-[4px] mb-3" />
+        <div className="h-4 w-1/3 bg-neutral-200 dark:bg-neutral-800 rounded-[4px]" />
+      </div>
+    </div>
   );
 }

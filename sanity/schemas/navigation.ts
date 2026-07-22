@@ -31,8 +31,16 @@ export default defineType({
                 {
                   type: "object",
                   fields: [
-                    { name: "label_en", title: "Label (English)", type: "string" },
-                    { name: "label_hi", title: "Label (Hindi)", type: "string" },
+                    {
+                      name: "label_en",
+                      title: "Label (English)",
+                      type: "string",
+                    },
+                    {
+                      name: "label_hi",
+                      title: "Label (Hindi)",
+                      type: "string",
+                    },
                     { name: "href", title: "Link URL", type: "string" },
                   ],
                   preview: {
