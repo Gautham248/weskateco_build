@@ -51,9 +51,10 @@ export function ProductDescription({
 
   // Extract artist name if exists
   const getArtistName = (html: string, text: string) => {
-    const htmlMatch = html.match(/Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*(?:<[^>]+>)*([^<]+?)(?:<[^>]+>)*\s*(?:<\/p>|$)/i);
+    const htmlMatch = html.match(/Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*((?:<[^>]+>|[^<>\n\r])+?)(?:<br\s*\/?>|<\/p>|\n|$)/i);
     if (htmlMatch && htmlMatch[1]) {
-      return htmlMatch[1].trim();
+      const extracted = htmlMatch[1].replace(/<[^>]+>/g, "").replace(/&nbsp;|\u00a0/g, " ").trim();
+      if (extracted) return extracted;
     }
     const textMatch = text.match(/Deck\s+Artwork\s+by\s+(.+)/i);
     if (textMatch && textMatch[1]) {
@@ -64,12 +65,17 @@ export function ProductDescription({
 
   const artistName = getArtistName(product.descriptionHtml || "", product.description || "");
 
-  // Helper function to format "Deck Artwork by..." paragraph in-place
+  // Helper function to format "Deck Artwork by..." in-place
   const formatArtworkBadgeHtml = (html: string) => {
+    if (!html) return "";
     return html.replace(
-      /<p[^>]*>[\s\u00a0&nbsp;]*Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*(?:<[^>]+>)*([^<]+?)(?:<[^>]+>)*[\s\u00a0&nbsp;]*<\/p>/gi,
-      (match, artistName) => {
-        const trimmedArtist = artistName.trim();
+      /Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*((?:<[^>]+>|[^<>\n\r])+?)(?:<br\s*\/?>|<\/p>|\n|(?=<span[^>]*><br)|$)/gi,
+      (match, rawArtist) => {
+        const trimmedArtist = rawArtist
+          .replace(/<[^>]+>/g, "")
+          .replace(/&nbsp;|\u00a0/g, " ")
+          .trim();
+        if (!trimmedArtist) return match;
         const initial = trimmedArtist.charAt(0).toUpperCase();
         return `
           <div class="my-4 flex items-center gap-2 rounded-md bg-[#F4FFCD] dark:bg-lime-950/20 p-2 w-fit">
