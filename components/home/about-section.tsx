@@ -48,9 +48,8 @@ export default function AboutSection() {
           viewBox="0 0 1082 716"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className={`absolute top-0 left-[20%] right-0 w-[80%] h-[75%] overflow-visible pointer-events-none z-10 ${
-            isInView ? "animate-path" : ""
-          }`}
+          className={`absolute top-0 left-[20%] right-0 w-[80%] h-[75%] overflow-visible pointer-events-none z-10 ${isInView ? "animate-path" : ""
+            }`}
           preserveAspectRatio="none"
         >
           <style>{`
@@ -96,88 +95,83 @@ export default function AboutSection() {
       </div>
 
       {/* Content Overlay */}
-      <div className="relative z-10 mx-auto flex h-full flex-row items-end justify-between pl-4 pr-5 md:px-4 pb-8 pt-12 md:px-6 md:py-24 lg:px-12">
+      <div className="relative z-10 mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 h-full md:h-auto md:absolute md:bottom-0 md:left-0 md:right-0 flex flex-row items-end md:items-center justify-between pb-8 pt-12 md:py-24">
         {/* Left Side: Description Text */}
         <div className="max-w-[45%] mb-0 md:max-w-md md:w-5/12">
-          <h2 className="md:hidden font-normal leading-tight tracking-tight text-[#d4ff00] fluid-text-xl sm:fluid-text-2xl lg:fluid-text-3xl text-balance">
+          <h2
+            className="md:hidden font-normal leading-tight tracking-tight text-[#d4ff00] text-xs sm:text-xs text-balance"
+            style={{ fontFamily: "'Clash Display', sans-serif" }}
+          >
             We are a community driven by grit, built on persistence, and united
             by skateboarding.
           </h2>
-          <h2 className="hidden md:block font-bold leading-tight tracking-tight text-[#d4ff00] lg:fluid-text-3xl text-4xl">
-            We are a community
-            <br /> driven by grit, built on
-            <br /> persistence, and united
-            <br /> by skateboarding.
+          <h2
+            className="hidden md:block font-bold leading-tight tracking-tight text-[#d4ff00] lg:fluid-text-3xl text-4xl"
+            style={{ fontFamily: "'Clash Display', sans-serif" }}
+          >
+            We are a community driven by grit, built on persistence, and united
+            by skateboarding.
           </h2>
         </div>
 
         {/* Right Side: Large Title & CTA Button Container */}
-        <div className="relative flex flex-col items-end md:w-7/12">
-          <div className="relative inline-flex items-start tracking-tighter select-none">
-            <h1 className="flex items-start text-[clamp(3rem,15vw,15rem)] font-black uppercase text-[#d4ff00] sm:text-[clamp(3rem,14vw,14rem)] lg:text-[clamp(3rem,11vw,11rem)] leading-[0.8]">
-              {/* WE */}
-              <span className="leading-[0.8]">WE</span>
+        <div className="relative flex flex-col items-end w-[50%] md:w-7/12">
+          <div className="relative inline-block tracking-tighter select-none w-full max-w-[575px]">
+            {/* SVG replacing WE'RE text */}
+            <svg
+              width="575"
+              height="132"
+              viewBox="0 0 575 132"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-full h-auto"
+            >
+              <path
+                d="M405.458 1.26465V48.3271C405.458 60.2127 401.947 68.8452 395.594 74.5264C389.217 80.2293 379.781 83.1348 367.586 83.1348H352.575V58.2969H366.173C369.049 58.2968 371.544 57.8961 373.272 56.2812C375.017 54.6494 375.671 52.0764 375.671 48.5625V44.0137H350.454V1.26465H405.458Z"
+                stroke="#CCFF02"
+                strokeWidth="2.5"
+              />
+              <path
+                d="M436.08 83.2547H412.719V0H461.304C483.299 0 494.855 9.1953 494.855 25.4734C494.855 38.6451 488.269 46.4735 472.364 48.4617V49.7043C480.938 51.941 483.671 56.0416 486.778 62.3789L497.092 83.2547H470.127L460.186 62.8759C457.204 56.6629 454.719 54.9232 445.648 54.9232H436.08V83.2547ZM436.08 21.0001V37.5267H461.056C467.89 37.5267 470.375 36.2841 470.375 29.2013C470.375 22.6155 467.89 21.0001 461.056 21.0001H436.08Z"
+                fill="#CCFF02"
+              />
+              <path
+                d="M574.753 83.2547H500.817V0H574.753V21.0001H524.178V30.9409H572.889V51.8167H524.178V62.2546H574.753V83.2547Z"
+                fill="#CCFF02"
+              />
+              <path
+                d="M82.5427 132.002H27.5799L0 0.012207H41.3699L52.4018 67.189L55.9478 96.9359H58.5088L63.8278 67.189L81.5577 0.012207H137.309L153.462 67.189L158.19 96.9359H160.751L164.691 67.189L177.102 0.012207H217.684L187.543 132.002H132.581L118.791 75.463L110.123 34.0931H107.562L98.3027 75.463L82.5427 132.002Z"
+                fill="#CCFF02"
+              />
+              <path
+                d="M342.591 132.002H225.376V0.012207H342.591V33.3051H262.412V49.065H339.636V82.1609H262.412V98.7089H342.591V132.002Z"
+                fill="#CCFF02"
+              />
+            </svg>
 
-              {/* Wrapper container for the Apostrophe + RE to establish the exact button width bounds */}
-              <span className="relative inline-flex items-start">
-                {/* Custom Apostrophe Frame */}
-                <span className="inline-flex items-center justify-center w-[0.36em] h-[0.6em] mr-[-0.03em] ml-[-0.03em] translate-y-[0.05em] shrink-0 mt-[-0.1em]">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 100 130"
-                    width="100%"
-                    height="100%"
-                  >
-                    <path
-                      d="M 15,10 
-              L 85,10 
-              L 85,85 
-              A 35,35 0 0,1 50,120 
-              L 15,120 
-              L 15,90 
-              L 45,90 
-              L 45,70 
-              L 15,70 
-              Z"
-                      fill="none"
-                      stroke="#d4ff00"
-                      strokeWidth="11"
-                      strokeLinejoin="miter"
-                      strokeLinecap="square"
-                    />
-                  </svg>
-                </span>
-
-                {/* 'RE' */}
-                <span className="text-[0.60em] font-black leading-[0.8] mt-[0.00em] translate-y-[0.04em]">
-                  RE
-                </span>
-
-                {/* CTA Button anchored strictly inside the width of the Apostrophe + RE area */}
-                <div className="absolute left-0 right-0 bottom-[-0.05em] z-20 translate-y-[100%]">
-                  <Link
-                    href="/about"
-                    className="!w-[fit-content] group flex items-center justify-between rounded-full bg-black border border-neutral-900 p-1 md:px-3 md:py-1.5 text-[7px] sm:text-[clamp(0.625rem,0.8vw,0.875rem)] md:text-[clamp(0.625rem,1vw,1rem)] font-bold tracking-widest text-[#d4ff00] uppercase transition-all duration-300 hover:bg-neutral-950 hover:border-neutral-800 w-full"
-                  >
-                    <span className="truncate">CTA BUTTON</span>
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="animate-nudge-x w-[1.1vw] h-[1.1vw] min-w-[10px] min-h-[10px] shrink-0"
-                    >
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
-                    </svg>
-                  </Link>
-                </div>
-              </span>
-            </h1>
+            {/* CTA Button positioned inside the SVG empty space under 'RE */}
+            <div className="absolute left-[60.9%] right-0 bottom-[-2%] z-20 h-[30%]">
+              <Link
+                href="/about"
+                className="group flex items-center justify-between rounded-full bg-black border border-neutral-900 px-3 md:px-5 text-[6px] sm:text-[clamp(0.5rem,0.8vw,0.875rem)] md:text-[clamp(0.625rem,1vw,1rem)] font-bold tracking-widest text-[#d4ff00] uppercase transition-all duration-300 hover:bg-neutral-950 hover:border-neutral-800 w-full h-full"
+              >
+                <span className="truncate">CTA BUTTON</span>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="animate-nudge-x w-[1.1vw] h-[1.1vw] min-w-[10px] min-h-[10px] shrink-0"
+                >
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

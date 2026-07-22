@@ -3,6 +3,7 @@ import { Navbar } from "components/layout/navbar";
 import { NavbarScrollWrapper } from "components/layout/navbar/navbar-scroll";
 import { WelcomeToast } from "components/welcome-toast";
 import { GeistSans } from "geist/font/sans";
+import { clashDisplay } from "lib/fonts";
 import { GoKwikScript } from "lib/gokwik";
 import { getDictionary } from "lib/i18n";
 import { TranslationProvider } from "lib/i18n/TranslationProvider";
@@ -40,7 +41,7 @@ export default async function RootLayout(props: {
   const dictionary = getDictionary(params.locale);
 
   return (
-    <html lang={params.locale} className={GeistSans.variable}>
+    <html lang={params.locale} className={`${GeistSans.variable} ${clashDisplay.variable}`}>
       <body className="bg-white text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
         <CartProvider cartPromise={cart}>
           <TranslationProvider locale={params.locale} dictionary={dictionary}>

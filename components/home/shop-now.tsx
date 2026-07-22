@@ -31,17 +31,17 @@ const products: ProductCard[] = catalog.shopNow.map((p) => ({
 
 export default function ShopNow({ locale }: { locale: string }) {
   // Calculates dynamic alignment padding relative to a 1536px max-width container
-  const trackPadding = "max(1rem, calc((100vw - 1536px) / 2 + 1rem))";
+  const trackPadding = "var(--track-padding)";
 
   return (
-    <section className="w-full overflow-hidden py-12 md:py-30">
+    <section className="shop-now-section w-full overflow-hidden py-15 md:py-30">
       {/* Header aligned dynamically using trackPadding */}
       <div
         className="mb-6 md:mb-10 flex justify-between w-full items-center"
         style={{ paddingLeft: trackPadding, paddingRight: trackPadding }}
       >
         <h2
-          className="text-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
+          className="text-[clamp(1.5rem,5vw,3.75rem)] leading-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
           style={{
             fontFamily: "'Clash Display', sans-serif",
             letterSpacing: "-0.01em",
@@ -71,6 +71,14 @@ export default function ShopNow({ locale }: { locale: string }) {
         <style
           dangerouslySetInnerHTML={{
             __html: `
+          .shop-now-section {
+            --track-padding: 1rem;
+          }
+          @media (min-width: 1024px) {
+            .shop-now-section {
+              --track-padding: max(3.75rem, calc((100vw - 1536px) / 2 + 3.75rem));
+            }
+          }
           div::-webkit-scrollbar {
             display: none !important;
           }
@@ -99,19 +107,17 @@ function ProductCardGrid({
 }) {
   const imgRef = useRef<HTMLDivElement>(null);
   const [showIndex, setShowIndex] = useState(0);
-  const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imgRef.current) return;
-    clearTimeout(moveTimer.current);
-    moveTimer.current = setTimeout(() => {
-      const rect = imgRef.current!.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const pct = x / rect.width;
-      setShowIndex(pct < 0.25 ? 0 : pct > 0.75 ? 2 : 1);
-    }, 80);
+    clearTimeout(leaveTimer.current);
+    const rect = imgRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = x / rect.width;
+    setShowIndex(pct < 0.25 ? 0 : pct > 0.75 ? 2 : 1);
   };
 
   const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -164,7 +170,6 @@ function ProductCardGrid({
     touchStart.current = null;
   };
 
-
   return (
     <div
       className="group/card flex flex-col bg-transparent w-[calc(50vw-1.25rem)] sm:w-[340px] lg:w-[384px] flex-shrink-0 snap-start"
@@ -175,14 +180,17 @@ function ProductCardGrid({
       {/* Image Block */}
       <div
         ref={imgRef}
-        className="relative aspect-[3/4.5] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
+        className="relative aspect-[3/4.5] w-full overflow-hidden rounded-md bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
         onMouseEnter={() => {
+          clearTimeout(leaveTimer.current);
           setShowIndex(1);
         }}
         onMouseMove={handleMouseMove}
         onMouseLeave={() => {
-          clearTimeout(moveTimer.current);
-          setShowIndex(0);
+          clearTimeout(leaveTimer.current);
+          leaveTimer.current = setTimeout(() => {
+            setShowIndex(0);
+          }, 800);
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -267,7 +275,7 @@ function ProductCardGrid({
           {product.brand}
         </p>
         <h3
-          className="line-clamp-2 text-[clamp(0.875rem,2.5vw,1.25rem)] font-medium leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2"
+          className="line-clamp-2 text-[clamp(0.875rem,2.5vw,1.25rem)] font-semibold leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2"
           style={{ fontFamily: "'Clash Display', sans-serif" }}
         >
           {product.name}

@@ -90,7 +90,7 @@ export default async function ProductPage(props: {
           __html: JSON.stringify(productJsonLd),
         }}
       />
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 py-4">
+      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 py-4">
         {/* Breadcrumb */}
         {/* <div className="mb-6 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
           <Link
@@ -166,7 +166,7 @@ async function RelatedProducts({ id, locale }: { id: string; locale: string }) {
       >
         {t("product.related_products").toUpperCase()}
       </h2>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+      <div className="grid grid-cols-2 gap-x-2.5 gap-y-11 sm:grid-cols-3 lg:grid-cols-4 md:gap-x-2.5 md:gap-y-20">
         {relatedProducts.slice(0, 4).map((product) => (
           <ProductCard key={product.handle} product={product} locale={locale} />
         ))}

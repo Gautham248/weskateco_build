@@ -5,6 +5,7 @@ import blueWheels from "components/icons/blue_skateboard_wheels.png";
 import yellowFull from "components/icons/yellow_skateboard_full.png";
 import yellowWheels from "components/icons/yellow_skateboard_wheels.png";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 const slides = [
@@ -111,36 +112,72 @@ export default function NewlyReleaseContent() {
                     pointerEvents: isActive ? "auto" : "none",
                   }}
                 >
-                  <div className="relative w-full aspect-[414/552] bg-[#e3e3e3] rounded-[16px] overflow-hidden">
-                    <Image
-                      src={slide.wheels}
-                      alt={`skateboard wheels ${idx}`}
-                      fill
-                      className="object-cover"
-                      sizes="414px"
-                    />
-                  </div>
-
-                  <div className="w-full text-black pt-4 flex flex-col justify-center bg-white rounded-[16px] p-4">
-                    <h3
-                      className="text-xs md:text-sm font-medium tracking-tight text-black uppercase leading-tight"
-                      style={{ fontFamily: "Archivo, sans-serif" }}
-                    >
-                      {slide.title}
-                    </h3>
-                    <h2
-                      className="text-xs md:text-sm font-medium tracking-tight text-black uppercase mt-0.5 leading-tight"
-                      style={{ fontFamily: "Archivo, sans-serif" }}
-                    >
-                      {slide.subtitle}
-                    </h2>
-                    <div className="flex items-center gap-2 mt-3 text-xs md:text-sm font-normal">
-                      <span className="text-black">{slide.price}</span>
-                      <span className="line-through text-red-500 scale-95 origin-left">
-                        {slide.oldPrice}
-                      </span>
+                  <Link
+                    href="#"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className="flex flex-col gap-4 w-full h-full cursor-pointer"
+                  >
+                    <div className="relative w-full aspect-[414/552] bg-[#e3e3e3] rounded-[16px] overflow-hidden">
+                      <Image
+                        src={slide.wheels}
+                        alt={`skateboard wheels ${idx}`}
+                        fill
+                        className="object-cover"
+                        sizes="414px"
+                      />
                     </div>
-                  </div>
+
+                    <div className="relative w-full text-black pt-4 flex flex-col justify-center bg-white rounded-[16px] p-4">
+                      <h3
+                        className="text-xs md:text-sm font-medium tracking-tight text-black uppercase leading-tight"
+                        style={{ fontFamily: "Archivo, sans-serif" }}
+                      >
+                        {slide.title}
+                      </h3>
+                      <h2
+                        className="text-xs md:text-sm font-medium tracking-tight text-black uppercase mt-0.5 leading-tight"
+                        style={{ fontFamily: "Archivo, sans-serif" }}
+                      >
+                        {slide.subtitle}
+                      </h2>
+                      <div className="flex items-center gap-2 mt-3 text-xs md:text-sm font-normal">
+                        <span className="text-black">{slide.price}</span>
+                        <span className="line-through text-red-500 scale-95 origin-left">
+                          {slide.oldPrice}
+                        </span>
+                      </div>
+                      {/* Add to Cart Hover Button */}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-8 w-8 hover:w-[100px] items-center rounded-full bg-[#00000050] backdrop-blur-md text-white transition-all duration-300 active:scale-95 overflow-hidden"
+                      >
+                        <div className="flex items-center justify-start gap-1.5 px-2 w-full h-full">
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="flex-shrink-0"
+                          >
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                          </svg>
+                          <span className="text-xs font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
+                            Add to Cart
+                          </span>
+                        </div>
+                      </button>
+                    </div>
+                  </Link>
                 </div>
               );
             })}
@@ -285,6 +322,35 @@ export default function NewlyReleaseContent() {
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
           </svg>
+        </button>
+
+        {/* Add to Cart Hover Button (Mobile) */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          className="cursor-pointer group/btn absolute bottom-6 right-6 z-20 flex h-8 w-8 hover:w-[100px] items-center rounded-full bg-[#00000050] backdrop-blur-md text-white transition-all duration-300 active:scale-95 overflow-hidden"
+        >
+          <div className="flex items-center justify-start gap-1.5 px-2 w-full h-full">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="flex-shrink-0"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span className="text-xs font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
+              Add to Cart
+            </span>
+          </div>
         </button>
       </div>
 

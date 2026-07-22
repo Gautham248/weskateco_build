@@ -305,7 +305,7 @@ export default function StoreAllClient({
       </div>
 
       {isPending ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+        <div className="grid grid-cols-2 gap-x-2.5 gap-y-11 sm:grid-cols-3 lg:grid-cols-4 md:gap-x-2.5 md:gap-y-20">
           {Array.from({ length: 8 }).map((_, idx) => (
             <ProductCardSkeleton key={idx} />
           ))}
@@ -318,7 +318,7 @@ export default function StoreAllClient({
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+          <div className="grid grid-cols-2 gap-x-2.5 gap-y-11 sm:grid-cols-3 lg:grid-cols-4 md:gap-x-2.5 md:gap-y-20">
             {paginatedProducts.map((product) => (
               <ProductCard
                 key={product.handle}

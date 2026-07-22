@@ -24,7 +24,7 @@ export function SnapmintEmiCartBanner({
 
   return (
     <div
-      className="bg-[#f9f9f9] dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 p-4 flex items-center justify-between gap-4 mb-4 rounded-none"
+      className="bg-[#f9f9f9] dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 p-4 flex items-center justify-between gap-4 mb-4 rounded-sm"
       style={{ fontFamily: "Archivo, sans-serif" }}
     >
       {/* Left side text column */}

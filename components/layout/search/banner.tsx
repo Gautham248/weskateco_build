@@ -19,7 +19,7 @@ export default function StoreBanner({ title, description }: StoreBannerProps) {
   return (
     <section className="w-full bg-white">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-0 py-12">
-        <div className="relative w-full aspect-[5/1] max-[500px]:aspect-square max-[780px]:aspect-[4/1] overflow-hidden rounded-xl">
+        <div className="relative w-full aspect-[5/1] max-[500px]:aspect-square max-[780px]:aspect-[4/1] overflow-hidden rounded-md">
           <Image
             src={bannerImg}
             alt={`${title} banner`}
