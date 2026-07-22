@@ -50,12 +50,12 @@
 }
 
 @theme {
-  --font-clash: var(--font-clash-display), "Clash Display", sans-serif;
+  --font-clash: "Clash Display", sans-serif;
 }
 
 [style*="Clash Display"],
 .font-clash {
-  font-family: var(--font-clash-display), "Clash Display", sans-serif !important;
+  font-family: "Clash Display", sans-serif !important;
 }
 
 @plugin "@tailwindcss/container-queries";
