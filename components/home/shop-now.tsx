@@ -180,7 +180,7 @@ function ProductCardGrid({
       {/* Image Block */}
       <div
         ref={imgRef}
-        className="relative aspect-[3/4.5] w-full overflow-hidden rounded-md bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
+        className="relative aspect-[3/4.5] w-full overflow-hidden rounded-md bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-x"
         onMouseEnter={() => {
           clearTimeout(leaveTimer.current);
           setShowIndex(1);
@@ -214,16 +214,16 @@ function ProductCardGrid({
 
         {/* Sliding Image Track */}
         <div
-          className="absolute inset-0 flex transition-transform duration-700 ease-in-out"
-          style={{ transform: `translateX(-${showIndex * 100}%)` }}
+          className="absolute inset-0 flex transition-transform duration-700 ease-in-out touch-pan-x"
+          style={{ transform: `translateX(-${showIndex * 100}%)`, touchAction: "pan-x" }}
         >
           {[shopNow1, shopNow2, shopNow3].map((img, index) => (
-            <div key={index} className="relative h-full w-full flex-shrink-0">
+            <div key={index} className="relative h-full w-full flex-shrink-0 touch-pan-x">
               <Image
                 src={img}
                 alt={product.name}
                 fill
-                className="object-cover"
+                className="object-cover touch-pan-x"
                 sizes="(max-width: 640px) 280px, (max-width: 768px) 340px, 440px"
                 priority={product.id === "1"}
               />
