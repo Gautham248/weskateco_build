@@ -112,8 +112,8 @@ export default function TipsSection({
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18.0942 12H5.90576" stroke="#1D6A2B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M12 5.90625L5.90576 12.0005L12 18.0947" stroke="#1D6A2B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M18.0942 12H5.90576" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 5.90625L5.90576 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
             <button
@@ -122,8 +122,8 @@ export default function TipsSection({
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5.90576 12H18.0942" stroke="#1D6A2B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M12 5.90625L18.0942 12.0005L12 18.0947" stroke="#1D6A2B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M5.90576 12H18.0942" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 5.90625L18.0942 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { addItem, buyNowAction } from "components/cart/actions";
+import { addItem, createSingleItemCartAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
@@ -40,8 +40,18 @@ export function ProductActions({
   const handleBuyNow = () => {
     if (!selectedVariantId || !finalVariant) return;
     startBuyNowTransition(async () => {
-      addCartItem(finalVariant, product);
-      await buyNowAction(selectedVariantId);
+      const singleCartId = await createSingleItemCartAction(selectedVariantId);
+      if (singleCartId) {
+        if (window.merchantInfo) {
+          window.merchantInfo.cart = { id: singleCartId };
+        }
+        if (typeof window.triggerGokwikCustomCheckout === "function") {
+          window.triggerGokwikCustomCheckout();
+        }
+        if (onAddedToCart) {
+          onAddedToCart();
+        }
+      }
     });
   };
 
