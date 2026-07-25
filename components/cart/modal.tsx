@@ -11,9 +11,10 @@ import { useTranslation } from "lib/i18n/TranslationProvider";
 import type { CartItem } from "lib/shopify/types";
 import { createUrl } from "lib/utils";
 import Image from "next/image";
+import { useModalHistory } from "lib/hooks/use-modal-history";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { QuickBuySidebar } from "../product/quick-buy-sidebar";
 import { createCartAndSetCookie, redirectToCheckout } from "./actions";
@@ -42,11 +43,12 @@ export default function CartModal() {
   });
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<CartItem | null>(null);
+  const rawClose = useCallback(() => setIsOpen(false), []);
+  const closeCart = useModalHistory(isOpen, rawClose, "cart-modal");
   const openCart = () => {
     if (pathname.endsWith("/cart")) return;
     setIsOpen(true);
   };
-  const closeCart = () => setIsOpen(false);
 
   useEffect(() => {
     if (!cart) {
@@ -244,7 +246,7 @@ export default function CartModal() {
                                                 <div className="ml-2 flex flex-col justify-center">
                                                   <Link
                                                     href={merchandiseUrl}
-                                                    onClick={closeCart}
+                                                    onClick={rawClose}
                                                     className="z-30 flex flex-row"
                                                   >
                                                     <div className="flex flex-1 flex-col text-sm">
@@ -363,7 +365,7 @@ export default function CartModal() {
                                             <div>
                                               <Link
                                                 href={merchandiseUrl}
-                                                onClick={closeCart}
+                                                onClick={rawClose}
                                                 className="text-md font-semibold text-black dark:text-white uppercase line-clamp-1 hover:underline leading-snug"
                                                 style={{ fontFamily: "'Clash Display', sans-serif" }}
                                               >
@@ -479,7 +481,7 @@ export default function CartModal() {
 
                     <Link
                       href={getLocalizedPath("/cart", locale)}
-                      onClick={closeCart}
+                      onClick={rawClose}
                       className="w-full h-14 bg-white text-black hover:bg-neutral-50 border border-neutral-300 dark:bg-black dark:text-white dark:hover:bg-neutral-900 dark:border-white uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors flex items-center justify-center"
                       style={{ fontFamily: "Archivo, sans-serif" }}
                     >
