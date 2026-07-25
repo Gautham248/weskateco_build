@@ -243,8 +243,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
           </p>
         )}
         <h3
-          className="mb-2 text-[clamp(0.8125rem,2vw,1rem)] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2"
-          style={{ fontFamily: "'Clash Display', sans-serif" }}
+          className="mb-2 text-[clamp(0.8125rem,2vw,1rem)] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2 tracking-[-1%]"
         >
           {title}
         </h3>

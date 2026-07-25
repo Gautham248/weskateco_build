@@ -18,8 +18,8 @@ export default function StoreBanner({ title, description }: StoreBannerProps) {
 
   return (
     <section className="w-full bg-white">
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-0 py-12">
-        <div className="relative w-full aspect-[5/1] max-[500px]:aspect-square max-[780px]:aspect-[4/1] overflow-hidden rounded-md">
+      <div className="mx-auto max-w-(--breakpoint-2xl) px-0 py-12 max-[500px]:py-8 max-[780px]:py-8">
+        <div className="relative w-full aspect-[5/1] max-[500px]:aspect-[5/3] max-[780px]:aspect-[4/1] overflow-hidden rounded-md">
           <Image
             src={bannerImg}
             alt={`${title} banner`}
@@ -29,7 +29,7 @@ export default function StoreBanner({ title, description }: StoreBannerProps) {
           />
           <div className="absolute inset-0 flex flex-col max-[500px]:justify-end justify-center items-start p-6 md:p-12 text-white bg-gradient-to-t from-black/60 to-transparent">
             <h1
-              className="text-[clamp(1.5rem,5vw,3.75rem)] font-bold tracking-[-1%] text-white"
+              className="text-[clamp(1.5rem,5vw,3.75rem)] font-bold tracking-[-1%] text-white leading-[100%]"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
               {title.toUpperCase()}

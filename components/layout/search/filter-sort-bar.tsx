@@ -263,7 +263,7 @@ export default function FilterSortBar({
   const badgeCount = activeFiltersCount + (currentSort ? 1 : 0);
 
   return (
-    <div className="w-full bg-white text-black py-4 border-b border-neutral-100 dark:bg-neutral-950 dark:text-white dark:border-neutral-900">
+    <div className="w-full bg-white text-black pb-4 border-b border-neutral-100 dark:bg-neutral-950 dark:text-white dark:border-neutral-900">
       {/* Top Row */}
       <div className="flex flex-col px-0 md:px-2">
         <div className="flex flex-wrap items-center justify-between gap-4">
