@@ -1,4 +1,7 @@
+"use client";
+
 import clsx from "clsx";
+import { useNavbarScroll } from "components/layout/navbar/navbar-scroll";
 
 export default function OpenCart({
   className,
@@ -7,6 +10,8 @@ export default function OpenCart({
   className?: string;
   quantity?: number;
 }) {
+  const scrolled = useNavbarScroll();
+
   return (
     <div className="relative flex h-5 w-5 md:h-7 md:w-7 items-center justify-center rounded-md transition-colors">
       <svg
@@ -44,7 +49,14 @@ export default function OpenCart({
       </svg>
 
       {quantity ? (
-        <div className="absolute right-0 top-0 -mr-2 -mt-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-blue-600 px-1 text-[clamp(0.5rem,1vw,0.563rem)] font-bold text-white">
+        <div
+          className={clsx(
+            "absolute -right-1 -top-0.5 md:-right-2 md:-top-1.5 flex h-3.5 min-w-[14px] md:h-5 md:min-w-[20px] items-center justify-center rounded-full px-0.5 md:px-1 text-[8px] md:text-[10px] font-bold leading-none border-2 transition-colors",
+            scrolled
+              ? "bg-black text-white border-white dark:bg-white dark:text-black dark:border-neutral-900"
+              : "bg-white text-black border-transparent",
+          )}
+        >
           {quantity}
         </div>
       ) : null}

@@ -6,12 +6,12 @@ import LoadingDots from "components/loading-dots";
 import Price from "components/price";
 import { DEFAULT_OPTION } from "lib/constants";
 import { useGoKwikCheckout } from "lib/gokwik";
+import { useModalHistory } from "lib/hooks/use-modal-history";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import type { CartItem } from "lib/shopify/types";
 import { createUrl } from "lib/utils";
 import Image from "next/image";
-import { useModalHistory } from "lib/hooks/use-modal-history";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useCallback, useEffect, useState } from "react";
@@ -410,7 +410,7 @@ export default function CartModal() {
                                               amount={item.cost.totalAmount.amount}
                                               currencyCode={item.cost.totalAmount.currencyCode}
                                               currencyCodeClassName="hidden"
-                                              className="text-base font-bold text-black dark:text-white"
+                                              className="text-base font-semibold text-black dark:text-white"
                                               style={{ fontFamily: "'Clash Display', sans-serif" }}
                                             />
                                             <DeleteItemButton
