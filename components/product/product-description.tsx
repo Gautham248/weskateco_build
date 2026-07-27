@@ -1,5 +1,5 @@
 "use client";
-import { addItem, createSingleItemCartAction } from "components/cart/actions";
+import { createSingleItemCartAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
 import Price from "components/price";
@@ -133,7 +133,7 @@ export function ProductDescription({
               amount={product.priceRange.maxVariantPrice.amount}
               currencyCode={product.priceRange.maxVariantPrice.currencyCode}
               currencyCodeClassName="hidden"
-              className="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-neutral-900 dark:text-neutral-50"
+              className="text-[clamp(1.25rem,3vw,1.75rem)] font-semibold text-neutral-900 dark:text-neutral-50"
             />
             <span className="text-[clamp(0.563rem,1.5vw,0.688rem)] font-semibold text-neutral-600 dark:text-neutral-400">
               MRP

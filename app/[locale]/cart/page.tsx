@@ -1,5 +1,6 @@
 "use client";
 
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { removeItem, updateItemQuantity } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
@@ -292,7 +293,7 @@ function CartPageContent() {
                             <div className="flex justify-between items-start gap-4">
                               <div>
                                 <h3
-                                  className="text-[16px] font-bold uppercase text-black dark:text-white leading-tight tracking-[-1%]"
+                                  className="text-[16px] font-semibold uppercase text-black dark:text-white leading-tight tracking-[-1%]"
                                   style={{
                                     fontFamily: "'Clash Display', sans-serif",
                                   }}
@@ -354,7 +355,7 @@ function CartPageContent() {
                                 amount={item.cost.totalAmount.amount}
                                 currencyCode={item.cost.totalAmount.currencyCode}
                                 currencyCodeClassName="hidden"
-                                className="text-[20px] font-extrabold text-black dark:text-white"
+                                className="text-[20px] font-semibold text-black dark:text-white"
                               />
                             </div>
                           </div>
@@ -376,7 +377,7 @@ function CartPageContent() {
                       amount={cart.cost.subtotalAmount.amount}
                       currencyCode={cart.cost.subtotalAmount.currencyCode}
                       currencyCodeClassName="hidden"
-                      className="text-base font-bold text-neutral-900 dark:text-neutral-50"
+                      className="text-base font-semibold text-neutral-900 dark:text-neutral-50"
                     />
                   </div>
                 </div>
@@ -407,7 +408,7 @@ function CartPageContent() {
                         amount={cart.cost.totalAmount.amount}
                         currencyCode={cart.cost.totalAmount.currencyCode}
                         currencyCodeClassName="hidden"
-                        className="text-lg font-bold text-neutral-900 dark:text-white"
+                        className="text-lg font-semibold text-neutral-900 dark:text-white"
                       />
                     </div>
                   </div>
@@ -519,8 +520,8 @@ function CartPageQuantitySelector({
   };
 
   const btnClass = isMobile
-    ? "flex h-8 w-8 items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors cursor-pointer text-base font-bold"
-    : "flex h-7 w-7 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 transition-colors cursor-pointer text-sm font-bold";
+    ? "flex h-8 w-8 items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors cursor-pointer shrink-0"
+    : "flex h-7 w-7 items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors cursor-pointer shrink-0";
 
   const containerClass = isMobile
     ? "flex items-center gap-3.5 flex-shrink-0"
@@ -530,6 +531,8 @@ function CartPageQuantitySelector({
     ? "text-sm font-semibold w-5 text-center text-neutral-900 dark:text-neutral-100"
     : "text-xs font-semibold w-5 text-center text-neutral-700 dark:text-neutral-300";
 
+  const iconClass = isMobile ? "h-6 w-6 stroke-[2]" : "h-5 w-5 stroke-[2]";
+
   return (
     <div className={containerClass}>
       <button
@@ -537,8 +540,9 @@ function CartPageQuantitySelector({
         onClick={handleDecrease}
         disabled={isPending}
         className={btnClass}
+        aria-label="Decrease item quantity"
       >
-        -
+        <MinusIcon className={iconClass} />
       </button>
       <span className={textClass}>
         {String(item.quantity).padStart(2, "0")}
@@ -548,8 +552,9 @@ function CartPageQuantitySelector({
         onClick={handleIncrease}
         disabled={isPending}
         className={btnClass}
+        aria-label="Increase item quantity"
       >
-        +
+        <PlusIcon className={iconClass} />
       </button>
     </div>
   );
