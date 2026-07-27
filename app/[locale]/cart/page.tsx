@@ -292,7 +292,7 @@ function CartPageContent() {
                             <div className="flex justify-between items-start gap-4">
                               <div>
                                 <h3
-                                  className="text-[16px] font-bold uppercase text-black dark:text-white leading-tight tracking-[-1%]"
+                                  className="text-[16px] font-semibold uppercase text-black dark:text-white leading-tight tracking-[-1%]"
                                   style={{
                                     fontFamily: "'Clash Display', sans-serif",
                                   }}
@@ -354,7 +354,7 @@ function CartPageContent() {
                                 amount={item.cost.totalAmount.amount}
                                 currencyCode={item.cost.totalAmount.currencyCode}
                                 currencyCodeClassName="hidden"
-                                className="text-[20px] font-extrabold text-black dark:text-white"
+                                className="text-[20px] font-semibold text-black dark:text-white"
                               />
                             </div>
                           </div>
@@ -376,7 +376,7 @@ function CartPageContent() {
                       amount={cart.cost.subtotalAmount.amount}
                       currencyCode={cart.cost.subtotalAmount.currencyCode}
                       currencyCodeClassName="hidden"
-                      className="text-base font-bold text-neutral-900 dark:text-neutral-50"
+                      className="text-base font-semibold text-neutral-900 dark:text-neutral-50"
                     />
                   </div>
                 </div>
