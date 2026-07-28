@@ -275,8 +275,7 @@ function ProductCardGrid({
           {product.brand}
         </p>
         <h3
-          className="line-clamp-2 text-[clamp(0.875rem,2.5vw,1.25rem)] font-semibold leading-snug tracking-tight text-neutral-900 dark:text-neutral-100 uppercase mb-2"
-          style={{ fontFamily: "'Clash Display', sans-serif" }}
+          className="line-clamp-2 text-[clamp(0.875rem,2.5vw,1.25rem)] font-semibold leading-snug tracking-[-1%] text-neutral-900 dark:text-neutral-100 uppercase mb-2"
         >
           {product.name}
         </h3>

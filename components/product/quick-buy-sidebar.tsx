@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { editCartItemVariantAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
+import { useModalHistory } from "lib/hooks/use-modal-history";
 import { Product } from "lib/shopify/types";
 import Image from "next/image";
 import { Fragment, useEffect, useState, useTransition } from "react";
@@ -48,6 +49,7 @@ export function QuickBuySidebar({
 }: QuickBuySidebarProps) {
   const { updateLineVariant } = useCart();
   const [isUpdating, startUpdateTransition] = useTransition();
+  const closePanel = useModalHistory(isOpen, onClose, "quick-buy-sidebar");
 
   // Initialize options. In edit mode, pre-fill with current line item options.
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
@@ -107,7 +109,7 @@ export function QuickBuySidebar({
               top: "60px",
             },
           });
-          onClose();
+          closePanel();
         }
       } catch (e) {
         console.error(e);
@@ -126,7 +128,7 @@ export function QuickBuySidebar({
 
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog onClose={onClose} className="relative z-50">
+      <Dialog onClose={closePanel} className="relative z-50">
         <Transition.Child
           as={Fragment}
           enter="transition-all ease-in-out duration-300"
@@ -164,7 +166,7 @@ export function QuickBuySidebar({
                 </p>
                 <button
                   aria-label="Close panel"
-                  onClick={onClose}
+                  onClick={closePanel}
                   className="w-10 h-10 rounded-md bg-[#f2f2f2] dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 flex items-center justify-center transition-colors"
                 >
                   <XMarkIcon className="h-5 w-5 text-black dark:text-white" />
@@ -252,7 +254,7 @@ export function QuickBuySidebar({
                 <ProductActions
                   product={product}
                   selectedVariantId={selectedVariantId}
-                  onAddedToCart={onClose}
+                  onAddedToCart={closePanel}
                 />
               )}
             </div>

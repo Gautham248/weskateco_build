@@ -123,10 +123,10 @@ export function VariantSelector({
           <dt
             className={clsx(
               isQuickBuy
-                ? "text-xl font-semibold text-black dark:text-white tracking-[-1%]"
-                : "text-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100",
+                ? "text-md font-medium text-black dark:text-white tracking-[-1%]"
+                : "text-sm font-medium uppercase tracking-wider text-neutral-900 dark:text-neutral-100",
             )}
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
+            style={{ fontFamily: "Archivo, sans-serif" }}
           >
             {option.name}
           </dt>
@@ -135,8 +135,8 @@ export function VariantSelector({
               href="#buying-guide"
               className={clsx(
                 isQuickBuy
-                  ? "text-xs font-semibold uppercase tracking-wider text-black hover:text-neutral-500 dark:text-white dark:hover:text-neutral-400 transition-colors underline"
-                  : "text-[clamp(0.563rem,1.5vw,0.688rem)] font-semibold uppercase tracking-wider text-black hover:text-neutral-400 dark:hover:text-white transition-colors underline",
+                  ? "text-xs font-medium uppercase tracking-wider text-black hover:text-neutral-500 dark:text-white dark:hover:text-neutral-400 transition-colors underline"
+                  : "text-[clamp(0.563rem,1.5vw,0.688rem)] font-medium uppercase tracking-wider text-black hover:text-neutral-400 dark:hover:text-white transition-colors underline",
               )}
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
