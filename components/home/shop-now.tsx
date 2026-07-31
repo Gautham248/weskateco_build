@@ -41,7 +41,7 @@ export default function ShopNow({ locale }: { locale: string }) {
         style={{ paddingLeft: trackPadding, paddingRight: trackPadding }}
       >
         <h2
-          className="text-[clamp(1.5rem,5vw,3.75rem)] leading-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
+          className="text-[clamp(1.5rem,5vw,2.8125rem)] leading-[clamp(1.5rem,5vw,2.8125rem)] font-black tracking-tight text-black dark:text-white uppercase"
           style={{
             fontFamily: "'Clash Display', sans-serif",
             letterSpacing: "-0.01em",
