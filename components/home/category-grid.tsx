@@ -154,7 +154,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
     <section className="h-[fit-content] w-full bg-white pt-15 md:pt-30 pb-0 md:pb-5">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 mb-0 md:mb-10">
         <h2
-          className="text-[clamp(1.5rem,5vw,3.75rem)] leading-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
+          className="text-[clamp(1.5rem,5vw,2.8125rem)] leading-[clamp(1.5rem,5vw,2.8125rem)] font-black tracking-tight text-black dark:text-white uppercase"
           style={{
             fontFamily: "'Clash Display', sans-serif",
             letterSpacing: "-0.01em",

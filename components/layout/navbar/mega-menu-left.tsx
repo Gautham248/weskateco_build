@@ -38,7 +38,7 @@ export default function MegaMenuLeft({
   ];
 
   return (
-    <div className="w-auto bg-white dark:bg-neutral-900 rounded-xl p-10">
+    <div className="w-[290px] shrink-0 bg-white dark:bg-neutral-900 rounded-xl p-10">
       <div className="flex flex-col gap-7">
         {links.map((link) => (
           <Link
@@ -52,7 +52,12 @@ export default function MegaMenuLeft({
             onClick={onLinkClick}
             onMouseEnter={() => onCategoryHover(link.href)}
           >
-            {link.title.toUpperCase()}
+            <span
+              className="inline-flex flex-col after:content-[attr(data-text)] after:font-bold after:h-0 after:invisible after:overflow-hidden select-none"
+              data-text={link.title.toUpperCase()}
+            >
+              {link.title.toUpperCase()}
+            </span>
           </Link>
         ))}
       </div>
