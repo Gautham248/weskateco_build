@@ -13,7 +13,7 @@ export default function OpenCart({
   const scrolled = useNavbarScroll();
 
   return (
-    <div className="relative flex h-5 w-5 md:h-7 md:w-7 items-center justify-center rounded-md transition-colors">
+    <div className="relative flex h-5 w-5 md:h-7 md:w-7 items-center justify-center rounded-md transition-colors cursor-pointer">
       <svg
         width="32"
         height="32"
