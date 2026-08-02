@@ -62,18 +62,39 @@ export default function NewlyReleaseContent() {
     const container = containerRef.current;
     if (!container) return;
 
+    let momentumTimer: NodeJS.Timeout | null = null;
+
     const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < 20) return;
       e.preventDefault();
+
+      if (isTransitioning.current) {
+        if (momentumTimer) clearTimeout(momentumTimer);
+        momentumTimer = setTimeout(() => {
+          isTransitioning.current = false;
+        }, 150);
+        return;
+      }
+
+      if (Math.abs(e.deltaY) < 25) return;
+
+      isTransitioning.current = true;
+
       if (e.deltaY > 0) {
         setSlideIndex((prev) => (prev >= maxSlide ? 0 : prev + 1));
       } else {
         setSlideIndex((prev) => (prev <= 0 ? maxSlide : prev - 1));
       }
+
+      setTimeout(() => {
+        isTransitioning.current = false;
+      }, 800);
     };
 
     container.addEventListener("wheel", handleWheel, { passive: false });
-    return () => container.removeEventListener("wheel", handleWheel);
+    return () => {
+      if (momentumTimer) clearTimeout(momentumTimer);
+      container.removeEventListener("wheel", handleWheel);
+    };
   }, [maxSlide]);
 
   return (
@@ -364,8 +385,9 @@ export default function NewlyReleaseContent() {
                 e.stopPropagation();
                 setSlideIndex(idx);
               }}
-              className={`w-1.5 transition-all duration-300 rounded-full bg-white cursor-pointer ${idx === slideIndex ? "h-4 opacity-100" : "h-1.5 opacity-50"
-                }`}
+              className={`w-1.5 transition-all duration-300 rounded-full bg-white cursor-pointer ${
+                idx === slideIndex ? "h-4 opacity-100" : "h-1.5 opacity-50"
+              }`}
             />
           ))}
         </div>

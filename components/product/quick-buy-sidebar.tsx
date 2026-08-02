@@ -193,13 +193,12 @@ export function QuickBuySidebar({
 
                 <div className="flex flex-col justify-center pt-0.5">
                   <h3
-                    className="text-md font-semibold text-black dark:text-white uppercase line-clamp-2 leading-snug"
-                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                    className="text-sm font-semibold text-black dark:text-white uppercase line-clamp-2 leading-snug"
                   >
                     {product.title}
                   </h3>
                   {product.vendor && (
-                    <p className="text-sm font-normal tracking-wide text-neutral-500 dark:text-neutral-400 uppercase mt-1">
+                    <p className="text-xs font-normal tracking-wide text-neutral-500 dark:text-neutral-400 uppercase mt-1">
                       {product.vendor}
                     </p>
                   )}
@@ -208,7 +207,7 @@ export function QuickBuySidebar({
                       amount={product.priceRange.minVariantPrice.amount}
                       currencyCode={product.priceRange.minVariantPrice.currencyCode}
                       currencyCodeClassName="hidden"
-                      className="text-xl font-bold text-black dark:text-white"
+                      className="text-lg font-bold text-black dark:text-white"
                       style={{ fontFamily: "'Clash Display', sans-serif" }}
                     />
                   </div>

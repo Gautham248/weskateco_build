@@ -366,8 +366,7 @@ export default function CartModal() {
                                               <Link
                                                 href={merchandiseUrl}
                                                 onClick={rawClose}
-                                                className="text-md font-semibold text-black dark:text-white uppercase line-clamp-1 hover:underline leading-snug"
-                                                style={{ fontFamily: "'Clash Display', sans-serif" }}
+                                                className="text-sm font-semibold text-black dark:text-white uppercase line-clamp-1 hover:underline leading-snug"
                                               >
                                                 {item.merchandise.product.title}
                                               </Link>
@@ -432,8 +431,7 @@ export default function CartModal() {
                   <div className="py-4 border-t border-neutral-200 dark:border-neutral-800" style={{ fontFamily: "Archivo, sans-serif" }}>
                     <div className="mb-4 flex items-baseline justify-between">
                       <span
-                        className="text-[14px] font-bold uppercase text-neutral-900 dark:text-white tracking-wider"
-                        style={{ fontFamily: "'Clash Display', sans-serif" }}
+                        className="text-lg font-bold uppercase text-neutral-900 dark:text-white tracking-wider"
                       >
                         {t("cart.estimated_total")}
                       </span>
