@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
-const HOME_PATHS = ["/", "/en", "/hi"];
+const HERO_PATHS = ["/", "/en", "/hi", "/academy", "/en/academy", "/hi/academy"];
 
 const NavbarScrollContext = createContext<boolean>(false);
 
@@ -17,11 +17,11 @@ export function NavbarScrollWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isHomePage = HOME_PATHS.includes(pathname);
-  const [scrolled, setScrolled] = useState(!isHomePage);
+  const isHeroPage = HERO_PATHS.includes(pathname) || pathname.endsWith("/academy");
+  const [scrolled, setScrolled] = useState(!isHeroPage);
 
   useEffect(() => {
-    if (!isHomePage) {
+    if (!isHeroPage) {
       setScrolled(true);
       return;
     }
@@ -31,7 +31,7 @@ export function NavbarScrollWrapper({
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [isHomePage]);
+  }, [isHeroPage]);
 
   return (
     <NavbarScrollContext.Provider value={scrolled}>
