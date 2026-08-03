@@ -15,7 +15,7 @@ export default function PhilosophySection() {
           {/* ================= COLUMN 1 (Left: Col-span-3 fit to academy1 width) ================= */}
           <div className="lg:col-span-3 flex flex-col gap-6 w-full max-w-[402px]">
             {/* Header Block with text extending into next column space */}
-            <div className="flex flex-col gap-5 lg:w-[180%] lg:max-w-[472px] z-10">
+            <div className="flex flex-col gap-5 lg:w-[180%] lg:max-w-[532px] z-10">
               <h2
                 className="text-[24px] md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
@@ -23,7 +23,7 @@ export default function PhilosophySection() {
                 OUR PHILOSOPHY
               </h2>
               <div
-                className="text-sm sm:text-base leading-[120%] text-black"
+                className="text-sm sm:text-lg leading-[120%] text-black"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 <p className="font-medium">
@@ -116,17 +116,17 @@ export default function PhilosophySection() {
 
                 {/* Secondary Text Block */}
                 <div
-                  className="flex flex-col gap-4 text-sm sm:text-base leading-[120%] text-black"
+                  className="flex flex-col gap-4 text-sm sm:text-lg leading-[120%] text-black"
                   style={{ fontFamily: "'Clash Display', sans-serif" }}
                 >
-                  <div className="md:w-[414px]">
+                  <div className="md:w-[470px]">
                     <span className="font-semibold">New to the game?</span> We&apos;ve
                     got your back. We teach you how to control your board—and how to
                     hit the ground without wrecking yourself. Safety isn&apos;t
                     soft. It&apos;s smart.
                   </div>
 
-                  <div className="md:w-[414px]">
+                  <div className="md:w-[470px]">
                     <span className="font-semibold">Already ripping?</span> We go all
                     in. Training plans that cover your diet, strength, stamina, and
                     style—built to push limits and hit long-term goals. No fluff.
