@@ -45,7 +45,7 @@ export default function LovedByCommunity() {
     <section className="w-full bg-[#F6F6F6] text-black py-10 md:py-24 overflow-hidden">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15">
         {/* Main 2-Column Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-stretch">
           {/* ================= COLUMN 1: Title & Navigation Controls ================= */}
           <div className="lg:col-span-4 flex flex-col justify-between pt-0 md:pt-25">
             <div className="flex flex-col gap-4 max-w-sm">
@@ -64,8 +64,8 @@ export default function LovedByCommunity() {
               </p>
             </div>
 
-            {/* Carousel Arrow Buttons */}
-            <div className="flex items-center gap-3 pt-8 lg:pt-0">
+            {/* Carousel Arrow Buttons (Desktop) */}
+            <div className="hidden lg:flex items-center gap-3 pt-8 lg:pt-0">
               <button
                 onClick={handlePrev}
                 aria-label="Previous slide"
@@ -138,7 +138,7 @@ export default function LovedByCommunity() {
                   </div>
 
                   {/* Text Container Card */}
-                  <div className="bg-white rounded-[16px] p-6 md:p-10 gap-4 flex flex-col justify-between border border-neutral-100 aspect-[497/615]">
+                  <div className="bg-white rounded-[16px] p-6 md:p-10 gap-6 md:gap-4 flex flex-col justify-between border border-neutral-100">
                     <div>
                       <svg
                         className="w-10 h-10 md:w-16 md:h-16"
@@ -169,6 +169,31 @@ export default function LovedByCommunity() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Carousel Arrow Buttons (Mobile) */}
+          <div className="flex lg:hidden items-center gap-3 pt-2">
+            <button
+              onClick={handlePrev}
+              aria-label="Previous slide"
+              className="w-12 h-12 border border-neutral-200 rounded-full flex items-center justify-center bg-white hover:bg-[#CCFF02] transition-colors cursor-pointer"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.0942 12H5.90576" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 5.90625L5.90576 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+
+            <button
+              onClick={handleNext}
+              aria-label="Next slide"
+              className="w-12 h-12 border border-neutral-200 rounded-full flex items-center justify-center bg-white hover:bg-[#CCFF02] transition-colors cursor-pointer"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5.90576 12H18.0942" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 5.90625L18.0942 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
