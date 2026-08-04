@@ -1,5 +1,3 @@
-"use client";
-
 import mission1 from "components/icons/skatepark/mission1.png";
 import mission2 from "components/icons/skatepark/mission2.png";
 import mission3 from "components/icons/skatepark/mission3.png";

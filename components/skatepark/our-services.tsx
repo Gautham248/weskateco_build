@@ -1,5 +1,3 @@
-"use client";
-
 import services1 from "components/icons/skatepark/services1.png";
 import services2 from "components/icons/skatepark/services2.png";
 import services3 from "components/icons/skatepark/services3.png";

@@ -1,5 +1,3 @@
-"use client";
-
 import weImg from "components/icons/skatepark/we.png";
 import weMobileImg from "components/icons/skatepark/we_mobile.png";
 import Image from "next/image";
@@ -27,7 +25,6 @@ export default function SkateparkGallerySection() {
           width={600}
           height={900}
           className="w-full h-auto object-contain"
-          priority
         />
       </div>
     </section>
