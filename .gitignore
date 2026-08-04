@@ -22,6 +22,7 @@ docs/
 # misc
 .DS_Store
 *.pem
+graphify-out/
 
 # debug
 npm-debug.log*
