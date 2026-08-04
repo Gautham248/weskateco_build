@@ -1,27 +1,16 @@
-import academyBanner from "components/icons/academy/academy_banner.png";
-import academyMobileBanner from "components/icons/academy/academy_mobile_hero.png";
+import skateparkBanner from "components/icons/skatepark/skatepark_banner.png";
 import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function AcademyHeroBanner({ locale }: { locale?: string }) {
+export default function SkateparkHeroBanner({ locale }: { locale?: string }) {
   return (
     <section className="relative h-screen w-full overflow-hidden -mt-[72px]">
-      {/* Mobile Image */}
-      <div className="absolute inset-0 md:hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0">
         <Image
-          src={academyMobileBanner}
-          alt="Academy Hero background"
-          fill
-          className="object-cover"
-          priority
-        />
-      </div>
-      {/* Desktop Image */}
-      <div className="absolute inset-0 hidden md:block">
-        <Image
-          src={academyBanner}
-          alt="Academy Hero background"
+          src={skateparkBanner}
+          alt="WB Skateparks background"
           fill
           className="object-cover"
           priority
@@ -34,24 +23,25 @@ export default function AcademyHeroBanner({ locale }: { locale?: string }) {
           {/* Left: Heading */}
           <div className="flex flex-col">
             <h1
-              className="text-[32px] md:text-[100px] font-bold text-white tracking-[-1%] uppercase leading-[32px] md:leading-[100px] select-none"
+              className="text-[clamp(32px,6.5vw,100px)] leading-[clamp(32px,6.5vw,100px)] font-bold text-white tracking-[-1%] uppercase select-none"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              WESKATE
+              WB
               <br />
-              ACADEMY
+              SKATEPARKS
             </h1>
           </div>
 
           {/* Right: Paragraph + Button */}
           <div className="max-w-xl flex flex-col items-start gap-6">
             <p
-              className="text-sm md:text-xl text-white leading-[130%] font-[400]"
+              className="text-sm md:text-lg text-white leading-[130%] font-[400]"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              Whether you&apos;re a first-timer or Olympic-bound, WeSkate Academy
-              has a place for you—with group sessions at Cubbon Park, Indiranagar,
-              and CV Raman Nagar, plus one-on-one coaching anywhere in Bangalore.
+              From Bangalore and Kerala, WB Skateparks brings together riders
+              and builders from around the world to create raw, purpose-built
+              concrete skateparks for skaters, BMXers, and roller crews—built
+              by people who live the culture, never by the corporate playbook.
             </p>
 
             <Link
@@ -59,7 +49,7 @@ export default function AcademyHeroBanner({ locale }: { locale?: string }) {
               className="group inline-flex items-center gap-2 rounded-full bg-white px-4 py-3 md:px-5 md:py-4 text-sm md:text-base font-[400] text-black transition-all duration-300 hover:bg-neutral-200 hover:scale-105 active:scale-95"
               style={{ fontFamily: "'Archivo', sans-serif" }}
             >
-              <span>Register Now</span>
+              <span>Contact Us</span>
               <svg
                 width="16"
                 height="16"

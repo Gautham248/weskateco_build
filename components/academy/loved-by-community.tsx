@@ -42,7 +42,7 @@ export default function LovedByCommunity() {
   };
 
   return (
-    <section className="w-full bg-[#F6F6F6] text-black py-10 md:py-24 overflow-hidden">
+    <section className="w-full bg-[#F7F7F9] text-black py-10 md:py-24 overflow-hidden">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15">
         {/* Main 2-Column Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-stretch">
@@ -56,7 +56,7 @@ export default function LovedByCommunity() {
                 LOVED BY OUR<br />COMMUNITY
               </h2>
               <p
-                className="text-sm sm:text-base text-black leading-[110%] font-[400]"
+                className="text-sm md:text-lg text-black leading-[110%] font-[400]"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 Hear what our skaters and parents have to say about their WeSkate
@@ -153,7 +153,7 @@ export default function LovedByCommunity() {
                       </svg>
                     </div>
                     <p
-                      className="text-sm md:text-base text-[#4F4F4F] leading-[140%] font-[400]"
+                      className="text-sm md:text-lg text-[#4F4F4F] leading-[140%] font-[400]"
                     >
                       {item.quote}
                     </p>
@@ -176,7 +176,7 @@ export default function LovedByCommunity() {
             <button
               onClick={handlePrev}
               aria-label="Previous slide"
-              className="w-12 h-12 border border-neutral-200 rounded-full flex items-center justify-center bg-white hover:bg-[#CCFF02] transition-colors cursor-pointer"
+              className="w-10 h-10 border border-neutral-200 rounded-full flex items-center justify-center bg-white hover:bg-[#CCFF02] transition-colors cursor-pointer"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M18.0942 12H5.90576" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -187,7 +187,7 @@ export default function LovedByCommunity() {
             <button
               onClick={handleNext}
               aria-label="Next slide"
-              className="w-12 h-12 border border-neutral-200 rounded-full flex items-center justify-center bg-white hover:bg-[#CCFF02] transition-colors cursor-pointer"
+              className="w-10 h-10 border border-neutral-200 rounded-full flex items-center justify-center bg-white hover:bg-[#CCFF02] transition-colors cursor-pointer"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M5.90576 12H18.0942" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

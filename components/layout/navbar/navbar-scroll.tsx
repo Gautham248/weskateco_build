@@ -3,7 +3,17 @@
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
-const HERO_PATHS = ["/", "/en", "/hi", "/academy", "/en/academy", "/hi/academy"];
+const HERO_PATHS = [
+  "/",
+  "/en",
+  "/hi",
+  "/academy",
+  "/en/academy",
+  "/hi/academy",
+  "/skateparks",
+  "/en/skateparks",
+  "/hi/skateparks",
+];
 
 const NavbarScrollContext = createContext<boolean>(false);
 
@@ -17,7 +27,10 @@ export function NavbarScrollWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isHeroPage = HERO_PATHS.includes(pathname) || pathname.endsWith("/academy");
+  const isHeroPage =
+    HERO_PATHS.includes(pathname) ||
+    pathname.endsWith("/academy") ||
+    pathname.endsWith("/skateparks");
   const [scrolled, setScrolled] = useState(!isHeroPage);
 
   useEffect(() => {
