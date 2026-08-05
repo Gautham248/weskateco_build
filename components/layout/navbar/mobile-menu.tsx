@@ -52,6 +52,7 @@ export default function MobileMenu() {
 
   // Accordion states
   const [isStoreExpanded, setIsStoreExpanded] = useState(true);
+  const [isGuidesExpanded, setIsGuidesExpanded] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const openMobileMenu = () => setIsOpen(true);
@@ -245,16 +246,45 @@ export default function MobileMenu() {
                   )}
                 </div>
 
-                {/* GUIDES Link */}
-                <div className="border-b border-neutral-100 dark:border-neutral-900 py-4">
-                  <Link
-                    href={getLocalizedPath("/guides", locale)}
-                    onClick={closeMobileMenu}
-                    className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
-                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                {/* GUIDES Accordion */}
+                <div className="border-b border-neutral-100 dark:border-neutral-900 py-3">
+                  <button
+                    onClick={() => setIsGuidesExpanded(!isGuidesExpanded)}
+                    className="flex w-full items-center justify-between font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                   >
-                    GUIDES
-                  </Link>
+                    <span style={{ fontFamily: "'Clash Display', sans-serif" }}>
+                      GUIDES
+                    </span>
+                    {isGuidesExpanded ? (
+                      <ChevronUpIcon className="h-4 w-4 stroke-[2.5]" />
+                    ) : (
+                      <ChevronDownIcon className="h-4 w-4 stroke-[2.5]" />
+                    )}
+                  </button>
+
+                  {isGuidesExpanded && (
+                    <div className="mt-3 flex flex-col gap-2 pl-1"
+                      style={{ fontFamily: "Archivo, sans-serif" }}
+                    >
+                      <Link
+                        href={getLocalizedPath(
+                          "/guides/skateboard-buying-guide",
+                          locale
+                        )}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Skateboard Buying Guide
+                      </Link>
+                      <Link
+                        href={getLocalizedPath("/guides/wheels-guide", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Wheels Guide
+                      </Link>
+                    </div>
+                  )}
                 </div>
 
                 {/* ACADEMY Link */}

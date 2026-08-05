@@ -30,7 +30,8 @@ export function NavbarScrollWrapper({
   const isHeroPage =
     HERO_PATHS.includes(pathname) ||
     pathname.endsWith("/academy") ||
-    pathname.endsWith("/skateparks");
+    pathname.endsWith("/skateparks") ||
+    pathname.includes("/guides/");
   const [scrolled, setScrolled] = useState(!isHeroPage);
 
   useEffect(() => {
