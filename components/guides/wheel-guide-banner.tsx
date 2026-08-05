@@ -1,4 +1,5 @@
 import wheelsGuideBanner from "components/icons/skateboard_guide/wheel_guide.png";
+import wheelsGuideBannerMobile from "components/icons/skateboard_guide/wheel_guide_mobile.png";
 import Image from "next/image";
 
 export default function WheelGuideHeroBanner() {
@@ -6,11 +7,20 @@ export default function WheelGuideHeroBanner() {
     <section className="relative h-screen w-full overflow-hidden -mt-[72px]">
       {/* Background Image */}
       <div className="absolute inset-0">
+        {/* Desktop Background */}
         <Image
           src={wheelsGuideBanner}
           alt="Wheel Guide background"
           fill
-          className="object-cover object-[5%_center] md:object-center"
+          className="hidden md:block object-cover object-center"
+          priority
+        />
+        {/* Mobile Background */}
+        <Image
+          src={wheelsGuideBannerMobile}
+          alt="Wheel Guide mobile background"
+          fill
+          className="block md:hidden object-cover object-center"
           priority
         />
       </div>
@@ -24,7 +34,7 @@ export default function WheelGuideHeroBanner() {
 
       {/* Content Overlay */}
       <div className="relative z-10 mx-auto h-full max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col justify-end pb-12 md:pb-20 lg:pb-24">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 lg:gap-16 w-full">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-3 lg:gap-16 w-full">
           {/* Left: Heading */}
           <div className="flex flex-col">
             <h1
@@ -36,9 +46,9 @@ export default function WheelGuideHeroBanner() {
           </div>
 
           {/* Right: Paragraph Block */}
-          <div className="max-w-xl flex flex-col items-start gap-4">
+          <div className="max-w-xl flex flex-col items-start gap-3 md:gap-4">
             <h2
-              className="text-xl md:text-[32px] font-bold text-white leading-[100%]"
+              className="text-base md:text-[32px] font-bold text-white leading-[100%] w-[300px]"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
               What's the right size skateboard wheel for you?

@@ -51,12 +51,12 @@ export default function ChoosingAWheelShapeSection() {
   const { locale } = useTranslation();
 
   return (
-    <section className="w-full bg-[#F7F7F9] text-black py-16 md:py-24 overflow-hidden">
+    <section className="w-full bg-[#F7F7F9] text-black py-10 md:py-24 overflow-hidden">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-8 md:gap-12">
         {/* Top Header Block */}
         <div className="flex flex-col gap-4 max-w-2xl">
           <h2
-            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-[80%]"
+            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             CHOOSING A WHEEL <br /> SHAPE
@@ -67,24 +67,24 @@ export default function ChoosingAWheelShapeSection() {
           </p>
         </div>
 
-        {/* 5 Cards Grid (3 in row 1, 2 in row 2) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch">
+        {/* Cards Grid / Horizontal Scroll on Mobile */}
+        <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-8 items-stretch overflow-x-auto snap-x snap-mandatory -mx-4 px-4 scroll-px-4 md:mx-0 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pb-2 md:pb-0">
           {WHEEL_SHAPES_DATA.map((shape) => (
             <div
               key={shape.id}
-              className="bg-white rounded-[16px] p-6 md:p-8 flex flex-col justify-between gap-6 border border-neutral-100/80 transition-shadow hover:shadow-md"
+              className="bg-white rounded-[20px] p-6 md:p-8 flex flex-col justify-between gap-6 border border-neutral-100/80 transition-shadow hover:shadow-md shrink-0 max-w-[77vw] md:w-auto md:max-w-none snap-start"
             >
-              <div className="flex flex-col gap-5">
-                <span className="text-xs md:text-sm font-medium tracking-[-1%] text-[#00000080] uppercase">
+              <div className="flex flex-col gap-5 md:gap-5">
+                <span className="text-sm md:text-sm font-medium tracking-[-1%] text-[#00000080] uppercase">
                   {shape.tag}
                 </span>
                 <h3
-                  className="text-lg md:text-[24px] font-semibold tracking-[-1%] text-black uppercase leading-[100%] pb-2"
+                  className="text-lg md:text-[24px] font-semibold tracking-[-1%] text-black uppercase leading-[110%] md:leading-[100%]"
                   style={{ fontFamily: "'Clash Display', sans-serif" }}
                 >
                   {shape.title}
                 </h3>
-                <p className="text-sm md:text-base text-black leading-[140%] font-normal pb-4">
+                <p className="text-base md:text-base text-black leading-[140%] font-normal my-4">
                   {shape.description}
                 </p>
               </div>
@@ -92,13 +92,13 @@ export default function ChoosingAWheelShapeSection() {
               {/* Action Button */}
               <Link
                 href={getLocalizedPath("/store/skateboard-wheels", locale)}
-                className="flex items-center gap-3 group cursor-pointer text-left w-fit mt-4"
+                className="flex items-center gap-3 group cursor-pointer text-left w-fit"
               >
                 <div className="w-7 h-7 rounded-full bg-[#CCFF02] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <GreenArrowIcon />
                 </div>
                 <span
-                  className="text-sm md:text-base font-bold uppercase text-black"
+                  className="text-xl md:text-[24px] font-bold uppercase text-black"
                   style={{ fontFamily: "'Clash Display', sans-serif" }}
                 >
                   {shape.buttonText}
