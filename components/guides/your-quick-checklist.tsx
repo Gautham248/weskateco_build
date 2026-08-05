@@ -1,24 +1,4 @@
-"use client";
-
-function GreenCheckIcon() {
-  return (
-    <svg
-      width="12"
-      height="9"
-      viewBox="0 0 18 13"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M17 1L6 12L1 7"
-        stroke="#1D6A2B"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+import { GreenCheckIcon } from "./icons";
 
 const CHECKLIST_ITEMS = [
   {

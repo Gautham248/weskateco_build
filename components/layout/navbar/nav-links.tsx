@@ -34,8 +34,12 @@ export default function NavLinks({
     if (isDropdownOpen || isGuidesOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
+    if (isDropdownOpen) {
+      document.body.style.overflow = "hidden";
+    }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "";
     };
   }, [isDropdownOpen, isGuidesOpen]);
 

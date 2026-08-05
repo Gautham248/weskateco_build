@@ -1,5 +1,3 @@
-"use client";
-
 import skateboardGuideBanner from "components/icons/skateboard_guide/skateboard_guide_banner.png";
 import Image from "next/image";
 

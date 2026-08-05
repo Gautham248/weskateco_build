@@ -1,28 +1,11 @@
 "use client";
 
 import durometerImg from "components/icons/skateboard_guide/durometer.png";
+import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-
-function GreenArrowIcon() {
-  return (
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 14 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M1 6.92096H12.6378M6.81888 12.8419L12.6378 6.92096L6.81888 1"
-        stroke="#1D6A2B"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 const DUROMETER_OPTIONS = [
   {
@@ -56,6 +39,7 @@ const DUROMETER_OPTIONS = [
 ];
 
 export default function WheelDurometerSection() {
+  const { locale } = useTranslation();
   const [scale, setScale] = useState<"A" | "B">("A");
   const [activeItemId, setActiveItemId] = useState("78a-87a");
 
@@ -150,19 +134,9 @@ export default function WheelDurometerSection() {
                 <button
                   key={opt.id}
                   onClick={() => setActiveItemId(opt.id)}
+                  aria-label={`Select ${scale === "A" ? opt.titleA : opt.titleB} durometer`}
                   className="flex items-start text-left transition-colors cursor-pointer group"
                 >
-                  {/* Arrow Circle Badge */}
-                  {/* <div
-                    className={`transition-all duration-300 ease-out overflow-hidden flex items-center justify-center shrink-0 rounded-full bg-[#CCFF02] mt-1 ${
-                      isActive
-                        ? "w-7 h-7 opacity-100 scale-100 mr-3 md:mr-4"
-                        : "w-0 h-7 opacity-0 scale-75 mr-0"
-                    }`}
-                  >
-                    <GreenArrowIcon />
-                  </div> */}
-
                   {/* Text Details */}
                   <div className="flex flex-col gap-1">
                     <span
@@ -197,12 +171,13 @@ export default function WheelDurometerSection() {
             </span>
           </div>
 
-          <button
-            className="w-full lg:w-auto bg-black text-white px-6 py-3.5 md:px-10 md:py-6 rounded-[4px] text-xs md:text-sm font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0"
+          <Link
+            href={getLocalizedPath("/store/decks", locale)}
+            className="inline-flex w-full lg:w-auto bg-black text-white px-6 py-3.5 md:px-10 md:py-6 rounded-[4px] text-xs md:text-sm font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 items-center justify-center"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             SHOP SKATEBOARD DECK
-          </button>
+          </Link>
         </div>
       </div>
     </section>

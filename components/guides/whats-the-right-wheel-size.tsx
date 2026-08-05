@@ -1,28 +1,11 @@
 "use client";
 
 import wheelSizeImg from "components/icons/skateboard_guide/wheel_size.png";
+import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-
-function GreenArrowIcon() {
-  return (
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 14 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M1 6.92096H12.6378M6.81888 12.8419L12.6378 6.92096L6.81888 1"
-        stroke="#1D6A2B"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 const WHEEL_SIZE_OPTIONS = [
   {
@@ -46,6 +29,7 @@ const WHEEL_SIZE_OPTIONS = [
 ];
 
 export default function WhatsTheRightWheelSizeSection() {
+  const { locale } = useTranslation();
   const [activeSizeId, setActiveSizeId] = useState("50-53mm");
 
   const activeOption =
@@ -83,6 +67,7 @@ export default function WhatsTheRightWheelSizeSection() {
                 <button
                   key={opt.id}
                   onClick={() => setActiveSizeId(opt.id)}
+                  aria-label={`Select ${opt.title} wheels`}
                   className="flex items-start text-left transition-colors cursor-pointer group"
                 >
                   {/* Text Details */}
@@ -118,12 +103,6 @@ export default function WhatsTheRightWheelSizeSection() {
                   priority
                 />
               </div>
-              {/* <span
-                className="text-2xl md:text-[32px] font-bold text-black mt-2"
-                style={{ fontFamily: "'Clash Display', sans-serif" }}
-              >
-                {activeOption.title}
-              </span> */}
             </div>
 
             {/* Bottom Progress Bar */}
@@ -160,12 +139,13 @@ export default function WhatsTheRightWheelSizeSection() {
             </div>
           </div>
 
-          <button
-            className="w-full lg:w-auto bg-black text-white px-6 py-3.5 md:px-10 md:py-6 rounded-[4px] text-xs md:text-sm font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0"
+          <Link
+            href={getLocalizedPath("/store/skateboard-completes", locale)}
+            className="inline-flex w-full lg:w-auto bg-black text-white px-6 py-3.5 md:px-10 md:py-6 rounded-[4px] text-xs md:text-sm font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 items-center justify-center"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             SHOP COMPLETE SKATEBOARDS
-          </button>
+          </Link>
         </div>
       </div>
     </section>

@@ -2,27 +2,9 @@
 
 import skateToolImg from "components/icons/skateboard_guide/skate_tool.png";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-
-function GreenArrowIcon() {
-  return (
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 14 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M1 6.92096H12.6378M6.81888 12.8419L12.6378 6.92096L6.81888 1"
-        stroke="#1D6A2B"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+import { GreenArrowIcon } from "./icons";
 
 const MAINTENANCE_ITEMS = [
   {
@@ -78,6 +60,7 @@ export default function WhatAboutMaintenanceSection() {
                 <button
                   key={item.id}
                   onClick={() => setActiveItemId(item.id)}
+                  aria-label={`Show ${item.label}`}
                   className="flex items-center text-left transition-colors cursor-pointer group"
                 >
                   {/* Arrow Circle Badge */}
@@ -146,12 +129,13 @@ export default function WhatAboutMaintenanceSection() {
           </div>
 
           {/* WhatsApp / Phone Button */}
-          <button
-            className="w-full lg:w-auto bg-black text-white px-6 py-3.5 md:px-10 md:py-6 rounded-[4px] text-xs md:text-sm font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0"
+          <Link
+            href="tel:+917204593003"
+            className="inline-flex w-full lg:w-auto bg-black text-white px-6 py-3.5 md:px-10 md:py-6 rounded-[4px] text-xs md:text-sm font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 items-center justify-center"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             (+91) 7204593003
-          </button>
+          </Link>
         </div>
       </div>
     </section>

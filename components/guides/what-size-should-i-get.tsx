@@ -1,28 +1,12 @@
 "use client";
 
 import deckImg from "components/icons/skateboard_guide/size.png";
+import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-
-function GreenArrowIcon() {
-  return (
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 14 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M1 6.92096H12.6378M6.81888 12.8419L12.6378 6.92096L6.81888 1"
-        stroke="#1D6A2B"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+import { GreenArrowIcon } from "./icons";
 
 const SIZE_OPTIONS = [
   {
@@ -52,6 +36,7 @@ const SIZE_OPTIONS = [
 ];
 
 export default function WhatSizeShouldIGetSection() {
+  const { locale } = useTranslation();
   const [unit, setUnit] = useState<"UK" | "US">("UK");
   const [activeSizeId, setActiveSizeId] = useState("under-4");
 
@@ -166,6 +151,7 @@ export default function WhatSizeShouldIGetSection() {
                   <button
                     key={size.id}
                     onClick={() => setActiveSizeId(size.id)}
+                    aria-label={`Select ${unit === "UK" ? size.labelUK : size.labelUS}`}
                     className="flex items-center text-left transition-colors cursor-pointer group"
                   >
                     {/* Arrow Circle Badge */}
@@ -226,12 +212,13 @@ export default function WhatSizeShouldIGetSection() {
           </div>
 
           {/* Shop Button */}
-          <button
-            className="w-full lg:w-auto bg-black text-white px-6 py-3.5 rounded-[4px] text-sm md:text-base font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0"
+          <Link
+            href={getLocalizedPath("/store/decks", locale)}
+            className="inline-flex w-full lg:w-auto bg-black text-white px-6 py-3.5 rounded-[4px] text-sm md:text-base font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 items-center justify-center"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             SHOP SKATEBOARD DECK
-          </button>
+          </Link>
         </div>
       </div>
     </section>

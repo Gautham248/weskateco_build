@@ -1,24 +1,9 @@
 "use client";
 
-function GreenArrowIcon() {
-  return (
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 14 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M1 6.92096H12.6378M6.81888 12.8419L12.6378 6.92096L6.81888 1"
-        stroke="#1D6A2B"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
+import Link from "next/link";
+import { GreenArrowIcon } from "./icons";
 
 const WHEEL_SHAPES_DATA = [
   {
@@ -63,6 +48,8 @@ const WHEEL_SHAPES_DATA = [
 ];
 
 export default function ChoosingAWheelShapeSection() {
+  const { locale } = useTranslation();
+
   return (
     <section className="w-full bg-[#F7F7F9] text-black py-16 md:py-24 overflow-hidden">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-8 md:gap-12">
@@ -103,7 +90,10 @@ export default function ChoosingAWheelShapeSection() {
               </div>
 
               {/* Action Button */}
-              <button className="flex items-center gap-3 group cursor-pointer text-left w-fit mt-4">
+              <Link
+                href={getLocalizedPath("/store/skateboard-wheels", locale)}
+                className="flex items-center gap-3 group cursor-pointer text-left w-fit mt-4"
+              >
                 <div className="w-7 h-7 rounded-full bg-[#CCFF02] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <GreenArrowIcon />
                 </div>
@@ -113,7 +103,7 @@ export default function ChoosingAWheelShapeSection() {
                 >
                   {shape.buttonText}
                 </span>
-              </button>
+              </Link>
             </div>
           ))}
         </div>

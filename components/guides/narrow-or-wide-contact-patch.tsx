@@ -1,5 +1,9 @@
 "use client";
 
+import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
+import Link from "next/link";
+
 const CONTACT_PATCH_DATA = [
   {
     id: "narrow-contact-patch",
@@ -7,6 +11,7 @@ const CONTACT_PATCH_DATA = [
     title: "STREET SKATING",
     points: ["Easier slides, faster response", "Less grip"],
     buttonText: "SHOP SKATEBOARD WHEELS",
+    href: "/store/skateboard-wheels",
   },
   {
     id: "wide-contact-patch",
@@ -14,10 +19,13 @@ const CONTACT_PATCH_DATA = [
     title: "CRUISING, DOWNHILL",
     points: ["More stability and control", "Heavier, harder to slide"],
     buttonText: "SHOP SURFSKATE WHEELS",
+    href: "/store/surfskate-wheels",
   },
 ];
 
 export default function NarrowOrWideContactPatchSection() {
+  const { locale } = useTranslation();
+
   return (
     <section className="w-full bg-[#F7F7F9] text-black py-16 md:py-24 overflow-hidden">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-8 md:gap-12">
@@ -67,12 +75,13 @@ export default function NarrowOrWideContactPatchSection() {
               </div>
 
               {/* Action Button */}
-              <button
-                className="w-fit bg-black text-white px-6 py-3.5 rounded-[4px] text-xs md:text-sm font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 mt-10"
+              <Link
+                href={getLocalizedPath(item.href, locale)}
+                className="w-fit bg-black text-white px-6 py-3.5 rounded-[4px] text-xs md:text-sm font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 mt-10 inline-flex items-center justify-center"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 {item.buttonText}
-              </button>
+              </Link>
             </div>
           ))}
         </div>

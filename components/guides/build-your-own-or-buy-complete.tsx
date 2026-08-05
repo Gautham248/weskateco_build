@@ -1,5 +1,9 @@
 "use client";
 
+import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
+import Link from "next/link";
+
 const OPTIONS_DATA = [
   {
     id: "buy-complete",
@@ -10,7 +14,8 @@ const OPTIONS_DATA = [
       "You don't want to research every part",
       "You want the best value for money",
     ],
-    buttonText: "SHOP TOUCAN ACCESSORIES",
+    buttonText: "SHOP COMPLETE SKATEBOARDS",
+    href: "/store/skateboard-completes",
   },
   {
     id: "build-your-own",
@@ -20,11 +25,14 @@ const OPTIONS_DATA = [
       "You know your size, trucks, wheels, bearings",
       "You want a personalised or upgraded setup",
     ],
-    buttonText: "SHOP TOUCAN ACCESSORIES",
+    buttonText: "SHOP SKATEBOARDS",
+    href: "/store/skateboards",
   },
 ];
 
 export default function BuildYourOwnOrBuyCompleteSection() {
+  const { locale } = useTranslation();
+
   return (
     <section className="w-full bg-[#F7F7F9] text-black py-16 md:py-24 overflow-hidden">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-8 md:gap-12">
@@ -73,12 +81,13 @@ export default function BuildYourOwnOrBuyCompleteSection() {
               </div>
 
               {/* Action Button */}
-              <button
-                className="w-fit bg-black text-white px-6 py-3.5 rounded-[4px] text-xs md:text-sm font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 mt-10"
+              <Link
+                href={getLocalizedPath(option.href, locale)}
+                className="w-fit bg-black text-white px-6 py-3.5 rounded-[4px] text-xs md:text-sm font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 mt-10 inline-flex items-center justify-center"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 {option.buttonText}
-              </button>
+              </Link>
             </div>
           ))}
         </div>
