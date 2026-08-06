@@ -10,7 +10,7 @@ export default function SkateboardBuyingGuideHeroBanner() {
           src={skateboardGuideBanner}
           alt="Skateboard Buying Guide background"
           fill
-          className="object-cover object-[30%_center] md:object-center"
+          className="object-cover object-[55%_center] md:object-center"
           priority
         />
       </div>
@@ -24,7 +24,7 @@ export default function SkateboardBuyingGuideHeroBanner() {
 
       {/* Content Overlay */}
       <div className="relative z-10 mx-auto h-full max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col justify-end pb-12 md:pb-20 lg:pb-24">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 lg:gap-16 w-full">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-3 md:gap-16 w-full">
           {/* Left: Heading */}
           <div className="flex flex-col">
             <h1
@@ -38,9 +38,9 @@ export default function SkateboardBuyingGuideHeroBanner() {
           </div>
 
           {/* Right: Paragraph Block */}
-          <div className="max-w-xl flex flex-col items-start gap-4">
+          <div className="max-w-xl flex flex-col items-start gap-3">
             <h2
-              className="text-xl md:text-[32px] font-bold text-white leading-[100%]"
+              className="text-base md:text-[32px] w-[80%] md:w-full font-semibold text-white leading-[100%]"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
               New to skateboarding? Not sure what to buy?

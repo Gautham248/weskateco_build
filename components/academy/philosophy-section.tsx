@@ -8,7 +8,7 @@ import Image from "next/image";
 
 export default function PhilosophySection() {
   return (
-    <section className="w-full bg-white text-black py-16 md:py-24 overflow-hidden">
+    <section className="w-full bg-white text-black py-10 md:py-24 overflow-hidden">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15">
         {/* ================= DESKTOP LAYOUT (lg:grid) ================= */}
         <div className="hidden lg:grid grid-cols-12 gap-6 items-start">
