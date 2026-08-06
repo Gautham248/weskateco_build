@@ -409,20 +409,23 @@ export default function Footer() {
 
         {/* BOTTOM SECTION: Copyright & Legal Meta (Desktop) */}
         <div
-          className="hidden md:flex flex-row justify-between items-center gap-4 text-[clamp(0.75rem,1.5vw,0.875rem)] text-white"
+          className="hidden md:flex flex-row justify-between items-center gap-4 text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-400"
           style={{ fontFamily: "'Archivo', sans-serif" }}
         >
           <p>&copy; {currentYear} Weskateco Pvt Ltd</p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Link
               href="/refund-policy"
               className="hover:text-white transition-colors"
             >
-              Refund policy
+              Refund Policy
             </Link>
-            <span className="text-white">|</span>
-            <Link href="/terms" className="hover:text-white transition-colors">
-              Terms & Conditions
+            <span className="text-neutral-600 font-light">|</span>
+            <Link
+              href="/terms-of-service"
+              className="hover:text-white transition-colors"
+            >
+              Terms of Service
             </Link>
           </div>
         </div>
@@ -434,11 +437,27 @@ export default function Footer() {
         >
           <span>&copy;{currentYear} Weskateco Pvt Ltd</span>
           <span className="text-neutral-600 font-light">|</span>
-          <Link href="/contact" className="hover:text-white transition-colors">
-            Contact Us
+          <Link
+            href="/privacy-policy"
+            className="hover:text-white transition-colors"
+          >
+            Privacy Policy
           </Link>
           <span className="text-neutral-600 font-light">|</span>
-          <div className="basis-full h-0" />
+          <Link
+            href="/refund-policy"
+            className="hover:text-white transition-colors"
+          >
+            Refund Policy
+          </Link>
+          <span className="text-neutral-600 font-light">|</span>
+          <Link
+            href="/terms-of-service"
+            className="hover:text-white transition-colors"
+          >
+            Terms of Service
+          </Link>
+          <span className="text-neutral-600 font-light">|</span>
           <Link
             href="/shipping-policy"
             className="hover:text-white transition-colors"
@@ -447,10 +466,10 @@ export default function Footer() {
           </Link>
           <span className="text-neutral-600 font-light">|</span>
           <Link
-            href="/privacy-policy"
+            href="/contact"
             className="hover:text-white transition-colors"
           >
-            Privacy Policy
+            Contact Us
           </Link>
         </div>
 
