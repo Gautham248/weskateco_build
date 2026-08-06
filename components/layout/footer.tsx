@@ -106,24 +106,18 @@ export default function Footer() {
           >
             <Link
               href="/contact"
-              target="_blank"
-              rel="noopener noreferrer"
               className="hover:text-neutral-300 transition-colors"
             >
               CONTACT US
             </Link>
             <Link
               href="/shipping-policy"
-              target="_blank"
-              rel="noopener noreferrer"
               className="hover:text-neutral-300 transition-colors"
             >
               SHIPPING POLICY
             </Link>
             <Link
               href="/privacy-policy"
-              target="_blank"
-              rel="noopener noreferrer"
               className="hover:text-neutral-300 transition-colors"
             >
               PRIVACY POLICY
@@ -422,8 +416,6 @@ export default function Footer() {
           <div className="flex items-center gap-2 flex-wrap">
             <Link
               href="/refund-policy"
-              target="_blank"
-              rel="noopener noreferrer"
               className="hover:text-white transition-colors"
             >
               Refund Policy
@@ -431,8 +423,6 @@ export default function Footer() {
             <span className="text-neutral-600 font-light">|</span>
             <Link
               href="/terms-of-service"
-              target="_blank"
-              rel="noopener noreferrer"
               className="hover:text-white transition-colors"
             >
               Terms of Service
@@ -449,8 +439,6 @@ export default function Footer() {
           <span className="text-neutral-600 font-light">|</span>
           <Link
             href="/privacy-policy"
-            target="_blank"
-            rel="noopener noreferrer"
             className="hover:text-white transition-colors"
           >
             Privacy Policy
@@ -458,8 +446,6 @@ export default function Footer() {
           <span className="text-neutral-600 font-light">|</span>
           <Link
             href="/refund-policy"
-            target="_blank"
-            rel="noopener noreferrer"
             className="hover:text-white transition-colors"
           >
             Refund Policy
@@ -467,8 +453,6 @@ export default function Footer() {
           <span className="text-neutral-600 font-light">|</span>
           <Link
             href="/terms-of-service"
-            target="_blank"
-            rel="noopener noreferrer"
             className="hover:text-white transition-colors"
           >
             Terms of Service
@@ -476,8 +460,6 @@ export default function Footer() {
           <span className="text-neutral-600 font-light">|</span>
           <Link
             href="/shipping-policy"
-            target="_blank"
-            rel="noopener noreferrer"
             className="hover:text-white transition-colors"
           >
             Shipping Policy
@@ -485,8 +467,6 @@ export default function Footer() {
           <span className="text-neutral-600 font-light">|</span>
           <Link
             href="/contact"
-            target="_blank"
-            rel="noopener noreferrer"
             className="hover:text-white transition-colors"
           >
             Contact Us

@@ -1,4 +1,5 @@
 import Prose from "components/prose";
+import Footer from "components/layout/footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -118,8 +119,6 @@ This website is operated by Toucan Distribution Private Limited. Throughout the 
   📍 235, BINNAMANGALA, 2ND FLOOR, 13TH CROSS ROAD, Indiranagar (Bangalore), Bangalore North, Bangalore- 560038, Karnataka
 </p>
 `;
-
-import Footer from "components/layout/footer";
 
 export default function TermsOfServicePage() {
   return (

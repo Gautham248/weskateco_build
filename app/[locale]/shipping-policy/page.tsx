@@ -1,4 +1,5 @@
 import Prose from "components/prose";
+import Footer from "components/layout/footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -73,8 +74,6 @@ const shippingPolicyHtml = `
 
 <p>Have questions about your order or delivery? Reach out to our support team at <a href="mailto:info@weskateco.com">info@weskateco.com</a>.</p>
 `;
-
-import Footer from "components/layout/footer";
 
 export default function ShippingPolicyPage() {
   return (

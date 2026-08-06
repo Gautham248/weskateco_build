@@ -14,4 +14,13 @@ export default {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/terms",
+        destination: "/terms-of-service",
+        permanent: true,
+      },
+    ];
+  },
 };

@@ -1,4 +1,5 @@
 import Prose from "components/prose";
+import Footer from "components/layout/footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -105,8 +106,6 @@ const refundPolicyHtml = `
   Website: <a href="https://www.weskateco.com" target="_blank" rel="noopener noreferrer">www.weskateco.com</a>
 </p>
 `;
-
-import Footer from "components/layout/footer";
 
 export default function RefundPolicyPage() {
   return (

@@ -1,4 +1,5 @@
 import Prose from "components/prose";
+import Footer from "components/layout/footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -17,8 +18,6 @@ const contactUsHtml = `
 <p><strong>Email:</strong> <a href="mailto:info@weskateco.com">info@weskateco.com</a></p>
 <p>We look forward to speaking with you.</p>
 `;
-
-import Footer from "components/layout/footer";
 
 export default function ContactPage() {
   return (

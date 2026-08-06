@@ -1,4 +1,5 @@
 import Prose from "components/prose";
+import Footer from "components/layout/footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -181,8 +182,6 @@ const privacyPolicyHtml = `
 <p>Should you have any questions about our privacy practices or this Privacy Policy, or if you would like to exercise any of the rights available to you, please call or email us at <a href="mailto:info@weskateco.com">info@weskateco.com</a> or contact us at Toucan Distribution Private Limited, No 149/3, 5th Main Road, Malleshpalya Kaggadasapura, Behind DS Upahara, 560075 Bengaluru KA, India.</p>
 <p>For the purpose of applicable data protection laws and if not explicitly stated otherwise, we are the data controller of your personal information.</p>
 `;
-
-import Footer from "components/layout/footer";
 
 export default function PrivacyPolicyPage() {
   return (
