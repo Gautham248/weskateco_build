@@ -150,7 +150,10 @@ export default function WhatSizeShouldIGetSection() {
                 return (
                   <div key={size.id} className="py-4 lg:py-0 flex flex-col">
                     <button
+                      id={`accordion-btn-${size.id}`}
                       onClick={() => setActiveSizeId(size.id)}
+                      aria-expanded={isActive}
+                      aria-controls={`accordion-panel-${size.id}`}
                       className="flex items-center justify-between w-full text-left transition-colors cursor-pointer group"
                     >
                       <div className="flex items-center">
@@ -186,7 +189,7 @@ export default function WhatSizeShouldIGetSection() {
 
                     {/* Mobile Active Diagram Box (rendered directly below active item header) */}
                     {isActive && (
-                      <div className="lg:hidden mt-6 w-full bg-[#F6F7F9] rounded-t-[8px] aspect-[828/611] flex flex-col items-center justify-between pt-6 px-0 pb-0 relative overflow-hidden">
+                      <div id={`accordion-panel-${size.id}`} role="region" aria-labelledby={`accordion-btn-${size.id}`} className="lg:hidden mt-6 w-full bg-[#F6F7F9] rounded-t-[8px] aspect-[828/611] flex flex-col items-center justify-between pt-6 px-0 pb-0 relative overflow-hidden">
                         {/* Top Deck Size Indicator */}
                         <div className="flex flex-col items-center gap-1 z-10 px-4">
                           <span className="text-xs sm:text-sm text-neutral-500 font-medium">
@@ -223,7 +226,6 @@ export default function WhatSizeShouldIGetSection() {
                               alt={`Skateboard Deck Size ${size.deckSize}`}
                               fill
                               className="object-contain object-bottom"
-                              priority
                             />
                           </div>
                         </div>
@@ -246,13 +248,13 @@ export default function WhatSizeShouldIGetSection() {
 
             {/* Guidance Notes Box */}
             <div className="flex flex-col gap-3 pt-6 text-sm md:text-base text-[#636363]">
-              <div className="flex items-center gap-2 items-start">
+              <div className="flex items-start gap-2">
                 <span className="font-normal text-black whitespace-nowrap">Smaller boards</span>
                 <span>=</span>
                 <span className="text-[#00000099]">easier to flip</span>
               </div>
               <div className="h-[1px] bg-[#00000033] w-full" />
-              <div className="flex items-center gap-2 items-start">
+              <div className="flex items-start gap-2">
                 <span className="font-normal text-black whitespace-nowrap">Wider boards</span>
                 <span>=</span>
                 <span className="text-[#00000099]">

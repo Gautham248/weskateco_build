@@ -62,7 +62,10 @@ export default function WhatAboutMaintenanceSection() {
               return (
                 <div key={item.id} className="py-4 lg:py-0 flex flex-col">
                   <button
+                    id={`accordion-btn-${item.id}`}
                     onClick={() => setActiveItemId(item.id)}
+                    aria-expanded={isActive}
+                    aria-controls={`accordion-panel-${item.id}`}
                     className="flex items-center justify-between w-full text-left transition-colors cursor-pointer group"
                   >
                     <div className="flex items-center">
@@ -99,14 +102,13 @@ export default function WhatAboutMaintenanceSection() {
                   {/* Mobile Active Diagram Box (rendered directly below active item header) */}
                   {
                     isActive && (
-                      <div className="lg:hidden mt-6 w-full bg-[#F6F7F9] rounded-t-[8px] aspect-[828/611] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+                      <div id={`accordion-panel-${item.id}`} role="region" aria-labelledby={`accordion-btn-${item.id}`} className="lg:hidden mt-6 w-full bg-[#F6F7F9] rounded-t-[8px] aspect-[828/611] flex flex-col items-center justify-center p-6 relative overflow-hidden">
                         <div className="relative w-full h-full max-w-[200px] sm:max-w-[260px] flex items-center justify-center">
                           <Image
                             src={item.image}
                             alt={item.alt}
                             fill
                             className="object-contain"
-                            priority
                           />
                         </div>
                         {/* Bottom Indicator bar */}

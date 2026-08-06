@@ -73,7 +73,10 @@ export default function AreYouABeginnerSection() {
               return (
                 <div key={part.id} className="py-4 lg:py-0 flex flex-col">
                   <button
+                    id={`accordion-btn-${part.id}`}
                     onClick={() => setActivePartId(part.id)}
+                    aria-expanded={isActive}
+                    aria-controls={`accordion-panel-${part.id}`}
                     className="flex items-center justify-between w-full text-left transition-colors cursor-pointer group"
                   >
                     <div className="flex items-center">
@@ -109,14 +112,13 @@ export default function AreYouABeginnerSection() {
 
                   {/* Mobile Active Diagram Box (rendered directly below active item header) */}
                   {isActive && (
-                    <div className="lg:hidden mt-6 w-full bg-[#F6F7F9] rounded-t-[8px] aspect-[828/611] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+                    <div id={`accordion-panel-${part.id}`} role="region" aria-labelledby={`accordion-btn-${part.id}`} className="lg:hidden mt-6 w-full bg-[#F6F7F9] rounded-t-[8px] aspect-[828/611] flex flex-col items-center justify-center p-6 relative overflow-hidden">
                       <div className="relative w-full h-full max-w-[540px] flex items-center justify-center">
                         <Image
                           src={part.image}
                           alt={part.alt}
                           fill
                           className="object-contain"
-                          priority
                         />
                       </div>
                       {/* Bottom Indicator bar */}

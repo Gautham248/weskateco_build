@@ -67,7 +67,10 @@ export default function WhatsTheRightWheelSizeSection() {
               return (
                 <div key={opt.id} className="py-4 lg:py-0 flex flex-col">
                   <button
+                    id={`accordion-btn-${opt.id}`}
                     onClick={() => setActiveSizeId(opt.id)}
+                    aria-expanded={isActive}
+                    aria-controls={`accordion-panel-${opt.id}`}
                     className="flex items-start justify-between w-full text-left transition-colors cursor-pointer group"
                   >
                     {/* Text Details */}
@@ -97,7 +100,7 @@ export default function WhatsTheRightWheelSizeSection() {
 
                   {/* Mobile Active Diagram Box (rendered directly below active item header) */}
                   {isActive && (
-                    <div className="lg:hidden mt-6 w-full bg-[#F6F7F9] rounded-t-[8px] aspect-[828/611] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+                    <div id={`accordion-panel-${opt.id}`} role="region" aria-labelledby={`accordion-btn-${opt.id}`} className="lg:hidden mt-6 w-full bg-[#F6F7F9] rounded-t-[8px] aspect-[828/611] flex flex-col items-center justify-center p-6 relative overflow-hidden">
                       <div className="relative w-full h-[200px] sm:h-[260px] flex flex-col items-center justify-center">
                         <div className="relative w-[150px] sm:w-[200px] h-[200px] sm:h-[260px]">
                           <Image
@@ -105,7 +108,6 @@ export default function WhatsTheRightWheelSizeSection() {
                             alt={`Wheel Size ${opt.title}`}
                             fill
                             className="object-contain"
-                            priority
                           />
                         </div>
                       </div>
