@@ -3,7 +3,7 @@ import BuildYourOwnOrBuyCompleteSection from "components/guides/build-your-own-o
 import SkateboardBuyingGuideHeroBanner from "components/guides/skateboard-buying-guide-banner";
 import WhatAboutMaintenanceSection from "components/guides/what-about-maintenance";
 import WhatSizeShouldIGetSection from "components/guides/what-size-should-i-get";
-import WhatsYourStyleMainSection from "components/guides/whats-your-style";
+import WhatsYourStyleSection from "components/guides/whats-your-style";
 import YourQuickChecklistSection from "components/guides/your-quick-checklist";
 import Footer from "components/layout/footer";
 
@@ -28,7 +28,7 @@ export default async function SkateboardBuyingGuidePage() {
       <SkateboardBuyingGuideHeroBanner />
       <AreYouABeginnerSection />
       <WhatSizeShouldIGetSection />
-      <WhatsYourStyleMainSection />
+      <WhatsYourStyleSection />
       <BuildYourOwnOrBuyCompleteSection />
       <WhatAboutMaintenanceSection />
       <YourQuickChecklistSection />

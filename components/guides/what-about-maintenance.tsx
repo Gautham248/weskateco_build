@@ -4,27 +4,10 @@ import skateToolImg from "components/icons/skateboard_guide/skate_tool.png";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { GreenArrowIcon } from "./icons";
+import { ChevronDownIcon, GreenArrowIcon } from "./icons";
 
-function ChevronDownIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M4 6L8 10L12 6"
-        stroke="#1A1A1A"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+const PHONE_NUMBER = "+917204593003";
+const PHONE_DISPLAY = "(+91) 7204593003";
 
 const MAINTENANCE_ITEMS = [
   {
@@ -186,20 +169,20 @@ export default function WhatAboutMaintenanceSection() {
 
           {/* WhatsApp / Phone Button */}
           <Link
-            href="tel:+917204593003"
+            href={`tel:${PHONE_NUMBER}`}
             className="hidden md:flex w-full lg:w-auto bg-black text-white px-6 py-3.5 md:px-10 md:py-6 rounded-[4px] text-xs md:text-base font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 justify-center"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
-            (+91) 7204593003
+            {PHONE_DISPLAY}
           </Link>
         </div>
 
         <Link
-          href="tel:+917204593003"
+          href={`tel:${PHONE_NUMBER}`}
           className="flex md:hidden w-full lg:w-auto bg-black text-white px-6 py-3.5 rounded-[4px] text-base justify-center font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0"
           style={{ fontFamily: "'Clash Display', sans-serif" }}
         >
-          (+91) 7204593003
+          {PHONE_DISPLAY}
         </Link>
       </div>
     </section >

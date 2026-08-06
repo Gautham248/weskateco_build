@@ -32,7 +32,7 @@ const STYLES_DATA = [
   },
 ];
 
-export function WhatsYourStyleSection() {
+export default function WhatsYourStyleSection() {
   const { locale } = useTranslation();
 
   return (
@@ -68,7 +68,7 @@ export function WhatsYourStyleSection() {
                 >
                   {styleItem.title}
                 </h3>
-                <p className="text-base md:text-base text-black leading-[140%] font-normal my-4 my-5">
+                <p className="text-base md:text-base text-black leading-[140%] font-normal my-5">
                   {styleItem.description}
                 </p>
               </div>
@@ -93,13 +93,5 @@ export function WhatsYourStyleSection() {
         </div>
       </div>
     </section>
-  );
-}
-
-export default function WhatsYourStyleMainSection() {
-  return (
-    <>
-      <WhatsYourStyleSection />
-    </>
   );
 }

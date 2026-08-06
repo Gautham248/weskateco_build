@@ -6,46 +6,7 @@ import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-
-function GreenArrowIcon() {
-  return (
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 14 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M1 6.92096H12.6378M6.81888 12.8419L12.6378 6.92096L6.81888 1"
-        stroke="#1D6A2B"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ChevronDownIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M4 6L8 10L12 6"
-        stroke="#1A1A1A"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+import { ChevronDownIcon, GreenArrowIcon } from "./icons";
 
 const DUROMETER_OPTIONS = [
   {
@@ -90,7 +51,7 @@ export default function WheelDurometerSection() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 w-full">
           <div className="flex flex-col gap-4">
             <span className="text-xs md:text-base font-medium tracking-[-1%] text-[#00000080] uppercase">
-              01 — DIAMETER
+              02 — DUROMETER
             </span>
             <div className="flex items-start justify-between gap-4 w-full lg:block">
               <h2
