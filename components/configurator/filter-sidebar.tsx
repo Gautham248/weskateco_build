@@ -58,8 +58,7 @@ export function FilterSidebar({
       <div className="flex-shrink-0">
         <div className="flex items-center justify-between border-b border-neutral-100 pb-4 dark:border-neutral-900">
           <h2
-            className="text-lg font-bold uppercase tracking-tight text-black dark:text-white"
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
+            className="text-lg font-bold uppercase tracking-tight text-black dark:text-white font-clash"
           >
             Filter By
           </h2>
