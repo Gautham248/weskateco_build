@@ -226,18 +226,13 @@ const SKATEBOARD_DECKS_FILTERS: FilterGroup[] = [
   SORT_GROUP,
   CATEGORY_GROUP,
   {
-    id: "size",
-    label: "Sizes",
+    // 'width' is the canonical deck-width filter; 'size' was a duplicate — removed.
+    id: "width",
+    label: "Deck Width",
     type: "checkbox",
     options: DECK_WIDTH_OPTIONS,
   },
   BRAND_GROUP,
-  {
-    id: "width",
-    label: "Width",
-    type: "checkbox",
-    options: DECK_WIDTH_OPTIONS,
-  },
   {
     id: "shape",
     label: "Shape",
@@ -249,6 +244,15 @@ const SKATEBOARD_DECKS_FILTERS: FilterGroup[] = [
     label: "Concave",
     type: "checkbox",
     options: DECK_CONCAVE_OPTIONS,
+  },
+  {
+    id: "wheel_wells",
+    label: "Wheel Wells",
+    type: "checkbox",
+    options: [
+      { label: "Yes", value: "yes" },
+      { label: "No", value: "no" },
+    ],
   },
   {
     id: "construction",
@@ -291,8 +295,25 @@ const SKATEBOARD_TRUCKS_FILTERS: FilterGroup[] = [
     type: "checkbox",
     options: TRUCK_AXLE_WIDTH_OPTIONS,
   },
+  {
+    id: "truck_type",
+    label: "Truck Type",
+    type: "checkbox",
+    options: [
+      { label: "Standard (TKP)", value: "standard" },
+      { label: "Longboard (RKP)", value: "longboard" },
+      { label: "Surfskate", value: "surfskate" },
+    ],
+  },
   BRAND_GROUP,
   PRICE_GROUP,
+];
+
+const WHEEL_TYPE_OPTIONS: FilterOption[] = [
+  { label: "Street / Park", value: "street" },
+  { label: "Cruiser / Longboard", value: "cruiser" },
+  { label: "Surfskate", value: "surfskate" },
+  { label: "Freestyle", value: "freestyle" },
 ];
 
 const SKATEBOARD_WHEELS_FILTERS: FilterGroup[] = [
@@ -311,13 +332,56 @@ const SKATEBOARD_WHEELS_FILTERS: FilterGroup[] = [
     type: "checkbox",
     options: WHEEL_HARDNESS_OPTIONS,
   },
+  {
+    id: "wheel_type",
+    label: "Wheel Type",
+    type: "checkbox",
+    options: WHEEL_TYPE_OPTIONS,
+  },
   PRICE_GROUP,
+];
+
+const BEARING_TYPE_OPTIONS: FilterOption[] = [
+  { label: "Steel (Standard)", value: "steel" },
+  { label: "Ceramic", value: "ceramic" },
+  { label: "Swiss (Precision)", value: "swiss" },
+];
+
+const GRIPTAPE_WIDTH_OPTIONS: FilterOption[] = [
+  { label: '9.0"', value: "9.0" },
+  { label: '9.5"', value: "9.5" },
+  { label: '10.0"', value: "10.0" },
+];
+
+const GRIPTAPE_TYPE_OPTIONS: FilterOption[] = [
+  { label: "Standard", value: "standard" },
+  { label: "Clear / Transparent", value: "clear" },
+  { label: "Coloured", value: "coloured" },
+  { label: "Printed", value: "printed" },
 ];
 
 const SKATEBOARD_ACCESSORIES_FILTERS: FilterGroup[] = [
   SORT_GROUP,
   CATEGORY_GROUP,
   BRAND_GROUP,
+  {
+    id: "bearing_type",
+    label: "Bearing Type",
+    type: "checkbox",
+    options: BEARING_TYPE_OPTIONS,
+  },
+  {
+    id: "griptape_width",
+    label: "Griptape Width",
+    type: "checkbox",
+    options: GRIPTAPE_WIDTH_OPTIONS,
+  },
+  {
+    id: "griptape_type",
+    label: "Griptape Type",
+    type: "checkbox",
+    options: GRIPTAPE_TYPE_OPTIONS,
+  },
   PRICE_GROUP,
 ];
 

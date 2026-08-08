@@ -57,6 +57,22 @@ export function buildConfiguratorItems(products: Product[]): {
         const width = widthByVariant[variant.title];
         if (width === undefined) continue; // skip variants we don't have width data for
 
+        let concave: string | undefined;
+        if (variant.title.toLowerCase().includes("mellow")) {
+          concave = "Mellow";
+        } else if (variant.title.toLowerCase().includes("medium")) {
+          concave = "Medium";
+        } else if (variant.title.toLowerCase().includes("steep")) {
+          concave = "Steep";
+        }
+
+        let wheelWells: string | undefined;
+        if (variant.title.toLowerCase().includes("without wheel well")) {
+          wheelWells = "No";
+        } else if (variant.title.toLowerCase().includes("wheel well")) {
+          wheelWells = "Yes";
+        }
+
         decks.push({
           productId: product.id,
           productHandle: handle,
@@ -74,6 +90,8 @@ export function buildConfiguratorItems(products: Product[]): {
             category: "deck" as const,
             deck_board_type: mock.deck_board_type as any,
             deck_width: width,
+            deck_concave: concave,
+            deck_wheel_wells: wheelWells,
           },
         });
       }

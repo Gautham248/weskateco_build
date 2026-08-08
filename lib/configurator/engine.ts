@@ -28,22 +28,82 @@ export function getBoardTypeUnavailableMessage(boardType: BoardType): string {
   );
 }
 
+// ─── Deck ────────────────────────────────────────────────────────────────────
+
 /**
  * Filter decks by board type.
+ * Also marks decks as incompatible when a truck is already selected —
+ * deck-truck width compatibility is bidirectional.
  */
 export function getCompatibleDecks(
   allDecks: ConfiguratorItem[],
   boardType: BoardType,
+  selectedTruck?: ConfiguratorItem | null,
+  showOutOfStock?: boolean,
 ): FilterResult {
-  const compatible = allDecks.filter((item) => {
-    const meta = item.meta as DeckMeta;
-    return meta.deck_board_type === boardType && item.availableForSale;
-  });
+  const tolerance = compatRules.truck_width_tolerance;
+  const offset = compatRules.hanger_to_axle_offset;
 
-  const incompatible = allDecks.filter((item) => {
+  const compatible: ConfiguratorItem[] = [];
+  const incompatible: ConfiguratorItem[] = [];
+
+  for (const item of allDecks) {
     const meta = item.meta as DeckMeta;
-    return meta.deck_board_type !== boardType || !item.availableForSale;
-  });
+
+    // Out-of-stock gating
+    if (!item.availableForSale && !showOutOfStock) {
+      continue; // exclude out of stock when toggle is off
+    }
+
+    // Board type gate
+    if (meta.deck_board_type !== boardType) {
+      incompatible.push({
+        ...item,
+        incompatibilityReason: `This deck is for ${meta.deck_board_type}, not ${boardType}`,
+      });
+      continue;
+    }
+
+    // If a truck is already selected, validate width compatibility
+    if (selectedTruck) {
+      const truckMeta = selectedTruck.meta as TruckMeta;
+      if (
+        truckMeta.truck_hanger_size !== null &&
+        truckMeta.truck_type !== "Surfskate"
+      ) {
+        const axleWidth = truckMeta.truck_hanger_size + offset;
+        const widthDiff = Math.abs(axleWidth - meta.deck_width);
+        if (widthDiff > tolerance) {
+          incompatible.push({
+            ...item,
+            incompatibilityReason: `Width mismatch with selected ${selectedTruck.productTitle}: deck ${meta.deck_width}" vs axle ${axleWidth.toFixed(2)}" (max ±${tolerance}")`,
+          });
+          continue;
+        }
+      }
+    }
+
+    compatible.push(item);
+  }
+
+  // Add out-of-stock items when showOutOfStock is on
+  if (showOutOfStock) {
+    for (const item of allDecks) {
+      const meta = item.meta as DeckMeta;
+      if (!item.availableForSale && meta.deck_board_type === boardType) {
+        // Check if already added as incompatible
+        const alreadyAdded =
+          incompatible.some((i) => i.variantId === item.variantId) ||
+          compatible.some((i) => i.variantId === item.variantId);
+        if (!alreadyAdded) {
+          incompatible.push({
+            ...item,
+            incompatibilityReason: "Out of stock",
+          });
+        }
+      }
+    }
+  }
 
   return {
     compatible,
@@ -56,16 +116,19 @@ export function getCompatibleDecks(
   };
 }
 
+// ─── Trucks ───────────────────────────────────────────────────────────────────
+
 /**
- * Filter trucks by board type and deck width compatibility.
+ * Filter trucks by board type and optionally by a selected deck's width.
+ * If no deck is selected yet, returns all trucks valid for the board type
+ * without width filtering — the user can browse all trucks first.
  */
 export function getCompatibleTrucks(
   allTrucks: ConfiguratorItem[],
-  selectedDeck: ConfiguratorItem,
   boardType: BoardType,
+  selectedDeck?: ConfiguratorItem | null,
+  showOutOfStock?: boolean,
 ): FilterResult {
-  const deckMeta = selectedDeck.meta as DeckMeta;
-  const deckWidth = deckMeta.deck_width;
   const allowedTruckTypes = compatRules.board_type_truck_map[boardType] || [];
   const tolerance = compatRules.truck_width_tolerance;
   const offset = compatRules.hanger_to_axle_offset;
@@ -76,22 +139,35 @@ export function getCompatibleTrucks(
   for (const item of allTrucks) {
     const meta = item.meta as TruckMeta;
 
-    // Must be correct truck type for this board
+    // Out-of-stock gating
+    if (!item.availableForSale && !showOutOfStock) continue;
+
+    // Truck type must match board type
     if (!allowedTruckTypes.includes(meta.truck_type)) {
-      incompatible.push(item);
+      incompatible.push({
+        ...item,
+        incompatibilityReason: `${meta.truck_type} trucks are not recommended for ${boardType}`,
+      });
       continue;
     }
 
-    // Must be compatible with this board type
+    // Board type in the truck's own compatibility list
     const compatibleBoardTypes = meta.truck_compatible_board_types
       .split(",")
-      .map((s) => s.trim());
-    if (!compatibleBoardTypes.includes(boardType)) {
-      incompatible.push(item);
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (
+      compatibleBoardTypes.length > 0 &&
+      !compatibleBoardTypes.includes(boardType)
+    ) {
+      incompatible.push({
+        ...item,
+        incompatibilityReason: `Not compatible with ${boardType}`,
+      });
       continue;
     }
 
-    // Surfskate trucks: skip width matching
+    // Surfskate trucks skip width matching
     if (
       meta.truck_type === "Surfskate" &&
       compatRules.surfskate_skip_width_match
@@ -99,26 +175,34 @@ export function getCompatibleTrucks(
       if (item.availableForSale) {
         compatible.push(item);
       } else {
-        incompatible.push(item);
+        incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
       }
       continue;
     }
 
-    // Standard TKP trucks: width matching
-    if (meta.truck_hanger_size !== null) {
+    // Width matching — only if a deck is already selected
+    if (selectedDeck && meta.truck_hanger_size !== null) {
+      const deckMeta = selectedDeck.meta as DeckMeta;
+      const deckWidth = deckMeta.deck_width;
       const axleWidth = meta.truck_hanger_size + offset;
       const widthDiff = Math.abs(axleWidth - deckWidth);
 
-      if (widthDiff <= tolerance && item.availableForSale) {
-        compatible.push(item);
-      } else {
-        incompatible.push(item);
+      if (widthDiff > tolerance) {
+        incompatible.push({
+          ...item,
+          incompatibilityReason: item.availableForSale
+            ? `Width mismatch: axle ${axleWidth.toFixed(2)}" vs deck ${deckWidth}" (max ±${tolerance}")` 
+            : "Out of stock",
+        });
+        continue;
       }
-      continue;
     }
 
-    // Fallback: if we can't determine compatibility, exclude
-    incompatible.push(item);
+    if (item.availableForSale) {
+      compatible.push(item);
+    } else {
+      incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
+    }
   }
 
   return {
@@ -127,18 +211,25 @@ export function getCompatibleTrucks(
     empty: compatible.length === 0,
     emptyMessage:
       compatible.length === 0
-        ? `No compatible trucks found for a ${deckWidth}" deck. Try a different deck width.`
+        ? selectedDeck
+          ? `No compatible trucks found for your deck. Try a different deck width.`
+          : `No ${boardType} trucks available.`
         : undefined,
   };
 }
 
+// ─── Wheels ───────────────────────────────────────────────────────────────────
+
 /**
- * Filter wheels by board type and wheel type compatibility.
+ * Filter wheels by board type.
+ * If a truck is already selected, that is noted but doesn't change filtering
+ * (wheel-truck compatibility is via board type, not dimensions).
  */
 export function getCompatibleWheels(
   allWheels: ConfiguratorItem[],
-  selectedTruck: ConfiguratorItem,
   boardType: BoardType,
+  selectedTruck?: ConfiguratorItem | null,
+  showOutOfStock?: boolean,
 ): FilterResult {
   const allowedWheelTypes = compatRules.board_type_wheel_map[boardType] || [];
 
@@ -148,25 +239,35 @@ export function getCompatibleWheels(
   for (const item of allWheels) {
     const meta = item.meta as WheelMeta;
 
-    // Check wheel type compatibility
+    if (!item.availableForSale && !showOutOfStock) continue;
+
     if (!allowedWheelTypes.includes(meta.wheel_type)) {
-      incompatible.push(item);
+      incompatible.push({
+        ...item,
+        incompatibilityReason: `${meta.wheel_type} wheels are not recommended for ${boardType}`,
+      });
       continue;
     }
 
-    // Check board type compatibility
     const compatibleBoardTypes = meta.wheel_compatible_board_types
       .split(",")
-      .map((s) => s.trim());
-    if (!compatibleBoardTypes.includes(boardType)) {
-      incompatible.push(item);
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (
+      compatibleBoardTypes.length > 0 &&
+      !compatibleBoardTypes.includes(boardType)
+    ) {
+      incompatible.push({
+        ...item,
+        incompatibilityReason: `Not compatible with ${boardType}`,
+      });
       continue;
     }
 
     if (item.availableForSale) {
       compatible.push(item);
     } else {
-      incompatible.push(item);
+      incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
     }
   }
 
@@ -176,19 +277,22 @@ export function getCompatibleWheels(
     empty: compatible.length === 0,
     emptyMessage:
       compatible.length === 0
-        ? `No compatible wheels found for this setup.`
+        ? `No compatible wheels found for ${boardType}.`
         : undefined,
   };
 }
 
-/**
- * Get all bearings. Bearings are universally compatible.
- */
+// ─── Bearings ─────────────────────────────────────────────────────────────────
+
+/** Bearings are universally compatible. */
 export function getCompatibleBearings(
   allBearings: ConfiguratorItem[],
+  showOutOfStock?: boolean,
 ): FilterResult {
   const compatible = allBearings.filter((item) => item.availableForSale);
-  const incompatible = allBearings.filter((item) => !item.availableForSale);
+  const incompatible = allBearings
+    .filter((item) => !item.availableForSale && showOutOfStock)
+    .map((item) => ({ ...item, incompatibilityReason: "Out of stock" }));
 
   return {
     compatible,
@@ -199,32 +303,55 @@ export function getCompatibleBearings(
   };
 }
 
+// ─── Griptape ─────────────────────────────────────────────────────────────────
+
 /**
  * Filter griptape by deck width.
+ * If no deck is selected yet, show all griptape without width filtering.
  */
 export function getCompatibleGriptape(
   allGriptape: ConfiguratorItem[],
-  selectedDeck: ConfiguratorItem,
+  selectedDeck?: ConfiguratorItem | null,
+  showOutOfStock?: boolean,
 ): FilterResult {
-  const deckMeta = selectedDeck.meta as DeckMeta;
-  const deckWidth = deckMeta.deck_width;
-
   const compatible: ConfiguratorItem[] = [];
   const incompatible: ConfiguratorItem[] = [];
 
   for (const item of allGriptape) {
     const meta = item.meta as GriptapeMeta;
-    const gripWidth = meta.griptape_width;
-    const maxDeckWidth = compatRules.griptape_deck_max_width[String(gripWidth)];
 
-    if (
-      maxDeckWidth !== undefined &&
-      deckWidth <= maxDeckWidth &&
-      item.availableForSale
-    ) {
-      compatible.push(item);
+    if (!item.availableForSale && !showOutOfStock) continue;
+
+    // If no deck selected yet, all griptape is shown as compatible
+    if (!selectedDeck) {
+      if (item.availableForSale) {
+        compatible.push(item);
+      } else {
+        incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
+      }
+      continue;
+    }
+
+    const deckMeta = selectedDeck.meta as DeckMeta;
+    const deckWidth = deckMeta.deck_width;
+    const gripWidth = meta.griptape_width;
+    const maxDeckWidth =
+      compatRules.griptape_deck_max_width[String(gripWidth)];
+
+    if (maxDeckWidth !== undefined && deckWidth <= maxDeckWidth) {
+      if (item.availableForSale) {
+        compatible.push(item);
+      } else {
+        incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
+      }
     } else {
-      incompatible.push(item);
+      incompatible.push({
+        ...item,
+        incompatibilityReason:
+          maxDeckWidth !== undefined && gripWidth < deckWidth
+            ? `Too narrow: ${gripWidth}" griptape for ${deckWidth}" deck`
+            : "Out of stock",
+      });
     }
   }
 
@@ -234,16 +361,18 @@ export function getCompatibleGriptape(
     empty: compatible.length === 0,
     emptyMessage:
       compatible.length === 0
-        ? `No griptape wide enough for a ${deckWidth}" deck.`
+        ? selectedDeck
+          ? `No griptape wide enough for a ${(selectedDeck.meta as DeckMeta).deck_width}" deck.`
+          : "No griptape available."
         : undefined,
   };
 }
 
-/**
- * Get all risers. Currently no products — returns empty.
- */
+// ─── Risers & Hardware (stub) ─────────────────────────────────────────────────
+
 export function getCompatibleRisers(
   allRisers: ConfiguratorItem[],
+  showOutOfStock?: boolean,
 ): FilterResult {
   return {
     compatible: allRisers.filter((item) => item.availableForSale),
@@ -253,10 +382,6 @@ export function getCompatibleRisers(
   };
 }
 
-/**
- * Filter hardware by riser height.
- * Currently no hardware products — returns empty.
- */
 export function getCompatibleHardware(
   allHardware: ConfiguratorItem[],
   selectedRiser: ConfiguratorItem | null,
@@ -269,9 +394,8 @@ export function getCompatibleHardware(
   };
 }
 
-/**
- * Calculate the total price of the current configurator build.
- */
+// ─── Totals ───────────────────────────────────────────────────────────────────
+
 export function calculateBuildTotal(state: {
   deck: ConfiguratorItem | null;
   trucks: ConfiguratorItem | null;
@@ -300,9 +424,8 @@ export function calculateBuildTotal(state: {
   return { amount: total, currencyCode };
 }
 
-/**
- * Get the list of configurator steps.
- */
+// ─── Steps ────────────────────────────────────────────────────────────────────
+
 export function getConfiguratorSteps(
   hasRisers: boolean,
   hasHardware: boolean,
