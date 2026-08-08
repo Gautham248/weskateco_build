@@ -37,6 +37,9 @@ export interface ConfiguratorItem {
 
   // Configurator metafields (from mock data or real Shopify metafields)
   meta: ConfiguratorMeta;
+
+  // Compatibility reason when item is incompatible with current build selection
+  incompatibilityReason?: string;
 }
 
 // Metafield data for each product category
@@ -53,6 +56,8 @@ export interface DeckMeta {
   category: "deck";
   deck_board_type: BoardType;
   deck_width: number; // inches — specific to this variant
+  deck_concave?: string; // e.g. 'Mellow', 'Medium'
+  deck_wheel_wells?: string; // e.g. 'Yes', 'No'
 }
 
 export interface TruckMeta {
