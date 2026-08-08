@@ -41,3 +41,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*
+
+# agents
+AGENTS.md
+.agents-md.sha256
+
