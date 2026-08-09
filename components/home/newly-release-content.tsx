@@ -43,7 +43,7 @@ export default function NewlyReleaseContent() {
   const handleNext = () => {
     if (isTransitioning.current) return;
     isTransitioning.current = true;
-    setSlideIndex((prev) => (prev >= maxSlide ? 0 : prev + 1));
+    setSlideIndex((prev) => Math.min(prev + 1, maxSlide));
     setTimeout(() => {
       isTransitioning.current = false;
     }, 800);
@@ -52,7 +52,7 @@ export default function NewlyReleaseContent() {
   const handlePrev = () => {
     if (isTransitioning.current) return;
     isTransitioning.current = true;
-    setSlideIndex((prev) => (prev <= 0 ? maxSlide : prev - 1));
+    setSlideIndex((prev) => Math.max(prev - 1, 0));
     setTimeout(() => {
       isTransitioning.current = false;
     }, 800);
