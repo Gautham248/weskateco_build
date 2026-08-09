@@ -7,7 +7,9 @@
     "start": "next start",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
-    "test": "pnpm prettier:check"
+    "test": "pnpm prettier:check",
+    "deploy": "node scripts/deploy.js --prod",
+    "vercel": "node scripts/deploy.js"
   },
   "dependencies": {
     "@fontsource/archivo": "^5.2.8",
