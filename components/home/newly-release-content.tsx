@@ -43,7 +43,7 @@ export default function NewlyReleaseContent() {
   const handleNext = () => {
     if (isTransitioning.current) return;
     isTransitioning.current = true;
-    setSlideIndex((prev) => (prev >= maxSlide ? 0 : prev + 1));
+    setSlideIndex((prev) => Math.min(prev + 1, maxSlide));
     setTimeout(() => {
       isTransitioning.current = false;
     }, 800);
@@ -52,7 +52,7 @@ export default function NewlyReleaseContent() {
   const handlePrev = () => {
     if (isTransitioning.current) return;
     isTransitioning.current = true;
-    setSlideIndex((prev) => (prev <= 0 ? maxSlide : prev - 1));
+    setSlideIndex((prev) => Math.max(prev - 1, 0));
     setTimeout(() => {
       isTransitioning.current = false;
     }, 800);
@@ -65,6 +65,24 @@ export default function NewlyReleaseContent() {
     let momentumTimer: NodeJS.Timeout | null = null;
 
     const handleWheel = (e: WheelEvent) => {
+      const isScrollDown = e.deltaY > 0;
+      const isScrollUp = e.deltaY < 0;
+      const current = slideIndexRef.current;
+
+      const canScrollNext = isScrollDown && current < maxSlide;
+      const canScrollPrev = isScrollUp && current > 0;
+
+      if (!canScrollNext && !canScrollPrev) {
+        if (isTransitioning.current) {
+          e.preventDefault();
+          if (momentumTimer) clearTimeout(momentumTimer);
+          momentumTimer = setTimeout(() => {
+            isTransitioning.current = false;
+          }, 150);
+        }
+        return;
+      }
+
       e.preventDefault();
 
       if (isTransitioning.current) {
@@ -79,10 +97,10 @@ export default function NewlyReleaseContent() {
 
       isTransitioning.current = true;
 
-      if (e.deltaY > 0) {
-        setSlideIndex((prev) => (prev >= maxSlide ? 0 : prev + 1));
-      } else {
-        setSlideIndex((prev) => (prev <= 0 ? maxSlide : prev - 1));
+      if (canScrollNext) {
+        setSlideIndex((prev) => Math.min(prev + 1, maxSlide));
+      } else if (canScrollPrev) {
+        setSlideIndex((prev) => Math.max(prev - 1, 0));
       }
 
       setTimeout(() => {
@@ -385,9 +403,8 @@ export default function NewlyReleaseContent() {
                 e.stopPropagation();
                 setSlideIndex(idx);
               }}
-              className={`w-1.5 transition-all duration-300 rounded-full bg-white cursor-pointer ${
-                idx === slideIndex ? "h-4 opacity-100" : "h-1.5 opacity-50"
-              }`}
+              className={`w-1.5 transition-all duration-300 rounded-full bg-white cursor-pointer ${idx === slideIndex ? "h-4 opacity-100" : "h-1.5 opacity-50"
+                }`}
             />
           ))}
         </div>
