@@ -38,8 +38,7 @@ export function ProductSelectionStep({
     return (
       <div>
         <h2
-          className="mb-6 text-xl font-bold uppercase tracking-wide text-black dark:text-white"
-          style={{ fontFamily: "'Clash Display', sans-serif" }}
+          className="mb-6 text-xl font-bold uppercase tracking-wide text-black dark:text-white font-clash"
         >
           {title}
         </h2>
@@ -60,8 +59,7 @@ export function ProductSelectionStep({
     <div>
       <div className="mb-4 flex items-baseline justify-between">
         <h2
-          className="text-xl font-bold uppercase tracking-wide text-black dark:text-white"
-          style={{ fontFamily: "'Clash Display', sans-serif" }}
+          className="text-xl font-bold uppercase tracking-wide text-black dark:text-white font-clash"
         >
           {title}
         </h2>
@@ -95,8 +93,7 @@ export function ProductSelectionStep({
         <div className="mt-10 border-t border-neutral-200 pt-6 dark:border-neutral-800">
           <div className="mb-4 flex items-center gap-3">
             <h3
-              className="text-sm font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400"
-              style={{ fontFamily: "'Clash Display', sans-serif" }}
+              className="text-sm font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 font-clash"
             >
               Not Compatible With Current Build ({incompatibleItems.length})
             </h3>

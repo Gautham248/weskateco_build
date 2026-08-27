@@ -45,8 +45,7 @@ export function BoardTypeStep({
           Step 1
         </p>
         <h1
-          className="text-4xl font-black uppercase tracking-tight text-black dark:text-white"
-          style={{ fontFamily: "'Clash Display', sans-serif" }}
+          className="text-4xl font-black uppercase tracking-tight text-black dark:text-white font-clash"
         >
           What are you riding?
         </h1>
@@ -115,8 +114,8 @@ export function BoardTypeStep({
                 className={clsx(
                   "mb-2 text-lg font-black uppercase tracking-tight",
                   isSelected ? "text-white dark:text-black" : "text-black dark:text-white",
+                  "font-clash",
                 )}
-                style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 {t(translationKey) !== translationKey ? t(translationKey) : boardType}
               </h3>
