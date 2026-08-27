@@ -167,8 +167,7 @@ export function ConfiguratorProductCard({
         {/* Brand */}
         {item.brand && (
           <span
-            className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-black dark:text-white"
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
+            className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-black dark:text-white font-clash"
           >
             {item.brand}
           </span>

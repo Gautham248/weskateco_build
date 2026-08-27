@@ -37,8 +37,7 @@ export function ConfiguratorHeader({
 
       {/* Title */}
       <h1
-        className="text-center text-xl font-bold uppercase tracking-wide md:text-2xl"
-        style={{ fontFamily: "'Clash Display', sans-serif" }}
+        className="text-center text-xl font-bold uppercase tracking-wide md:text-2xl font-clash"
       >
         {title}
       </h1>
