@@ -1,216 +1,9 @@
-# Standing rules for any OpenCode session in this environment
-
-These rules apply to every request, regardless of project, regardless of how simple, routine, or urgent the request looks. They compose alongside any project-specific AGENTS.md — this file does not replace it.
-
-## The governing meta-principle — read this before anything else
-
-If you ever find yourself weighing whether a rule below "really applies" to this particular request — because it seems too simple, too obvious, too small, too urgent, or too unrelated to code — **that weighing is itself the failure mode every rule below exists to prevent.** None of the rules below have a simplicity exemption, an urgency exemption, or a judgment-call exemption. Follow them in order, every time. The only acceptable deviation from a rule is the fallback that rule itself explicitly describes for when its own action genuinely cannot be completed — never a deviation based on your own assessment that the rule doesn't fit this case.
-
----
-
-## Rule 0 — Ensure a project-level AGENTS.md exists before anything else
-
-Before doing anything else in response to **any** request — before Rule 1's graph check, before grepping, before globbing, before asking the user anything — check whether the workspace root contains an `AGENTS.md` file:
-
-```bash
-test -f AGENTS.md && echo "AGENTS_EXISTS" || echo "NO_AGENTS"
-```
-
-**If it prints `NO_AGENTS`:** copy the full contents of the environment's standing rules file — the very file you are reading right now — into `AGENTS.md` at the workspace root. Do not summarize. Do not distill. Do not abbreviate. Copy it verbatim so that every rule, every anti-pattern, every fallback, and the meta-principle are all present at the project level with zero room for reinterpretation or omission.
-
-Do not wait for permission to create this file — the standing rules demand it. Write it, then proceed to Rule 1 immediately.
-
-**If it prints `AGENTS_EXISTS`:** proceed to Rule 1. Do not modify the existing AGENTS.md unless the user explicitly asked you to.
-
-### Anti-patterns — explicitly forbidden for Rule 0
-
-- Deciding the rules are "already in the system prompt" so a project-level AGENTS.md is unnecessary. The system prompt is easy to override with judgment calls; a project-level file sitting in the workspace root is the hardest instruction to ignore.
-- Skipping this check because the request seems trivial. No simplicity exemption — the AGENTS.md is the gate that prevents Rule 1 from being skipped.
-- Writing a bare or incomplete AGENTS.md. It must contain the four items above. A one-liner defeats the purpose.
-
----
-
-## Rule 0b — Offer to gitignore local tooling artifacts
-
-Immediately after Rule 0, before Rule 1: check whether this project's
-`.gitignore` already lists `graphify-out/`:
-
-```bash
-test -f .gitignore && grep -q "graphify-out" .gitignore && echo "ALREADY_IGNORED" || echo "NOT_IGNORED"
-```
-
-**If it prints `NOT_IGNORED`:** ask once, as a single closed question: "This
-project doesn't gitignore `graphify-out/` yet (the local knowledge graph and
-its build artifacts) — want me to add it?" Add the entry only after an
-explicit yes. If `.gitignore` doesn't exist yet, create it with just that
-entry after the same yes.
-
-**If it prints `ALREADY_IGNORED`:** proceed to Rule 1, say nothing.
-
-**If the answer is no:** proceed to Rule 1. Do not ask again for the rest of
-this session — a "no" is a real answer, not something to retry.
-
-### Anti-patterns — explicitly forbidden for Rule 0b
-
-- Adding the `.gitignore` entry without asking first, even though it's a
-  smaller mutation than a commit — it is still an unrequested edit to a file
-  in what may be a client's repository, and this project already treats that
-  category of action (see `fix-bug`'s commit/push behavior) as requiring
-  explicit opt-in, not silent action.
-- Asking again in the same session after a "no." One answer covers the whole
-  session.
-- Treating this as a reason to delay or skip Rule 1 — this check and its
-  question, if any, happen quickly and then Rule 1 proceeds regardless of
-  the answer.
-
----
-
-## Rule 1 — Prepare the project's knowledge graph before investigating any other way
-
-Before doing anything else in response to a request that isn't already fully concrete — before grepping, before globbing, before spawning a task/subagent to explore, before asking the user anything — run this exact command first:
-
-```bash
-test -f graphify-out/graph.json && echo "GRAPH EXISTS" || echo "NO GRAPH YET"
-```
-
-**If it prints `GRAPH EXISTS`:** before querying, confirm it's actually current — existence alone doesn't mean it reflects the latest commit:
-
-```bash
-graphify check-update .
-```
-
-If that reports pending changes, refresh it first (AST-only, no API cost, no LLM call):
-
-```bash
-graphify update .
-```
-
-Then query it:
-
-```bash
-graphify query "<a question grounded in what's actually being asked>"
-```
-
-Also confirm the graph is set up to stay fresh on its own, so this check matters less over time:
-
-```bash
-graphify hook status
-```
-
-If it reports the hook isn't installed:
-
-```bash
-graphify hook install
-```
-
-This installs post-commit and post-checkout hooks that rebuild the AST-derived part of the graph automatically — no API cost, no agent involvement required — plus a git merge driver so `graph.json` never ends up with conflict markers when two people commit in parallel. Doc/PDF/image content still needs a real pass through the `graphify` skill (that part needs a model, which a bare git hook doesn't have) — `check-update`/`update` above is what catches staleness in that gap.
-
-**If it prints `NO GRAPH YET`:** invoke the `graphify` skill using the same skill-loading tool/mechanism you use for any other skill (`fix-bug`, `plan-feature`, etc.) — by skill name, not as a shell command and not as literal chat text. The `graphify` skill is a complete, multi-step pipeline (interpreter detection, file detection, structural extraction, and — if needed — dispatching its own subagents for any docs/images). Your only job is to invoke it; the skill's own instructions guide everything after that.
-
-This step is about investigation, not about deciding what kind of task this is — it applies even before you've figured out whether this is a bug report, a feature request, or something else. Once this rule is complete (graph queried, or `graphify` ruled out per its own fallback below), move to Rule 2.
-
-**If the `graphify` skill itself reports it cannot proceed** (a genuinely empty or unsupported corpus, an installation failure, etc.): note plainly that graph-based grounding isn't available for this project, then proceed with ordinary file tools instead. A failed or skipped graph is not a reason to stall — it's a reason to fall back, visibly, and say so.
-
-### Anti-patterns — explicitly forbidden for Rule 1
-
-- Deciding the request is "too simple" or "probably doesn't need a graph" and skipping the check command. There is no simplicity exemption. A one-line typo fix still benefits from knowing which file to touch instead of a blind grep across tens of thousands of matches.
-- Running `/graphify .` (or any slash-prefixed text) through the bash/shell tool. **Confirmed to fail** with `No such file or directory` — `/graphify` is a skill invocation, not a shell executable. The only correct mechanism is the skill-loading tool, by skill name.
-- Loading the `graphify` skill and then skipping or abbreviating its own internal steps because they seem slow, redundant, or unnecessary for this particular request. Follow its documented sequence in full. If a step genuinely cannot complete, follow *its own* documented fallback and say so — never preemptively skip ahead on your own judgment.
-- Treating a generic "let me explore the codebase" action — grep, glob, or spawning an Explore/Task subagent — as a substitute for this rule. Exploration is not graph preparation, and doing one does not satisfy the other.
-- Assuming you already know the graph's state from earlier in the same session and skipping the check. Run the literal command for real, every time you start investigating a new request.
-- Treating `graphify-out/graph.json`'s mere existence as proof it's current. A graph built three commits ago and never refreshed is stale — `check-update` is what actually confirms freshness, not the existence check alone.
-
----
-
-## Rule 2 — Load a matching workflow skill before exploring further, before asking
-
-Once Rule 1 is complete, if the request sounds like it could be a bug report, feature idea, or PR-related task — even a vague, one-line, incomplete one — invoke the matching workflow skill (`fix-bug`, `plan-feature`, `sync-prs`, or similar) using the skill-loading tool, by name, as your very next action, before anything else. Use whatever Rule 1's graph query already found as part of how you proceed inside that skill — do not re-investigate from scratch once it's loaded.
-
-### Anti-patterns — explicitly forbidden for Rule 2
-
-- Deciding a vague request is "probably simple enough" to handle without a matching skill, and answering or asking directly instead. If a skill plausibly fits, load it — simplicity is not an exemption, and "I can just ask a clarifying question myself" is not a substitute for loading the skill that's supposed to be guiding that question.
-- Spawning an explore/investigation subagent before invoking the matching workflow skill.
-- Trying to invoke a skill via the bash/shell tool, or by typing its name or trigger as literal chat text, instead of using the actual skill-loading tool. Same failure mode as Rule 1 — skills are invoked through the skill tool, never as shell commands or plain text.
-- Picking the first plausible-sounding skill name without considering whether a different one fits better, when genuinely unsure. If unsure between two, asking the user which one applies is acceptable — but that is a different, legitimate action from skipping skill-loading altogether.
-- Treating "I already looked at the code in Rule 1" as a reason to skip loading the workflow skill. Rule 1's investigation feeds the skill — it doesn't replace it.
-
----
-
-## Rule 3 — Clarify, then confirm, before acting
-
-This rule governs everything from the moment a matching skill (or no skill, if none applied) has been engaged, up until you are about to make any real change. It has four steps. Follow them in order — do not skip ahead to Step 4 without genuinely completing Steps 1–3.
-
-This rule exists because the developer on the other end is not always going to describe what they want clearly, completely, or in the right technical vocabulary — sometimes it's 2 AM and they're typing one line from a phone. Design for that person, not for the person who already hands you a perfect spec.
-
-### Step 1 — Decide if you actually have enough to act
-
-You have enough if you can state, in one or two sentences, what's actually broken or wanted, and what the result should look like instead. A specific, concrete detail — an exact value, an exact error message, an exact before/after, an exact name — is enough on its own. You do not need to know which file or where in the codebase something lives before proceeding; finding that out is your job, never the user's.
-
-Before treating anything as unknown, check what's already visible first — earlier messages in this thread, a linked issue, output you've already produced. Don't ask about something already answered or already inferable from what you have.
-
-**Anti-pattern:** Asking the user to specify a file path, line number, or other technical/internal detail when they've already given a concrete, identifying value. That is your job to resolve using Rule 1's graph and your own tools — asking the user to do it for you is forbidden.
-
-### Step 2 — Investigate before you ask
-
-If the request is too vague per Step 1, investigate using tools you already have — including Rule 1's graph — before asking the user anything you could find out yourself. Ground your question in what you actually found: naming real candidates is always better than asking generically.
-
-Ask exactly one focused question at a time.
-
-**How to ask well:**
-
-- **Prefer a closed question over an open one whenever the space of likely answers is small.** "Should this retry once, or stop and report it?" gets answered faster and more reliably than "what should happen on failure?" — and it's easier for someone to correct a wrong guess than to compose an answer from nothing.
-- **Never accept a vague answer as final.** "Whatever's fine," "you decide," "I don't know," or anything that doesn't actually commit to a specific outcome is not an answer — it's a signal to propose one yourself. State a concrete default plainly and turn it into a yes/no: "I'll have it stop and report the error rather than retry — sound right?" Don't proceed until you get an actual reaction to it, not just silence.
-- **If more than a couple of things are still unclear after a few exchanges, recap before continuing.** Restate what's been established so far in one or two plain sentences, then ask the next thing. Catching a misread here costs one message; catching it after you've already acted costs a redo.
-- **If the request seems to bundle two unrelated changes, say so.** Ask whether to handle them separately rather than silently picking one and dropping the other, or silently merging them into a single change neither was meant to be part of.
-
-**Anti-pattern:** Asking a question you've already asked, even if reworded. If you notice you're about to repeat yourself, that itself means you already have enough information to move to Step 3 — say so instead of asking again.
-
-**Anti-pattern:** Continuing to ask follow-up questions indefinitely. If after roughly 3–4 exchanges you still don't have a fully concrete answer, stop asking — move to Step 3 with your best understanding, explicitly flagged as uncertain wherever it is.
-
-**Anti-pattern:** Treating an explicit "just go ahead," "that's enough," or "proceed" from the user as one more data point to weigh against your own remaining questions, rather than as an instruction to stop asking and move to Step 3 immediately.
-
-### Step 3 — Present a plan and STOP
-
-Once you have enough clarity (from Step 1 directly, or after Step 2), do not edit any file, run any state-changing command, or make a commit yet. Present a short plan in plain language:
-
-- **What you're going to do** — one or two sentences.
-- **What you're explicitly NOT going to do** — any obvious adjacent thing you're deliberately leaving alone, stated plainly, never omitted as "obvious."
-- **What "done" looks like** — concrete and checkable.
-
-Then explicitly ask the user to confirm — "Want me to go ahead with this?" or equivalent.
-
-**"The plan" means the specific, concrete change you are actually about to make, not the initial framing of the request.** For a simple request these are the same thing. But several skills investigate first and only determine the actual diff, fix, or full set of affected files partway through their own procedure — later, and often more specifically, than the request first suggested (querying a graph, reading the target file, classifying a batch of failures, and so on). If what you're about to do differs at all from what an earlier plan described in this same conversation — a different file, a wider blast radius, a specific change that wasn't yet knowable at the time — **that is a new plan and must be presented and confirmed again before you act**, even if the user already said yes once earlier. An earlier general go-ahead authorizes investigation, not whatever the investigation turns up. A skill whose own procedure only reveals the real, specific change partway through must say so explicitly in its own steps and re-invoke this rule at that later point — see `fix-bug`'s checkpoint between determining the fix and creating a branch, or `sync-prs`'s batched checkpoint before any auto-fix or remediation, for two different shapes of this same requirement.
-
-**What counts as confirmation:** a reply only counts if it responds to the substance of the plan. "Yes," "looks right," "go ahead," "correct," or a specific correction that you then re-confirm all count. A reply that changes the subject, doesn't address the plan at all, or arrives as a suspiciously fast "sure" right after a long or complex plan does not count on its own — for that last case specifically, a quick double-check ("just to be sure — anything here you'd want changed?") is worth the extra message before treating it as a real yes.
-
-**Anti-pattern:** Presenting a plan and then proceeding to act within the same turn, without waiting for the user's actual next message. A rhetorical question followed immediately by action is not a confirmation step — there must be a genuine stop, with nothing happening until a real reply arrives.
-
-**Anti-pattern:** Omitting the "what you will NOT do" part of the plan because it feels obvious for a simple-looking change. State it every time, regardless of how small the change seems.
-
-**Anti-pattern:** Treating silence, a tangential reply, or anything other than a clear affirmative as equivalent to confirmation.
-
-**Anti-pattern:** Treating confirmation of an early, vague version of the plan as covering a later, more specific version that turned out different once you actually investigated.
-
-**If the user rejects the plan or asks for a change at this step:** revise the plan and present the revised version, returning to this same step — do not proceed on the old plan, and do not silently assume the rejected part doesn't matter.
-
-### Step 4 — Act
-
-Only after explicit, unambiguous confirmation, proceed with the actual change — following the loaded skill's own procedure from this point on.
-
-**Anti-pattern:** Treating "the user clearly wants this" or "this is obviously what they meant" as a substitute for Step 3's actual confirmation. Inferred intent is never a replacement for an explicit yes.
-
----
-
-## What to do if a step fails
-
-Each rule above includes its own fallback for when the thing it asks for genuinely isn't available (no graph, no matching skill, can't reach full confidence after several exchanges). The fallback is always the same shape: say so plainly, then proceed to the next rule in sequence using ordinary judgment for the part that failed. Never silently skip a rule's fallback note, and never let one rule's failure block the rest of the sequence — a failed graph doesn't excuse skipping skill-loading, and an unclear request doesn't excuse clearing confirmation.
-<!-- BEGIN dev-agent-skills managed block (do not edit by hand -- source of truth is /Users/gauthamkrishna/Code/personal/dev-agent-skills/config/AGENT-STANDING-RULES.md) -->
 # Standing rules for any AI coding session in this environment
 
 These rules apply to every request, regardless of harness (OpenCode, Claude Code, or otherwise), regardless of project, regardless of how simple, routine, or urgent the request looks. They compose alongside any project-specific AGENTS.md — this file does not replace it.
 
-<!-- BEGIN dev-agent-skills sync script pointer (managed by setup.sh -- do not edit this block manually; it self-corrects on every `bash setup.sh` run regardless of where this repo is checked out) -->
-Rule 0 below uses this script to manage a project's AGENTS.md: /home/claude/dev-agent-skills/scripts/agents-md-sync.sh
+<!-- BEGIN dev-agent-skills sync script pointer (placeholder resolved in memory by agents-md-sync.sh's resolve_placeholders at write/append time -- never resolved here, this stays a stable template on every machine and in every commit) -->
+Rule 0 below uses this script to manage a project's AGENTS.md: /Users/gauthamkrishna/Code/personal/dev-agent-skills/scripts/agents-md-sync.sh
 <!-- END dev-agent-skills sync script pointer -->
 
 ## The governing meta-principle — read this before anything else
@@ -224,14 +17,14 @@ If you ever find yourself weighing whether a rule below "really applies" to this
 Before doing anything else in response to **any** request — before Rule 1's graph check, before grepping, before globbing, before asking the user anything — run:
 
 ```bash
-bash __AGENTS_MD_SYNC_SCRIPT__ status
+bash /Users/gauthamkrishna/Code/personal/dev-agent-skills/scripts/agents-md-sync.sh status
 ```
 
 This prints exactly one of five states. Do not guess at the state from `test -f AGENTS.md` yourself, and do not hand-copy standing rules into a file yourself — the script is the only source of truth for both the check and the write, because it reads the canonical rules file directly (no risk of an LLM-driven copy silently dropping or paraphrasing content) and because a project's `AGENTS.md` existing is not the same thing as it being ours — that distinction is exactly what the script's sha256 sidecar (`.agents-md.sha256`, committed alongside `AGENTS.md`) exists to make reliable instead of guessed at.
 
 **`NO_AGENTS`** — no `AGENTS.md` in this project yet.
 ```bash
-bash __AGENTS_MD_SYNC_SCRIPT__ write
+bash /Users/gauthamkrishna/Code/personal/dev-agent-skills/scripts/agents-md-sync.sh write
 ```
 Do not wait for permission — the standing rules demand it. Run it, then proceed to Rule 1 immediately.
 
@@ -239,13 +32,13 @@ Do not wait for permission — the standing rules demand it. Run it, then procee
 
 **`AGENTS_OURS_STALE`** — ours, and untouched by anyone since we last wrote it, but the canonical standing rules have changed since then (the sidecar's integrity hash matches the file, but its recorded rules-hash doesn't match the current rules file). Safe to refresh automatically, since nothing else has touched it:
 ```bash
-bash __AGENTS_MD_SYNC_SCRIPT__ write
+bash /Users/gauthamkrishna/Code/personal/dev-agent-skills/scripts/agents-md-sync.sh write
 ```
 State in one line that you refreshed it because it was out of date, then proceed to Rule 1.
 
 **`AGENTS_TAMPERED`** — a sidecar exists but no longer matches the file's actual content, meaning someone edited this `AGENTS.md` by hand (or some other tool did) after dev-agent-skills last wrote it. Do not silently overwrite content someone deliberately changed. Follow the same ask-before-acting flow as `AGENTS_FOREIGN` below, with one difference: since this file already carries our rules (just with an edit on top), offer `accept` as the resolution instead of `append` — it re-baselines the sidecar to the file exactly as it stands, touching no content, so the edit stops being flagged on every future session:
 ```bash
-bash __AGENTS_MD_SYNC_SCRIPT__ accept
+bash /Users/gauthamkrishna/Code/personal/dev-agent-skills/scripts/agents-md-sync.sh accept
 ```
 
 **`AGENTS_FOREIGN`** — an `AGENTS.md` already exists but there's no sidecar at all, meaning dev-agent-skills never wrote it. Most commonly this means another tool's own init/scaffolding command (for example OpenCode's `/init`) wrote one before this environment's skills were set up, or someone hand-wrote one. This file contains none of the rules you are currently reading — no graph-first investigation, no skill-loading, no clarification protocol — and any harness or session that only reads `AGENTS.md` (rather than also receiving these standing rules as instructions, the way this session did) will behave as if none of this exists.
@@ -256,7 +49,7 @@ Do **not** silently proceed as if this file were equivalent to your own standing
 2. Ask exactly one closed question: "Want me to append the dev-agent-skills rules to the bottom of the existing AGENTS.md (nothing in it gets removed or changed), or leave it as-is?"
 3. If yes:
    ```bash
-   bash __AGENTS_MD_SYNC_SCRIPT__ append
+   bash /Users/gauthamkrishna/Code/personal/dev-agent-skills/scripts/agents-md-sync.sh append
    ```
    This appends a clearly delimited block to the end of the file and leaves everything above it untouched. State in one line that you did this, then proceed to Rule 1.
 4. If no: proceed to Rule 1 without modifying the file. Do not ask again for the rest of this session — a "no" is a real answer, not something to retry.
@@ -274,36 +67,104 @@ Do **not** silently proceed as if this file were equivalent to your own standing
 
 ## Rule 0b — Offer to gitignore local tooling artifacts
 
-Immediately after Rule 0, before Rule 1: check whether this project's
-`.gitignore` already lists `graphify-out/`:
+Immediately after Rule 0, before Rule 0c: check whether this project's
+`.gitignore` already lists both `graphify-out/` (the local knowledge graph
+and its build artifacts) and `.dev-agent/` (session history, fix-attempt
+ledger, and other local tooling state — see Rule 0c):
 
 ```bash
-test -f .gitignore && grep -q "graphify-out" .gitignore && echo "ALREADY_IGNORED" || echo "NOT_IGNORED"
+NEEDED=""
+{ test -f .gitignore && grep -q "graphify-out" .gitignore; } || NEEDED="${NEEDED}graphify-out/ "
+{ test -f .gitignore && grep -q "\.dev-agent" .gitignore; } || NEEDED="${NEEDED}.dev-agent/ "
+if [ -z "$NEEDED" ]; then echo "ALL_IGNORED"; else echo "NEEDED: $NEEDED"; fi
 ```
 
-**If it prints `NOT_IGNORED`:** ask once, as a single closed question: "This
-project doesn't gitignore `graphify-out/` yet (the local knowledge graph and
-its build artifacts) — want me to add it?" Add the entry only after an
-explicit yes. If `.gitignore` doesn't exist yet, create it with just that
-entry after the same yes.
+**If it prints `NEEDED: ...`:** ask once, as a single closed question naming
+whichever entries are actually missing — e.g. "This project doesn't
+gitignore `.dev-agent/` yet (session history and local tooling state) —
+want me to add it?" or, if both are missing, name both in the same
+question rather than asking twice. Add only the entries the check actually
+reported missing, after an explicit yes. If `.gitignore` doesn't exist yet,
+create it with just those entries after the same yes.
 
-**If it prints `ALREADY_IGNORED`:** proceed to Rule 1, say nothing.
+**If it prints `ALL_IGNORED`:** proceed to Rule 0c, say nothing.
 
-**If the answer is no:** proceed to Rule 1. Do not ask again for the rest of
-this session — a "no" is a real answer, not something to retry.
+**If the answer is no:** proceed to Rule 0c. Do not ask again for the rest
+of this session — a "no" is a real answer, not something to retry.
 
 ### Anti-patterns — explicitly forbidden for Rule 0b
 
-- Adding the `.gitignore` entry without asking first, even though it's a
+- Adding either `.gitignore` entry without asking first, even though it's a
   smaller mutation than a commit — it is still an unrequested edit to a file
   in what may be a client's repository, and this project already treats that
   category of action (see `fix-bug`'s commit/push behavior) as requiring
   explicit opt-in, not silent action.
+- Asking two separate questions (one for `graphify-out/`, one for
+  `.dev-agent/`) when both are missing. One combined question, naming both.
 - Asking again in the same session after a "no." One answer covers the whole
   session.
-- Treating this as a reason to delay or skip Rule 1 — this check and its
-  question, if any, happen quickly and then Rule 1 proceeds regardless of
-  the answer.
+- Treating this as a reason to delay or skip Rule 0c or Rule 1 — this check
+  and its question, if any, happen quickly and then the sequence proceeds
+  regardless of the answer.
+
+---
+
+## Rule 0c — Initialize and read this project's session history
+
+<!-- BEGIN dev-agent-skills work-log script pointer (placeholder resolved in memory by agents-md-sync.sh's resolve_placeholders at write/append time -- never resolved here, this stays a stable template on every machine and in every commit) -->
+Rule 0c below uses this script to initialize and read a project's session history: /Users/gauthamkrishna/Code/personal/dev-agent-skills/scripts/work-log-cli.mjs
+<!-- END dev-agent-skills work-log script pointer -->
+
+Immediately after Rule 0b, before Rule 1. This is what makes session
+continuity automatic instead of dependent on a specific skill being
+invoked — the fix-attempt ledger and quiz-back only apply once fix-bug is
+running, but every session, regardless of what it turns out to be about,
+benefits from knowing what happened last time.
+
+```bash
+node /Users/gauthamkrishna/Code/personal/dev-agent-skills/scripts/work-log-cli.mjs init --repo-root .
+cat .dev-agent/KICKOFF.md
+```
+
+`init` is idempotent — safe to run every session, every time, same posture
+as Rule 1's graph-prep. On a repo with no `.dev-agent/` yet, it creates
+`.dev-agent/work-log/` and writes a placeholder `KICKOFF.md` saying plainly
+that there's no prior history yet. On a repo that already has real session
+history, it changes nothing and reports how many sessions are on record.
+Either way, the `cat` that follows always has something valid to read.
+
+Hold what `KICKOFF.md` contains in context for the rest of this session, so
+a question like "what did we last work on" or "where did we leave off" can
+be answered directly from it — without the user needing to invoke a skill
+or paste the file in themselves. **Only do this once per session, at the
+very first request** — not on every subsequent message in an ongoing
+conversation. If this session's own work later updates
+`.dev-agent/KICKOFF.md` (via fix-bug's Step 6b/12 or plan-feature's Step
+7), that reflects on disk for next time; there's no need to re-read it
+mid-session since you already know what you changed.
+
+### Anti-patterns — explicitly forbidden for Rule 0c
+
+- Waiting for the user to explicitly ask "what did we last talk about"
+  before checking. By then it's too late to have context ready — run `init`
+  and read the file unconditionally, at the start, same as Rule 1's graph
+  prep never waits to be asked either.
+- Asking permission before running `init` or reading `KICKOFF.md`. `init`
+  only ever creates a placeholder if nothing exists, or reports and changes
+  nothing if something does — never destructive, never a reason to ask,
+  same as Rule 1's graph query needing no confirmation.
+- Skipping this because the project has no `.dev-agent/` yet, or assuming
+  that means there's nothing to do. No-history is itself a valid, expected
+  first-run state that `init` handles — it is not a reason to skip the
+  rule, the same way "no graph yet" in Rule 1 is a reason to build one, not
+  a reason to skip graph-prep entirely.
+- Re-running `init` or re-reading `KICKOFF.md` on every turn within the
+  same session. Once is enough — after that, the content is already in
+  context.
+- Treating this rule as satisfied by a skill's own logging step (fix-bug's
+  Step 6b/12, plan-feature's Step 7). Those steps *write* to the file; this
+  rule is what makes sure something also *reads* it, regardless of which
+  skill — if any — ends up being invoked for the actual request.
 
 ---
 
@@ -455,8 +316,33 @@ Work out what actually happened (Step 1, using Step 2's investigation if the fee
 
 ---
 
+---
+
+## Rule 3b — Database mutations always require their own explicit confirmation
+
+A script or command that performs a CREATE, UPDATE, DELETE, TRUNCATE, or migration against a database is a fundamentally different action from writing or running an ordinary script — even when Rule 3's plan for "write a script to do X" was already confirmed. Running that script against a real database, including a dev, local, or staging one, is itself a new plan under Rule 3 Step 3's own "wider blast radius" language, and needs its own explicit confirmation before it happens, every time, separate from whatever was confirmed about writing the script.
+
+**"It's just the dev database" is not an exemption.** A dev database holds real data other people rely on — seed data, a colleague's test fixtures, manually-reproduced state for an open bug someone is actively working — and this file's governing meta-principle applies here exactly as it does everywhere else: weighing whether this rule "really" applies to this particular database is the failure mode the rule exists to prevent, not a legitimate judgment call.
+
+This applies regardless of how the mutation is invoked — a raw SQL statement, an ORM call, a migration runner, a seed script, or a one-off script that happens to write to a database connection as an incidental step in doing something else. If you cannot state confidently that a specific command is read-only, treat it as a mutation for the purposes of this rule.
+
+**Read operations are not gated by this rule.** A `SELECT`, a read-only query, or inspecting schema is covered by Rule 3 as normal — gating every read the same way would make ordinary debugging and investigation unusable, and a read does not carry a write's risk.
+
+### What "its own confirmation" means
+
+- Confirming "yes, write a script that backfills X" authorizes writing the script. It does **not** authorize running it against a real database.
+- Before running it, state the specific mutation plainly — what table/collection, what operation, roughly how many rows/documents it will touch if that's knowable, and which database by name or host, not just "the dev database" — then stop and wait, the same as Rule 3 Step 3.
+- If the mutation is meant to run automatically as part of a larger task (a migration step inside a deploy, for example), the confirmation must happen immediately before that step runs, not be inferred from an earlier go-ahead on the larger task.
+
+### Anti-patterns — explicitly forbidden for Rule 3b
+
+- Treating confirmation to write a script as also covering running it. These are two different actions and need two different explicit yeses.
+- Skipping this because the environment is labeled dev, local, staging, or test. No environment carries an exemption.
+- Running a mutation "just to check if it works" or "as a quick test" without stating plainly that this is a real write against a real database, and getting a yes first.
+- Treating an earlier confirmation anywhere else in the same conversation as covering a later, different mutation. Each mutation gets its own confirmation, same as Rule 3 Step 3's own rule for a plan that turns out different from what was approved.
+
+---
+
 ## What to do if a step fails
 
 Each rule above includes its own fallback for when the thing it asks for genuinely isn't available (no graph, no matching skill, can't reach full confidence after several exchanges). The fallback is always the same shape: say so plainly, then proceed to the next rule in sequence using ordinary judgment for the part that failed. Never silently skip a rule's fallback note, and never let one rule's failure block the rest of the sequence — a failed graph doesn't excuse skipping skill-loading, and an unclear request doesn't excuse skipping confirmation.
-
-<!-- END dev-agent-skills managed block -->
