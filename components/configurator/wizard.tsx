@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { buildConfiguratorItems } from "lib/configurator/mock-data";
 import {
@@ -483,8 +484,12 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
     if (!bundleItems.length) return;
     setIsAddingToCart(true);
     try {
-      await addConfiguratorBundle(null, bundleItems);
-      router.push("/cart");
+      const res = await addConfiguratorBundle(null, bundleItems);
+      if (typeof res === "string") {
+        toast.error(res);
+        return;
+      }
+      router.push(getLocalizedPath("/cart", locale));
     } catch (e) {
       toast.error("Failed to add items to cart. Please try again.");
     } finally {
