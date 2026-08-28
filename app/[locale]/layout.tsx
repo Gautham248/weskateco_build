@@ -1,3 +1,4 @@
+import { AnnouncementBar } from "components/layout/announcement-bar";
 import { CartProvider } from "components/cart/cart-context";
 import { Navbar } from "components/layout/navbar";
 import { NavbarScrollWrapper } from "components/layout/navbar/navbar-scroll";
@@ -44,6 +45,7 @@ export default async function RootLayout(props: {
       <body className="bg-white text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
         <CartProvider cartPromise={cart}>
           <TranslationProvider locale={params.locale} dictionary={dictionary}>
+            <AnnouncementBar locale={params.locale} />
             <NavbarScrollWrapper>
               <Navbar locale={params.locale} />
             </NavbarScrollWrapper>

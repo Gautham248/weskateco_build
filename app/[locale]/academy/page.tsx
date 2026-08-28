@@ -17,6 +17,8 @@ export const metadata = {
   },
 };
 
+import AcademyProgrammesList from "components/academy/programmes-list";
+
 export default async function AcademyPage(props: {
   params: Promise<{ locale: string }>;
 }) {
@@ -26,6 +28,7 @@ export default async function AcademyPage(props: {
     <>
       <AcademyHeroBanner locale={locale} />
       <PhilosophySection />
+      <AcademyProgrammesList locale={locale} />
       <LovedByCommunity />
       <Footer />
     </>

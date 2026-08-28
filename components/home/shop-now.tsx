@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import catalog from "scripts/product-catalog-dump.json";
+import { ShopNowProductData } from "lib/sanity/queries";
 
 interface ProductCard {
   id: string;
@@ -29,7 +30,13 @@ const products: ProductCard[] = catalog.shopNow.map((p) => ({
   monthlyPayment: p.monthlyPayment,
 }));
 
-export default function ShopNow({ locale }: { locale: string }) {
+export default function ShopNow({
+  locale,
+  sanityProducts,
+}: {
+  locale: string;
+  sanityProducts?: ShopNowProductData[];
+}) {
   // Calculates dynamic alignment padding relative to a 1536px max-width container
   const trackPadding = "var(--track-padding)";
 

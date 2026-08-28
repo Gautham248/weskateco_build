@@ -95,7 +95,45 @@ function CategoryTitle({
   );
 }
 
-export default function CategoryGrid({ locale }: { locale: string }) {
+interface CategoryItem {
+  name: string;
+  image: typeof skateboardsImg;
+  imageUrl?: string;
+  href: string;
+  imageClassName?: string;
+  imageExpandedClassName?: string;
+}
+
+const defaultCategories: CategoryItem[] = [
+  {
+    name: "Surfboards",
+    image: surfboardsImg,
+    imageUrl: undefined,
+    href: "/store/surfskates",
+  },
+  {
+    name: "Skateboards",
+    image: skateboardsImg,
+    imageUrl: undefined,
+    href: "/store/skateboards",
+  },
+  {
+    name: "Accessories",
+    image: accessoriesImg,
+    imageUrl: undefined,
+    href: "/store/apparel-1",
+    imageClassName: "scale-170 -translate-x-15",
+    imageExpandedClassName: "scale-180 -translate-x-15",
+  },
+];
+
+export default function CategoryGrid({
+  locale,
+  sanityCategories,
+}: {
+  locale: string;
+  sanityCategories?: Array<{ title_en?: string; title_hi?: string; href?: string; imageUrl?: string }>;
+}) {
   const t = createTranslator(locale);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(0);
 
@@ -103,25 +141,14 @@ export default function CategoryGrid({ locale }: { locale: string }) {
   const [activeMobileIndex, setActiveMobileIndex] = useState<number>(0);
   const touchStart = useRef<number | null>(null);
 
-  const categories = [
-    {
-      name: "Surfboards",
-      image: surfboardsImg,
-      href: "/store/surfskates",
-    },
-    {
-      name: "Skateboards",
-      image: skateboardsImg,
-      href: "/store/skateboards",
-    },
-    {
-      name: "Accessories",
-      image: accessoriesImg,
-      href: "/store/apparel-1",
-      imageClassName: "scale-170 -translate-x-15",
-      imageExpandedClassName: "scale-180 -translate-x-15",
-    },
-  ];
+  const categories: CategoryItem[] = (sanityCategories && sanityCategories.length > 0)
+    ? sanityCategories.map((c) => ({
+        name: (locale === "hi" && c.title_hi) ? c.title_hi : (c.title_en || "Category"),
+        image: skateboardsImg,
+        imageUrl: c.imageUrl,
+        href: c.href || "/store",
+      }))
+    : defaultCategories;
 
   // Mobile Touch Mechanics
   const handleTouchStart = (e: React.TouchEvent) => {

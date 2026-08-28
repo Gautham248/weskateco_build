@@ -1,6 +1,10 @@
+import { getHomeNewlyReleased } from "lib/sanity/queries";
 import NewlyReleaseContent from "./newly-release-content";
 
-export default function NewlyRelease() {
+export default async function NewlyRelease() {
+  const sanityData = await getHomeNewlyReleased();
+  const sanitySlides = sanityData?.slides;
+
   return (
     <section className="h-auto md:h-screen w-full bg-white pt-15 md:pt-[120px] pb-15 md:mb-[100px]">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 h-auto md:h-full flex flex-col">
@@ -28,7 +32,7 @@ export default function NewlyRelease() {
                   "linear-gradient(262.47deg, #141414 13.74%, #393939 98.84%)",
               }}
             >
-              <NewlyReleaseContent />
+              <NewlyReleaseContent sanitySlides={sanitySlides} />
               {/* Mobile SVG */}
               <svg
                 width="324"

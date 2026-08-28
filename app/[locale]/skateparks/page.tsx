@@ -20,6 +20,8 @@ export const metadata = {
   },
 };
 
+import SkateparksList from "components/skatepark/skateparks-list";
+
 export default async function SkateparksPage(props: {
   params: Promise<{ locale: string }>;
 }) {
@@ -29,6 +31,7 @@ export default async function SkateparksPage(props: {
     <>
       <SkateparkHeroBanner locale={locale} />
       <OurMissionSection />
+      <SkateparksList />
       <WhyChooseUsSection />
       <OurServicesSection />
       <SkateparkGallerySection />

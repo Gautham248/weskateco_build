@@ -8,10 +8,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-const slides = [
+import { NewlyReleasedSlideData } from "lib/sanity/queries";
+
+const defaultSlides = [
   {
     full: yellowFull,
     wheels: yellowWheels,
+    fullUrl: undefined,
+    wheelsUrl: undefined,
     title: "BEGINNER SKATEBOARD SPHERE",
     subtitle: "LOGO COMPLETE",
     price: "₹ 8499",
@@ -21,6 +25,8 @@ const slides = [
   {
     full: blueFull,
     wheels: blueWheels,
+    fullUrl: undefined,
+    wheelsUrl: undefined,
     title: "BUDDY & CARE 66",
     subtitle: "STREET SERIES",
     price: "₹ 8499",
@@ -29,7 +35,21 @@ const slides = [
   },
 ];
 
-export default function NewlyReleaseContent() {
+export default function NewlyReleaseContent({ sanitySlides }: { sanitySlides?: NewlyReleasedSlideData[] }) {
+  const slides = (sanitySlides && sanitySlides.length > 0)
+    ? sanitySlides.map((s) => ({
+        full: yellowFull,
+        wheels: yellowWheels,
+        fullUrl: s.fullImageUrl,
+        wheelsUrl: s.wheelsImageUrl,
+        title: s.title || "SKATEBOARD DECK",
+        subtitle: s.subtitle || "PRO SERIES",
+        price: s.price || "₹ 8499",
+        oldPrice: s.oldPrice || "₹ 10999",
+        heightClass: "h-[160%]",
+      }))
+    : defaultSlides;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [slideIndex, setSlideIndex] = useState(0);
   const slideIndexRef = useRef(slideIndex);
