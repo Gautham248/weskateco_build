@@ -77,8 +77,8 @@ export default function NavLinks({
 
           <div
             className={`absolute left-6 right-6 lg:left-12 lg:right-12 z-50 shadow-lg top-full mt-5 ${isDropdownOpen
-                ? "opacity-100 pointer-events-auto"
-                : "opacity-0 pointer-events-none"
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
               } transition-opacity duration-300`}
             style={{ height: "471px" }}
             onMouseLeave={(e) => {
@@ -134,8 +134,8 @@ export default function NavLinks({
 
           <div
             className={`absolute left-0 top-full pt-1.5 w-64 z-50 transition-all duration-200 ${isGuidesOpen
-                ? "opacity-100 scale-100 pointer-events-auto"
-                : "opacity-0 scale-95 pointer-events-none"
+              ? "opacity-100 scale-100 pointer-events-auto"
+              : "opacity-0 scale-95 pointer-events-none"
               }`}
           >
             <div className="rounded-md bg-white text-black shadow-xl border border-neutral-100 py-2">
