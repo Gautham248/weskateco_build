@@ -27,7 +27,10 @@ export default function NavLinks({
         setIsDropdownOpen(false);
         setActiveCategory(null);
       }
-      if (guidesRef.current && !guidesRef.current.contains(event.target as Node)) {
+      if (
+        guidesRef.current &&
+        !guidesRef.current.contains(event.target as Node)
+      ) {
         setIsGuidesOpen(false);
       }
     }
@@ -76,10 +79,11 @@ export default function NavLinks({
           </button>
 
           <div
-            className={`absolute left-6 right-6 lg:left-12 lg:right-12 z-50 shadow-lg top-full mt-5 ${isDropdownOpen
+            className={`absolute left-6 right-6 lg:left-12 lg:right-12 z-50 shadow-lg top-full mt-5 ${
+              isDropdownOpen
                 ? "opacity-100 pointer-events-auto"
                 : "opacity-0 pointer-events-none"
-              } transition-opacity duration-300`}
+            } transition-opacity duration-300`}
             style={{ height: "471px" }}
             onMouseLeave={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
@@ -127,22 +131,24 @@ export default function NavLinks({
           >
             GUIDES
             <ChevronDownIcon
-              className={`h-2.5 w-2.5 md:h-2.5 md:w-2.5 xl:h-3 xl:w-3 transition-transform duration-200 ${isGuidesOpen ? "rotate-180" : ""
-                }`}
+              className={`h-2.5 w-2.5 md:h-2.5 md:w-2.5 xl:h-3 xl:w-3 transition-transform duration-200 ${
+                isGuidesOpen ? "rotate-180" : ""
+              }`}
             />
           </button>
 
           <div
-            className={`absolute left-0 top-full pt-1.5 w-64 z-50 transition-all duration-200 ${isGuidesOpen
+            className={`absolute left-0 top-full pt-1.5 w-64 z-50 transition-all duration-200 ${
+              isGuidesOpen
                 ? "opacity-100 scale-100 pointer-events-auto"
                 : "opacity-0 scale-95 pointer-events-none"
-              }`}
+            }`}
           >
             <div className="rounded-md bg-white text-black shadow-xl border border-neutral-100 py-2">
               <Link
                 href={getLocalizedPath(
                   "/guides/skateboard-buying-guide",
-                  locale
+                  locale,
                 )}
                 onClick={() => setIsGuidesOpen(false)}
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
@@ -174,6 +180,17 @@ export default function NavLinks({
           <Link href={getLocalizedPath("/academy", locale)}>
             WESKATE ACADEMY
           </Link>
+        </li>
+        {/* WESKATE SCHOOL */}
+        <li
+          className={isDropdownOpen ? "opacity-50" : ""}
+          onMouseEnter={() => {
+            setIsDropdownOpen(false);
+            setIsGuidesOpen(false);
+            setActiveCategory(null);
+          }}
+        >
+          <Link href={getLocalizedPath("/school", locale)}>WESKATE SCHOOL</Link>
         </li>
         {/* SKATEPARKS */}
         <li

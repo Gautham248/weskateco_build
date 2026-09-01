@@ -23,6 +23,7 @@ docs/
 .DS_Store
 *.pem
 graphify-out/
+.dev-agent/
 
 # debug
 npm-debug.log*

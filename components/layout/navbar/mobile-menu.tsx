@@ -37,7 +37,7 @@ const ITEM_SLUGS: Record<string, (prefix: string) => string> = {
 
 function getStorePath(parentCategoryUrl: string, itemLower: string): string {
   const category = CATEGORY_PREFIXES.find((c) =>
-    parentCategoryUrl.includes(c.match)
+    parentCategoryUrl.includes(c.match),
   );
   const slugFn = category && ITEM_SLUGS[itemLower];
   const slug = slugFn ? slugFn(category.prefix) : itemLower;
@@ -263,13 +263,14 @@ export default function MobileMenu() {
                   </button>
 
                   {isGuidesExpanded && (
-                    <div className="mt-3 flex flex-col gap-2 pl-1"
+                    <div
+                      className="mt-3 flex flex-col gap-2 pl-1"
                       style={{ fontFamily: "Archivo, sans-serif" }}
                     >
                       <Link
                         href={getLocalizedPath(
                           "/guides/skateboard-buying-guide",
-                          locale
+                          locale,
                         )}
                         onClick={closeMobileMenu}
                         className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
@@ -296,6 +297,18 @@ export default function MobileMenu() {
                     style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
                     WESKATE ACADEMY
+                  </Link>
+                </div>
+
+                {/* WESKATE SCHOOL Link */}
+                <div className="border-b border-neutral-100 dark:border-neutral-900 py-4">
+                  <Link
+                    href={getLocalizedPath("/school", locale)}
+                    onClick={closeMobileMenu}
+                    className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
+                    WESKATE SCHOOL
                   </Link>
                 </div>
 
