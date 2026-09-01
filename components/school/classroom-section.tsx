@@ -40,7 +40,10 @@ export default function ClassroomSection() {
               className="max-w-md lg:max-w-[560px] text-black text-sm md:text-xl leading-[18px] md:leading-[100%] font-[400]"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              Skateboarding is one of the world&apos;s fastest-growing Olympic sports, but in India, access to structured coaching remains limited. WeSkate Co bridges that gap by bringing a professionally designed curriculum directly into schools.
+              Skateboarding is one of the world&apos;s fastest-growing Olympic
+              sports, but in India, access to structured coaching remains
+              limited. WeSkate Co bridges that gap by bringing a professionally
+              designed curriculum directly into schools.
             </p>
           </div>
         </div>

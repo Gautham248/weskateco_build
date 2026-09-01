@@ -57,7 +57,8 @@ export default function OurImpactSection() {
             className="text-sm md:text-base text-black font-normal leading-[18px] md:leading-relaxed"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
-            Preparing athletes for international competition across Thailand, Indonesia and Japan.
+            Preparing athletes for international competition across Thailand,
+            Indonesia and Japan.
           </p>
         </div>
       </div>
