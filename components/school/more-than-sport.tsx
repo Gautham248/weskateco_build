@@ -75,7 +75,7 @@ export default function MoreThanSportSection() {
                   {card.title}
                 </h3>
                 <p
-                  className="text-xs sm:text-sm text-white font-[400] leading-relaxed"
+                  className="text-sm text-white font-[400] leading-[120%]"
                   style={{ fontFamily: "'Clash Display', sans-serif" }}
                 >
                   {card.description}

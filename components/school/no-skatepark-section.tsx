@@ -1,8 +1,11 @@
+"use client";
+
 import sp1 from "components/icons/school/skatepark_1.png";
 import sp2 from "components/icons/school/skatepark_2.png";
 import sp3 from "components/icons/school/skatepark_3.png";
 import sp4 from "components/icons/school/skatepark_4.png";
 import Image from "next/image";
+import { useRef, useState } from "react";
 
 const PLACES = [
   {
@@ -24,31 +27,96 @@ const PLACES = [
 ];
 
 export default function NoSkateparkSection() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isScrollingRef = useRef(false);
+
+  const scrollToCard = (index: number) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const targetChild = container.children[index] as HTMLElement;
+    if (targetChild) {
+      isScrollingRef.current = true;
+      setActiveIndex(index);
+      container.scrollTo({
+        left: targetChild.offsetLeft - container.offsetLeft,
+        behavior: "smooth",
+      });
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 400);
+    }
+  };
+
+  const handlePrev = () => {
+    if (activeIndex > 0) {
+      scrollToCard(activeIndex - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (activeIndex < PLACES.length - 1) {
+      scrollToCard(activeIndex + 1);
+    }
+  };
+
+  const handleScroll = () => {
+    if (isScrollingRef.current) return;
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const children = Array.from(container.children) as HTMLElement[];
+    const containerLeft = container.scrollLeft;
+
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    children.forEach((child, index) => {
+      const distance = Math.abs(child.offsetLeft - containerLeft);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    if (closestIndex !== activeIndex) {
+      setActiveIndex(closestIndex);
+    }
+  };
+
   return (
     <section className="w-full bg-[#F4F4F6] py-12 md:py-[120px]">
       <div className="mx-auto w-full max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-8 md:gap-12">
         {/* Section Heading */}
         <h2
-          className="text-[clamp(28px,4.5vw,60px)] font-bold tracking-tight uppercase text-black select-none"
+          className="text-[clamp(28px,4.5vw,60px)] font-bold tracking-tight uppercase text-black select-none text-left"
           style={{ fontFamily: "'Clash Display', sans-serif" }}
         >
           NO SKATEPARK? NO PROBLEM.
         </h2>
 
-        {/* 4 Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 md:gap-5">
+        {/* 4 Cards Container: Horizontal Scroll on Mobile, 4 Grid on Desktop */}
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="flex md:grid overflow-x-auto md:overflow-visible gap-4 md:gap-5 snap-x snap-mandatory scrollbar-none md:grid-cols-4 items-stretch pb-2 md:pb-0"
+          style={{
+            msOverflowStyle: "none",
+            scrollbarWidth: "none",
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
           {PLACES.map((item, idx) => (
             <div
               key={idx}
-              className="relative w-full aspect-[405/487] rounded-[4px] overflow-hidden bg-neutral-200 shadow-xs"
+              className="relative w-[290px] min-w-[290px] h-[348.72px] aspect-[290/348.72] md:w-full md:h-auto md:aspect-[405/487] rounded-[8px] md:rounded-[4px] overflow-hidden bg-neutral-200 shadow-xs shrink-0 md:shrink snap-start select-none"
             >
               {/* Image */}
               <Image
                 src={item.image}
                 alt={item.title}
                 fill
-                className="object-cover rounded-[4px]"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                className="object-cover rounded-[8px] md:rounded-[4px]"
+                sizes="(max-width: 640px) 290px, (max-width: 1024px) 50vw, 25vw"
                 priority={idx < 2}
               />
 
@@ -66,13 +134,39 @@ export default function NoSkateparkSection() {
         </div>
 
         {/* Bottom Centered Description Paragraph */}
-        <div className="max-w-6xl mx-auto text-center">
+        <div className="max-w-6xl md:mx-auto text-left md:text-center">
           <p
-            className="text-sm md:text-xl text-black font-normal leading-[130%] tracking-[0%]"
+            className="text-sm md:text-xl text-black font-normal leading-[18px] md:leading-[130%] tracking-[0%]"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             Our curriculum is designed to operate on any flat, hard surface. Schools can begin immediately without investing in permanent infrastructure. Portable ramps can be introduced as the program grows.
           </p>
+
+          {/* Navigation Arrows for Mobile */}
+          <div className="flex gap-3 pt-6 md:hidden">
+            <button
+              onClick={handlePrev}
+              disabled={activeIndex === 0}
+              aria-label="Previous card"
+              className="w-9 h-9 flex items-center justify-center border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.0942 12H5.90576" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 5.90625L5.90576 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={activeIndex === PLACES.length - 1}
+              aria-label="Next card"
+              className="w-9 h-9 flex items-center justify-center border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5.90576 12H18.0942" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 5.90625L18.0942 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>

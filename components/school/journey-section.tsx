@@ -1,3 +1,5 @@
+"use client";
+
 import j1 from "components/icons/school/journey_1.svg";
 import j2 from "components/icons/school/journey_2.svg";
 import j3 from "components/icons/school/journey_3.svg";
@@ -5,6 +7,7 @@ import j4 from "components/icons/school/journey_4.svg";
 import j5 from "components/icons/school/journey_5.svg";
 import j6 from "components/icons/school/journey_6.svg";
 import Image from "next/image";
+import { useRef, useState } from "react";
 
 const STAGES = [
   {
@@ -40,23 +43,88 @@ const STAGES = [
 ];
 
 export default function JourneySection() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isScrollingRef = useRef(false);
+
+  const scrollToCard = (index: number) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const targetChild = container.children[index] as HTMLElement;
+    if (targetChild) {
+      isScrollingRef.current = true;
+      setActiveIndex(index);
+      container.scrollTo({
+        left: targetChild.offsetLeft - container.offsetLeft,
+        behavior: "smooth",
+      });
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 400);
+    }
+  };
+
+  const handlePrev = () => {
+    if (activeIndex > 0) {
+      scrollToCard(activeIndex - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (activeIndex < STAGES.length - 1) {
+      scrollToCard(activeIndex + 1);
+    }
+  };
+
+  const handleScroll = () => {
+    if (isScrollingRef.current) return;
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const children = Array.from(container.children) as HTMLElement[];
+    const containerLeft = container.scrollLeft;
+
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    children.forEach((child, index) => {
+      const distance = Math.abs(child.offsetLeft - containerLeft);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    if (closestIndex !== activeIndex) {
+      setActiveIndex(closestIndex);
+    }
+  };
+
   return (
     <section className="w-full bg-white py-12 md:py-[120px]">
       <div className="mx-auto w-full max-w-(--breakpoint-2xl) px-4 lg:px-15">
         {/* Header */}
         <h2
-          className="text-[clamp(28px,4.5vw,60px)] font-bold tracking-tight uppercase text-black text-center mb-8 md:mb-14 select-none"
+          className="text-[clamp(28px,4.5vw,60px)] font-bold tracking-tight uppercase text-black text-left md:text-center mb-6 md:mb-14 select-none"
           style={{ fontFamily: "'Clash Display', sans-serif" }}
         >
           THE JOURNEY
         </h2>
 
-        {/* 6 Stage Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 items-stretch">
+        {/* Stage Cards Container: Horizontal Scroll on Mobile, 6 Grid on Desktop */}
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="flex md:grid overflow-x-auto md:overflow-visible gap-4 md:gap-3.5 snap-x snap-mandatory scrollbar-none md:grid-cols-3 lg:grid-cols-6 items-stretch pb-2 md:pb-0"
+          style={{
+            msOverflowStyle: "none",
+            scrollbarWidth: "none",
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
           {STAGES.map((item, idx) => (
             <div
               key={idx}
-              className="bg-[#F4F4F6] rounded-[8px] p-6 flex flex-col justify-between h-full min-h-[205px]"
+              className="bg-[#F4F4F6] rounded-[8px] p-6 flex flex-col justify-between w-[228px] min-w-[228px] h-[205px] aspect-[228/205] md:w-auto md:aspect-auto shrink-0 md:shrink snap-start select-none"
             >
               {/* Stage Top Tag */}
               <span
@@ -67,7 +135,7 @@ export default function JourneySection() {
               </span>
 
               {/* Icon */}
-              <div className="my-auto flex items-center justify-left py-6">
+              <div className="my-auto flex items-center justify-left py-4">
                 <Image
                   src={item.icon}
                   alt={item.title}
@@ -89,13 +157,39 @@ export default function JourneySection() {
         </div>
 
         {/* Bottom Description */}
-        <div className="mt-10 md:mt-14 max-w-3xl mx-auto text-center">
+        <div className="mt-8 md:mt-14 max-w-3xl md:mx-auto text-left md:text-center">
           <p
-            className="text-xs sm:text-sm md:text-base text-black font-normal leading-[120%] tracking-[0%]"
+            className="text-sm md:text-base text-black font-normal leading-[18px] md:leading-[120%] tracking-[0%]"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             Every student begins with the fundamentals. Those who demonstrate passion and commitment can continue progressing through increasingly advanced stages, creating a genuine pathway from school programs to competitive skateboarding
           </p>
+
+          {/* Navigation Arrows for Mobile */}
+          <div className="flex gap-3 pt-6 md:hidden">
+            <button
+              onClick={handlePrev}
+              disabled={activeIndex === 0}
+              aria-label="Previous stage"
+              className="w-9 h-9 flex items-center justify-center border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.0942 12H5.90576" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 5.90625L5.90576 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={activeIndex === STAGES.length - 1}
+              aria-label="Next stage"
+              className="w-9 h-9 flex items-center justify-center border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5.90576 12H18.0942" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 5.90625L18.0942 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>

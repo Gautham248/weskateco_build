@@ -65,7 +65,7 @@ export default function WhySchoolsChooseSection() {
         </h2>
 
         {/* 6 Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 lg:gap-6">
           {REASONS.map((item) => (
             <div
               key={item.id}

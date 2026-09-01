@@ -1,4 +1,5 @@
 import schoolBanner from "components/icons/school/school_banner.png";
+import schoolBannerMobile from "components/icons/school/school_banner_mobile.png";
 import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,10 +10,17 @@ export default function SchoolHeroBanner({ locale }: { locale?: string }) {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
+          src={schoolBannerMobile}
+          alt="School Hero background"
+          fill
+          className="object-cover md:hidden"
+          priority
+        />
+        <Image
           src={schoolBanner}
           alt="School Hero background"
           fill
-          className="object-cover"
+          className="object-cover hidden md:block"
           priority
         />
       </div>
