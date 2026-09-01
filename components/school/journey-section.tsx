@@ -135,7 +135,7 @@ export default function JourneySection() {
               </span>
 
               {/* Icon */}
-              <div className="my-auto flex items-center justify-left py-4">
+              <div className="my-auto flex items-center justify-start py-4">
                 <Image
                   src={item.icon}
                   alt={item.title}
@@ -162,7 +162,10 @@ export default function JourneySection() {
             className="text-sm md:text-base text-black font-normal leading-[18px] md:leading-[120%] tracking-[0%]"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
-            Every student begins with the fundamentals. Those who demonstrate passion and commitment can continue progressing through increasingly advanced stages, creating a genuine pathway from school programs to competitive skateboarding
+            Every student begins with the fundamentals. Those who demonstrate
+            passion and commitment can continue progressing through increasingly
+            advanced stages, creating a genuine pathway from school programs to
+            competitive skateboarding
           </p>
 
           {/* Navigation Arrows for Mobile */}
@@ -173,9 +176,27 @@ export default function JourneySection() {
               aria-label="Previous stage"
               className="w-9 h-9 flex items-center justify-center border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18.0942 12H5.90576" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 5.90625L5.90576 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18.0942 12H5.90576"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 5.90625L5.90576 12.0005L12 18.0947"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             <button
@@ -184,9 +205,27 @@ export default function JourneySection() {
               aria-label="Next stage"
               className="w-9 h-9 flex items-center justify-center border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5.90576 12H18.0942" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 5.90625L18.0942 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5.90576 12H18.0942"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 5.90625L18.0942 12.0005L12 18.0947"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           </div>

@@ -54,7 +54,7 @@ const REASONS = [
 
 export default function WhySchoolsChooseSection() {
   return (
-    <section className="w-full !bg-[#F4F4F6] py-12 md:py-[120px]">
+    <section className="w-full bg-[#F4F4F6] py-12 md:py-[120px]">
       <div className="mx-auto w-full max-w-(--breakpoint-2xl) px-4 lg:px-15">
         {/* Section Heading */}
         <h2

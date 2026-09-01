@@ -62,7 +62,6 @@ export default function MoreThanSportSection() {
                   fill
                   className="object-cover rounded-[8px]"
                   sizes="(max-width: 768px) 80vw, 424px"
-                  priority={idx < 2}
                 />
               </div>
 

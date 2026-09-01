@@ -117,7 +117,6 @@ export default function NoSkateparkSection() {
                 fill
                 className="object-cover rounded-[8px] md:rounded-[4px]"
                 sizes="(max-width: 640px) 290px, (max-width: 1024px) 50vw, 25vw"
-                priority={idx < 2}
               />
 
               {/* Bottom Black Info Overlay Box: height 78px, pl-30px, pr-10px, py-10px, gap-10px */}
@@ -139,7 +138,10 @@ export default function NoSkateparkSection() {
             className="text-sm md:text-xl text-black font-normal leading-[18px] md:leading-[130%] tracking-[0%]"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
-            Our curriculum is designed to operate on any flat, hard surface. Schools can begin immediately without investing in permanent infrastructure. Portable ramps can be introduced as the program grows.
+            Our curriculum is designed to operate on any flat, hard surface.
+            Schools can begin immediately without investing in permanent
+            infrastructure. Portable ramps can be introduced as the program
+            grows.
           </p>
 
           {/* Navigation Arrows for Mobile */}
@@ -150,9 +152,27 @@ export default function NoSkateparkSection() {
               aria-label="Previous card"
               className="w-9 h-9 flex items-center justify-center border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18.0942 12H5.90576" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 5.90625L5.90576 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18.0942 12H5.90576"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 5.90625L5.90576 12.0005L12 18.0947"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             <button
@@ -161,9 +181,27 @@ export default function NoSkateparkSection() {
               aria-label="Next card"
               className="w-9 h-9 flex items-center justify-center border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5.90576 12H18.0942" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 5.90625L18.0942 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5.90576 12H18.0942"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 5.90625L18.0942 12.0005L12 18.0947"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           </div>
