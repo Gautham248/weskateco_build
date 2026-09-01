@@ -9,20 +9,17 @@ export default function SchoolHeroBanner({ locale }: { locale?: string }) {
     <section className="relative h-screen w-full overflow-hidden -mt-[72px]">
       {/* Background Image */}
       <div className="absolute inset-0">
-        <Image
-          src={schoolBannerMobile}
-          alt="School Hero background"
-          fill
-          className="object-cover md:hidden"
-          priority
-        />
-        <Image
-          src={schoolBanner}
-          alt="School Hero background"
-          fill
-          className="object-cover hidden md:block"
-          priority
-        />
+        <picture>
+          <source srcSet={schoolBanner.src} media="(min-width: 768px)" />
+          <Image
+            src={schoolBannerMobile}
+            alt="School Hero background"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+        </picture>
       </div>
       <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.1),rgba(0,0,0,0.1)),linear-gradient(310.04deg,rgba(0,0,0,0.45)_15%,rgba(0,0,0,0)_55%)]" />
       {/* Content Overlay */}
@@ -48,7 +45,10 @@ export default function SchoolHeroBanner({ locale }: { locale?: string }) {
               className="text-sm md:text-xl text-white leading-[130%] font-[400]"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              India's first structured skateboarding curriculum for schools—introducing students to skateboarding through a safe, progressive program that can evolve from PE classes to competitive pathways.
+              India's first structured skateboarding curriculum for
+              schools—introducing students to skateboarding through a safe,
+              progressive program that can evolve from PE classes to competitive
+              pathways.
             </p>
 
             <Link

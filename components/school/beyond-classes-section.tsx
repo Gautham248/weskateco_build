@@ -5,7 +5,7 @@ import b2 from "components/icons/school/beyond_2.png";
 import b3 from "components/icons/school/beyond_3.png";
 import b4 from "components/icons/school/beyond_4.png";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useCarousel } from "lib/hooks/use-carousel";
 
 const PROGRAMS = [
   {
@@ -27,61 +27,13 @@ const PROGRAMS = [
 ];
 
 export default function BeyondClassesSection() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const isScrollingRef = useRef(false);
-
-  const scrollToCard = (index: number) => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-    const targetChild = container.children[index] as HTMLElement;
-    if (targetChild) {
-      isScrollingRef.current = true;
-      setActiveIndex(index);
-      container.scrollTo({
-        left: targetChild.offsetLeft - container.offsetLeft,
-        behavior: "smooth",
-      });
-      setTimeout(() => {
-        isScrollingRef.current = false;
-      }, 400);
-    }
-  };
-
-  const handlePrev = () => {
-    if (activeIndex > 0) {
-      scrollToCard(activeIndex - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (activeIndex < PROGRAMS.length - 1) {
-      scrollToCard(activeIndex + 1);
-    }
-  };
-
-  const handleScroll = () => {
-    if (isScrollingRef.current) return;
-    const container = scrollContainerRef.current;
-    if (!container) return;
-    const children = Array.from(container.children) as HTMLElement[];
-    const containerLeft = container.scrollLeft;
-
-    let closestIndex = 0;
-    let minDistance = Infinity;
-
-    children.forEach((child, index) => {
-      const distance = Math.abs(child.offsetLeft - containerLeft);
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestIndex = index;
-      }
-    });
-
-    if (closestIndex !== activeIndex) {
-      setActiveIndex(closestIndex);
-    }
-  };
+  const {
+    activeIndex,
+    scrollContainerRef,
+    handlePrev,
+    handleNext,
+    handleScroll,
+  } = useCarousel(PROGRAMS.length);
 
   return (
     <section className="w-full bg-[#F4F4F6] py-12 md:py-[120px]">
