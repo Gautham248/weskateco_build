@@ -16,6 +16,9 @@ const HERO_PATHS = [
   "/skateparks",
   "/en/skateparks",
   "/hi/skateparks",
+  "/about-us",
+  "/en/about-us",
+  "/hi/about-us",
 ];
 
 const NavbarScrollContext = createContext<boolean>(false);
@@ -35,6 +38,7 @@ export function NavbarScrollWrapper({
     pathname.endsWith("/academy") ||
     pathname.endsWith("/school") ||
     pathname.endsWith("/skateparks") ||
+    pathname.endsWith("/about-us") ||
     pathname.includes("/guides/");
   const [scrolled, setScrolled] = useState(!isHeroPage);
 
