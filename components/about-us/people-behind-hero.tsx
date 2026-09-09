@@ -1,8 +1,12 @@
 export default function PeopleBehindHero() {
   return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col gap-6 sm:gap-10 select-none" style={{ fontFamily: '"Clash Display", sans-serif' }}>
+    <div
+      className="w-full max-w-3xl mx-auto flex flex-col gap-6 sm:gap-10 select-none"
+      style={{ fontFamily: '"Clash Display", sans-serif' }}
+    >
       <p className="ml-[4.8%] max-w-[280px] text-lg md:text-2xl font-bold text-black leading-[100%] tracking-[-1%]">
-        We are a community driven by grit, built on persistence, and united by skateboarding.
+        We are a community driven by grit, built on persistence, and united by
+        skateboarding.
       </p>
 
       <div
@@ -27,7 +31,10 @@ export default function PeopleBehindHero() {
                 fill="#0b0b0b"
               />
             </svg>
-            <div className="flex items-start self-start" style={{ width: "12.8%", marginLeft: "2%" }}>
+            <div
+              className="flex items-start self-start"
+              style={{ width: "12.8%", marginLeft: "2%" }}
+            >
               <svg
                 viewBox="350.454 1.26 55.004 81.87"
                 fill="none"
