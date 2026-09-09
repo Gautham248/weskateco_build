@@ -74,7 +74,7 @@ export default function Footer() {
               ACADEMY
             </Link>
             <Link
-              href="/about"
+              href="/about-us"
               className="hover:text-neutral-300 transition-colors"
             >
               ABOUT US
@@ -225,7 +225,7 @@ export default function Footer() {
           {/* ABOUT US */}
           <div className="border-b border-neutral-800">
             <Link
-              href="/about"
+              href="/about-us"
               className="block py-4 font-bold text-base tracking-wider text-white uppercase"
             >
               ABOUT US

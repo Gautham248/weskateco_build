@@ -24,6 +24,7 @@ docs/
 *.pem
 graphify-out/
 .dev-agent/
+.commandcode/
 
 # debug
 npm-debug.log*
