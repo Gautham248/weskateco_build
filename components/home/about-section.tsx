@@ -152,7 +152,7 @@ export default function AboutSection() {
             {/* CTA Button positioned inside the SVG empty space under 'RE */}
             <div className="absolute left-[60.9%] right-0 bottom-[-2%] z-20 h-[30%]">
               <Link
-                href="/about"
+                href="/about-us"
                 className="group flex items-center justify-between rounded-full bg-black border border-neutral-900 px-3 md:px-5 text-[6px] sm:text-[clamp(0.5rem,0.8vw,0.875rem)] md:text-[clamp(0.625rem,1vw,1rem)] font-bold tracking-widest text-[#d4ff00] uppercase transition-all duration-300 hover:bg-neutral-950 hover:border-neutral-800 w-full h-full"
               >
                 <svg
