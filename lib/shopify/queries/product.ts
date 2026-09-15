@@ -57,6 +57,7 @@ export const getProductsPageQuery = /* GraphQL */ `
           handle
           title
           vendor
+          productType
           availableForSale
           updatedAt
           tags

@@ -1,24 +1,33 @@
-import clsx from "clsx";
-import type { ProductOverrideWithImages } from "lib/admin/queries";
+"use client";
+
 import Price from "components/price";
+import clsx from "clsx";
+import type { AdminProductOverrideSummary } from "lib/admin/product-filters";
 import type { ShopifyProductSummary } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
 
 export function ProductTable({
   products,
-  overridesByHandle,
+  overrides,
 }: {
   products: ShopifyProductSummary[];
-  overridesByHandle: Map<string, ProductOverrideWithImages>;
+  overrides: AdminProductOverrideSummary[];
 }) {
+  const overrideByHandle = new Map(
+    overrides.map((override) => [override.handle, override]),
+  );
+
   return (
     <div className="overflow-x-auto rounded-sm border border-neutral-200 dark:border-neutral-800">
-      <table className="w-full min-w-[720px] border-collapse text-sm">
+      <table className="w-full min-w-[820px] border-collapse text-sm">
         <thead>
           <tr className="border-b border-neutral-200 bg-neutral-50 text-left dark:border-neutral-800 dark:bg-neutral-900">
             <th className="px-4 py-3 font-semibold tracking-wider uppercase">
               Product
+            </th>
+            <th className="px-4 py-3 font-semibold tracking-wider uppercase">
+              Type
             </th>
             <th className="px-4 py-3 font-semibold tracking-wider uppercase">
               Vendor
@@ -34,7 +43,7 @@ export function ProductTable({
         </thead>
         <tbody>
           {products.map((product) => {
-            const override = overridesByHandle.get(product.handle);
+            const override = overrideByHandle.get(product.handle);
             const title = override?.title ?? product.title;
             const image = product.featuredImage;
 
@@ -65,6 +74,9 @@ export function ProductTable({
                   </div>
                 </td>
                 <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">
+                  {product.productType || "—"}
+                </td>
+                <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">
                   {product.vendor || "—"}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
@@ -77,16 +89,24 @@ export function ProductTable({
                   />
                 </td>
                 <td className="px-4 py-3">
-                  <span
-                    className={clsx(
-                      "inline-block rounded-[6px] px-2 py-1 text-xs font-semibold",
-                      override
-                        ? "bg-black text-white dark:bg-white dark:text-black"
-                        : "bg-neutral-100 text-neutral-600 dark:bg-neutral-900 dark:text-neutral-400",
-                    )}
-                  >
-                    {override ? "Overridden" : "Shopify"}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span
+                      className={clsx(
+                        "inline-block rounded-[6px] px-2 py-1 text-xs font-semibold",
+                        override
+                          ? "bg-black text-white dark:bg-white dark:text-black"
+                          : "bg-neutral-100 text-neutral-600 dark:bg-neutral-900 dark:text-neutral-400",
+                      )}
+                    >
+                      {override ? "Overridden" : "Shopify"}
+                    </span>
+
+                    {!product.availableForSale ? (
+                      <span className="inline-block rounded-[6px] bg-neutral-200 px-2 py-1 text-xs font-semibold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+                        Sold out
+                      </span>
+                    ) : null}
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <Link

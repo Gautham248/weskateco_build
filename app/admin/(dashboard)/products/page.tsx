@@ -1,12 +1,8 @@
-import { ProductListSearch } from "components/admin/product-list-search";
-import { ProductTable } from "components/admin/product-table";
-import {
-  listOverridesForHandles,
-  type ProductOverrideWithImages,
-} from "lib/admin/queries";
-import { getAdminProductPage } from "lib/shopify";
+import { AdminProductsBrowser } from "components/admin/admin-products-browser";
+import type { AdminProductOverrideSummary } from "lib/admin/product-filters";
+import { listOverridesForHandles } from "lib/admin/queries";
+import { getAdminProductCatalog } from "lib/shopify";
 import type { Metadata } from "next";
-import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -15,43 +11,26 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const PAGE_SIZE = 24;
+export default async function AdminProductsPage() {
+  const { items, truncated } = await getAdminProductCatalog();
 
-export default async function AdminProductsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ after?: string; q?: string }>;
-}) {
-  const { after, q } = await searchParams;
-
-  const page = await getAdminProductPage({
-    first: PAGE_SIZE,
-    after,
-    query: q,
-  });
-
-  let overridesByHandle = new Map<string, ProductOverrideWithImages>();
+  let overrides: AdminProductOverrideSummary[] = [];
   let overrideLookupFailed = false;
 
-  if (page.items.length > 0) {
-    try {
-      const overrides = await listOverridesForHandles(
-        page.items.map((item) => item.handle),
-      );
-      overridesByHandle = new Map(
-        overrides.map((override) => [override.productHandle, override]),
-      );
-    } catch (error) {
-      console.error("Could not load product overrides for the list:", error);
-      overrideLookupFailed = true;
-    }
+  try {
+    const rows = await listOverridesForHandles(
+      items.map((item) => item.handle),
+    );
+    overrides = rows.map((row) => ({
+      handle: row.productHandle,
+      title: row.title,
+    }));
+  } catch (error) {
+    console.error("Could not load product overrides for the list:", error);
+    overrideLookupFailed = true;
   }
 
-  const nextHref = page.endCursor
-    ? `/admin/products?after=${encodeURIComponent(page.endCursor)}${
-        q ? `&q=${encodeURIComponent(q)}` : ""
-      }`
-    : null;
+  const overridden = overrides.length;
 
   return (
     <div className="space-y-8">
@@ -66,14 +45,9 @@ export default async function AdminProductsPage({
         </div>
 
         <span className="text-xs text-neutral-500 dark:text-neutral-400">
-          {overridesByHandle.size} override
-          {overridesByHandle.size === 1 ? "" : "s"} on this page
+          {overridden} override{overridden === 1 ? "" : "s"} across the catalog
         </span>
       </header>
-
-      <div className="max-w-md">
-        <ProductListSearch initialQuery={q ?? ""} />
-      </div>
 
       {overrideLookupFailed ? (
         <p
@@ -85,37 +59,11 @@ export default async function AdminProductsPage({
         </p>
       ) : null}
 
-      {page.items.length === 0 ? (
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">
-          No products found. If Shopify credentials are not configured, the
-          admin product list will be empty.
-        </p>
-      ) : (
-        <ProductTable
-          products={page.items}
-          overridesByHandle={overridesByHandle}
-        />
-      )}
-
-      <div className="flex items-center gap-4">
-        {after ? (
-          <Link
-            href={`/admin/products${q ? `?q=${encodeURIComponent(q)}` : ""}`}
-            className="text-sm underline underline-offset-4"
-          >
-            ← Back to first page
-          </Link>
-        ) : null}
-
-        {nextHref ? (
-          <Link
-            href={nextHref}
-            className="text-sm font-semibold underline underline-offset-4"
-          >
-            Next page →
-          </Link>
-        ) : null}
-      </div>
+      <AdminProductsBrowser
+        products={items}
+        overrides={overrides}
+        truncated={truncated}
+      />
     </div>
   );
 }

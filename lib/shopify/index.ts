@@ -59,6 +59,7 @@ import {
   ShopifyProductRecommendationsOperation,
   ShopifyProductsOperation,
   ShopifyProductsPageOperation,
+  ShopifyProductSummary,
   ShopifyRemoveFromCartOperation,
   ShopifyUpdateCartOperation,
 } from "./types";
@@ -608,6 +609,59 @@ export async function getAdminProductPage({
     hasNextPage: connection.pageInfo.hasNextPage,
     endCursor: connection.pageInfo.endCursor,
   };
+}
+
+/** Safety valve: 4 x 250 products before we stop paging. */
+const ADMIN_CATALOG_MAX_PAGES = 4;
+const ADMIN_CATALOG_PAGE_SIZE = 250;
+
+export type AdminProductCatalog = {
+  items: ShopifyProductSummary[];
+  /** True when the catalog is larger than the page cap, so the list is partial. */
+  truncated: boolean;
+};
+
+/**
+ * The whole admin catalog in one call, so the admin products page can filter
+ * client-side exactly like the storefront does. Sorted by title for a
+ * predictable, scannable list.
+ */
+export async function getAdminProductCatalog(): Promise<AdminProductCatalog> {
+  "use cache";
+  cacheTag(TAGS.products);
+  cacheLife("days");
+
+  if (!endpoint) {
+    console.log("Skipping getAdminProductCatalog - Shopify not configured");
+    return { items: [], truncated: false };
+  }
+
+  const items: ShopifyProductSummary[] = [];
+  let after: string | undefined;
+  let hasMore = true;
+  let pages = 0;
+
+  while (hasMore && pages < ADMIN_CATALOG_MAX_PAGES) {
+    const res = await shopifyFetch<ShopifyProductsPageOperation>({
+      query: getProductsPageQuery,
+      variables: {
+        first: ADMIN_CATALOG_PAGE_SIZE,
+        after,
+        sortKey: "TITLE",
+        reverse: false,
+      },
+    });
+
+    const connection = res.body.data.products;
+
+    items.push(...removeEdgesAndNodes(connection));
+
+    hasMore = connection.pageInfo.hasNextPage;
+    after = connection.pageInfo.endCursor ?? undefined;
+    pages += 1;
+  }
+
+  return { items, truncated: hasMore };
 }
 
 // This is called from `app/api/revalidate.ts` so providers can control revalidation logic.

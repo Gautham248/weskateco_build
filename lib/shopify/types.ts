@@ -270,6 +270,7 @@ export type ShopifyProductSummary = {
   handle: string;
   title: string;
   vendor: string;
+  productType: string;
   availableForSale: boolean;
   updatedAt: string;
   tags: string[];
