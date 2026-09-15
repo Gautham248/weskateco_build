@@ -10,7 +10,7 @@ import { getCart } from "lib/shopify";
 import { baseUrl } from "lib/utils";
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
-import "./globals.css";
+import "../globals.css";
 
 const { SITE_NAME } = process.env;
 

@@ -1,3 +1,4 @@
+import { withOverrides } from "lib/catalog/overrides";
 import {
   HIDDEN_PRODUCT_TAG,
   SHOPIFY_GRAPHQL_API_ENDPOINT,
@@ -29,10 +30,12 @@ import { getPageQuery, getPagesQuery } from "./queries/page";
 import {
   getProductQuery,
   getProductRecommendationsQuery,
+  getProductsPageQuery,
   getProductsQuery,
 } from "./queries/product";
 import { getConfiguratorProductsQuery } from "./queries/configurator";
 import {
+  AdminProductPage,
   Cart,
   Collection,
   Connection,
@@ -55,6 +58,7 @@ import {
   ShopifyProductOperation,
   ShopifyProductRecommendationsOperation,
   ShopifyProductsOperation,
+  ShopifyProductsPageOperation,
   ShopifyRemoveFromCartOperation,
   ShopifyUpdateCartOperation,
 } from "./types";
@@ -352,8 +356,8 @@ export async function getCollectionProducts({
     return [];
   }
 
-  return reshapeProducts(
-    removeEdgesAndNodes(res.body.data.collection.products),
+  return withOverrides(
+    reshapeProducts(removeEdgesAndNodes(res.body.data.collection.products)),
   );
 }
 
@@ -450,6 +454,35 @@ export async function getPages(): Promise<Page[]> {
   return removeEdgesAndNodes(res.body.data.pages);
 }
 
+/**
+ * Admin-only. Returns the raw Shopify product WITHOUT the override layer applied,
+ * so the editor can show the true Shopify title/description/photos alongside the
+ * override fields instead of the already-merged result.
+ */
+export async function getRawProduct(
+  handle: string,
+): Promise<Product | undefined> {
+  "use cache";
+  cacheTag(TAGS.products);
+  cacheLife("days");
+
+  if (!endpoint) {
+    console.log(
+      `Skipping getRawProduct for '${handle}' - Shopify not configured`,
+    );
+    return undefined;
+  }
+
+  const res = await shopifyFetch<ShopifyProductOperation>({
+    query: getProductQuery,
+    variables: {
+      handle,
+    },
+  });
+
+  return reshapeProduct(res.body.data.product, false);
+}
+
 export async function getProduct(handle: string): Promise<Product | undefined> {
   "use cache";
   cacheTag(TAGS.products);
@@ -467,7 +500,15 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
     },
   });
 
-  return reshapeProduct(res.body.data.product, false);
+  const product = reshapeProduct(res.body.data.product, false);
+
+  if (!product) {
+    return undefined;
+  }
+
+  const [merged] = await withOverrides([product]);
+
+  return merged;
 }
 
 export async function getProductRecommendations(
@@ -484,7 +525,7 @@ export async function getProductRecommendations(
     },
   });
 
-  return reshapeProducts(res.body.data.productRecommendations);
+  return withOverrides(reshapeProducts(res.body.data.productRecommendations));
 }
 
 export async function getProducts({
@@ -509,7 +550,9 @@ export async function getProducts({
     },
   });
 
-  return reshapeProducts(removeEdgesAndNodes(res.body.data.products));
+  return withOverrides(
+    reshapeProducts(removeEdgesAndNodes(res.body.data.products)),
+  );
 }
 
 export async function getConfiguratorProducts(): Promise<Product[]> {
@@ -521,7 +564,50 @@ export async function getConfiguratorProducts(): Promise<Product[]> {
     query: getConfiguratorProductsQuery,
   });
 
-  return reshapeProducts(removeEdgesAndNodes(res.body.data.products));
+  return withOverrides(
+    reshapeProducts(removeEdgesAndNodes(res.body.data.products)),
+  );
+}
+
+/**
+ * Admin-only cursor pagination over the Shopify catalog. Unlike getProducts this
+ * is not capped at 100 and does not pull variants or metafields, so it stays
+ * cheap enough for a table view.
+ */
+export async function getAdminProductPage({
+  first = 24,
+  after,
+  query,
+  sortKey = "UPDATED_AT",
+  reverse = true,
+}: {
+  first?: number;
+  after?: string;
+  query?: string;
+  sortKey?: string;
+  reverse?: boolean;
+}): Promise<AdminProductPage> {
+  "use cache";
+  cacheTag(TAGS.products);
+  cacheLife("days");
+
+  if (!endpoint) {
+    console.log("Skipping getAdminProductPage - Shopify not configured");
+    return { items: [], hasNextPage: false, endCursor: null };
+  }
+
+  const res = await shopifyFetch<ShopifyProductsPageOperation>({
+    query: getProductsPageQuery,
+    variables: { first, after, query, sortKey, reverse },
+  });
+
+  const connection = res.body.data.products;
+
+  return {
+    items: removeEdgesAndNodes(connection),
+    hasNextPage: connection.pageInfo.hasNextPage,
+    endCursor: connection.pageInfo.endCursor,
+  };
 }
 
 // This is called from `app/api/revalidate.ts` so providers can control revalidation logic.
