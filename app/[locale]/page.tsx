@@ -48,7 +48,7 @@ export default async function HomePage(props: {
   return (
     <>
       <HeroBanner locale={locale} />
-      <NewlyRelease />
+      <NewlyRelease locale={locale} />
       <AboutSection />
       <CategoryGrid locale={locale} />
       {/* <ProductGridSection

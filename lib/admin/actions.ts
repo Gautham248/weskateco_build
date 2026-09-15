@@ -14,15 +14,30 @@ import {
   createAdminUser,
   deleteProductOverride,
   getAdminUserByUsername,
+  saveNewlyReleasedItems,
   saveProductOverride,
   updateAdminUserPassword,
 } from "lib/admin/queries";
 import { TAGS } from "lib/constants";
+import { getAdminProductPage, getProduct } from "lib/shopify";
 import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export type ActionState = { error?: string; success?: string } | null;
+
+export type AdminProductSummary = {
+  handle: string;
+  shopifyProductId: string;
+  title: string;
+  vendor: string;
+  featuredImageUrl: string | null;
+};
+
+export type ProductPhotoOption = {
+  url: string;
+  altText: string;
+};
 
 const absoluteUrl = z.string().refine(
   (value) => {
@@ -34,6 +49,12 @@ const absoluteUrl = z.string().refine(
     }
   },
   { message: "Must be an absolute URL." },
+);
+
+/** The admin form sends "" for "no choice"; store that as null. */
+const optionalAbsoluteUrl = z.preprocess(
+  (value) => (value === "" ? null : value),
+  absoluteUrl.nullish(),
 );
 
 const loginSchema = z.object({
@@ -65,6 +86,20 @@ const overrideSchema = z.object({
       }),
     )
     .default([]),
+});
+
+const newlyReleasedSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        productHandle: z.string().trim().min(1),
+        shopifyProductId: z.string().nullish(),
+        cardImageUrl: optionalAbsoluteUrl,
+        heroImageUrl: optionalAbsoluteUrl,
+        subtitle: z.string().nullish(),
+      }),
+    )
+    .max(200, "That is more products than one carousel can hold."),
 });
 
 export async function loginAction(
@@ -243,4 +278,99 @@ export async function deleteProductOverrideAction(
   revalidateTag(TAGS.collections, "seconds");
 
   return { success: "Override removed. Shopify data is showing again." };
+}
+
+export async function searchAdminProductsAction(
+  query: string,
+): Promise<AdminProductSummary[]> {
+  await requireAdmin();
+
+  try {
+    const page = await getAdminProductPage({
+      first: 12,
+      query:
+        typeof query === "string" && query.trim() ? query.trim() : undefined,
+    });
+
+    return page.items.map((item) => ({
+      handle: item.handle,
+      shopifyProductId: item.id,
+      title: item.title,
+      vendor: item.vendor,
+      featuredImageUrl: item.featuredImage?.url ?? null,
+    }));
+  } catch (error) {
+    console.error("Admin product search failed:", error);
+    return [];
+  }
+}
+
+/**
+ * Photos the customer would actually see for this product, so image overrides
+ * made on the Products tab are respected when choosing carousel photos.
+ */
+export async function getProductPhotoOptionsAction(
+  handle: string,
+): Promise<ProductPhotoOption[]> {
+  await requireAdmin();
+
+  if (typeof handle !== "string" || handle.length === 0) {
+    return [];
+  }
+
+  try {
+    const product = await getProduct(handle);
+
+    if (!product) {
+      return [];
+    }
+
+    return product.images.map((image) => ({
+      url: image.url,
+      altText: image.altText || product.title,
+    }));
+  } catch (error) {
+    console.error(`Could not load photos for "${handle}":`, error);
+    return [];
+  }
+}
+
+export async function saveNewlyReleasedAction(
+  items: unknown,
+): Promise<ActionState> {
+  const session = await requireAdmin();
+
+  const parsed = newlyReleasedSchema.safeParse({ items });
+
+  if (!parsed.success) {
+    return {
+      error: parsed.error.issues[0]?.message ?? "Check the form and try again.",
+    };
+  }
+
+  const handles = parsed.data.items.map((item) => item.productHandle);
+
+  if (new Set(handles).size !== handles.length) {
+    return { error: "Each product can only appear once in the carousel." };
+  }
+
+  try {
+    await saveNewlyReleasedItems(
+      parsed.data.items.map((item) => ({
+        productHandle: item.productHandle,
+        shopifyProductId: item.shopifyProductId ?? null,
+        cardImageUrl: item.cardImageUrl ?? null,
+        heroImageUrl: item.heroImageUrl ?? null,
+        subtitle: item.subtitle ?? null,
+      })),
+      session.userId,
+    );
+  } catch (error) {
+    console.error("Failed to save the newly released carousel:", error);
+    return { error: "Could not save the carousel." };
+  }
+
+  revalidateTag(TAGS.newlyReleased, "seconds");
+
+  return { success: "Newly released carousel saved." };
 }

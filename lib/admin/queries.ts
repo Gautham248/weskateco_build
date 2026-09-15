@@ -1,7 +1,12 @@
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, notInArray } from "drizzle-orm";
 import { getDb, schema } from "lib/db";
 
-const { adminUsers, productOverrideImages, productOverrides } = schema;
+const {
+  adminUsers,
+  newlyReleasedItems,
+  productOverrideImages,
+  productOverrides,
+} = schema;
 
 export type AdminUserRecord = schema.AdminUser;
 export type ProductOverrideRecord = schema.ProductOverride;
@@ -29,6 +34,18 @@ export type ProductOverrideInput = {
 
 export type ProductOverrideWithImages = ProductOverrideRecord & {
   images: ProductOverrideImageRecord[];
+};
+
+/**
+ * Deliberately not the raw Drizzle row — the storefront caches this shape, and
+ * keeping it free of Date objects keeps the cache payload simple.
+ */
+export type NewlyReleasedItemRow = {
+  productHandle: string;
+  shopifyProductId: string | null;
+  cardImageUrl: string | null;
+  heroImageUrl: string | null;
+  subtitle: string | null;
 };
 
 export async function getAdminUserByUsername(
@@ -77,7 +94,7 @@ export async function createAdminUser(
     .returning();
 
   if (!user) {
-    throw new Error("Failed to create admin user.");
+    throw new Error("Failed to create an admin user.");
   }
 
   return user;
@@ -242,4 +259,74 @@ export async function deleteProductOverride(
     .returning({ id: productOverrides.id });
 
   return deleted.length > 0;
+}
+
+export async function listNewlyReleasedItems(): Promise<
+  NewlyReleasedItemRow[]
+> {
+  const db = getDb();
+
+  return db
+    .select({
+      productHandle: newlyReleasedItems.productHandle,
+      shopifyProductId: newlyReleasedItems.shopifyProductId,
+      cardImageUrl: newlyReleasedItems.cardImageUrl,
+      heroImageUrl: newlyReleasedItems.heroImageUrl,
+      subtitle: newlyReleasedItems.subtitle,
+    })
+    .from(newlyReleasedItems)
+    .orderBy(newlyReleasedItems.position);
+}
+
+/**
+ * Replaces the whole curated list.
+ *
+ * Upsert-then-prune rather than delete-then-insert: neon-http has no
+ * transactions, and this way a failure part-way through leaves a superset of
+ * correct rows (at worst one stale entry) instead of an empty carousel.
+ */
+export async function saveNewlyReleasedItems(
+  items: NewlyReleasedItemRow[],
+  updatedBy?: string | null,
+): Promise<void> {
+  const db = getDb();
+
+  if (items.length === 0) {
+    await db.delete(newlyReleasedItems);
+    return;
+  }
+
+  for (const [index, item] of items.entries()) {
+    await db
+      .insert(newlyReleasedItems)
+      .values({
+        productHandle: item.productHandle,
+        shopifyProductId: item.shopifyProductId ?? null,
+        cardImageUrl: item.cardImageUrl ?? null,
+        heroImageUrl: item.heroImageUrl ?? null,
+        subtitle: item.subtitle ?? null,
+        position: index,
+        updatedBy: updatedBy ?? null,
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: newlyReleasedItems.productHandle,
+        set: {
+          shopifyProductId: item.shopifyProductId ?? null,
+          cardImageUrl: item.cardImageUrl ?? null,
+          heroImageUrl: item.heroImageUrl ?? null,
+          subtitle: item.subtitle ?? null,
+          position: index,
+          updatedBy: updatedBy ?? null,
+          updatedAt: new Date(),
+        },
+      });
+  }
+
+  await db.delete(newlyReleasedItems).where(
+    notInArray(
+      newlyReleasedItems.productHandle,
+      items.map((item) => item.productHandle),
+    ),
+  );
 }

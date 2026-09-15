@@ -1,6 +1,14 @@
+import { getNewlyReleased } from "lib/catalog/newly-released-feed";
 import NewlyReleaseContent from "./newly-release-content";
+import { NewlyReleaseErrorBoundary } from "./newly-release-error-boundary";
 
-export default function NewlyRelease() {
+export default async function NewlyRelease({ locale }: { locale: string }) {
+  const slides = await getNewlyReleased();
+
+  if (slides.length === 0) {
+    return null;
+  }
+
   return (
     <section className="h-auto md:h-screen w-full bg-white pt-15 md:pt-[120px] pb-15 md:mb-[100px]">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 h-auto md:h-full flex flex-col">
@@ -28,7 +36,9 @@ export default function NewlyRelease() {
                   "linear-gradient(262.47deg, #141414 13.74%, #393939 98.84%)",
               }}
             >
-              <NewlyReleaseContent />
+              <NewlyReleaseErrorBoundary>
+                <NewlyReleaseContent slides={slides} locale={locale} />
+              </NewlyReleaseErrorBoundary>
               {/* Mobile SVG */}
               <svg
                 width="324"

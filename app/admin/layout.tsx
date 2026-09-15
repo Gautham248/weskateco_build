@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Toaster } from "sonner";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -12,6 +13,7 @@ export default function AdminRootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body className="min-h-screen bg-neutral-50 text-black antialiased dark:bg-neutral-950 dark:text-white">
         {children}
+        <Toaster closeButton />
       </body>
     </html>
   );

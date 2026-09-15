@@ -1,3 +1,4 @@
+import { ProductListSearch } from "components/admin/product-list-search";
 import { ProductTable } from "components/admin/product-table";
 import {
   listOverridesForHandles,
@@ -70,25 +71,9 @@ export default async function AdminProductsPage({
         </span>
       </header>
 
-      <form
-        method="get"
-        action="/admin/products"
-        className="flex max-w-md gap-2"
-      >
-        <input
-          type="search"
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder="Search products…"
-          className="w-full rounded-sm border border-neutral-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-black dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-white"
-        />
-        <button
-          type="submit"
-          className="cursor-pointer rounded-sm border border-black bg-black px-5 text-xs font-bold tracking-wider text-white uppercase dark:border-white dark:bg-white dark:text-black"
-        >
-          Search
-        </button>
-      </form>
+      <div className="max-w-md">
+        <ProductListSearch initialQuery={q ?? ""} />
+      </div>
 
       {overrideLookupFailed ? (
         <p
