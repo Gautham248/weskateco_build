@@ -57,27 +57,82 @@ function bump(counts: Map<string, number>, key: string | undefined) {
   counts.set(key, (counts.get(key) ?? 0) + 1);
 }
 
-/** Facet values and counts are derived from the catalog, never hardcoded. */
-export function deriveAdminFacets(
+function countByField(
   products: ShopifyProductSummary[],
-): AdminFacets {
-  const productTypes = new Map<string, number>();
-  const vendors = new Map<string, number>();
-  const tags = new Map<string, number>();
+  field: "productType" | "vendor",
+): AdminFacetOption[] {
+  const counts = new Map<string, number>();
 
   for (const product of products) {
-    bump(productTypes, product.productType);
-    bump(vendors, product.vendor);
+    bump(counts, product[field]);
+  }
 
+  return toFacetOptions(counts);
+}
+
+function countByTag(products: ShopifyProductSummary[]): AdminFacetOption[] {
+  const counts = new Map<string, number>();
+
+  for (const product of products) {
     for (const tag of product.tags ?? []) {
-      bump(tags, tag);
+      bump(counts, tag);
     }
   }
 
+  return toFacetOptions(counts);
+}
+
+/**
+ * Keeps a value the user has already ticked in the list even when the other
+ * filters have excluded everything it applies to. Without this, choosing
+ * "Deck" + a vendor that makes no decks could drop that vendor out of the
+ * vendor list, leaving no way to untick it.
+ */
+function keepSelected(
+  options: AdminFacetOption[],
+  selected: string[],
+): AdminFacetOption[] {
+  const present = new Set(options.map((option) => option.value));
+  const missing = selected
+    .filter((value) => !present.has(value))
+    .map((value) => ({ value, count: 0 }));
+
+  return missing.length > 0 ? [...options, ...missing] : options;
+}
+
+/**
+ * Facet values and counts are derived from the catalog, never hardcoded.
+ *
+ * Each group is counted against the products matching every *other* filter, so
+ * picking a product type narrows the vendors and tags on offer (and vice versa)
+ * while the group you are editing keeps all of its own options selectable.
+ * With no filters this is simply a count over the whole catalog.
+ */
+export function deriveAdminFacets(
+  products: ShopifyProductSummary[],
+  overrides: AdminProductOverrideSummary[] = [],
+  filters: AdminProductFilters = EMPTY_ADMIN_PRODUCT_FILTERS,
+): AdminFacets {
+  const forTypes = applyAdminProductFilters(products, overrides, {
+    ...filters,
+    productTypes: [],
+  });
+  const forVendors = applyAdminProductFilters(products, overrides, {
+    ...filters,
+    vendors: [],
+  });
+  const forTags = applyAdminProductFilters(products, overrides, {
+    ...filters,
+    tags: [],
+  });
+
   return {
-    productTypes: toFacetOptions(productTypes),
-    vendors: toFacetOptions(vendors),
-    tags: toFacetOptions(tags),
+    productTypes: keepSelected(
+      countByField(forTypes, "productType"),
+      filters.productTypes,
+    ),
+    vendors: keepSelected(countByField(forVendors, "vendor"), filters.vendors),
+    tags: keepSelected(countByTag(forTags), filters.tags),
   };
 }
 

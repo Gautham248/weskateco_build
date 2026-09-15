@@ -4,6 +4,7 @@ import {
   deriveAdminFacets,
   EMPTY_ADMIN_PRODUCT_FILTERS,
   toggleFacetValue,
+  type AdminFacets,
   type AdminProductFilters,
   type AdminProductOverrideSummary,
 } from "lib/admin/product-filters";
@@ -301,6 +302,107 @@ async function main() {
     ),
     [],
   );
+
+  console.log("\ndynamic facets");
+
+  const at = (value: AdminFacets, key: "productTypes" | "vendors" | "tags") =>
+    value[key].map((option) => `${option.value}:${option.count}`);
+
+  const unfiltered = deriveAdminFacets(catalog, overrides, filters());
+
+  equal(
+    "with no filters, types are a plain count",
+    at(unfiltered, "productTypes"),
+    ["Deck:2", "Full Setup:1", "Griptape:1"],
+  );
+  equal(
+    "with no filters, vendors are a plain count",
+    at(unfiltered, "vendors"),
+    ["Sphere Skateboards:2", "Toucan Distribution:2"],
+  );
+  equal("with no filters, all tags are offered", unfiltered.tags.length, 4);
+
+  const byType = deriveAdminFacets(
+    catalog,
+    overrides,
+    filters({ productTypes: ["Deck"] }),
+  );
+
+  equal("picking a type narrows the vendors", at(byType, "vendors"), [
+    "Sphere Skateboards:1",
+    "Toucan Distribution:1",
+  ]);
+  equal("picking a type narrows the tags", at(byType, "tags"), [
+    "SKATEBOARD:2",
+    "SKATE DECK:1",
+  ]);
+  equal("picking a type still offers every type", at(byType, "productTypes"), [
+    "Deck:2",
+    "Full Setup:1",
+    "Griptape:1",
+  ]);
+
+  const byVendor = deriveAdminFacets(
+    catalog,
+    overrides,
+    filters({ vendors: ["Toucan Distribution"] }),
+  );
+
+  equal("picking a vendor narrows the types", at(byVendor, "productTypes"), [
+    "Deck:1",
+    "Full Setup:1",
+  ]);
+  equal("picking a vendor narrows the tags", at(byVendor, "tags"), [
+    "SKATEBOARD:1",
+    "SKATEBOARDING IN INDIA:1",
+  ]);
+  equal("picking a vendor still offers every vendor", at(byVendor, "vendors"), [
+    "Sphere Skateboards:2",
+    "Toucan Distribution:2",
+  ]);
+
+  const byTag = deriveAdminFacets(
+    catalog,
+    overrides,
+    filters({ tags: ["GRIPTAPE"] }),
+  );
+
+  equal("picking a tag narrows the types", at(byTag, "productTypes"), [
+    "Griptape:1",
+  ]);
+  equal("picking a tag narrows the vendors", at(byTag, "vendors"), [
+    "Sphere Skateboards:1",
+  ]);
+  equal("picking a tag still offers every tag", byTag.tags.length, 4);
+
+  const contradictory = deriveAdminFacets(
+    catalog,
+    overrides,
+    filters({ productTypes: ["Full Setup"], vendors: ["Sphere Skateboards"] }),
+  );
+
+  check(
+    "a selection the other filters exclude stays listed, at zero, so it can be unticked",
+    contradictory.vendors.find((o) => o.value === "Sphere Skateboards")
+      ?.count === 0,
+    JSON.stringify(contradictory.vendors),
+  );
+
+  const soldOutFacets = deriveAdminFacets(
+    catalog,
+    overrides,
+    filters({ availability: "sold-out" }),
+  );
+
+  equal("availability narrows the types", at(soldOutFacets, "productTypes"), [
+    "Griptape:1",
+  ]);
+  equal("availability narrows the vendors", at(soldOutFacets, "vendors"), [
+    "Sphere Skateboards:1",
+  ]);
+  equal("availability narrows the tags", at(soldOutFacets, "tags"), [
+    "GRIPTAPE:1",
+  ]);
 
   console.log("\nhelpers");
 
