@@ -5,7 +5,7 @@ import { addItem, createSingleItemCartAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
-import { useActionState, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
 export function ProductActions({
@@ -21,20 +21,22 @@ export function ProductActions({
   const { addCartItem } = useCart();
   const searchParams = useSearchParams();
   const [isBuyNowPending, startBuyNowTransition] = useTransition();
-  const [message, formAction] = useActionState(addItem, null);
+  const [message, setMessage] = useState<string | null>(null);
   const [isAdded, setIsAdded] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
   const variant = customSelectedVariantId
     ? variants.find((v) => v.id === customSelectedVariantId)
     : variants.find((variant: ProductVariant) =>
-      variant.selectedOptions.every(
-        (option) => option.value === searchParams.get(option.name.toLowerCase()),
-      ),
-    );
+        variant.selectedOptions.every(
+          (option) =>
+            option.value === searchParams.get(option.name.toLowerCase()),
+        ),
+      );
 
   const defaultVariantId = variants.length === 1 ? variants[0]?.id : undefined;
-  const selectedVariantId = customSelectedVariantId || variant?.id || defaultVariantId;
+  const selectedVariantId =
+    customSelectedVariantId || variant?.id || defaultVariantId;
   const finalVariant = variants.find((v) => v.id === selectedVariantId);
 
   const handleBuyNow = () => {
@@ -74,42 +76,55 @@ export function ProductActions({
     );
   }
 
-  const addItemAction = formAction.bind(null, selectedVariantId);
+  async function handleAddToCart() {
+    if (!selectedVariantId || isAdding) return;
+
+    setIsAdding(true);
+    setMessage(null);
+
+    try {
+      // Optimistic first, so the cart responds instantly.
+      if (finalVariant) {
+        addCartItem(finalVariant, product);
+      }
+
+      const error = await addItem(null, selectedVariantId);
+
+      if (error) {
+        setMessage(error);
+        toast.error(error);
+        return;
+      }
+
+      toast.success(`${product.title} added to cart!`, {
+        position: "top-right",
+        style: {
+          backgroundColor: "#ffffff",
+          color: "#10b981",
+          borderColor: "#10b981",
+          position: "relative",
+          top: "60px",
+        },
+      });
+
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 2000);
+
+      // Close only now that the add actually succeeded. Closing optimistically
+      // would hide the error above behind a panel the user can no longer see.
+      onAddedToCart?.();
+    } catch (e) {
+      console.error(e);
+      setMessage("Could not add to cart. Please try again.");
+    } finally {
+      setIsAdding(false);
+    }
+  }
 
   return (
     <div className="space-y-3">
       {/* Add To Cart Form */}
-      <form
-        action={async () => {
-          if (!selectedVariantId) return;
-          setIsAdding(true);
-          try {
-            if (finalVariant) {
-              addCartItem(finalVariant, product);
-            }
-            toast.success(`${product.title} added to cart!`, {
-              position: "top-right",
-              style: {
-                backgroundColor: "#ffffff",
-                color: "#10b981",
-                borderColor: "#10b981",
-                position: "relative",
-                top: "60px",
-              },
-            });
-            setIsAdded(true);
-            setTimeout(() => setIsAdded(false), 2000);
-            if (onAddedToCart) {
-              onAddedToCart();
-            }
-            await addItemAction();
-          } catch (e) {
-            console.error(e);
-          } finally {
-            setIsAdding(false);
-          }
-        }}
-      >
+      <form action={handleAddToCart}>
         <button
           type="submit"
           disabled={!selectedVariantId || isAdding || isAdded}
@@ -131,9 +146,14 @@ export function ProductActions({
                 ? "Added to Cart ✓"
                 : "Add To Cart"}
         </button>
-        <p aria-live="polite" className="sr-only" role="status">
-          {message}
-        </p>
+        {message ? (
+          <p
+            role="alert"
+            className="mt-2 rounded-sm border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300"
+          >
+            {message}
+          </p>
+        ) : null}
       </form>{" "}
       {/* Buy Now Button */}
       <button
