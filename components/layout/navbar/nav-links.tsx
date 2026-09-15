@@ -79,7 +79,7 @@ export default function NavLinks({
           </button>
 
           <div
-            className={`absolute left-6 right-6 lg:left-12 lg:right-12 z-50 shadow-lg top-full mt-5 ${
+            className={`absolute left-6 right-6 lg:left-12 lg:right-12 z-50 shadow-lg top-full mt-5 before:absolute before:-top-5 before:left-0 before:right-0 before:h-5 ${
               isDropdownOpen
                 ? "opacity-100 pointer-events-auto"
                 : "opacity-0 pointer-events-none"
@@ -98,11 +98,18 @@ export default function NavLinks({
               <MegaMenuLeft
                 activeCategory={activeCategory}
                 onCategoryHover={setActiveCategory}
-                onLinkClick={() => setIsDropdownOpen(false)}
+                onLinkClick={() => {
+                  setIsDropdownOpen(false);
+                  setActiveCategory(null);
+                }}
               />
               <MegaMenuRight
                 activeCategory={activeCategory}
                 onCollapse={() => setActiveCategory(null)}
+                onLinkClick={() => {
+                  setIsDropdownOpen(false);
+                  setActiveCategory(null);
+                }}
               />
             </div>
           </div>

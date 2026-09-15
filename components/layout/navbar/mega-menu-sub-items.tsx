@@ -1,6 +1,7 @@
 "use client";
 
 import { getLocalizedPath } from "lib/i18n";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import catalog from "scripts/product-catalog-dump.json";
@@ -85,8 +86,10 @@ function getStorePath(parentCategoryUrl: string, itemLower: string): string {
 
 export default function MegaMenuSubItems({
   category,
+  onLinkClick,
 }: {
   category: string | null;
+  onLinkClick?: () => void;
 }) {
   const params = useParams();
   const locale = (params?.locale as string) || "en";
@@ -110,9 +113,10 @@ export default function MegaMenuSubItems({
         {items.map((item) => {
           const isHovered = hoveredItem === item;
           return (
-            <a
+            <Link
               key={item}
               href={getSubItemHref(category!, item)}
+              onClick={onLinkClick}
               className="relative flex h-12 items-center justify-between gap-10 text-[20px] font-medium text-black dark:text-white whitespace-nowrap"
               style={{
                 fontFamily: "Archivo, sans-serif",
@@ -123,7 +127,6 @@ export default function MegaMenuSubItems({
             >
               {/* Background Layers */}
               <div className="absolute inset-0 rounded-lg overflow-hidden">
-                {/* Removed the gap here so the layers butt right up against each other */}
                 <div className="flex h-full">
                   {/* Left block (Text Background) */}
                   <svg
@@ -166,7 +169,7 @@ export default function MegaMenuSubItems({
               >
                 <SkateboardIcon />
               </div>
-            </a>
+            </Link>
           );
         })}
       </div>
