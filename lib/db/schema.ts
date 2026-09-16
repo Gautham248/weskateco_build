@@ -94,6 +94,34 @@ export const newlyReleasedItems = pgTable(
   (table) => [index("newly_released_items_position_idx").on(table.position)],
 );
 
+/**
+ * Curated, ordered list behind the homepage "SHOP NOW" row. Same contract as
+ * the newly released carousel: the row stores curation (order) and which three
+ * photos to slide through, and the storefront reads the live Shopify product.
+ */
+export const shopNowItems = pgTable(
+  "shop_now_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    position: integer("position").notNull(),
+    productHandle: text("product_handle").notNull().unique(),
+    shopifyProductId: text("shopify_product_id"),
+    imageUrl1: text("image_url_1"),
+    imageUrl2: text("image_url_2"),
+    imageUrl3: text("image_url_3"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedBy: uuid("updated_by").references(() => adminUsers.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => [index("shop_now_items_position_idx").on(table.position)],
+);
+
 export const productOverridesRelations = relations(
   productOverrides,
   ({ many, one }) => ({
@@ -125,6 +153,13 @@ export const newlyReleasedItemsRelations = relations(
   }),
 );
 
+export const shopNowItemsRelations = relations(shopNowItems, ({ one }) => ({
+  updatedByUser: one(adminUsers, {
+    fields: [shopNowItems.updatedBy],
+    references: [adminUsers.id],
+  }),
+}));
+
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type NewAdminUser = typeof adminUsers.$inferInsert;
 export type ProductOverride = typeof productOverrides.$inferSelect;
@@ -133,3 +168,5 @@ export type ProductOverrideImage = typeof productOverrideImages.$inferSelect;
 export type NewProductOverrideImage = typeof productOverrideImages.$inferInsert;
 export type NewlyReleasedItem = typeof newlyReleasedItems.$inferSelect;
 export type NewNewlyReleasedItem = typeof newlyReleasedItems.$inferInsert;
+export type ShopNowItem = typeof shopNowItems.$inferSelect;
+export type NewShopNowItem = typeof shopNowItems.$inferInsert;

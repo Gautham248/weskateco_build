@@ -16,6 +16,7 @@ import {
   getAdminUserByUsername,
   saveNewlyReleasedItems,
   saveProductOverride,
+  saveShopNowItems,
   updateAdminUserPassword,
 } from "lib/admin/queries";
 import { TAGS } from "lib/constants";
@@ -100,6 +101,22 @@ const newlyReleasedSchema = z.object({
       }),
     )
     .max(200, "That is more products than one carousel can hold."),
+});
+
+/**
+ * No upper bound on purpose: this row is a scroll track rather than a fixed-size
+ * carousel, so there is no number of products that genuinely "cannot fit".
+ */
+const shopNowSchema = z.object({
+  items: z.array(
+    z.object({
+      productHandle: z.string().trim().min(1),
+      shopifyProductId: z.string().nullish(),
+      imageUrl1: optionalAbsoluteUrl,
+      imageUrl2: optionalAbsoluteUrl,
+      imageUrl3: optionalAbsoluteUrl,
+    }),
+  ),
 });
 
 export async function loginAction(
@@ -373,4 +390,42 @@ export async function saveNewlyReleasedAction(
   revalidateTag(TAGS.newlyReleased, "seconds");
 
   return { success: "Newly released carousel saved." };
+}
+
+export async function saveShopNowAction(items: unknown): Promise<ActionState> {
+  const session = await requireAdmin();
+
+  const parsed = shopNowSchema.safeParse({ items });
+
+  if (!parsed.success) {
+    return {
+      error: parsed.error.issues[0]?.message ?? "Check the form and try again.",
+    };
+  }
+
+  const handles = parsed.data.items.map((item) => item.productHandle);
+
+  if (new Set(handles).size !== handles.length) {
+    return { error: "Each product can only appear once in Shop Now." };
+  }
+
+  try {
+    await saveShopNowItems(
+      parsed.data.items.map((item) => ({
+        productHandle: item.productHandle,
+        shopifyProductId: item.shopifyProductId ?? null,
+        imageUrl1: item.imageUrl1 ?? null,
+        imageUrl2: item.imageUrl2 ?? null,
+        imageUrl3: item.imageUrl3 ?? null,
+      })),
+      session.userId,
+    );
+  } catch (error) {
+    console.error("Failed to save the Shop Now section:", error);
+    return { error: "Could not save the Shop Now section." };
+  }
+
+  revalidateTag(TAGS.shopNow, "seconds");
+
+  return { success: "Shop Now section saved." };
 }

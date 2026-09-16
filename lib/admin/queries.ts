@@ -6,6 +6,7 @@ const {
   newlyReleasedItems,
   productOverrideImages,
   productOverrides,
+  shopNowItems,
 } = schema;
 
 export type AdminUserRecord = schema.AdminUser;
@@ -46,6 +47,18 @@ export type NewlyReleasedItemRow = {
   cardImageUrl: string | null;
   heroImageUrl: string | null;
   subtitle: string | null;
+};
+
+/**
+ * Same reasoning as NewlyReleasedItemRow: no Date objects, so the storefront can
+ * cache this shape directly.
+ */
+export type ShopNowItemRow = {
+  productHandle: string;
+  shopifyProductId: string | null;
+  imageUrl1: string | null;
+  imageUrl2: string | null;
+  imageUrl3: string | null;
 };
 
 export async function getAdminUserByUsername(
@@ -326,6 +339,72 @@ export async function saveNewlyReleasedItems(
   await db.delete(newlyReleasedItems).where(
     notInArray(
       newlyReleasedItems.productHandle,
+      items.map((item) => item.productHandle),
+    ),
+  );
+}
+
+export async function listShopNowItems(): Promise<ShopNowItemRow[]> {
+  const db = getDb();
+
+  return db
+    .select({
+      productHandle: shopNowItems.productHandle,
+      shopifyProductId: shopNowItems.shopifyProductId,
+      imageUrl1: shopNowItems.imageUrl1,
+      imageUrl2: shopNowItems.imageUrl2,
+      imageUrl3: shopNowItems.imageUrl3,
+    })
+    .from(shopNowItems)
+    .orderBy(shopNowItems.position);
+}
+
+/**
+ * Replaces the whole curated list. Upsert-then-prune for the same reason as the
+ * newly released list: neon-http has no transactions, so a failure part-way
+ * through leaves a superset of correct rows instead of an empty row.
+ */
+export async function saveShopNowItems(
+  items: ShopNowItemRow[],
+  updatedBy?: string | null,
+): Promise<void> {
+  const db = getDb();
+
+  if (items.length === 0) {
+    await db.delete(shopNowItems);
+    return;
+  }
+
+  for (const [index, item] of items.entries()) {
+    await db
+      .insert(shopNowItems)
+      .values({
+        productHandle: item.productHandle,
+        shopifyProductId: item.shopifyProductId ?? null,
+        imageUrl1: item.imageUrl1 ?? null,
+        imageUrl2: item.imageUrl2 ?? null,
+        imageUrl3: item.imageUrl3 ?? null,
+        position: index,
+        updatedBy: updatedBy ?? null,
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: shopNowItems.productHandle,
+        set: {
+          shopifyProductId: item.shopifyProductId ?? null,
+          imageUrl1: item.imageUrl1 ?? null,
+          imageUrl2: item.imageUrl2 ?? null,
+          imageUrl3: item.imageUrl3 ?? null,
+          position: index,
+          updatedBy: updatedBy ?? null,
+          updatedAt: new Date(),
+        },
+      });
+  }
+
+  await db.delete(shopNowItems).where(
+    notInArray(
+      shopNowItems.productHandle,
       items.map((item) => item.productHandle),
     ),
   );
