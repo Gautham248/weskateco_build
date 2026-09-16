@@ -14,6 +14,7 @@
     "test:overrides": "tsx scripts/test-overrides.ts",
     "test:auth": "tsx scripts/test-admin-auth.ts",
     "test:newly-released": "tsx scripts/test-newly-released.ts",
+    "test:shop-now": "tsx scripts/test-shop-now.ts",
     "test:admin-filters": "tsx scripts/test-admin-product-filters.ts",
     "deploy": "node scripts/deploy.js --prod",
     "vercel": "node scripts/deploy.js"

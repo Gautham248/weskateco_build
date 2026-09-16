@@ -1,9 +1,11 @@
 import {
   buildSlide,
   composeSlides,
-  readNewlyReleasedItems,
-} from "lib/catalog/newly-released";
-import type { NewlyReleasedItemRow } from "lib/admin/queries";
+  discountPercent,
+  readShopNowItems,
+  resolveImages,
+} from "lib/catalog/shop-now";
+import type { ShopNowItemRow } from "lib/admin/queries";
 import type { Image, Product, ProductVariant } from "lib/shopify/types";
 
 let passed = 0;
@@ -45,6 +47,11 @@ function variant(
   };
 }
 
+const FEATURED = "https://cdn.shopify.com/s/files/featured.jpg";
+const FIRST = "https://cdn.shopify.com/s/files/first.jpg";
+const SECOND = "https://cdn.shopify.com/s/files/second.jpg";
+const THIRD = "https://cdn.shopify.com/s/files/third.jpg";
+
 function product(overrides: Partial<Product> = {}): Product {
   return {
     id: "gid://shopify/Product/1",
@@ -60,11 +67,8 @@ function product(overrides: Partial<Product> = {}): Product {
       minVariantPrice: { amount: "4299.0", currencyCode: "INR" },
     },
     variants: [variant("var-1")],
-    featuredImage: image("https://cdn.shopify.com/s/files/featured.jpg"),
-    images: [
-      image("https://cdn.shopify.com/s/files/first.jpg"),
-      image("https://cdn.shopify.com/s/files/second.jpg"),
-    ],
+    featuredImage: image(FEATURED),
+    images: [image(FIRST), image(SECOND), image(THIRD)],
     seo: { title: "Test Deck", description: "SEO description" },
     metafields: [
       {
@@ -77,135 +81,153 @@ function product(overrides: Partial<Product> = {}): Product {
     collections: {
       edges: [{ node: { handle: "decks", title: "Decks" } }],
     },
-    tags: ["newly-released"],
+    tags: ["shop-now"],
     updatedAt: "2026-01-01T00:00:00Z",
     ...overrides,
   };
 }
 
-function item(
-  overrides: Partial<NewlyReleasedItemRow> = {},
-): NewlyReleasedItemRow {
+function item(overrides: Partial<ShopNowItemRow> = {}): ShopNowItemRow {
   return {
     productHandle: "test-deck",
     shopifyProductId: "gid://shopify/Product/1",
-    cardImageUrl: null,
-    heroImageUrl: null,
-    subtitle: null,
+    imageUrl1: null,
+    imageUrl2: null,
+    imageUrl3: null,
     ...overrides,
   };
 }
 
 async function main() {
-  console.log("\nbuildSlide — photo resolution");
+  console.log("\nresolveImages — fallbacks and slot order");
 
   const base = product();
-  const plain = buildSlide(item(), base);
 
   equal(
-    "card falls back to the first product photo",
-    plain.cardImage?.url,
-    base.images[0]?.url,
+    "each slot falls back to the product's nth photo",
+    resolveImages(base, [null, null, null]).map((image) => image.url),
+    [FIRST, SECOND, THIRD],
   );
   equal(
-    "hero falls back to the second product photo",
-    plain.heroImage?.url,
-    base.images[1]?.url,
-  );
-
-  const oneImage = buildSlide(
-    item(),
-    product({ images: [image("https://cdn.shopify.com/s/files/only.jpg")] }),
-  );
-  equal(
-    "a single photo is used for both slots (card)",
-    oneImage.cardImage?.url,
-    "https://cdn.shopify.com/s/files/only.jpg",
-  );
-  equal(
-    "a single photo is used for both slots (hero)",
-    oneImage.heroImage?.url,
-    "https://cdn.shopify.com/s/files/only.jpg",
-  );
-
-  const noImages = buildSlide(item(), product({ images: [] }));
-  equal(
-    "no photos falls back to featuredImage (card)",
-    noImages.cardImage?.url,
-    "https://cdn.shopify.com/s/files/featured.jpg",
-  );
-  equal(
-    "no photos falls back to featuredImage (hero)",
-    noImages.heroImage?.url,
-    "https://cdn.shopify.com/s/files/featured.jpg",
-  );
-
-  const chosen = buildSlide(
-    item({
-      cardImageUrl: "https://cdn.shopify.com/s/files/second.jpg",
-      heroImageUrl: "https://cdn.shopify.com/s/files/first.jpg",
-    }),
-    base,
-  );
-  equal("item card photo wins", chosen.cardImage?.url, base.images[1]?.url);
-  equal("item hero photo wins", chosen.heroImage?.url, base.images[0]?.url);
-  equal(
-    "a chosen photo keeps its own alt text",
-    chosen.cardImage?.altText,
+    "fallback photos keep the product title as alt text when they have none",
+    resolveImages(base, [null, null, null])[0]?.altText,
     "Test Deck",
   );
 
-  const uploaded = buildSlide(
-    item({
-      cardImageUrl: "https://ik.imagekit.io/kyfkw6hca/uploaded-card.jpg",
-      heroImageUrl: "https://ik.imagekit.io/kyfkw6hca/uploaded-hero.jpg",
-    }),
-    base,
+  const twoPhotos = product({ images: [image(FIRST), image(SECOND)] });
+  equal(
+    "a two-photo product yields two slides, not three",
+    resolveImages(twoPhotos, [null, null, null]).map((image) => image.url),
+    [FIRST, SECOND],
   );
 
+  const onePhoto = product({ images: [image(FIRST)] });
   equal(
-    "an uploaded card photo is used verbatim, not replaced by a Shopify photo",
-    uploaded.cardImage?.url,
-    "https://ik.imagekit.io/kyfkw6hca/uploaded-card.jpg",
+    "a one-photo product yields exactly one slide rather than repeating it",
+    resolveImages(onePhoto, [null, null, null]).map((image) => image.url),
+    [FIRST],
   );
+
+  const noPhotos = product({ images: [] });
   equal(
-    "an uploaded hero photo is used verbatim",
-    uploaded.heroImage?.url,
-    "https://ik.imagekit.io/kyfkw6hca/uploaded-hero.jpg",
+    "no photos falls back to the single featuredImage, once",
+    resolveImages(noPhotos, [null, null, null]).map((image) => image.url),
+    [FEATURED],
+  );
+
+  const noImagery = product({
+    images: [],
+    featuredImage: undefined as unknown as Image,
+  });
+  equal(
+    "a product with no imagery at all yields no slides",
+    resolveImages(noImagery, [null, null, null]).length,
+    0,
+  );
+
+  console.log("\nresolveImages — admin choices");
+
+  const chosen = resolveImages(base, [SECOND, null, null]);
+  equal(
+    "a chosen photo wins for its own slot, and a fallback that would repeat it is dropped",
+    chosen.map((image) => image.url),
+    [SECOND, THIRD],
+  );
+
+  const uploaded = resolveImages(base, [
+    "https://ik.imagekit.io/kyfkw6hca/uploaded-1.jpg",
+    null,
+    "https://ik.imagekit.io/kyfkw6hca/uploaded-3.jpg",
+  ]);
+  equal(
+    "an uploaded photo is used verbatim, not replaced by a Shopify photo",
+    uploaded.map((image) => image.url),
+    [
+      "https://ik.imagekit.io/kyfkw6hca/uploaded-1.jpg",
+      SECOND,
+      "https://ik.imagekit.io/kyfkw6hca/uploaded-3.jpg",
+    ],
   );
   equal(
     "an uploaded photo falls back to the product title for alt text",
-    uploaded.cardImage?.altText,
+    uploaded[0]?.altText,
     "Test Deck",
   );
+
+  console.log("\ndiscountPercent");
+
   equal(
-    "an uploaded photo carries no dimensions, so hero framing falls back",
-    uploaded.heroAspectRatio,
+    "a genuine markdown rounds to a whole percentage",
+    discountPercent(
+      { amount: "8499.0", currencyCode: "INR" },
+      { amount: "12748.0", currencyCode: "INR" },
+    ),
+    33,
+  );
+  equal(
+    "an exact markdown is reported exactly",
+    discountPercent(
+      { amount: "4000.0", currencyCode: "INR" },
+      { amount: "5000.0", currencyCode: "INR" },
+    ),
+    20,
+  );
+  equal(
+    "no compareAtPrice means no discount",
+    discountPercent({ amount: "4000.0", currencyCode: "INR" }, null),
+    null,
+  );
+  equal(
+    "a compareAtPrice equal to the price is not a discount",
+    discountPercent(
+      { amount: "4000.0", currencyCode: "INR" },
+      { amount: "4000.0", currencyCode: "INR" },
+    ),
+    null,
+  );
+  equal(
+    "a compareAtPrice below the price is not a discount",
+    discountPercent(
+      { amount: "4000.0", currencyCode: "INR" },
+      { amount: "3500.0", currencyCode: "INR" },
+    ),
     null,
   );
 
-  console.log("\nbuildSlide — text and pricing");
+  console.log("\nbuildSlide — text, pricing and variants");
 
+  const plain = buildSlide(item(), base);
+
+  equal("handle comes from the product", plain.handle, "test-deck");
   equal("title comes from the product", plain.title, "Test Deck");
-  equal("subtitle falls back to the vendor", plain.subtitle, "WeSkate");
-
-  equal(
-    "an explicit subtitle wins",
-    buildSlide(item({ subtitle: "Street Series" }), base).subtitle,
-    "Street Series",
-  );
-  equal(
-    "a whitespace subtitle still falls back to the vendor",
-    buildSlide(item({ subtitle: "   " }), base).subtitle,
-    "WeSkate",
-  );
-
+  equal("vendor comes from the product", plain.vendor, "WeSkate");
   equal("price uses minVariantPrice", plain.price.amount, "4299.0");
   equal(
     "compareAtPrice is null when the variant has none",
     plain.compareAtPrice,
     null,
   );
+  equal("one variant means no picker needed", plain.hasVariants, false);
 
   const onSale = buildSlide(
     item(),
@@ -222,10 +244,8 @@ async function main() {
     onSale.compareAtPrice?.amount,
     "5999.0",
   );
+  equal("the discount is derived from it", onSale.discountPercent, 28);
 
-  console.log("\nbuildSlide — variants and availability");
-
-  equal("one variant means no picker needed", plain.hasVariants, false);
   equal(
     "two variants means the picker is needed",
     buildSlide(
@@ -240,23 +260,7 @@ async function main() {
     false,
   );
 
-  console.log("\nbuildSlide — hero framing and payload");
-
-  equal(
-    "aspect ratio is derived from the hero photo",
-    plain.heroAspectRatio,
-    2,
-  );
-  equal(
-    "aspect ratio is null when the photo has no dimensions",
-    buildSlide(
-      item(),
-      product({
-        images: [image("https://cdn.shopify.com/s/files/a.jpg", 0, 0)],
-      }),
-    ).heroAspectRatio,
-    null,
-  );
+  console.log("\nbuildSlide — payload narrowing");
 
   equal(
     "metafields are stripped from the client payload",
@@ -312,21 +316,18 @@ async function main() {
   equal("the surviving items still render", withMissing.length, 2);
   equal("no items yields no slides", composeSlides([], []).length, 0);
 
-  console.log("\nreadNewlyReleasedItems");
+  console.log("\nreadShopNowItems");
 
   // The contract is that a failed item read hides the section rather than
   // throwing into the homepage render. Asserted on the resolved value rather
   // than on emptiness, because the count legitimately depends on whether a
   // database is reachable and populated.
-  const read = await readNewlyReleasedItems().then(
+  const read = await readShopNowItems().then(
     (rows) => ({ ok: Array.isArray(rows), rows }),
-    () => ({ ok: false, rows: [] as NewlyReleasedItemRow[] }),
+    () => ({ ok: false, rows: [] as ShopNowItemRow[] }),
   );
 
-  check(
-    "a Newly Released item read never throws into the homepage render",
-    read.ok,
-  );
+  check("a Shop Now item read never throws into the homepage render", read.ok);
   console.log(`      (read resolved with ${read.rows.length} row(s))`);
 
   console.log("");
