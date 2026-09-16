@@ -88,7 +88,7 @@ function aspectRatio(image: Image | undefined | null): number | null {
  * variants. Blanking the rest keeps 17 metafields and up to 100 collection edges
  * per product out of the homepage's RSC payload.
  */
-function narrowProduct(product: Product): Product {
+export function narrowProduct(product: Product): Product {
   return {
     ...product,
     description: "",
