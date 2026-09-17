@@ -280,12 +280,6 @@ export type ShopifyProductSummary = {
   };
 };
 
-export type AdminProductPage = {
-  items: ShopifyProductSummary[];
-  hasNextPage: boolean;
-  endCursor: string | null;
-};
-
 export type ShopifyProductsPageOperation = {
   data: {
     products: {

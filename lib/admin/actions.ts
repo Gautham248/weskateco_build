@@ -20,20 +20,12 @@ import {
   updateAdminUserPassword,
 } from "lib/admin/queries";
 import { TAGS } from "lib/constants";
-import { getAdminProductPage, getProduct } from "lib/shopify";
+import { getProduct } from "lib/shopify";
 import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export type ActionState = { error?: string; success?: string } | null;
-
-export type AdminProductSummary = {
-  handle: string;
-  shopifyProductId: string;
-  title: string;
-  vendor: string;
-  featuredImageUrl: string | null;
-};
 
 export type ProductPhotoOption = {
   url: string;
@@ -295,31 +287,6 @@ export async function deleteProductOverrideAction(
   revalidateTag(TAGS.collections, "seconds");
 
   return { success: "Override removed. Shopify data is showing again." };
-}
-
-export async function searchAdminProductsAction(
-  query: string,
-): Promise<AdminProductSummary[]> {
-  await requireAdmin();
-
-  try {
-    const page = await getAdminProductPage({
-      first: 12,
-      query:
-        typeof query === "string" && query.trim() ? query.trim() : undefined,
-    });
-
-    return page.items.map((item) => ({
-      handle: item.handle,
-      shopifyProductId: item.id,
-      title: item.title,
-      vendor: item.vendor,
-      featuredImageUrl: item.featuredImage?.url ?? null,
-    }));
-  } catch (error) {
-    console.error("Admin product search failed:", error);
-    return [];
-  }
 }
 
 /**

@@ -35,7 +35,6 @@ import {
 } from "./queries/product";
 import { getConfiguratorProductsQuery } from "./queries/configurator";
 import {
-  AdminProductPage,
   Cart,
   Collection,
   Connection,
@@ -568,47 +567,6 @@ export async function getConfiguratorProducts(): Promise<Product[]> {
   return withOverrides(
     reshapeProducts(removeEdgesAndNodes(res.body.data.products)),
   );
-}
-
-/**
- * Admin-only cursor pagination over the Shopify catalog. Unlike getProducts this
- * is not capped at 100 and does not pull variants or metafields, so it stays
- * cheap enough for a table view.
- */
-export async function getAdminProductPage({
-  first = 24,
-  after,
-  query,
-  sortKey = "UPDATED_AT",
-  reverse = true,
-}: {
-  first?: number;
-  after?: string;
-  query?: string;
-  sortKey?: string;
-  reverse?: boolean;
-}): Promise<AdminProductPage> {
-  "use cache";
-  cacheTag(TAGS.products);
-  cacheLife("days");
-
-  if (!endpoint) {
-    console.log("Skipping getAdminProductPage - Shopify not configured");
-    return { items: [], hasNextPage: false, endCursor: null };
-  }
-
-  const res = await shopifyFetch<ShopifyProductsPageOperation>({
-    query: getProductsPageQuery,
-    variables: { first, after, query, sortKey, reverse },
-  });
-
-  const connection = res.body.data.products;
-
-  return {
-    items: removeEdgesAndNodes(connection),
-    hasNextPage: connection.pageInfo.hasNextPage,
-    endCursor: connection.pageInfo.endCursor,
-  };
 }
 
 /** Safety valve: 4 x 250 products before we stop paging. */

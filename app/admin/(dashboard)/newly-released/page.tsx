@@ -2,8 +2,12 @@ import {
   NewlyReleasedManager,
   type NewlyReleasedManagerItem,
 } from "components/admin/newly-released-manager";
-import { listNewlyReleasedItems } from "lib/admin/queries";
-import { getProduct } from "lib/shopify";
+import type { AdminProductOverrideSummary } from "lib/admin/product-filters";
+import {
+  listNewlyReleasedItems,
+  listOverridesForHandles,
+} from "lib/admin/queries";
+import { getAdminProductCatalog, getProduct } from "lib/shopify";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -49,6 +53,25 @@ export default async function AdminNewlyReleasedPage() {
     loadError = true;
   }
 
+  const { items: catalog, truncated } = await getAdminProductCatalog();
+
+  let overrides: AdminProductOverrideSummary[] = [];
+  let overrideLookupFailed = false;
+
+  try {
+    const rows = await listOverridesForHandles(
+      catalog.map((item) => item.handle),
+    );
+
+    overrides = rows.map((row) => ({
+      handle: row.productHandle,
+      title: row.title,
+    }));
+  } catch (error) {
+    console.error("Could not load product overrides for the picker:", error);
+    overrideLookupFailed = true;
+  }
+
   return (
     <div className="space-y-8">
       <header>
@@ -71,7 +94,22 @@ export default async function AdminNewlyReleasedPage() {
         </p>
       ) : null}
 
-      <NewlyReleasedManager initialItems={initialItems} />
+      {overrideLookupFailed ? (
+        <p
+          role="alert"
+          className="rounded-sm border border-amber-300 bg-amber-50 px-3 py-2.5 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300"
+        >
+          Could not read existing overrides. The Override status filter may be
+          wrong for some products.
+        </p>
+      ) : null}
+
+      <NewlyReleasedManager
+        initialItems={initialItems}
+        catalog={catalog}
+        overrides={overrides}
+        truncated={truncated}
+      />
     </div>
   );
 }

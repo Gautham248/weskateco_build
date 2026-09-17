@@ -1,19 +1,29 @@
 "use client";
 
 import { ConfirmDialog } from "components/admin/confirm-dialog";
-import { DebouncedSearchInput } from "components/admin/debounced-search-input";
+import { ProductFilters } from "components/admin/product-filters";
 import {
   ProductPhotoPicker,
   type PhotoOption,
 } from "components/admin/product-photo-picker";
+import { ResultsPager } from "components/admin/results-pager";
 import clsx from "clsx";
 import {
   getProductPhotoOptionsAction,
   saveNewlyReleasedAction,
-  searchAdminProductsAction,
-  type AdminProductSummary,
 } from "lib/admin/actions";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { paginate } from "lib/admin/pagination";
+import {
+  applyAdminProductFilters,
+  countActiveAdminFilters,
+  deriveAdminFacets,
+  EMPTY_ADMIN_PRODUCT_FILTERS,
+  toggleFacetValue,
+  type AdminProductFilters,
+  type AdminProductOverrideSummary,
+} from "lib/admin/product-filters";
+import type { ShopifyProductSummary } from "lib/shopify/types";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 export type NewlyReleasedManagerItem = {
@@ -44,12 +54,21 @@ const moverClasses =
  */
 export function NewlyReleasedManager({
   initialItems,
+  catalog,
+  overrides,
+  truncated,
 }: {
   initialItems: NewlyReleasedManagerItem[];
+  catalog: ShopifyProductSummary[];
+  overrides: AdminProductOverrideSummary[];
+  truncated: boolean;
 }) {
   const [items, setItems] = useState<NewlyReleasedManagerItem[]>(initialItems);
-  const [results, setResults] = useState<AdminProductSummary[]>([]);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [filters, setFilters] = useState<AdminProductFilters>(
+    EMPTY_ADMIN_PRODUCT_FILTERS,
+  );
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [pendingRemoval, setPendingRemoval] = useState<{
     index: number;
@@ -58,13 +77,33 @@ export function NewlyReleasedManager({
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">(
     "idle",
   );
-  const [isSearching, startSearch] = useTransition();
   const [isAdding, startAdd] = useTransition();
   const [isSaving, startSave] = useTransition();
 
-  const requestIdRef = useRef(0);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addedHandles = new Set(items.map((item) => item.productHandle));
+
+  // Facets follow the other active filters, so each selection narrows what the
+  // remaining groups offer.
+  const facets = useMemo(
+    () => deriveAdminFacets(catalog, overrides, filters),
+    [catalog, overrides, filters],
+  );
+
+  const visible = useMemo(
+    () => applyAdminProductFilters(catalog, overrides, filters),
+    [catalog, overrides, filters],
+  );
+
+  const activeCount = countActiveAdminFilters(filters);
+
+  const {
+    items: pageItems,
+    currentPage,
+    totalPages,
+    rangeStart,
+    rangeEnd,
+  } = paginate(visible, page);
 
   useEffect(() => {
     return () => {
@@ -73,6 +112,11 @@ export function NewlyReleasedManager({
       }
     };
   }, []);
+
+  // A changed filter set is a new result set, so start it at the first page.
+  useEffect(() => {
+    setPage(1);
+  }, [filters]);
 
   function persist(next: NewlyReleasedManagerItem[], delayMs = 0) {
     if (saveTimerRef.current) {
@@ -144,34 +188,9 @@ export function NewlyReleasedManager({
     persist(next);
   }
 
-  function handleSearch(query: string) {
-    const trimmed = query.trim();
-
-    if (!trimmed) {
-      requestIdRef.current += 1;
-      setResults([]);
-      setHasSearched(false);
-      return;
-    }
-
-    const requestId = (requestIdRef.current += 1);
-
-    startSearch(async () => {
-      const found = await searchAdminProductsAction(trimmed);
-
-      // A newer keystroke has already superseded this response.
-      if (requestId !== requestIdRef.current) {
-        return;
-      }
-
-      setResults(found);
-      setHasSearched(true);
-    });
-  }
-
-  function handleAdd(summary: AdminProductSummary) {
-    if (addedHandles.has(summary.handle)) {
-      setError(`"${summary.title}" is already in the carousel.`);
+  function handleAdd(product: ShopifyProductSummary) {
+    if (addedHandles.has(product.handle)) {
+      setError(`"${product.title}" is already in the carousel.`);
       return;
     }
 
@@ -180,14 +199,14 @@ export function NewlyReleasedManager({
     const next = [
       ...items,
       {
-        productHandle: summary.handle,
-        shopifyProductId: summary.shopifyProductId,
+        productHandle: product.handle,
+        shopifyProductId: product.id,
         cardImageUrl: null,
         heroImageUrl: null,
         subtitle: null,
-        title: summary.title,
-        vendor: summary.vendor,
-        thumbnailUrl: summary.featuredImageUrl,
+        title: product.title,
+        vendor: product.vendor,
+        thumbnailUrl: product.featuredImage?.url ?? null,
         photos: [],
         photosLoading: true,
       },
@@ -197,15 +216,15 @@ export function NewlyReleasedManager({
     // Persist straight away, so the product is genuinely in the carousel.
     persist(next);
 
-    toast.success(`${summary.title} added.`);
+    toast.success(`${product.title} added.`);
 
     startAdd(async () => {
       try {
-        const photos = await getProductPhotoOptionsAction(summary.handle);
+        const photos = await getProductPhotoOptionsAction(product.handle);
 
         setItems((prev) =>
           prev.map((item) =>
-            item.productHandle === summary.handle
+            item.productHandle === product.handle
               ? { ...item, photos, photosLoading: false }
               : item,
           ),
@@ -217,13 +236,13 @@ export function NewlyReleasedManager({
         );
         setItems((prev) =>
           prev.map((item) =>
-            item.productHandle === summary.handle
+            item.productHandle === product.handle
               ? { ...item, photosLoading: false }
               : item,
           ),
         );
         setError(
-          `Added "${summary.title}", but its photos could not be loaded. Reload to retry the photos.`,
+          `Added "${product.title}", but its photos could not be loaded. Reload to retry the photos.`,
         );
       }
     });
@@ -261,68 +280,100 @@ export function NewlyReleasedManager({
           </p>
         </div>
 
-        <div className="max-w-xl">
-          <DebouncedSearchInput
-            placeholder="Search products…"
-            isSearching={isSearching || isAdding}
-            onSearch={handleSearch}
-          />
-        </div>
+        <ProductFilters
+          facets={facets}
+          filters={filters}
+          activeCount={activeCount}
+          isOpen={isFilterPanelOpen}
+          onToggleOpen={() => setIsFilterPanelOpen((open) => !open)}
+          onChange={(patch) => setFilters((prev) => ({ ...prev, ...patch }))}
+          onToggleFacet={(key, value) =>
+            setFilters((prev) => ({
+              ...prev,
+              [key]: toggleFacetValue(prev[key], value),
+            }))
+          }
+          onClear={() => setFilters(EMPTY_ADMIN_PRODUCT_FILTERS)}
+        />
 
-        {hasSearched ? (
-          results.length > 0 ? (
-            <ul className="divide-y divide-neutral-200 rounded-sm border border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
-              {results.map((summary) => {
-                const alreadyAdded = addedHandles.has(summary.handle);
+        {activeCount === 0 ? (
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            Search or filter the catalog to find products to add.
+          </p>
+        ) : (
+          <>
+            {truncated ? (
+              <p className="rounded-sm border border-amber-300 bg-amber-50 px-3 py-2.5 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
+                This store has more products than the admin list loads at once,
+                so the list below is partial.
+              </p>
+            ) : null}
 
-                return (
-                  <li
-                    key={summary.handle}
-                    className="flex items-center justify-between gap-4 px-4 py-3"
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      {summary.featuredImageUrl ? (
-                        <img
-                          src={summary.featuredImageUrl}
-                          alt={summary.title}
-                          className="h-10 w-10 flex-none rounded-sm bg-neutral-100 object-contain dark:bg-neutral-900"
-                        />
-                      ) : (
-                        <div className="h-10 w-10 flex-none rounded-sm bg-neutral-100 dark:bg-neutral-900" />
-                      )}
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium">
-                          {summary.title}
-                        </p>
-                        <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
-                          {summary.vendor || summary.handle}
-                        </p>
-                      </div>
-                    </div>
+            {visible.length === 0 ? (
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                No products match these filters.
+              </p>
+            ) : (
+              <>
+                <ul className="divide-y divide-neutral-200 rounded-sm border border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
+                  {pageItems.map((product) => {
+                    const alreadyAdded = addedHandles.has(product.handle);
 
-                    <button
-                      type="button"
-                      disabled={alreadyAdded || isAdding}
-                      onClick={() => handleAdd(summary)}
-                      className={clsx(
-                        "flex-none cursor-pointer rounded-sm border px-3 py-1.5 text-xs font-bold tracking-wider uppercase transition-colors",
-                        alreadyAdded
-                          ? "cursor-not-allowed border-neutral-300 text-neutral-400 dark:border-neutral-700"
-                          : "border-black bg-black text-white hover:bg-neutral-800 dark:border-white dark:bg-white dark:text-black dark:hover:bg-neutral-100",
-                      )}
-                    >
-                      {alreadyAdded ? "Added" : "Add"}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
-              No products matched that search.
-            </p>
-          )
-        ) : null}
+                    return (
+                      <li
+                        key={product.handle}
+                        className="flex items-center justify-between gap-4 px-4 py-3"
+                      >
+                        <div className="flex min-w-0 items-center gap-3">
+                          {product.featuredImage?.url ? (
+                            <img
+                              src={product.featuredImage.url}
+                              alt={product.title}
+                              className="h-10 w-10 flex-none rounded-sm bg-neutral-100 object-contain dark:bg-neutral-900"
+                            />
+                          ) : (
+                            <div className="h-10 w-10 flex-none rounded-sm bg-neutral-100 dark:bg-neutral-900" />
+                          )}
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-medium">
+                              {product.title}
+                            </p>
+                            <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                              {product.vendor || product.handle}
+                            </p>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          disabled={alreadyAdded || isAdding}
+                          onClick={() => handleAdd(product)}
+                          className={clsx(
+                            "flex-none cursor-pointer rounded-sm border px-3 py-1.5 text-xs font-bold tracking-wider uppercase transition-colors",
+                            alreadyAdded
+                              ? "cursor-not-allowed border-neutral-300 text-neutral-400 dark:border-neutral-700"
+                              : "border-black bg-black text-white hover:bg-neutral-800 dark:border-white dark:bg-white dark:text-black dark:hover:bg-neutral-100",
+                          )}
+                        >
+                          {alreadyAdded ? "Added" : "Add"}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+
+                <ResultsPager
+                  rangeStart={rangeStart}
+                  rangeEnd={rangeEnd}
+                  total={visible.length}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                />
+              </>
+            )}
+          </>
+        )}
       </section>
 
       <section className="space-y-4">

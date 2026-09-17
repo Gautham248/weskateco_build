@@ -1,3 +1,4 @@
+import { ADMIN_RESULTS_PAGE_SIZE, paginate } from "lib/admin/pagination";
 import {
   applyAdminProductFilters,
   countActiveAdminFilters,
@@ -439,6 +440,77 @@ async function main() {
       toggleFacetValue(original, "Deck");
       return original.length === 1;
     })(),
+  );
+
+  console.log("\npicker composition");
+
+  const wideCatalog: ShopifyProductSummary[] = Array.from(
+    { length: ADMIN_RESULTS_PAGE_SIZE + 1 },
+    (_, index) => product(`deck-${index + 1}`, { productType: "Deck" }),
+  );
+
+  const allDecks = applyAdminProductFilters(
+    wideCatalog,
+    [],
+    filters({ productTypes: ["Deck"] }),
+  );
+  const firstPage = paginate(allDecks, 1);
+  const secondPage = paginate(allDecks, 2);
+
+  equal(
+    "the pager sees every filtered product, not just the page",
+    allDecks.length,
+    ADMIN_RESULTS_PAGE_SIZE + 1,
+  );
+  equal(
+    "page one fills the page size",
+    firstPage.items.length,
+    ADMIN_RESULTS_PAGE_SIZE,
+  );
+  equal("page two holds the single leftover", secondPage.items.length, 1);
+  equal(
+    "page two continues where page one stopped",
+    secondPage.items[0]?.handle,
+    "deck-13",
+  );
+  equal(
+    "page one stops before page two starts",
+    firstPage.items.at(-1)?.handle,
+    "deck-12",
+  );
+
+  const noMatches = applyAdminProductFilters(
+    catalog,
+    overrides,
+    filters({ productTypes: ["Deck"], availability: "sold-out" }),
+  );
+  const emptyPage = paginate(noMatches, 1);
+
+  equal("a filter set matching nothing yields no rows", emptyPage.items, []);
+  equal("and still reports one page rather than zero", emptyPage.totalPages, 1);
+  equal(
+    "and reports an empty range rather than 1-0",
+    [emptyPage.rangeStart, emptyPage.rangeEnd],
+    [0, 0],
+  );
+
+  const decksOnly = applyAdminProductFilters(
+    catalog,
+    overrides,
+    filters({ productTypes: ["Deck"] }),
+  );
+
+  check(
+    "an already-added product stays in the results so its Added button can explain itself",
+    decksOnly.some((entry) => entry.handle === "deck-a"),
+  );
+  check(
+    "a filtered-out already-added product is excluded like any other",
+    !applyAdminProductFilters(
+      catalog,
+      overrides,
+      filters({ productTypes: ["Griptape"] }),
+    ).some((entry) => entry.handle === "deck-a"),
   );
 
   console.log("");

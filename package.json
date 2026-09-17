@@ -16,6 +16,7 @@
     "test:newly-released": "tsx scripts/test-newly-released.ts",
     "test:shop-now": "tsx scripts/test-shop-now.ts",
     "test:admin-filters": "tsx scripts/test-admin-product-filters.ts",
+    "test:admin-pagination": "tsx scripts/test-admin-pagination.ts",
     "deploy": "node scripts/deploy.js --prod",
     "vercel": "node scripts/deploy.js"
   },
