@@ -1,8 +1,11 @@
 import { eq, inArray, notInArray } from "drizzle-orm";
 import { getDb, schema } from "lib/db";
+import { HERO_SETTINGS_ID } from "lib/db/schema";
 
 const {
   adminUsers,
+  heroItems,
+  heroSettings,
   newlyReleasedItems,
   productOverrideImages,
   productOverrides,
@@ -59,6 +62,19 @@ export type ShopNowItemRow = {
   imageUrl1: string | null;
   imageUrl2: string | null;
   imageUrl3: string | null;
+};
+
+/**
+ * Same reasoning once more: no Date objects, so the storefront caches this shape
+ * directly. `seconds` is null when the item should use the hero default.
+ */
+export type HeroItemRow = {
+  id: string;
+  kind: string;
+  url: string;
+  altText: string | null;
+  posterUrl: string | null;
+  seconds: number | null;
 };
 
 export async function getAdminUserByUsername(
@@ -408,4 +424,107 @@ export async function saveShopNowItems(
       items.map((item) => item.productHandle),
     ),
   );
+}
+
+export async function listHeroItems(): Promise<HeroItemRow[]> {
+  const db = getDb();
+
+  return db
+    .select({
+      id: heroItems.id,
+      kind: heroItems.kind,
+      url: heroItems.url,
+      altText: heroItems.altText,
+      posterUrl: heroItems.posterUrl,
+      seconds: heroItems.seconds,
+    })
+    .from(heroItems)
+    .orderBy(heroItems.position);
+}
+
+/**
+ * Null when the settings row has never been written, which the caller resolves to
+ * the built-in default rather than treating as zero.
+ */
+export async function getHeroSettings(): Promise<number | null> {
+  const db = getDb();
+
+  const [row] = await db
+    .select({ defaultSeconds: heroSettings.defaultSeconds })
+    .from(heroSettings)
+    .where(eq(heroSettings.id, HERO_SETTINGS_ID))
+    .limit(1);
+
+  return row?.defaultSeconds ?? null;
+}
+
+/**
+ * Replaces the whole hero: items by upsert-then-prune on the client-generated id
+ * - the same reasoning as the curated product lists, since neon-http has no
+ * transactions, so a partial failure leaves a superset of correct rows instead of
+ * an empty hero - then the singleton settings row.
+ */
+export async function saveHeroConfig(
+  items: HeroItemRow[],
+  defaultSeconds: number,
+  updatedBy?: string | null,
+): Promise<void> {
+  const db = getDb();
+
+  if (items.length === 0) {
+    await db.delete(heroItems);
+  } else {
+    for (const [index, item] of items.entries()) {
+      await db
+        .insert(heroItems)
+        .values({
+          id: item.id,
+          kind: item.kind,
+          url: item.url,
+          altText: item.altText ?? null,
+          posterUrl: item.posterUrl ?? null,
+          seconds: item.seconds ?? null,
+          position: index,
+          updatedBy: updatedBy ?? null,
+          updatedAt: new Date(),
+        })
+        .onConflictDoUpdate({
+          target: heroItems.id,
+          set: {
+            kind: item.kind,
+            url: item.url,
+            altText: item.altText ?? null,
+            posterUrl: item.posterUrl ?? null,
+            seconds: item.seconds ?? null,
+            position: index,
+            updatedBy: updatedBy ?? null,
+            updatedAt: new Date(),
+          },
+        });
+    }
+
+    await db.delete(heroItems).where(
+      notInArray(
+        heroItems.id,
+        items.map((item) => item.id),
+      ),
+    );
+  }
+
+  await db
+    .insert(heroSettings)
+    .values({
+      id: HERO_SETTINGS_ID,
+      defaultSeconds,
+      updatedBy: updatedBy ?? null,
+      updatedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: heroSettings.id,
+      set: {
+        defaultSeconds,
+        updatedBy: updatedBy ?? null,
+        updatedAt: new Date(),
+      },
+    });
 }

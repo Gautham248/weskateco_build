@@ -10,15 +10,23 @@ import {
   verifyPassword,
   type AdminSession,
 } from "lib/admin/auth";
+import { probeMediaUrl } from "lib/admin/media-probe";
 import {
   createAdminUser,
   deleteProductOverride,
   getAdminUserByUsername,
+  listHeroItems,
+  saveHeroConfig,
   saveNewlyReleasedItems,
   saveProductOverride,
   saveShopNowItems,
   updateAdminUserPassword,
 } from "lib/admin/queries";
+import {
+  HERO_MAX_SECONDS,
+  HERO_MIN_SECONDS,
+  isAllowedHeroUrl,
+} from "lib/catalog/hero";
 import { TAGS } from "lib/constants";
 import { getProduct } from "lib/shopify";
 import { revalidateTag } from "next/cache";
@@ -26,6 +34,16 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export type ActionState = { error?: string; success?: string } | null;
+
+/**
+ * The hero save reports probe warnings alongside the outcome, so unlike
+ * ActionState it carries a list of things that were allowed but worth knowing.
+ */
+export type HeroActionState = {
+  error?: string;
+  success?: string;
+  warnings?: string[];
+} | null;
 
 export type ProductPhotoOption = {
   url: string;
@@ -395,4 +413,113 @@ export async function saveShopNowAction(items: unknown): Promise<ActionState> {
   revalidateTag(TAGS.shopNow, "seconds");
 
   return { success: "Shop Now section saved." };
+}
+
+const heroItemSchema = z.object({
+  id: z.string().trim().min(1).max(64),
+  kind: z.enum(["video", "image"]),
+  url: z.string().trim().min(1, "Enter a media URL."),
+  altText: z.string().nullish(),
+  posterUrl: z.string().nullish(),
+  seconds: z.number().int().nullish(),
+});
+
+const heroSchema = z.object({
+  items: z
+    .array(heroItemSchema)
+    .max(20, "That is more slides than a hero should rotate through."),
+  defaultSeconds: z
+    .number()
+    .int()
+    .min(HERO_MIN_SECONDS, `Use at least ${HERO_MIN_SECONDS} seconds.`)
+    .max(HERO_MAX_SECONDS, `Use at most ${HERO_MAX_SECONDS} seconds.`),
+});
+
+export async function saveHeroAction(input: unknown): Promise<HeroActionState> {
+  const session = await requireAdmin();
+
+  const parsed = heroSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      error: parsed.error.issues[0]?.message ?? "Check the hero and try again.",
+    };
+  }
+
+  const { items, defaultSeconds } = parsed.data;
+
+  for (const item of items) {
+    if (!isAllowedHeroUrl(item.url)) {
+      return {
+        error:
+          "Media URLs must be https:// or a path on this site, such as /hero/cover_vid.gif.",
+      };
+    }
+
+    if (item.posterUrl && !isAllowedHeroUrl(item.posterUrl)) {
+      return {
+        error: "The poster URL must be https:// or a path on this site.",
+      };
+    }
+  }
+
+  /**
+   * Only probe URLs that are new or changed. Probing every item on every autosave
+   * would mean N HEAD requests per pause in typing, so instead this compares
+   * against what is already stored - one small read - and only verifies the
+   * difference. A definitively wrong URL therefore still cannot be stored.
+   */
+  const warnings: string[] = [];
+
+  try {
+    const existing = new Map(
+      (await listHeroItems()).map((row) => [row.id, row.url]),
+    );
+
+    for (const item of items) {
+      if (existing.get(item.id) === item.url) {
+        continue;
+      }
+
+      const probe = await probeMediaUrl(item.url, item.kind);
+
+      if (probe.status === "wrong-type") {
+        return {
+          error: `That URL returns ${probe.contentType} rather than ${item.kind} media. Check the link.`,
+        };
+      }
+
+      if (probe.status === "unreachable") {
+        warnings.push(
+          `Could not verify one of the ${item.kind} URLs (${probe.reason}). It was saved anyway.`,
+        );
+      } else if (probe.warning) {
+        warnings.push(probe.warning);
+      }
+    }
+  } catch (error) {
+    console.error("Could not check the hero media URLs:", error);
+  }
+
+  try {
+    await saveHeroConfig(
+      items.map((item) => ({
+        id: item.id,
+        kind: item.kind,
+        url: item.url,
+        altText: item.altText ?? null,
+        posterUrl: item.posterUrl ?? null,
+        seconds: item.seconds ?? null,
+      })),
+      defaultSeconds,
+      session.userId,
+    );
+  } catch (error) {
+    console.error("Failed to save the hero:", error);
+    return { error: "Could not save the hero." };
+  }
+
+  revalidateTag(TAGS.hero, "seconds");
+
+  return { success: "Hero saved.", warnings: [...new Set(warnings)] };
 }

@@ -122,6 +122,62 @@ export const shopNowItems = pgTable(
   (table) => [index("shop_now_items_position_idx").on(table.position)],
 );
 
+/**
+ * Ordered media behind the homepage hero, managed from the admin panel.
+ *
+ * Unlike the curated product rows this has no natural key, so the admin client
+ * generates `id` and saves upsert on it. That keeps the same superset-on-failure
+ * property the curated saves rely on. The column is `text` rather than `uuid`
+ * because the id is produced by our own helper (lib/catalog/hero.ts) instead of
+ * crypto.randomUUID(), which would require a secure context.
+ *
+ * `seconds` is null when the item should fall back to the hero default;
+ * `poster_url` only applies to videos.
+ */
+export const heroItems = pgTable(
+  "hero_items",
+  {
+    id: text("id").primaryKey(),
+    position: integer("position").notNull(),
+    kind: text("kind").notNull(),
+    url: text("url").notNull(),
+    altText: text("alt_text"),
+    posterUrl: text("poster_url"),
+    seconds: integer("seconds"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedBy: uuid("updated_by").references(() => adminUsers.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => [index("hero_items_position_idx").on(table.position)],
+);
+
+/**
+ * Single-row settings table for the hero. The fixed primary key is what makes it
+ * a singleton, so no extra constraint is needed to enforce one row.
+ */
+export const heroSettings = pgTable("hero_settings", {
+  id: text("id").primaryKey(),
+  defaultSeconds: integer("default_seconds").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedBy: uuid("updated_by").references(() => adminUsers.id, {
+    onDelete: "set null",
+  }),
+});
+
+/** The one and only row in `hero_settings`. */
+export const HERO_SETTINGS_ID = "default";
+
 export const productOverridesRelations = relations(
   productOverrides,
   ({ many, one }) => ({
@@ -160,6 +216,20 @@ export const shopNowItemsRelations = relations(shopNowItems, ({ one }) => ({
   }),
 }));
 
+export const heroItemsRelations = relations(heroItems, ({ one }) => ({
+  updatedByUser: one(adminUsers, {
+    fields: [heroItems.updatedBy],
+    references: [adminUsers.id],
+  }),
+}));
+
+export const heroSettingsRelations = relations(heroSettings, ({ one }) => ({
+  updatedByUser: one(adminUsers, {
+    fields: [heroSettings.updatedBy],
+    references: [adminUsers.id],
+  }),
+}));
+
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type NewAdminUser = typeof adminUsers.$inferInsert;
 export type ProductOverride = typeof productOverrides.$inferSelect;
@@ -170,3 +240,7 @@ export type NewlyReleasedItem = typeof newlyReleasedItems.$inferSelect;
 export type NewNewlyReleasedItem = typeof newlyReleasedItems.$inferInsert;
 export type ShopNowItem = typeof shopNowItems.$inferSelect;
 export type NewShopNowItem = typeof shopNowItems.$inferInsert;
+export type HeroItem = typeof heroItems.$inferSelect;
+export type NewHeroItem = typeof heroItems.$inferInsert;
+export type HeroSettings = typeof heroSettings.$inferSelect;
+export type NewHeroSettings = typeof heroSettings.$inferInsert;

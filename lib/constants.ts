@@ -46,6 +46,7 @@ export const TAGS = {
   cart: "cart",
   newlyReleased: "newly-released",
   shopNow: "shop-now",
+  hero: "hero",
 };
 
 /**
