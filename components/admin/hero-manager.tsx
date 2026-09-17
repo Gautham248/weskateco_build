@@ -79,6 +79,118 @@ function buildPayload(
   };
 }
 
+/** The debounced values the preview renders from, so typing a URL is not one request per keystroke. */
+type HeroPreviewSource = {
+  url: string;
+  posterUrl: string;
+};
+
+const PREVIEW_TILE_CLASSES =
+  "flex h-16 w-28 flex-none items-center justify-center overflow-hidden rounded-sm border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900";
+
+const PREVIEW_LABEL_CLASSES =
+  "px-1 text-center text-[10px] font-semibold tracking-wider uppercase";
+
+/**
+ * Shows what a slide will actually look like. object-cover rather than contain,
+ * because the hero is full-bleed - the tile should show the crop the storefront
+ * will produce, not the whole image letterboxed.
+ */
+function HeroPreview({
+  kind,
+  source,
+}: {
+  kind: HeroItemKind;
+  source: HeroPreviewSource | undefined;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  const url = source && isAllowedHeroUrl(source.url) ? source.url : null;
+  const poster =
+    source && isAllowedHeroUrl(source.posterUrl) ? source.posterUrl : null;
+
+  // A corrected URL is a fresh attempt, so an earlier failure must not stick.
+  useEffect(() => {
+    setFailed(false);
+  }, [url, poster, kind]);
+
+  if (!url) {
+    return (
+      <div className={PREVIEW_TILE_CLASSES}>
+        <span
+          className={clsx(
+            PREVIEW_LABEL_CLASSES,
+            "text-neutral-400 dark:text-neutral-500",
+          )}
+        >
+          No preview
+        </span>
+      </div>
+    );
+  }
+
+  // A dead link is worth seeing in the list rather than as a broken-image icon.
+  if (failed) {
+    return (
+      <div className={PREVIEW_TILE_CLASSES}>
+        <span
+          className={clsx(
+            PREVIEW_LABEL_CLASSES,
+            "text-amber-700 dark:text-amber-400",
+          )}
+        >
+          Preview unavailable
+        </span>
+      </div>
+    );
+  }
+
+  if (kind === "video" && !poster) {
+    return (
+      <div className={PREVIEW_TILE_CLASSES}>
+        <video
+          key={url}
+          src={url}
+          muted
+          playsInline
+          preload="metadata"
+          onError={() => setFailed(true)}
+          onLoadedMetadata={(event) => {
+            const video = event.currentTarget;
+            const target =
+              Number.isFinite(video.duration) && video.duration > 0
+                ? Math.min(0.1, video.duration / 2)
+                : 0.1;
+
+            try {
+              // Left alone, a video element paints a black box; nudging it past
+              // zero makes it render a real frame.
+              video.currentTime = target;
+            } catch {
+              // Seeking can throw before the source is seekable, which just
+              // leaves the first frame showing instead.
+            }
+          }}
+          className="h-full w-full object-cover"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className={PREVIEW_TILE_CLASSES}>
+      <img
+        src={kind === "video" ? (poster as string) : url}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
+        className="h-full w-full object-cover"
+      />
+    </div>
+  );
+}
+
 /**
  * Every change persists on its own — adding, removing, reordering, editing.
  * There is deliberately no separate "Save" step, matching the other admin tabs.
@@ -105,6 +217,15 @@ export function HeroManager({
   const [warnings, setWarnings] = useState<string[]>([]);
   const [notice, setNotice] = useState<string | null>(null);
   const [durations, setDurations] = useState<Record<string, number>>({});
+  const [previews, setPreviews] = useState<Record<string, HeroPreviewSource>>(
+    () =>
+      Object.fromEntries(
+        initialItems.map((item) => [
+          item.id,
+          { url: item.url.trim(), posterUrl: item.posterUrl.trim() },
+        ]),
+      ),
+  );
   const [pendingRemoval, setPendingRemoval] = useState<{
     id: string;
     label: string;
@@ -118,6 +239,7 @@ export function HeroManager({
   const inFlightRef = useRef(false);
   const pendingSaveRef = useRef<HeroPayload | null>(null);
   const itemsRef = useRef(items);
+  const previewInitialisedRef = useRef(false);
 
   useEffect(() => {
     itemsRef.current = items;
@@ -130,6 +252,37 @@ export function HeroManager({
       }
     };
   }, []);
+
+  // The preview follows the debounced URL rather than the raw input, so pasting a
+  // long link is one request instead of one per keystroke. Seeded from the initial
+  // items above, so the first paint already shows the real media and the effect
+  // has nothing to do until something actually changes.
+  const previewKey = items
+    .map(
+      (item) =>
+        `${item.id}:${item.kind}:${item.url.trim()}:${item.posterUrl.trim()}`,
+    )
+    .join("|");
+
+  useEffect(() => {
+    if (!previewInitialisedRef.current) {
+      previewInitialisedRef.current = true;
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setPreviews(
+        Object.fromEntries(
+          itemsRef.current.map((item) => [
+            item.id,
+            { url: item.url.trim(), posterUrl: item.posterUrl.trim() },
+          ]),
+        ),
+      );
+    }, EDIT_DEBOUNCE_MS);
+
+    return () => clearTimeout(timer);
+  }, [previewKey]);
 
   // Only the set of video URLs matters, so this does not re-probe on every
   // keystroke in an unrelated field.
@@ -447,11 +600,17 @@ export function HeroManager({
                   key={item.id}
                   className="space-y-5 rounded-sm border border-neutral-200 p-4 dark:border-neutral-800"
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <span className="flex h-6 w-6 flex-none items-center justify-center rounded-full bg-black text-[11px] font-bold text-white dark:bg-white dark:text-black">
                         {index + 1}
                       </span>
+
+                      <HeroPreview
+                        kind={item.kind}
+                        source={previews[item.id]}
+                      />
+
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium">
                           {item.kind === "video" ? "Video" : "Image"}
