@@ -9,7 +9,6 @@ import TipsSection from "components/home/tips-section";
 import ConfiguratorCTA from "components/home/configurator-cta";
 import BrandsSection from "components/home/brands-section";
 import Footer from "components/layout/footer";
-import { getCollectionProducts, getProducts } from "lib/shopify";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 
 export const dynamicParams = true;
@@ -31,19 +30,6 @@ export default async function HomePage(props: {
 }) {
   const { locale } = await props.params;
   const t = createTranslator(locale);
-
-  // Fetch Featured Products (first 4 products from skateboard-completes collection)
-  const featuredProducts = await getCollectionProducts({
-    collection: "skateboard-completes",
-  });
-  const slicedFeaturedProducts = featuredProducts.slice(0, 4);
-
-  // Fetch New Arrivals (first 8 products sorted by newest)
-  const newArrivals = await getProducts({
-    sortKey: "CREATED_AT",
-    reverse: true,
-  });
-  const slicedNewArrivals = newArrivals.slice(0, 8);
 
   return (
     <>

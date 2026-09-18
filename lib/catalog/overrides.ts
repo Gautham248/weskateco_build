@@ -70,7 +70,7 @@ export function applyOverride(
     // Keep the <title>/OpenGraph metadata in step with the visible heading, but
     // only when Shopify's SEO title was simply mirroring the product title - a
     // deliberately different SEO title is left alone.
-    if (!product.seo.title || product.seo.title === product.title) {
+    if (!product.seo?.title || product.seo.title === product.title) {
       next.seo = { ...product.seo, title: override.title };
     }
   }

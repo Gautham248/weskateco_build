@@ -73,6 +73,35 @@ type ExtractVariables<T> = T extends { variables: object }
   ? T["variables"]
   : never;
 
+/**
+ * True only for connection-establishment failures — a connect timeout, DNS
+ * failure, or refused connection — where the request never reached Shopify.
+ * Retrying those is safe even for cart mutations. Anything where a response
+ * may already have started is deliberately not retried.
+ */
+function isTransientConnectError(error: unknown): boolean {
+  const cause = (error as { cause?: unknown } | null)?.cause;
+
+  if (cause && typeof cause === "object") {
+    const code = (cause as { code?: string }).code;
+    if (
+      code === "ECONNREFUSED" ||
+      code === "ENETUNREACH" ||
+      code === "EHOSTUNREACH" ||
+      code === "ENOTFOUND" ||
+      code === "EAI_AGAIN"
+    ) {
+      return true;
+    }
+
+    if ((cause as { name?: string }).name === "ConnectTimeoutError") {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export async function shopifyFetch<T>({
   headers,
   query,
@@ -82,49 +111,63 @@ export async function shopifyFetch<T>({
   query: string;
   variables?: ExtractVariables<T>;
 }): Promise<{ status: number; body: T } | never> {
-  try {
-    if (!endpoint) {
-      throw new Error("SHOPIFY_STORE_DOMAIN environment variable is not set");
-    }
+  const maxRetries = 2;
+  let lastError: unknown;
 
-    const result = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": key,
-        ...headers,
-      },
-      body: JSON.stringify({
-        ...(query && { query }),
-        ...(variables && { variables }),
-      }),
-    });
+  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    try {
+      if (!endpoint) {
+        throw new Error("SHOPIFY_STORE_DOMAIN environment variable is not set");
+      }
 
-    const body = await result.json();
+      const result = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": key,
+          ...headers,
+        },
+        body: JSON.stringify({
+          ...(query && { query }),
+          ...(variables && { variables }),
+        }),
+      });
 
-    if (body.errors) {
-      throw body.errors[0];
-    }
+      const body = await result.json();
 
-    return {
-      status: result.status,
-      body,
-    };
-  } catch (e) {
-    if (isShopifyError(e)) {
-      throw {
-        cause: e.cause?.toString() || "unknown",
-        status: e.status || 500,
-        message: e.message,
-        query,
+      if (body.errors) {
+        throw body.errors[0];
+      }
+
+      return {
+        status: result.status,
+        body,
       };
-    }
+    } catch (e) {
+      lastError = e;
 
+      if (attempt < maxRetries && isTransientConnectError(e)) {
+        await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt));
+        continue;
+      }
+
+      break;
+    }
+  }
+
+  if (isShopifyError(lastError)) {
     throw {
-      error: e,
+      cause: lastError.cause?.toString() || "unknown",
+      status: lastError.status || 500,
+      message: lastError.message,
       query,
     };
   }
+
+  throw {
+    error: lastError,
+    query,
+  };
 }
 
 const removeEdgesAndNodes = <T>(array: Connection<T>): T[] => {

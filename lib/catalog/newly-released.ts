@@ -95,7 +95,7 @@ export function narrowProduct(product: Product): Product {
     descriptionHtml: "",
     metafields: [],
     collections: undefined,
-    seo: { title: product.seo.title || product.title, description: "" },
+    seo: { title: product.seo?.title || product.title, description: "" },
   };
 }
 
