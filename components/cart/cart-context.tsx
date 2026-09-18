@@ -38,7 +38,11 @@ type CartContextType = {
   resolvedPromise: Promise<Cart | undefined> | null;
 };
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartContext = createContext<CartContextType>({
+  cartPromise: Promise.resolve(undefined),
+  resolvedCart: null,
+  resolvedPromise: null,
+});
 
 function calculateItemCost(quantity: number, price: string): string {
   return (Number(price) * quantity).toString();
@@ -255,10 +259,11 @@ export function CartProvider({
 
 export function useCart() {
   const context = useContext(CartContext);
-  if (context === undefined) {
-    throw new Error("useCart must be used within a CartProvider");
-  }
 
+  // Fall back to a no-op cart instead of throwing. Client components rendered
+  // outside the provider context (e.g. store/product cards during dev
+  // streaming) still complete their real add/update through the server actions,
+  // so only optimistic state is skipped here.
   const initialCart =
     context.resolvedCart !== null && context.resolvedPromise === context.cartPromise
       ? context.resolvedCart
