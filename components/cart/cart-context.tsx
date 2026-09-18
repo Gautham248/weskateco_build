@@ -8,7 +8,6 @@ import type {
 } from "lib/shopify/types";
 import React, {
   createContext,
-  use,
   useContext,
   useEffect,
   useMemo,
@@ -33,15 +32,17 @@ type CartAction =
     };
 
 type CartContextType = {
-  cartPromise: Promise<Cart | undefined>;
-  resolvedCart: Cart | undefined | null;
-  resolvedPromise: Promise<Cart | undefined> | null;
+  cart: Cart | undefined;
+  updateCartItem: (merchandiseId: string, updateType: UpdateType) => void;
+  addCartItem: (variant: ProductVariant, product: Product) => void;
+  updateLineVariant: (lineId: string, newVariant: ProductVariant) => void;
 };
 
 const CartContext = createContext<CartContextType>({
-  cartPromise: Promise.resolve(undefined),
-  resolvedCart: null,
-  resolvedPromise: null,
+  cart: undefined,
+  updateCartItem: () => {},
+  addCartItem: () => {},
+  updateLineVariant: () => {},
 });
 
 function calculateItemCost(quantity: number, price: string): string {
@@ -232,44 +233,25 @@ export function CartProvider({
   children: React.ReactNode;
   cartPromise: Promise<Cart | undefined>;
 }) {
-  const [resolvedCart, setResolvedCart] = useState<Cart | undefined | null>(
-    null,
-  );
-  const [resolvedPromise, setResolvedPromise] = useState<Promise<Cart | undefined> | null>(null);
+  const [resolvedCart, setResolvedCart] = useState<Cart | undefined>(undefined);
 
   useEffect(() => {
     let active = true;
-    cartPromise.then((cart) => {
-      if (active) {
-        setResolvedCart(cart);
-        setResolvedPromise(cartPromise);
-      }
-    });
+    cartPromise
+      .then((cart) => {
+        if (active) setResolvedCart(cart);
+      })
+      .catch(() => {
+        // Keep the cart empty on failure; the server actions still mutate the
+        // real cart and revalidate it on the next successful request.
+      });
     return () => {
       active = false;
     };
   }, [cartPromise]);
 
-  return (
-    <CartContext.Provider value={{ cartPromise, resolvedCart, resolvedPromise }}>
-      {children}
-    </CartContext.Provider>
-  );
-}
-
-export function useCart() {
-  const context = useContext(CartContext);
-
-  // Fall back to a no-op cart instead of throwing. Client components rendered
-  // outside the provider context (e.g. store/product cards during dev
-  // streaming) still complete their real add/update through the server actions,
-  // so only optimistic state is skipped here.
-  const initialCart =
-    context.resolvedCart !== null && context.resolvedPromise === context.cartPromise
-      ? context.resolvedCart
-      : use(context.cartPromise);
   const [optimisticCart, updateOptimisticCart] = useOptimistic(
-    initialCart,
+    resolvedCart,
     cartReducer,
   );
 
@@ -291,7 +273,7 @@ export function useCart() {
     });
   };
 
-  return useMemo(
+  const value = useMemo(
     () => ({
       cart: optimisticCart,
       updateCartItem,
@@ -300,4 +282,10 @@ export function useCart() {
     }),
     [optimisticCart],
   );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+}
+
+export function useCart() {
+  return useContext(CartContext);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { addItem, createSingleItemCartAction } from "components/cart/actions";
+import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
 import { QuickBuySidebar } from "components/product/quick-buy-sidebar";
 import { SnapmintEmiBadge } from "components/product/snapmint-emi-badge";
@@ -52,6 +53,7 @@ function ShopNowCard({
   isFirst: boolean;
 }) {
   const t = createTranslator(locale);
+  const { addCartItem } = useCart();
   const [isPending, startTransition] = useTransition();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -156,15 +158,17 @@ function ShopNowCard({
 
     if (!variant) return;
 
+    // Optimistic UI: badge and toast update instantly. addItem below performs
+    // the real server-side add.
+    addCartItem(variant, slide.product);
+    toast.success(`${slide.title} added to cart.`);
+
     startTransition(async () => {
       const error = await addItem(null, variant.id);
 
       if (error) {
         toast.error(error);
-        return;
       }
-
-      toast.success(`${slide.title} added to cart.`);
     });
   };
 

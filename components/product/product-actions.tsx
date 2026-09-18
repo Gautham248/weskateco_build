@@ -82,12 +82,24 @@ export function ProductActions({
     setIsAdding(true);
     setMessage(null);
 
-    try {
-      // Optimistic first, so the cart responds instantly.
-      if (finalVariant) {
-        addCartItem(finalVariant, product);
-      }
+    // Optimistic UI: the badge and toast update immediately. The server action
+    // below still performs the real add, and only surfaces an error on failure.
+    if (finalVariant) {
+      addCartItem(finalVariant, product);
+    }
 
+    toast.success(`${product.title} added to cart!`, {
+      position: "top-right",
+      style: {
+        backgroundColor: "#ffffff",
+        color: "#10b981",
+        borderColor: "#10b981",
+        position: "relative",
+        top: "60px",
+      },
+    });
+
+    try {
       const error = await addItem(null, selectedVariantId);
 
       if (error) {
@@ -95,17 +107,6 @@ export function ProductActions({
         toast.error(error);
         return;
       }
-
-      toast.success(`${product.title} added to cart!`, {
-        position: "top-right",
-        style: {
-          backgroundColor: "#ffffff",
-          color: "#10b981",
-          borderColor: "#10b981",
-          position: "relative",
-          top: "60px",
-        },
-      });
 
       setIsAdded(true);
       setTimeout(() => setIsAdded(false), 2000);
@@ -116,6 +117,7 @@ export function ProductActions({
     } catch (e) {
       console.error(e);
       setMessage("Could not add to cart. Please try again.");
+      toast.error("Could not add to cart. Please try again.");
     } finally {
       setIsAdding(false);
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import { addItem } from "components/cart/actions";
+import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
 import { QuickBuySidebar } from "components/product/quick-buy-sidebar";
 import { NewlyReleaseErrorBoundary } from "./newly-release-error-boundary";
@@ -44,6 +45,7 @@ export default function NewlyReleaseContent({
   slides: NewlyReleasedSlide[];
   locale: string;
 }) {
+  const { addCartItem } = useCart();
   const [, startTransition] = useTransition();
   const [pickerProduct, setPickerProduct] = useState<
     NewlyReleasedSlide["product"] | null
@@ -94,27 +96,26 @@ export default function NewlyReleaseContent({
     const variant = slide.product.variants[0];
     if (!variant) return;
 
+    // Optimistic UI: badge and toast update instantly. addItem below performs
+    // the real server-side add.
+    addCartItem(variant, slide.product);
+    toast.success(`${slide.title} added to cart!`, {
+      position: "top-right",
+      style: {
+        backgroundColor: "#ffffff",
+        color: "#10b981",
+        borderColor: "#10b981",
+        position: "relative",
+        top: "60px",
+      },
+    });
+
     startTransition(async () => {
-      // Called straight through the server action: no cart context needed here,
-      // so this section can never throw "useCart must be used within a
-      // CartProvider" while rendering the homepage.
       const error = await addItem(null, variant.id);
 
       if (error) {
         toast.error(error);
-        return;
       }
-
-      toast.success(`${slide.title} added to cart!`, {
-        position: "top-right",
-        style: {
-          backgroundColor: "#ffffff",
-          color: "#10b981",
-          borderColor: "#10b981",
-          position: "relative",
-          top: "60px",
-        },
-      });
     });
   };
 
