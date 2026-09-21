@@ -237,7 +237,7 @@ export function CartProvider({
 
   useEffect(() => {
     let active = true;
-    cartPromise
+    Promise.resolve(cartPromise)
       .then((cart) => {
         if (active) setResolvedCart(cart);
       })
