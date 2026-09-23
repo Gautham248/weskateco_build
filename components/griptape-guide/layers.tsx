@@ -8,7 +8,7 @@ import {
   LAYERS_IMAGE_ALT,
   LAYERS_SECTION,
 } from "lib/griptape-guide/data";
-import { PanelKicker, SectionHeader, SpecList } from "./ui";
+import { PanelKicker, SectionHeader, SpecList, Container, Section, GRID_CLASS } from "components/guides/ui";
 
 // Hotspot button positions, as % centres over the cross-section PNG.
 const HOTSPOTS: Record<number, { left: string; top: string }> = {
@@ -24,18 +24,15 @@ export default function LayersSection() {
   const layer = LAYERS.find((l) => l.n === selected) ?? LAYERS[0]!;
 
   return (
-    <section
-      id="layers"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="layers">
+      <Container>
         <SectionHeader
           kicker={LAYERS_SECTION.kicker}
           title={LAYERS_SECTION.title}
           intro={LAYERS_SECTION.intro}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
+        <div className={GRID_CLASS}>
           {/* Cross-section with hotspots */}
           <div className="lg:col-span-7 w-full bg-[#F7F7F9] rounded-[16px] p-5 md:p-8">
             <div className="relative w-full overflow-hidden rounded-[8px]">
@@ -58,8 +55,8 @@ export default function LayersSection() {
                     aria-label={`Layer ${layer.n}: ${layer.name}`}
                     className={`absolute w-8 h-8 md:w-9 md:h-9 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center text-xs md:text-sm font-bold cursor-pointer transition-colors ${
                       isActive
-                        ? "bg-[#CCFF02] text-black border-2 border-black"
-                        : "bg-white text-black border-2 border-black hover:bg-[#CCFF02]"
+                        ? "bg-brand text-black border-2 border-black"
+                        : "bg-white text-black border-2 border-black hover:bg-brand"
                     }`}
                     style={{
                       left: pos.left,
@@ -91,7 +88,7 @@ export default function LayersSection() {
             <SpecList spec={layer.spec} />
           </div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

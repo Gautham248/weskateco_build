@@ -8,7 +8,7 @@ import Link from "next/link";
  * Cyan crosslink callout. Internal paths (`/…`) are localized; in-page
  * anchors (`#…`) and external URLs are used as-is.
  */
-export default function GripCrosslink({
+export default function GuideCrosslink({
   text,
   cta,
   href,
@@ -21,7 +21,7 @@ export default function GripCrosslink({
   const internal = href.startsWith("/");
   const dest = internal ? getLocalizedPath(href, locale) : href;
   const className =
-    "w-full lg:w-auto shrink-0 inline-flex items-center justify-center text-center bg-black text-white px-6 py-3.5 md:px-10 md:py-6 rounded-[4px] text-base font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors";
+    "w-full lg:w-auto shrink-0 inline-flex items-center justify-center text-center bg-black text-white px-6 py-3.5 md:px-10 md:py-6 rounded-4 text-base font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors";
   const style = { fontFamily: "'Clash Display', sans-serif" };
 
   return (

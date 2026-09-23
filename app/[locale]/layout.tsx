@@ -12,7 +12,7 @@ import { ReactNode } from "react";
 import { Toaster } from "sonner";
 import "../globals.css";
 
-const { SITE_NAME } = process.env;
+const SITE_NAME = process.env.SITE_NAME || "WeSkate Co";
 
 export const metadata = {
   metadataBase: new URL(baseUrl),

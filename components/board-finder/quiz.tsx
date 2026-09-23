@@ -13,7 +13,7 @@ import {
   type QuizAnswers,
 } from "lib/board-finder/data";
 import type { Unit } from "./board-finder-page";
-import { renderTagged } from "./rich-text";
+import { renderTagged } from "components/guides/rich";
 
 interface Props {
   unit: Unit;
@@ -29,11 +29,12 @@ function tagClasses(tone: "cyan" | "pink" | "neutral") {
     case "cyan":
       return "bg-[#EAFBFF] border border-[#80E5FF] text-black";
     case "pink":
-      return "bg-[#CCFF02] border border-[#CCFF02] text-black";
+      return "bg-brand border border-brand text-black";
     default:
       return "bg-[#F7F7F9] border border-neutral-200 text-black";
   }
 }
+import { Container, Section, H2_CLASS } from "components/guides/ui";
 
 export default function QuizSection({
   unit,
@@ -94,15 +95,12 @@ export default function QuizSection({
     : null;
 
   return (
-    <section
-      id="find-your-board"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[72px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="find-your-board" scroll={72}>
+      <Container>
         {/* Header */}
         <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
           <h2
-            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
+            className={H2_CLASS}
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             Find your board
@@ -129,7 +127,7 @@ export default function QuizSection({
                     aria-current={state === "current" ? "step" : undefined}
                     className={`w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold transition-colors ${
                       state === "done"
-                        ? "bg-[#CCFF02] text-black"
+                        ? "bg-brand text-black"
                         : state === "current"
                           ? "bg-black text-white"
                           : "bg-neutral-100 text-neutral-400"
@@ -141,7 +139,7 @@ export default function QuizSection({
                     <span
                       aria-hidden
                       className={`w-5 md:w-10 h-px ${
-                        i < currentForPips ? "bg-[#CCFF02]" : "bg-neutral-200"
+                        i < currentForPips ? "bg-brand" : "bg-neutral-200"
                       }`}
                     />
                   )}
@@ -177,7 +175,7 @@ export default function QuizSection({
               {/* Unit toggle, shown on the shoe-size step */}
               {question.key === "shoe" && (
                 <div
-                  className="inline-flex rounded-[4px] border border-neutral-200 p-1 gap-1 w-fit"
+                  className="inline-flex rounded-4 border border-neutral-200 p-1 gap-1 w-fit"
                   role="group"
                   aria-label="Shoe size unit"
                 >
@@ -187,7 +185,7 @@ export default function QuizSection({
                       type="button"
                       onClick={() => setUnit(u)}
                       aria-pressed={unit === u}
-                      className={`px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-wider rounded-[4px] transition-colors cursor-pointer ${
+                      className={`px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-wider rounded-4 transition-colors cursor-pointer ${
                         unit === u
                           ? "bg-black text-white"
                           : "text-black hover:bg-neutral-100"
@@ -292,7 +290,7 @@ export default function QuizSection({
                   <ul className="flex flex-col gap-3">
                     {result.reasons.map((reason, i) => (
                       <li key={i} className="flex gap-3 items-start">
-                        <span className="w-2 h-2 rounded-full bg-[#CCFF02] mt-2 shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
                         <span className="text-sm md:text-base text-black leading-[150%] font-[400]">
                           {renderTagged(reason)}
                         </span>
@@ -325,7 +323,7 @@ export default function QuizSection({
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <Link
                     href={getLocalizedPath(toPath(result.ctaHref), locale)}
-                    className="w-full sm:w-fit bg-black text-white px-6 py-3.5 rounded-[4px] text-base font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors text-center shrink-0"
+                    className="w-full sm:w-fit bg-black text-white px-6 py-3.5 rounded-4 text-base font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors text-center shrink-0"
                     style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
                     {result.ctaLabel}
@@ -335,7 +333,7 @@ export default function QuizSection({
                     onClick={startOver}
                     className="flex items-center gap-3 group cursor-pointer w-fit"
                   >
-                    <span className="w-7 h-7 rounded-full bg-[#CCFF02] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <span className="w-7 h-7 rounded-full bg-brand flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                       <GreenArrowIcon />
                     </span>
                     <span
@@ -350,7 +348,7 @@ export default function QuizSection({
             )
           )}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

@@ -37,6 +37,7 @@ function loadChecked(): boolean[] {
     return DEFAULT_STATE;
   }
 }
+import { Container, Section, GRID_CLASS, H2_CLASS } from "components/guides/ui";
 
 export default function MaintenanceSection() {
   const [checked, setChecked] = useState<boolean[]>(DEFAULT_STATE);
@@ -61,12 +62,12 @@ export default function MaintenanceSection() {
   const doneCount = checked.filter(Boolean).length;
 
   return (
-    <section className="w-full bg-white text-black py-10 md:py-24 overflow-hidden">
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section scroll={false}>
+      <Container>
         {/* Header */}
         <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
           <h2
-            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
+            className={H2_CLASS}
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             Maintenance
@@ -77,7 +78,7 @@ export default function MaintenanceSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
+        <div className={GRID_CLASS}>
           {/* Checklist */}
           <div className="lg:col-span-7 flex flex-col gap-4">
             <div className="flex items-center justify-between gap-4">
@@ -97,7 +98,7 @@ export default function MaintenanceSection() {
                 aria-label="Maintenance checklist progress"
               >
                 <div
-                  className="h-full bg-[#CCFF02] rounded-full transition-all duration-300"
+                  className="h-full bg-brand rounded-full transition-all duration-300"
                   style={{ width: `${(doneCount / CARE_ITEMS.length) * 100}%` }}
                 />
               </div>
@@ -176,7 +177,7 @@ export default function MaintenanceSection() {
               <ul className="flex flex-col gap-3">
                 {QUICK_BULLETS.map((bullet) => (
                   <li key={bullet} className="flex gap-3 items-start">
-                    <span className="w-2 h-2 rounded-full bg-[#CCFF02] mt-2 shrink-0" />
+                    <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
                     <span className="text-sm md:text-base text-black leading-[150%] font-[400]">
                       {bullet}
                     </span>
@@ -186,7 +187,7 @@ export default function MaintenanceSection() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

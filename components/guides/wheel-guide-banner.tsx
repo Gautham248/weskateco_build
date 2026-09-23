@@ -70,7 +70,7 @@ export default function WheelGuideHeroBanner() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 w-full">
               <a
                 href="#durometer"
-                className="inline-flex items-center justify-center bg-[#CCFF02] text-black px-6 py-3.5 md:px-8 md:py-4 rounded-[4px] text-sm md:text-base font-semibold uppercase tracking-wider hover:bg-black hover:text-[#CCFF02] transition-colors"
+                className="inline-flex items-center justify-center bg-brand text-black px-6 py-3.5 md:px-8 md:py-4 rounded-4 text-sm md:text-base font-semibold uppercase tracking-wider hover:bg-black hover:text-brand transition-colors"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 Start with durometer
@@ -80,7 +80,7 @@ export default function WheelGuideHeroBanner() {
                   "/guides/skateboard-buying-guide",
                   locale,
                 )}
-                className="inline-flex items-center justify-center border border-white/50 text-white px-6 py-3.5 md:px-8 md:py-4 rounded-[4px] text-sm md:text-base font-semibold uppercase tracking-wider hover:bg-white hover:text-black transition-colors"
+                className="inline-flex items-center justify-center border border-white/50 text-white px-6 py-3.5 md:px-8 md:py-4 rounded-4 text-sm md:text-base font-semibold uppercase tracking-wider hover:bg-white hover:text-black transition-colors"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 The buying guide

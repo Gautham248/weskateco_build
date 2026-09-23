@@ -4,6 +4,7 @@
 
 // ── Section 1 — Parts (anatomy) ───────────────────────────────────────────
 
+import type { GuideFaqItem } from "lib/guides/types";
 export interface WheelPart {
   n: number;
   name: string;
@@ -494,13 +495,7 @@ export const RANGE_CALLOUT =
 
 // ── Section 8 — FAQ ───────────────────────────────────────────────────────
 
-export interface WheelFaqItem {
-  q: string;
-  a: string;
-  stock: string;
-}
-
-export const WHEEL_FAQ: WheelFaqItem[] = [
+export const WHEEL_FAQ: GuideFaqItem[] = [
   {
     q: "Are expensive wheels actually faster?",
     a: "Sometimes, and not for the reason on the packaging. Two wheels at the same durometer can return very different amounts of the energy you put into them — that property is rebound, and it comes from the urethane formula rather than the hardness number. A high-rebound wheel rolls further for the same push and keeps doing it after months of use. A cheap one feels fine new and goes dead.\n\nWhat you cannot do is read that off a listing. Every wheel on the market claims high rebound. The real test is a season: if a set still rolls like it did when you bought it, the formula was good. If they went slow and started flat-spotting, it wasn't, whatever the number said.\n\nBearings get blamed for most of this and deserve very little of it. A dead wheel feels exactly like a dirty bearing, and swapping bearings into a dead wheel proves it.",

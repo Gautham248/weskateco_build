@@ -11,15 +11,12 @@ import {
   TYPES_TABLE_COLS,
   TYPES_TABLE_ROWS,
 } from "lib/truck-guide/data";
-import { GuideTable, Note, ProseCols, SectionHeader, SubHead } from "./ui";
+import { GuideTable, Note, ProseCols, SectionHeader, SubHead, Container, Section } from "components/guides/ui";
 
 export default function TypesSection() {
   return (
-    <section
-      id="types"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="types">
+      <Container>
         <SectionHeader
           kicker={TYPES_SECTION.kicker}
           title={TYPES_SECTION.title}
@@ -52,7 +49,7 @@ export default function TypesSection() {
 
         <Note text={TYPES_NOTE_2} />
         <Note text={TYPES_NOTE_3} />
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

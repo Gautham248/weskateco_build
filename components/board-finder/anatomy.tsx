@@ -8,6 +8,7 @@ import { useState } from "react";
 import { CAPTIONS, HINTS, PARTS } from "lib/board-finder/data";
 
 type View = "top" | "under";
+import { Container, Section, H2_CLASS } from "components/guides/ui";
 
 export default function AnatomySection() {
   const [view, setView] = useState<View>("top");
@@ -25,13 +26,13 @@ export default function AnatomySection() {
   }
 
   return (
-    <section className="w-full bg-[#F7F7F9] text-black py-8 md:py-14 overflow-hidden">
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-4 md:gap-6">
+    <Section bg="muted" scroll={false} pad="compact">
+      <Container gap="tight">
         {/* Header + view toggle (one row to save vertical space) */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div className="flex flex-col gap-2 max-w-2xl">
             <h2
-              className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
+              className={H2_CLASS}
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
               Anatomy of a complete skateboard
@@ -44,7 +45,7 @@ export default function AnatomySection() {
           {/* View toggle */}
           <div className="flex flex-wrap items-center gap-4">
             <div
-              className="inline-flex rounded-[4px] border border-neutral-200 bg-white p-1 gap-1"
+              className="inline-flex rounded-4 border border-neutral-200 bg-white p-1 gap-1"
               role="group"
               aria-label="Board view"
             >
@@ -59,7 +60,7 @@ export default function AnatomySection() {
                   type="button"
                   onClick={() => switchView(value)}
                   aria-pressed={view === value}
-                  className={`px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-wider rounded-[4px] transition-colors cursor-pointer ${
+                  className={`px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-wider rounded-4 transition-colors cursor-pointer ${
                     view === value
                       ? "bg-black text-white"
                       : "text-black hover:bg-neutral-100"
@@ -102,8 +103,8 @@ export default function AnatomySection() {
                   aria-label={`${part.n}. ${part.name}`}
                   className={`absolute -translate-x-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-sm md:text-base font-bold transition-all cursor-pointer border-2 ${
                     isActive
-                      ? "bg-[#CCFF02] border-black text-black scale-110"
-                      : "bg-white/90 border-black text-black hover:bg-[#CCFF02]"
+                      ? "bg-brand border-black text-black scale-110"
+                      : "bg-white/90 border-black text-black hover:bg-brand"
                   }`}
                   style={{
                     left: `${part.x}%`,
@@ -178,7 +179,7 @@ export default function AnatomySection() {
             ))}
           </dl>
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

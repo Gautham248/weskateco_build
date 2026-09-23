@@ -14,7 +14,7 @@ import {
   TOUCAN_MAP,
 } from "lib/truck-guide/data";
 import { useState } from "react";
-import { ProseCols, Note, SectionHeader, SubHead } from "./ui";
+import { ProseCols, Note, SectionHeader, SubHead, Container, Section, GRID_CLASS } from "components/guides/ui";
 
 function statusChip(label: string) {
   const cyan = label === "Coming soon";
@@ -94,11 +94,8 @@ export default function SizeSection() {
   const rows = computeRows(width.w, isBeginner);
 
   return (
-    <section
-      id="size"
-      className="w-full bg-[#F7F7F9] text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="size" bg="muted">
+      <Container>
         <SectionHeader
           kicker={SIZE_SECTION.kicker}
           title={SIZE_SECTION.title}
@@ -115,7 +112,7 @@ export default function SizeSection() {
           intro={CALC_SUB.intro}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
+        <div className={GRID_CLASS}>
           {/* Deck-width chips + notes */}
           <div className="lg:col-span-5 flex flex-col gap-5">
             <div
@@ -204,7 +201,7 @@ export default function SizeSection() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

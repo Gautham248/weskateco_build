@@ -1,7 +1,10 @@
 // ---------------------------------------------------------------------------
 // Deck Guide — data and copy, ported verbatim from the source artifact.
 // Cells may carry **bold** / *italic* markers; warn cells are flagged.
+// The table types are shared across guides (lib/guides/types).
 // ---------------------------------------------------------------------------
+
+import type { GuideFaqItem, TableCol, TableRow } from "lib/guides/types";
 
 // ── Hero ──────────────────────────────────────────────────────────────────
 
@@ -228,19 +231,6 @@ export const SHAPE_CROSSLINK = {
 };
 
 // ── Section 3 — #maple ────────────────────────────────────────────────────
-
-export type TableCell = string | { text: string; warn?: boolean };
-
-export interface TableCol {
-  name: string;
-  sub: string;
-}
-
-export interface TableRow {
-  label: string;
-  note?: string;
-  cells: TableCell[];
-}
 
 export const MAPLE_SECTION = {
   kicker: "The wood",
@@ -787,13 +777,7 @@ export const FAQ_SECTION = {
     "True for any deck from any brand. What we happen to stock is at the end of each one.",
 };
 
-export interface DeckFaqItem {
-  q: string;
-  a: string;
-  stock: string;
-}
-
-export const DECK_FAQ: DeckFaqItem[] = [
+export const DECK_FAQ: GuideFaqItem[] = [
   {
     q: "Is an expensive deck actually better than a cheap one?",
     a: "Up to a point, and then no. Below a certain price the compromises are real and you can feel them: fewer plies, lower-grade veneer with knots and voids in it, cheaper glue, a hot press run fast, and a concave that flattens out within weeks. That board goes soft early and the pop disappears.\n\nAbove that floor, most decks are made in a handful of factories from the same Canadian maple to similar specifications, and what you are paying extra for is the brand, the artist, the pro model and the rider it supports. The life of the board comes out much the same. A mid-priced blank from a good press and a famous pro model from the same press will often last you the same number of sessions.\n\nThe things worth paying for are **7-ply hard-rock maple** rather than a mixed or softwood stack, a **press you can name**, and a shape that suits what you skate. Everything past that is taste.",

@@ -13,15 +13,12 @@ import {
   MOISTURE_PROSE,
   MOISTURE_SUB,
 } from "lib/deck-guide/data";
-import { GuideTable, Note, ProseCols, SectionHeader, SubHead } from "./ui";
+import { GuideTable, Note, ProseCols, SectionHeader, SubHead, Container, Section } from "components/guides/ui";
 
 export default function MapleSection() {
   return (
-    <section
-      id="maple"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="maple">
+      <Container>
         <SectionHeader
           kicker={MAPLE_SECTION.kicker}
           title={MAPLE_SECTION.title}
@@ -64,7 +61,7 @@ export default function MapleSection() {
         <Note text={MOISTURE_NOTE} />
 
         <ProseCols items={MOISTURE_MOVE_PROSE} tone="muted" />
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

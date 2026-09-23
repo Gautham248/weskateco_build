@@ -31,17 +31,18 @@ const STYLES = [
     href: "/store/decks",
   },
 ];
+import { Container, Section, H2_CLASS } from "components/guides/ui";
 
 export default function StyleCardsSection() {
   const { locale } = useTranslation();
 
   return (
-    <section className="w-full bg-[#F7F7F9] text-black py-10 md:py-24 overflow-hidden">
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section bg="muted" scroll={false}>
+      <Container>
         {/* Header */}
         <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
           <h2
-            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
+            className={H2_CLASS}
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             What&apos;s your style <br /> or goal?
@@ -81,7 +82,7 @@ export default function StyleCardsSection() {
                 href={getLocalizedPath(style.href, locale)}
                 className="flex items-center gap-3 group cursor-pointer text-left w-fit"
               >
-                <span className="w-7 h-7 rounded-full bg-[#CCFF02] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <span className="w-7 h-7 rounded-full bg-brand flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <GreenArrowIcon />
                 </span>
                 <span
@@ -94,7 +95,7 @@ export default function StyleCardsSection() {
             </div>
           ))}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

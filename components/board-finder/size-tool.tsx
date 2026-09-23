@@ -65,6 +65,7 @@ const CONCAVE_CARDS = [
 
 // Ruler: 7″ to 9″ in 0.25″ steps.
 const TICKS = Array.from({ length: 9 }, (_, i) => 7 + i * 0.25);
+import { Container, Section, GRID_CLASS, H2_CLASS } from "components/guides/ui";
 
 export default function SizeToolSection({
   unit,
@@ -76,13 +77,13 @@ export default function SizeToolSection({
 
   return (
     <>
-      <section className="w-full bg-white text-black py-10 md:py-24 overflow-hidden">
-        <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+      <Section scroll={false}>
+        <Container>
           {/* Header with unit toggle */}
           <div className="flex flex-row items-center justify-between gap-4 w-full">
             <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
               <h2
-                className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
+                className={H2_CLASS}
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 What size deck should I get?
@@ -93,7 +94,7 @@ export default function SizeToolSection({
             </div>
 
             <div
-              className="inline-flex rounded-[4px] border border-neutral-200 p-1 gap-1 shrink-0"
+              className="inline-flex rounded-4 border border-neutral-200 p-1 gap-1 shrink-0"
               role="group"
               aria-label="Shoe size unit"
             >
@@ -103,7 +104,7 @@ export default function SizeToolSection({
                   type="button"
                   onClick={() => setUnit(u)}
                   aria-pressed={unit === u}
-                  className={`px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-wider rounded-[4px] transition-colors cursor-pointer ${
+                  className={`px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-wider rounded-4 transition-colors cursor-pointer ${
                     unit === u
                       ? "bg-black text-white"
                       : "text-black hover:bg-neutral-100"
@@ -116,7 +117,7 @@ export default function SizeToolSection({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
+          <div className={GRID_CLASS}>
             {/* Band list */}
             <div
               className="lg:col-span-5 flex flex-col divide-y divide-neutral-100 border-y border-neutral-100"
@@ -133,7 +134,7 @@ export default function SizeToolSection({
                     aria-selected={isActive}
                     onClick={() => setBandIndex(i)}
                     className={`flex items-center justify-between gap-4 w-full text-left py-4 px-4 transition-colors cursor-pointer ${
-                      isActive ? "bg-[#CCFF02]" : "hover:bg-[#F7F7F9]"
+                      isActive ? "bg-brand" : "hover:bg-[#F7F7F9]"
                     }`}
                   >
                     <span
@@ -169,7 +170,7 @@ export default function SizeToolSection({
                 <div className="relative h-10">
                   {/* Highlight range */}
                   <div
-                    className="absolute top-4 h-2 bg-[#CCFF02] rounded-full"
+                    className="absolute top-4 h-2 bg-brand rounded-full"
                     style={{
                       left: `${((band.lo - 7) / 2) * 100}%`,
                       width: `${((band.hi - band.lo) / 2) * 100}%`,
@@ -247,15 +248,15 @@ export default function SizeToolSection({
               </p>
             </div>
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Concave explainer */}
-      <section className="w-full bg-[#F7F7F9] text-black py-10 md:py-24 overflow-hidden">
-        <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+      <Section bg="muted" scroll={false}>
+        <Container>
           <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
             <h2
-              className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
+              className={H2_CLASS}
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
               What&apos;s concave?
@@ -288,7 +289,7 @@ export default function SizeToolSection({
                         className={`rounded-full px-3 py-1 text-[10px] md:text-xs font-bold uppercase tracking-wider ${
                           card.muted
                             ? "bg-neutral-100 text-neutral-500 border border-neutral-200"
-                            : "bg-[#CCFF02] text-black"
+                            : "bg-brand text-black"
                         }`}
                         style={{ fontFamily: "'Clash Display', sans-serif" }}
                       >
@@ -308,7 +309,7 @@ export default function SizeToolSection({
                 <ul className="flex flex-col gap-2 mt-auto">
                   {card.bullets.map((bullet) => (
                     <li key={bullet} className="flex gap-3 items-start">
-                      <span className="w-2 h-2 rounded-full bg-[#CCFF02] mt-2 shrink-0" />
+                      <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
                       <span className="text-sm text-black leading-[150%] font-[400]">
                         {bullet}
                       </span>
@@ -318,8 +319,8 @@ export default function SizeToolSection({
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
     </>
   );
 }

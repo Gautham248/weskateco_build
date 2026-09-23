@@ -5,29 +5,18 @@ import {
   DURO_ROWS,
   DURO_SCALES,
 } from "lib/wheel-guide/data";
+import { SectionHeader, Container, Section } from "components/guides/ui";
 
 export default function DurometerSection() {
   return (
-    <section
-      id="durometer"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="durometer">
+      <Container>
         {/* Header */}
-        <div className="flex flex-col gap-3 md:gap-4 max-w-3xl">
-          <span className="text-xs md:text-base font-medium tracking-[-1%] text-[#00000080] uppercase">
-            03 — Durometer
-          </span>
-          <h2
-            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
-            Durometer
-          </h2>
-          <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-            {DURO_INTRO}
-          </p>
-        </div>
+        <SectionHeader
+          kicker="03 — Durometer"
+          title="Durometer"
+          intro={DURO_INTRO}
+        />
 
         {/* The two scales */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -97,7 +86,7 @@ export default function DurometerSection() {
         <p className="text-sm md:text-base text-neutral-600 leading-[150%] max-w-3xl">
           {DURO_NOTE}
         </p>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

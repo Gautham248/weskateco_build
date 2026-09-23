@@ -6,15 +6,12 @@ import {
   HEIGHT_TABLE_ROWS,
   WHEELBITE_SUB,
 } from "lib/truck-guide/data";
-import { GuideTable, Note, ProseCols, SectionHeader, SubHead } from "./ui";
+import { GuideTable, Note, ProseCols, SectionHeader, SubHead, Container, Section } from "components/guides/ui";
 
 export default function HeightSection() {
   return (
-    <section
-      id="height"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="height">
+      <Container>
         <SectionHeader
           kicker={HEIGHT_SECTION.kicker}
           title={HEIGHT_SECTION.title}
@@ -36,7 +33,7 @@ export default function HeightSection() {
         />
 
         <Note text={HEIGHT_NOTE} />
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

@@ -6,16 +6,7 @@ import {
   TRUCK_PARTS,
 } from "lib/truck-guide/data";
 import { useState } from "react";
-import {
-  FigCaption,
-  FigCard,
-  FigHint,
-  PanelKicker,
-  PendingCard,
-  PendingNote,
-  Seg,
-  SpecList,
-} from "./ui";
+import { FigCaption, FigCard, FigHint, PanelKicker, PendingCard, PendingNote, SectionHeader, Seg, SpecList, Container, Section, GRID_CLASS } from "components/guides/ui";
 
 // Hotspot button positions, as % centres over the front-view drawing
 // (viewBox 0 0 560 340). Dashed hotspots mark the parts hidden inside
@@ -35,7 +26,6 @@ const HOTSPOTS: Record<
   9: { left: "90%", top: "41.2%" },
 };
 
-const LIME = "#CCFF02";
 
 /** Front view of an assembled truck, wheels removed — reference drawing
  * standing in for the assembled photograph. */
@@ -65,7 +55,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           width="368"
           height="28"
           rx="8"
-          fill={LIME}
+          className="fill-brand"
           opacity="0.45"
         />
       )}
@@ -88,7 +78,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           width="88"
           height="82"
           rx="10"
-          fill={LIME}
+          className="fill-brand"
           opacity="0.45"
         />
       )}
@@ -111,7 +101,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           width="300"
           height="18"
           rx="4"
-          fill={LIME}
+          className="fill-brand"
           opacity="0.75"
         />
       )}
@@ -142,7 +132,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           y1="140"
           x2="516"
           y2="140"
-          stroke={LIME}
+          className="stroke-brand"
           strokeWidth="16"
           strokeLinecap="round"
           opacity="0.85"
@@ -171,7 +161,7 @@ function TruckFrontView({ selected }: { selected: number }) {
         strokeWidth="4"
       />
       {selected === 9 && (
-        <g fill={LIME} stroke="#000000" strokeWidth="4">
+        <g className="fill-brand" stroke="#000000" strokeWidth="4">
           <rect x="44" y="126" width="26" height="28" rx="3" />
           <rect x="490" y="126" width="26" height="28" rx="3" />
         </g>
@@ -195,7 +185,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           width="52"
           height="26"
           rx="5"
-          fill={LIME}
+          className="fill-brand"
           opacity="0.85"
         />
       )}
@@ -215,7 +205,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           y1="52"
           x2="280"
           y2="224"
-          stroke={LIME}
+          className="stroke-brand"
           strokeWidth="14"
           strokeLinecap="round"
           opacity="0.9"
@@ -248,28 +238,16 @@ export default function PartsSection() {
   const part = TRUCK_PARTS.find((p) => p.n === selected) ?? TRUCK_PARTS[0]!;
 
   return (
-    <section
-      id="parts"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="parts">
+      <Container>
         {/* Header */}
-        <div className="flex flex-col gap-3 md:gap-4 max-w-3xl">
-          <span className="text-xs md:text-base font-medium tracking-[-1%] text-[#00000080] uppercase">
-            {PARTS_SECTION.kicker}
-          </span>
-          <h2
-            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
-            {PARTS_SECTION.title}
-          </h2>
-          <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-            {PARTS_SECTION.intro}
-          </p>
-        </div>
+        <SectionHeader
+          kicker={PARTS_SECTION.kicker}
+          title={PARTS_SECTION.title}
+          intro={PARTS_SECTION.intro}
+        />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
+        <div className={GRID_CLASS}>
           {/* Figure with the two views */}
           <div className="lg:col-span-5 w-full flex flex-col gap-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -302,8 +280,8 @@ export default function PartsSection() {
                             pos.hidden ? "border-dashed " : ""
                           }${
                             isActive
-                              ? "bg-[#CCFF02] text-black border-2 border-black"
-                              : "bg-white text-black border-2 border-black hover:bg-[#CCFF02]"
+                              ? "bg-brand text-black border-2 border-black"
+                              : "bg-white text-black border-2 border-black hover:bg-brand"
                           }`}
                           style={{
                             left: pos.left,
@@ -349,7 +327,7 @@ export default function PartsSection() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

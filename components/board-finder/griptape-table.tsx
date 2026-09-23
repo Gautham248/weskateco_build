@@ -126,17 +126,18 @@ function renderCell(cell: Cell, locale: string) {
     </span>
   );
 }
+import { Container, Section, H2_CLASS } from "components/guides/ui";
 
 export default function GriptapeSection() {
   const { locale } = useTranslation();
 
   return (
-    <section className="w-full bg-white text-black py-10 md:py-24 overflow-hidden">
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section scroll={false}>
+      <Container>
         {/* Header */}
         <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
           <h2
-            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
+            className={H2_CLASS}
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             Griptape grades
@@ -213,7 +214,7 @@ export default function GriptapeSection() {
           </Link>
           .
         </p>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

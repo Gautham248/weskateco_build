@@ -1,26 +1,11 @@
 // ---------------------------------------------------------------------------
 // Griptape Guide — data and copy, ported verbatim from the spec.
 // Cells may carry **bold** markers; warn cells/rows are flagged; `span`
-// merges cells across columns.
+// merges cells across columns. The table types are shared across guides
+// (lib/guides/types).
 // ---------------------------------------------------------------------------
 
-// ── Table primitives ──────────────────────────────────────────────────────
-
-export type TableCell =
-  | string
-  | { text: string; warn?: boolean; span?: number };
-
-export interface TableCol {
-  name: string;
-  sub: string;
-}
-
-export interface TableRow {
-  label: string;
-  note?: string;
-  cells: TableCell[];
-  warnRow?: boolean;
-}
+import type { GuideFaqItem, TableCol, TableRow } from "lib/guides/types";
 
 // ── Hero ──────────────────────────────────────────────────────────────────
 
@@ -626,13 +611,7 @@ export const FAQ_SECTION = {
     "True for any griptape from any brand. What we happen to stock is at the end of each one.",
 };
 
-export interface GripFaqItem {
-  q: string;
-  a: string;
-  stock: string;
-}
-
-export const GRIP_FAQ: GripFaqItem[] = [
+export const GRIP_FAQ: GuideFaqItem[] = [
   {
     q: "Can I put new grip straight over the old sheet?",
     a: "You can, and it is the most common shortcut in skateboarding, but it costs you something every time. The new sheet is bonding to the old backing rather than to wood, so it holds less well and lifts sooner. You also add thickness, which rounds off the feel of the concave under your feet — two or three layers deep and the board rides differently.\n\nThe right way takes ten more minutes. Warm the old sheet with a hairdryer until the adhesive gives up, peel it from one corner, and take the residue off with a bit of heat and a rag. For the patches that will not shift, nail-polish remover on a cloth softens the glue and lets you scrape it away — work it gently and keep it off the graphic on the underside. A heat gun does the heating faster and will scorch the wood if you are careless, so a hairdryer is the better tool for a first attempt.\n\nOne case where layering is fine: a small patch over a torn area, as a repair, on a board you are going to re-grip properly anyway.",

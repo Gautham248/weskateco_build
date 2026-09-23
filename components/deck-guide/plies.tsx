@@ -3,15 +3,7 @@
 import { Fragment } from "react";
 import { PLIES, PLIES_PROSE, PLIES_SECTION } from "lib/deck-guide/data";
 import { useState } from "react";
-import {
-  FigCaption,
-  FigCard,
-  FigHint,
-  PanelKicker,
-  ProseCols,
-  SectionHeader,
-  SpecList,
-} from "./ui";
+import { FigCaption, FigCard, FigHint, PanelKicker, ProseCols, SectionHeader, SpecList, Container, Section, GRID_CLASS } from "components/guides/ui";
 
 // Ply stack geometry — the source's drawing math, unchanged.
 const PLY_TOP = 24;
@@ -27,18 +19,15 @@ export default function PliesSection() {
   const ply = PLIES[active]!;
 
   return (
-    <section
-      id="plies"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="plies">
+      <Container>
         <SectionHeader
           kicker={PLIES_SECTION.kicker}
           title={PLIES_SECTION.title}
           intro={PLIES_SECTION.intro}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
+        <div className={GRID_CLASS}>
           {/* Cross-section diagram */}
           <FigCard tone="muted" className="lg:col-span-7 w-full flex flex-col">
             <FigHint>{PLIES_SECTION.hint}</FigHint>
@@ -108,7 +97,7 @@ export default function PliesSection() {
                         width={PLY_W}
                         height={PLY_H}
                         rx="2"
-                        fill={isActive ? "#CCFF02" : "#000000"}
+                        className={isActive ? "fill-brand" : "fill-black"}
                         fillOpacity={isActive ? ".55" : ".07"}
                         stroke="#000000"
                         strokeWidth={isActive ? "2.4" : "1.2"}
@@ -210,7 +199,7 @@ export default function PliesSection() {
         </div>
 
         <ProseCols items={PLIES_PROSE} tone="muted" />
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

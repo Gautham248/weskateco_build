@@ -7,7 +7,7 @@ import {
 } from "lib/griptape-guide/data";
 import { useState } from "react";
 import { STEP_ICONS } from "./icons";
-import { PanelKicker, ProseCols, SectionHeader } from "./ui";
+import { PanelKicker, ProseCols, SectionHeader, Container, Section, GRID_CLASS } from "components/guides/ui";
 
 const CLASH = { fontFamily: "'Clash Display', sans-serif" };
 
@@ -17,11 +17,8 @@ export default function ApplySection() {
   const Icon = STEP_ICONS[step]!;
 
   return (
-    <section
-      id="apply"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="apply">
+      <Container>
         <SectionHeader
           kicker={APPLY_SECTION.kicker}
           title={APPLY_SECTION.title}
@@ -32,7 +29,7 @@ export default function ApplySection() {
         <ProseCols items={APPLY_TOOLS} tone="muted" />
 
         {/* Stepper */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
+        <div className={GRID_CLASS}>
           {/* Step list */}
           <ol className="lg:col-span-4 flex flex-col gap-2">
             {APPLY_STEPS.map((s, i) => {
@@ -43,9 +40,9 @@ export default function ApplySection() {
                     type="button"
                     aria-pressed={isActive}
                     onClick={() => setStep(i)}
-                    className={`w-full flex items-center gap-3 border-2 px-4 py-3 rounded-[4px] text-left cursor-pointer transition-colors ${
+                    className={`w-full flex items-center gap-3 border-2 px-4 py-3 rounded-4 text-left cursor-pointer transition-colors ${
                       isActive
-                        ? "border-black bg-[#CCFF02]/30"
+                        ? "border-black bg-brand/30"
                         : "border-neutral-300 bg-white hover:border-black"
                     }`}
                   >
@@ -114,7 +111,7 @@ export default function ApplySection() {
                 type="button"
                 onClick={() => setStep((s) => Math.max(0, s - 1))}
                 disabled={step === 0}
-                className="border-2 border-black bg-white text-black px-6 py-2.5 rounded-[4px] text-sm font-semibold uppercase tracking-wider transition-colors enabled:hover:bg-black enabled:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                className="border-2 border-black bg-white text-black px-6 py-2.5 rounded-4 text-sm font-semibold uppercase tracking-wider transition-colors enabled:hover:bg-black enabled:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
                 style={CLASH}
               >
                 ← Back
@@ -125,7 +122,7 @@ export default function ApplySection() {
                   setStep((s) => Math.min(APPLY_STEPS.length - 1, s + 1))
                 }
                 disabled={step === APPLY_STEPS.length - 1}
-                className="bg-black text-white px-6 py-2.5 rounded-[4px] text-sm font-semibold uppercase tracking-wider transition-colors enabled:hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="bg-black text-white px-6 py-2.5 rounded-4 text-sm font-semibold uppercase tracking-wider transition-colors enabled:hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={CLASH}
               >
                 Next →
@@ -133,7 +130,7 @@ export default function ApplySection() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

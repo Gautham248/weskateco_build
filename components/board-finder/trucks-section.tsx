@@ -27,15 +27,16 @@ const BAND_COLUMNS = [
     make: "Double Hollow",
   },
 ];
+import { Container, Section, H2_CLASS } from "components/guides/ui";
 
 export default function TrucksSection() {
   return (
-    <section className="w-full bg-[#F7F7F9] text-black py-10 md:py-24 overflow-hidden">
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section bg="muted" scroll={false}>
+      <Container>
         {/* Header */}
         <div className="flex flex-col gap-3 md:gap-4 max-w-3xl">
           <h2
-            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
+            className={H2_CLASS}
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             Trucks
@@ -153,7 +154,7 @@ export default function TrucksSection() {
                 "Usually the first part a rider upgrades.",
               ].map((item) => (
                 <li key={item} className="flex gap-3 items-start">
-                  <span className="w-2 h-2 rounded-full bg-[#CCFF02] mt-2 shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
                   <span className="text-sm text-black leading-[150%] font-[400]">
                     {item}
                   </span>
@@ -183,13 +184,13 @@ export default function TrucksSection() {
             </p>
             <ul className="flex flex-col gap-2 mt-auto">
               <li className="flex gap-3 items-start">
-                <span className="w-2 h-2 rounded-full bg-[#CCFF02] mt-2 shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
                 <span className="text-sm text-black leading-[150%] font-[400]">
                   Double Hollow in 5.0″, 5.25″ and 5.5″.
                 </span>
               </li>
               <li className="flex gap-3 items-start">
-                <span className="w-2 h-2 rounded-full bg-[#CCFF02] mt-2 shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
                 <span className="text-sm text-black leading-[150%] font-[400] flex items-center gap-2 flex-wrap">
                   Solid Toucan pro trucks
                   <span
@@ -201,7 +202,7 @@ export default function TrucksSection() {
                 </span>
               </li>
               <li className="flex gap-3 items-start">
-                <span className="w-2 h-2 rounded-full bg-[#CCFF02] mt-2 shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
                 <span className="text-sm text-black leading-[150%] font-[400] flex items-center gap-2 flex-wrap">
                   A range of ACE trucks
                   <span
@@ -229,7 +230,7 @@ export default function TrucksSection() {
           A fuller breakdown of geometry, bushings and brands is coming in the
           dedicated truck guide.
         </p>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

@@ -9,7 +9,16 @@ import {
   GRIT_SECTION,
 } from "lib/griptape-guide/data";
 import { useState } from "react";
-import { DefList, FigHint, Note, PanelKicker, SectionHeader } from "./ui";
+import {
+  DefList,
+  FigHint,
+  Note,
+  PanelKicker,
+  SectionHeader,
+  Container,
+  Section,
+  GRID_CLASS,
+} from "components/guides/ui";
 
 const CLASH = { fontFamily: "'Clash Display', sans-serif" };
 
@@ -60,7 +69,15 @@ function GritScale({ selected }: { selected: string }) {
         const x0 = 14 + bi * BAND_W;
         const isActive = band.id === selected;
         const fill = isActive ? "#000000" : "#D4D4D8";
-        const gap = 4;
+        // Keep the default 4px gap, but tighten it when the cluster would
+        // overflow its band slot — spikes and the number label below share
+        // the same x-axis, so a cluster must stay within its own band
+        // (centered on the label) instead of bleeding into neighbors.
+        const CLUSTER_MAX = BAND_W - 10;
+        const gap = Math.max(
+          0,
+          Math.min(4, (CLUSTER_MAX - band.count * band.w) / (band.count - 1)),
+        );
         const clusterW = band.count * band.w + (band.count - 1) * gap;
         const start = x0 + (BAND_W - 14 - clusterW) / 2;
         return (
@@ -93,7 +110,7 @@ function GritScale({ selected }: { selected: string }) {
                 width={BAND_W - 14}
                 height="5"
                 rx="2.5"
-                fill="#CCFF02"
+                className="fill-brand"
               />
             )}
           </g>
@@ -117,11 +134,8 @@ export default function GritSection() {
   const grit = GRITS.find((g) => g.label === selected) ?? GRITS[4]!;
 
   return (
-    <section
-      id="grit"
-      className="w-full bg-[#F7F7F9] text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="grit" bg="muted">
+      <Container>
         <SectionHeader
           kicker={GRIT_SECTION.kicker}
           title={GRIT_SECTION.title}
@@ -156,7 +170,7 @@ export default function GritSection() {
         </div>
 
         {/* Scale + output panel */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
+        <div className={GRID_CLASS}>
           <div className="lg:col-span-7 bg-white border border-neutral-200 rounded-[16px] p-5 md:p-8">
             <GritScale selected={selected} />
             <FigHint className="mt-3">
@@ -203,7 +217,7 @@ export default function GritSection() {
           </a>
           {GRIT_ATTRIBUTION.after}
         </p>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { WEAR, WEAR_SECTION } from "lib/deck-guide/data";
-import { PanelKicker, SectionHeader, SpecList } from "./ui";
+import { PanelKicker, SectionHeader, SpecList, Container, Section } from "components/guides/ui";
 
 const CLASH = { fontFamily: "'Clash Display', sans-serif" };
 
@@ -11,11 +11,8 @@ export default function WearSection() {
   const w = WEAR[active]!;
 
   return (
-    <section
-      id="wear"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="wear">
+      <Container>
         <SectionHeader
           kicker={WEAR_SECTION.kicker}
           title={WEAR_SECTION.title}
@@ -39,7 +36,7 @@ export default function WearSection() {
                   onClick={() => setActive(i)}
                   className={`text-left rounded-[12px] p-4 flex flex-col gap-1 border-2 transition-colors cursor-pointer ${
                     isActive
-                      ? "border-black bg-[#CCFF02]/30"
+                      ? "border-black bg-brand/30"
                       : "border-neutral-200 bg-white hover:border-black"
                   }`}
                 >
@@ -75,8 +72,8 @@ export default function WearSection() {
               {w.cause}
             </p>
             <span
-              className={`inline-flex items-center self-start mt-1 px-4 py-2 rounded-[4px] text-sm font-semibold uppercase tracking-wider ${
-                w.fatal ? "bg-black text-white" : "bg-[#CCFF02] text-black"
+              className={`inline-flex items-center self-start mt-1 px-4 py-2 rounded-4 text-sm font-semibold uppercase tracking-wider ${
+                w.fatal ? "bg-black text-white" : "bg-brand text-black"
               }`}
               style={CLASH}
             >
@@ -85,7 +82,7 @@ export default function WearSection() {
             <SpecList spec={w.spec} />
           </div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

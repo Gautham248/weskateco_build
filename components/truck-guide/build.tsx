@@ -10,15 +10,12 @@ import {
   MATERIALS_TABLE_ROWS,
   METALS_SUB,
 } from "lib/truck-guide/data";
-import { GuideTable, Note, ProseCols, SectionHeader, SubHead } from "./ui";
+import { GuideTable, Note, ProseCols, SectionHeader, SubHead, Container, Section } from "components/guides/ui";
 
 export default function BuildSection() {
   return (
-    <section
-      id="build"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="build">
+      <Container>
         <SectionHeader
           kicker={BUILD_SECTION.kicker}
           title={BUILD_SECTION.title}
@@ -52,7 +49,7 @@ export default function BuildSection() {
         <ProseCols items={EXPENSIVE_PROSE} tone="muted" />
 
         <Note text={EXPENSIVE_NOTE} />
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

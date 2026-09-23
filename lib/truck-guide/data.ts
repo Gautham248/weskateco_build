@@ -1,23 +1,10 @@
 // ---------------------------------------------------------------------------
 // Truck Guide — data and copy, ported verbatim from the spec.
 // Cells may carry **bold** / *italic* markers; warn cells/rows are flagged.
+// The table types are shared across guides (lib/guides/types).
 // ---------------------------------------------------------------------------
 
-// ── Table primitives ──────────────────────────────────────────────────────
-
-export type TableCell = string | { text: string; warn?: boolean };
-
-export interface TableCol {
-  name: string;
-  sub: string;
-}
-
-export interface TableRow {
-  label: string;
-  note?: string;
-  cells: TableCell[];
-  warnRow?: boolean;
-}
+import type { GuideFaqItem, TableCol, TableRow } from "lib/guides/types";
 
 // ── Hero ──────────────────────────────────────────────────────────────────
 
@@ -900,13 +887,7 @@ export const FAQ_SECTION = {
     "True of any trucks from any brand. What we happen to stock is at the end of each one.",
 };
 
-export interface TruckFaqItem {
-  q: string;
-  a: string;
-  stock: string;
-}
-
-export const TRUCK_FAQ: TruckFaqItem[] = [
+export const TRUCK_FAQ: GuideFaqItem[] = [
   {
     q: "Do expensive trucks actually turn better?",
     a: "They turn differently, and more predictably. The geometry that decides how much turn you get per degree of lean is designed rather than adjustable, and a well-made truck holds that geometry under load because the casting is stiff and the pivot fits properly. A cheap truck flexes and the pivot is loose, so the same lean gives you a slightly different turn each time — which reads as vagueness rather than as a different feel.\n\nWhat a price tag does not buy is a turn that suits you. That comes from bushings and washers, and a mid-priced truck with the right bushings will beat an expensive one with the wrong ones every time. Spend on the truck once you know what feel you are chasing.",

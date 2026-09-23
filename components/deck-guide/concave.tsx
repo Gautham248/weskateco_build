@@ -7,15 +7,7 @@ import {
   CONCAVE_SECTION,
   CONCAVE_TOGGLES,
 } from "lib/deck-guide/data";
-import {
-  FigCaption,
-  FigCard,
-  FigHint,
-  Note,
-  ProseCols,
-  SectionHeader,
-  Seg,
-} from "./ui";
+import { FigCaption, FigCard, FigHint, Note, ProseCols, SectionHeader, Seg, Container, Section } from "components/guides/ui";
 
 // Profile cell geometry — the source's drawing math, unchanged.
 interface Cell {
@@ -78,11 +70,8 @@ export default function ConcaveSection() {
   const [active, setActive] = useState<string>("all");
 
   return (
-    <section
-      id="concave"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="concave">
+      <Container>
         <SectionHeader
           kicker={CONCAVE_SECTION.kicker}
           title={CONCAVE_SECTION.title}
@@ -137,7 +126,7 @@ export default function ConcaveSection() {
                       />
                       <path
                         d={`${cell.path} Z`}
-                        fill={highlighted ? "#CCFF02" : "#000000"}
+                        className={highlighted ? "fill-brand" : "fill-black"}
                         fillOpacity={highlighted ? ".65" : ".10"}
                       />
                       <path
@@ -194,7 +183,7 @@ export default function ConcaveSection() {
         <ProseCols items={CONCAVE_PROSE} tone="muted" />
 
         <Note text={CONCAVE_NOTE} />
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

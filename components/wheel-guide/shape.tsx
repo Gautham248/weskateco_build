@@ -1,4 +1,5 @@
 import classicImg from "components/icons/wheel_guide/wheel-shape-classic.png";
+import { SectionHeader, Container, Section } from "components/guides/ui";
 import conicalImg from "components/icons/wheel_guide/wheel-shape-conical.png";
 import radialImg from "components/icons/wheel_guide/wheel-shape-radial.png";
 import {
@@ -30,26 +31,10 @@ const SHAPE_ALT: Record<ShapeProfile["id"], string> = {
 
 export default function ShapeSection() {
   return (
-    <section
-      id="shape"
-      className="w-full bg-[#F7F7F9] text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="shape" bg="muted">
+      <Container>
         {/* Header */}
-        <div className="flex flex-col gap-3 md:gap-4 max-w-3xl">
-          <span className="text-xs md:text-base font-medium tracking-[-1%] text-[#00000080] uppercase">
-            04 — Shape
-          </span>
-          <h2
-            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
-            Shape
-          </h2>
-          <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-            {SHAPE_INTRO}
-          </p>
-        </div>
+        <SectionHeader kicker="04 — Shape" title="Shape" intro={SHAPE_INTRO} />
 
         <p className="text-sm md:text-lg text-black font-[400] leading-[150%] max-w-4xl">
           {SHAPE_OPENING}
@@ -103,7 +88,7 @@ export default function ShapeSection() {
             </div>
           ))}
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

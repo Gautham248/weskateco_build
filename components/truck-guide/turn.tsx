@@ -7,18 +7,8 @@ import {
   TURN_SECTION,
 } from "lib/truck-guide/data";
 import { useState } from "react";
-import {
-  FigCaption,
-  FigCard,
-  FigHint,
-  PendingCard,
-  PendingNote,
-  ProseCols,
-  Seg,
-  SectionHeader,
-} from "./ui";
+import { FigCaption, FigCard, FigHint, PendingCard, PendingNote, ProseCols, Seg, SectionHeader, Container, Section } from "components/guides/ui";
 
-const LIME = "#CCFF02";
 
 /** Reference drawing: the truck seen from behind, deck level — both
  * bushings at rest. */
@@ -61,7 +51,7 @@ function FromBehind({ leaning }: { leaning: boolean }) {
           width="44"
           height={leaning ? 26 : 42}
           rx="6"
-          fill={leaning ? LIME : "#EDEEF0"}
+          className={leaning ? "fill-brand" : "fill-[#EDEEF0]"}
           fillOpacity={leaning ? 0.85 : 1}
           stroke="#000000"
           strokeWidth="4"
@@ -126,7 +116,7 @@ function FromBehind({ leaning }: { leaning: boolean }) {
         width="44"
         height={leaning ? 58 : 42}
         rx="6"
-        fill={leaning ? "#EDEEF0" : LIME}
+        className={leaning ? "fill-[#EDEEF0]" : "fill-brand"}
         fillOpacity={leaning ? 1 : 0.6}
         stroke="#000000"
         strokeWidth="4"
@@ -231,7 +221,7 @@ function FromAbove({ leaning }: { leaning: boolean }) {
           y1="216"
           x2="300"
           y2="216"
-          stroke={leaning ? LIME : "#000000"}
+          className={leaning ? "stroke-brand" : "stroke-black"}
           strokeOpacity={leaning ? 1 : 1}
           strokeWidth={leaning ? 8 : 5}
           strokeLinecap="round"
@@ -271,11 +261,8 @@ export default function TurnSection() {
   const leaning = state === "leaning";
 
   return (
-    <section
-      id="turn"
-      className="w-full bg-[#F7F7F9] text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="turn" bg="muted">
+      <Container>
         <SectionHeader
           kicker={TURN_SECTION.kicker}
           title={TURN_SECTION.title}
@@ -314,7 +301,7 @@ export default function TurnSection() {
         />
 
         <ProseCols items={TURN_PROSE} tone="plain" />
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

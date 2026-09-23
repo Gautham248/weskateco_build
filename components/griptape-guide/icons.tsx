@@ -54,7 +54,7 @@ export function PeelLayIcon() {
         strokeLinejoin="round"
       />
       <path d="M32 8v6h6" stroke="#000000" strokeWidth="2.5" />
-      <path d="M24 32v8m0 0l-4-4m4 4l4-4" stroke="#CCFF02" strokeWidth="2.5" />
+      <path d="M24 32v8m0 0l-4-4m4 4l4-4" className="stroke-brand" strokeWidth="2.5" />
     </svg>
   );
 }
@@ -77,8 +77,8 @@ export function PressOutIcon() {
         stroke="#000000"
         strokeWidth="2.5"
       />
-      <path d="M12 34H4m0 0l3-3M4 34l3 3" stroke="#CCFF02" strokeWidth="2.5" />
-      <path d="M36 34h8m0 0l-3-3m3 3l-3 3" stroke="#CCFF02" strokeWidth="2.5" />
+      <path d="M12 34H4m0 0l3-3M4 34l3 3" className="stroke-brand" strokeWidth="2.5" />
+      <path d="M36 34h8m0 0l-3-3m3 3l-3 3" className="stroke-brand" strokeWidth="2.5" />
     </svg>
   );
 }
@@ -91,11 +91,11 @@ export function ScoreOutlineIcon() {
       <path d="M30 6L18 30" stroke="#000000" strokeWidth="2.5" />
       <path
         d="M18 30l-3 6 6-3"
-        stroke="#CCFF02"
+        className="stroke-brand"
         strokeWidth="2.5"
         fill="none"
       />
-      <path d="M14 24h6" stroke="#CCFF02" strokeWidth="2.5" />
+      <path d="M14 24h6" className="stroke-brand" strokeWidth="2.5" />
     </svg>
   );
 }
@@ -108,7 +108,7 @@ export function CutOffIcon() {
       <path d="M34 6v14l-4 4-4-4V6" stroke="#000000" strokeWidth="2.5" />
       <path
         d="M8 38c4-2 8-2 12 0"
-        stroke="#CCFF02"
+        className="stroke-brand"
         strokeWidth="2.5"
         fill="none"
       />
@@ -130,8 +130,8 @@ export function SandEdgeIcon() {
         stroke="#000000"
         strokeWidth="2.5"
       />
-      <path d="M36 34c1.5 1.5 1.5 4 0 5.5" stroke="#CCFF02" strokeWidth="2.5" />
-      <path d="M41 31c3 3 3 9 0 12" stroke="#CCFF02" strokeWidth="2.5" />
+      <path d="M36 34c1.5 1.5 1.5 4 0 5.5" className="stroke-brand" strokeWidth="2.5" />
+      <path d="M41 31c3 3 3 9 0 12" className="stroke-brand" strokeWidth="2.5" />
     </svg>
   );
 }
@@ -146,12 +146,12 @@ export function BoltHolesIcon() {
       <path d="M16 36V31m16 5V31" stroke="#000000" strokeWidth="2.5" />
       <path
         d="M16 44v-6m0 0l-2.5 2.5M16 44l2.5-2.5"
-        stroke="#CCFF02"
+        className="stroke-brand"
         strokeWidth="2.5"
       />
       <path
         d="M32 44v-6m0 0l-2.5 2.5M32 44l2.5-2.5"
-        stroke="#CCFF02"
+        className="stroke-brand"
         strokeWidth="2.5"
       />
     </svg>

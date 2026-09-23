@@ -2,7 +2,7 @@
 
 import { WEAR, WEAR_NOTE, WEAR_SECTION } from "lib/griptape-guide/data";
 import { useState } from "react";
-import { Note, PanelKicker, SectionHeader } from "./ui";
+import { Note, PanelKicker, SectionHeader, Container, Section, GRID_CLASS } from "components/guides/ui";
 
 const CLASH = { fontFamily: "'Clash Display', sans-serif" };
 
@@ -11,18 +11,15 @@ export default function WearSection() {
   const mode = WEAR[selected]!;
 
   return (
-    <section
-      id="wear"
-      className="w-full bg-white text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="wear">
+      <Container>
         <SectionHeader
           kicker={WEAR_SECTION.kicker}
           title={WEAR_SECTION.title}
           intro={WEAR_SECTION.intro}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
+        <div className={GRID_CLASS}>
           {/* Failure mode picker */}
           <div
             role="group"
@@ -37,9 +34,9 @@ export default function WearSection() {
                   type="button"
                   aria-pressed={isActive}
                   onClick={() => setSelected(i)}
-                  className={`flex items-center gap-3 border-2 px-4 py-3 rounded-[4px] text-left cursor-pointer transition-colors ${
+                  className={`flex items-center gap-3 border-2 px-4 py-3 rounded-4 text-left cursor-pointer transition-colors ${
                     isActive
-                      ? "border-black bg-[#CCFF02]/30"
+                      ? "border-black bg-brand/30"
                       : "border-neutral-300 bg-white hover:border-black"
                   }`}
                 >
@@ -77,7 +74,7 @@ export default function WearSection() {
               </h3>
               <span
                 className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${
-                  mode.fatal ? "bg-black text-white" : "bg-[#CCFF02] text-black"
+                  mode.fatal ? "bg-black text-white" : "bg-brand text-black"
                 }`}
                 style={CLASH}
               >
@@ -91,7 +88,7 @@ export default function WearSection() {
         </div>
 
         <Note text={WEAR_NOTE} />
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

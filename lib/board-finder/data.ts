@@ -3,6 +3,7 @@
 // Copy ported verbatim from the source artifact spec.
 // ---------------------------------------------------------------------------
 
+import type { GuideFaqItem } from "lib/guides/types";
 export const SHOP = "https://weskateco.vercel.app";
 
 // Widths we stock, inches
@@ -603,13 +604,7 @@ export const CARE_STORAGE_KEY = "wsk-care-v1";
 
 // ── FAQ ──────────────────────────────────────────────────────────────────
 
-export interface FaqItem {
-  q: string;
-  a: string;
-  stock?: string;
-}
-
-export const FAQ: FaqItem[] = [
+export const FAQ: GuideFaqItem[] = [
   {
     q: "Is a cheap board from a general sports shop fine to start on?",
     a: "Usually not, and the reasons are specific rather than snobbery. Four things tend to be wrong at once:\n\n**The trucks.** Cast from soft pot metal or part-plastic, with a kingpin done up hard against stiff bushings. The board barely leans, so it won't carve — the rider ends up steering by hopping the nose around instead of turning. That is the single biggest reason a cheap board feels impossible.\n\n**The wheels.** Unmarked, over-hard urethane — or worse, filled plastic. It skates fine on a showroom floor and skids on the first patch of grit, then flat-spots and thumps for the rest of its life.\n\n**The bearings.** Dry, often fitted without spacers, so tightening the axle nut squeezes them out of true. They feel gritty within weeks.\n\n**The deck.** Fewer plies, lower-grade veneer, cheaper glue, and often no real concave or kick. It goes soft fast, and a deck without pop — the springy snap that launches an ollie — can't ollie no matter who's standing on it.\n\nThe result is that learning gets harder, and beginners conclude the problem is them. Three checks in any shop: lean the board hard onto one edge and see if the trucks actually turn; spin a wheel and count how long it rolls; press the tail down and feel whether it springs back or just thuds.",

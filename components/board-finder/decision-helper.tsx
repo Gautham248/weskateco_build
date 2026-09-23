@@ -12,6 +12,7 @@ import {
 } from "lib/board-finder/data";
 
 type Selection = Record<"width" | "parts" | "first", number>;
+import { Container, Section, GRID_CLASS, H2_CLASS } from "components/guides/ui";
 
 export default function DecisionHelperSection() {
   const { locale } = useTranslation();
@@ -27,12 +28,12 @@ export default function DecisionHelperSection() {
     getVerdict(score);
 
   return (
-    <section className="w-full bg-white text-black py-10 md:py-24 overflow-hidden">
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section scroll={false}>
+      <Container>
         {/* Header */}
         <div className="flex flex-col gap-3 md:gap-4 max-w-3xl">
           <h2
-            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
+            className={H2_CLASS}
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             Buy a complete, or build it yourself?
@@ -46,7 +47,7 @@ export default function DecisionHelperSection() {
         </div>
 
         {/* Questions + verdict */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
+        <div className={GRID_CLASS}>
           <div className="lg:col-span-7 flex flex-col gap-6">
             {ROUTE_QUESTIONS.map((q) => (
               <div key={q.key} className="flex flex-col gap-3">
@@ -57,7 +58,7 @@ export default function DecisionHelperSection() {
                   {q.question}
                 </span>
                 <div
-                  className="inline-flex rounded-[4px] border border-neutral-200 p-1 gap-1 w-fit max-w-full"
+                  className="inline-flex rounded-4 border border-neutral-200 p-1 gap-1 w-fit max-w-full"
                   role="group"
                   aria-label={q.question}
                 >
@@ -69,7 +70,7 @@ export default function DecisionHelperSection() {
                         setSelection((prev) => ({ ...prev, [q.key]: index }))
                       }
                       aria-pressed={selection[q.key] === index}
-                      className={`px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-wider rounded-[4px] transition-colors cursor-pointer whitespace-nowrap ${
+                      className={`px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-wider rounded-4 transition-colors cursor-pointer whitespace-nowrap ${
                         selection[q.key] === index
                           ? "bg-black text-white"
                           : "text-black hover:bg-neutral-100"
@@ -114,7 +115,7 @@ export default function DecisionHelperSection() {
             <div className="flex flex-col gap-3 mt-2">
               <Link
                 href={getLocalizedPath(toPath(ctaHref), locale)}
-                className="w-full bg-black text-white px-6 py-3.5 rounded-[4px] text-base font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors text-center"
+                className="w-full bg-black text-white px-6 py-3.5 rounded-4 text-base font-semibold uppercase tracking-wider hover:bg-neutral-800 transition-colors text-center"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 {ctaLabel}
@@ -152,7 +153,7 @@ export default function DecisionHelperSection() {
                 "Best value for money — a package price beats the sum of its parts.",
               ].map((item) => (
                 <li key={item} className="flex gap-3 items-start">
-                  <span className="w-2 h-2 rounded-full bg-[#CCFF02] mt-2 shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
                   <span className="text-sm text-black leading-[150%] font-[400]">
                     {item}
                   </span>
@@ -188,7 +189,7 @@ export default function DecisionHelperSection() {
                 "You're replacing one worn part.",
               ].map((item) => (
                 <li key={item} className="flex gap-3 items-start">
-                  <span className="w-2 h-2 rounded-full bg-[#CCFF02] mt-2 shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
                   <span className="text-sm text-black leading-[150%] font-[400]">
                     {item}
                   </span>
@@ -204,7 +205,7 @@ export default function DecisionHelperSection() {
             </Link>
           </div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

@@ -10,17 +10,8 @@ import {
   SHAPE_SUB,
   SHAPE_TOGGLES,
 } from "lib/deck-guide/data";
-import DeckCrosslink from "./callout";
-import {
-  DefList,
-  FigCaption,
-  FigCard,
-  FigHint,
-  ProseCols,
-  SectionHeader,
-  Seg,
-  SubHead,
-} from "./ui";
+import DeckCrosslink from "components/guides/callout";
+import { DefList, FigCaption, FigCard, FigHint, ProseCols, SectionHeader, Seg, SubHead, Container, Section } from "components/guides/ui";
 
 // Dimension drawing math — the source's numbers, unchanged:
 // drawn at 600 units for 31.875 inches.
@@ -87,11 +78,8 @@ export default function ShapeSection() {
     only === null || only === id ? "1" : "0.12";
 
   return (
-    <section
-      id="shape"
-      className="w-full bg-[#F7F7F9] text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="shape" bg="muted">
+      <Container>
         <SectionHeader
           kicker={SHAPE_SECTION.kicker}
           title={SHAPE_SECTION.title}
@@ -365,7 +353,7 @@ export default function ShapeSection() {
           cta={SHAPE_CROSSLINK.cta}
           href={SHAPE_CROSSLINK.href}
         />
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

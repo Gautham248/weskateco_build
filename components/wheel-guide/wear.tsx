@@ -1,6 +1,7 @@
 "use client";
 
 import { SYMPTOMS, WEAR_CLOSING, WEAR_INTRO } from "lib/wheel-guide/data";
+import { SectionHeader, Container, Section } from "components/guides/ui";
 import { useState } from "react";
 
 export default function WearSection() {
@@ -8,26 +9,10 @@ export default function WearSection() {
   const active = SYMPTOMS.find((s) => s.id === activeId) ?? SYMPTOMS[0]!;
 
   return (
-    <section
-      id="wear"
-      className="w-full bg-[#F7F7F9] text-black py-10 md:py-24 overflow-hidden scroll-mt-[136px]"
-    >
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-6 md:gap-10">
+    <Section id="wear" bg="muted">
+      <Container>
         {/* Header */}
-        <div className="flex flex-col gap-3 md:gap-4 max-w-3xl">
-          <span className="text-xs md:text-base font-medium tracking-[-1%] text-[#00000080] uppercase">
-            06 — Wear
-          </span>
-          <h2
-            className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
-            Wear
-          </h2>
-          <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-            {WEAR_INTRO}
-          </p>
-        </div>
+        <SectionHeader kicker="06 — Wear" title="Wear" intro={WEAR_INTRO} />
 
         {/* Symptom chips */}
         <div
@@ -43,7 +28,7 @@ export default function WearSection() {
                 type="button"
                 onClick={() => setActiveId(s.id)}
                 aria-pressed={isActive}
-                className={`px-4 py-2.5 rounded-[4px] text-sm font-semibold uppercase tracking-wider cursor-pointer transition-colors border ${
+                className={`px-4 py-2.5 rounded-4 text-sm font-semibold uppercase tracking-wider cursor-pointer transition-colors border ${
                   isActive
                     ? "bg-black text-white border-black"
                     : "bg-white text-black border-neutral-200 hover:border-black"
@@ -60,8 +45,8 @@ export default function WearSection() {
         <div className="bg-white rounded-[16px] p-5 md:p-8 flex flex-col gap-5">
           <div className="flex flex-wrap items-center gap-3">
             <span
-              className={`inline-flex items-center px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase tracking-wider ${
-                active.fatal ? "bg-black text-white" : "bg-[#CCFF02] text-black"
+              className={`inline-flex items-center px-3 py-1.5 rounded-4 text-xs font-bold uppercase tracking-wider ${
+                active.fatal ? "bg-black text-white" : "bg-brand text-black"
               }`}
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
@@ -118,7 +103,7 @@ export default function WearSection() {
         <p className="text-sm md:text-base text-neutral-600 leading-[150%] max-w-3xl">
           {WEAR_CLOSING}
         </p>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

@@ -1,8 +1,86 @@
-import type { TableCol, TableCell, TableRow } from "lib/griptape-guide/data";
-import type { ReactNode } from "react";
+import type { TableCol, TableCell, TableRow } from "lib/guides/types";
+import type { HTMLAttributes, ReactNode } from "react";
 import { renderRich } from "./rich";
 
 const CLASH = { fontFamily: "'Clash Display', sans-serif" };
+
+/**
+ * Repeated composite class strings, defined once — output is byte-identical
+ * to the hand-copied originals these replace:
+ *  - H2_CLASS: every guide section heading (SectionHeader's own h2 plus the
+ *    board-finder and FAQ bespoke headers).
+ *  - GRID_CLASS: the 12-column body grid inside sections.
+ */
+export const H2_CLASS =
+  "text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]";
+export const GRID_CLASS =
+  "grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start";
+
+// ---------------------------------------------------------------------------
+// Section / Container — the wrapper pair repeated across every guide section
+// (previously ~42 inline <section> tags and ~45 inline container <div>s with
+// hand-copied class strings). Defaults reproduce the most common variant
+// byte-for-byte: white bg, py-10 md:py-24, scroll-mt-[136px], stacked with
+// the standard gap.
+// ---------------------------------------------------------------------------
+
+export interface SectionProps extends HTMLAttributes<HTMLElement> {
+  id?: string;
+  /** Alternating band colour. */
+  bg?: "white" | "muted";
+  /** Sticky-navbar scroll offset in px, or false for no scroll margin. */
+  scroll?: 136 | 72 | false;
+  /** Vertical padding: default `py-10 md:py-24`, compact `py-8 md:py-14`. */
+  pad?: "default" | "compact";
+}
+
+export function Section({
+  id,
+  bg = "white",
+  scroll = 136,
+  pad = "default",
+  className,
+  children,
+  ...rest
+}: SectionProps) {
+  const cls =
+    `w-full ${bg === "white" ? "bg-white" : "bg-[#F7F7F9]"} text-black ` +
+    `${pad === "compact" ? "py-8 md:py-14" : "py-10 md:py-24"} overflow-hidden` +
+    (scroll ? ` scroll-mt-[${scroll}px]` : "") +
+    (className ? ` ${className}` : "");
+  return (
+    <section id={id} className={cls} {...rest}>
+      {children}
+    </section>
+  );
+}
+
+export interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
+  /** Stack children vertically with the standard gap (default true). */
+  stack?: boolean;
+  /** Gap between stacked children; only used when `stack` is true. */
+  gap?: "default" | "tight";
+}
+
+export function Container({
+  stack = true,
+  gap = "default",
+  className,
+  children,
+  ...rest
+}: ContainerProps) {
+  const base = "mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15";
+  const cls = !stack
+    ? base
+    : gap === "tight"
+      ? `${base} flex flex-col gap-4 md:gap-6`
+      : `${base} flex flex-col gap-6 md:gap-10`;
+  return (
+    <div className={className ? `${cls} ${className}` : cls} {...rest}>
+      {children}
+    </div>
+  );
+}
 
 /** Section kicker — matches the wheel guide's `01 — Parts` label style. */
 export function Kicker({ children }: { children: ReactNode }) {
@@ -13,7 +91,7 @@ export function Kicker({ children }: { children: ReactNode }) {
   );
 }
 
-/** Small panel kicker — "Layer 01 of 05", "Step 01 of 07". */
+/** Small panel kicker — "Part 01 of 09", "Layer 01 of 05", "Symptom 01 of 05". */
 export function PanelKicker({ children }: { children: ReactNode }) {
   return (
     <span
@@ -38,10 +116,7 @@ export function SectionHeader({
   return (
     <div className="flex flex-col gap-3 md:gap-4 max-w-3xl">
       <Kicker>{kicker}</Kicker>
-      <h2
-        className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-none md:leading-[80%]"
-        style={CLASH}
-      >
+      <h2 className={H2_CLASS} style={CLASH}>
         {title}
       </h2>
       <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
@@ -82,7 +157,7 @@ export function SubHead({
  * sit on: "muted" cards are grey (on white sections), "plain" cards are
  * white with a border (on #F7F7F9 sections). `sub` renders a muted line
  * between the title and the body; `text` may contain `\n\n` paragraph
- * breaks.
+ * breaks, which render as separate paragraphs in the same card.
  */
 export function ProseCols({
   items,
@@ -108,7 +183,7 @@ export function ProseCols({
           >
             {item.title}
             {item.tag && (
-              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-[4px] bg-[#EAFBFF] border border-[#80E5FF] text-xs font-semibold uppercase tracking-wider align-middle">
+              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-4 bg-[#EAFBFF] border border-[#80E5FF] text-xs font-semibold uppercase tracking-wider align-middle">
                 {item.tag}
               </span>
             )}
@@ -141,7 +216,7 @@ export function Note({ text }: { text: string }) {
   );
 }
 
-/** Term / note / definition list — the code and material explainers. */
+/** Term / note / definition list — definitions across the guides. */
 export function DefList({
   items,
 }: {
@@ -174,7 +249,7 @@ export function DefList({
   );
 }
 
-/** Label/value spec rows — layer detail panels. */
+/** Label/value spec rows — part, ply and wear detail panels. */
 export function SpecList({ spec }: { spec: [string, string][] }) {
   return (
     <dl className="flex flex-col mt-1">
@@ -218,8 +293,8 @@ function cellSpan(cell: TableCell): number | undefined {
   return typeof cell === "string" ? undefined : cell.span;
 }
 
-/** Comparison table — the griptape-table pattern, with `span` support for
- * merged cells and optional `warnRow` tint. */
+/** Comparison table — the shared griptape-table pattern, with `span`
+ * support for merged cells, `warn` cells and optional `warnRow` tint. */
 export function GuideTable({
   srLabel,
   cols,
@@ -302,7 +377,7 @@ export function Seg({
     <div
       role="group"
       aria-label={label}
-      className="inline-flex flex-wrap border border-neutral-300 rounded-[4px] overflow-hidden bg-white"
+      className="inline-flex flex-wrap border border-neutral-300 rounded-4 overflow-hidden bg-white"
     >
       {options.map((option) => (
         <button
@@ -365,5 +440,87 @@ export function FigCaption({ children }: { children: ReactNode }) {
     <figcaption className="mt-4 text-xs md:text-sm text-neutral-500 leading-[160%] max-w-4xl">
       {children}
     </figcaption>
+  );
+}
+
+/**
+ * Dashed "Photography pending" note — stands in where the spec calls for
+ * a future photograph but a reference drawing is showing instead. The
+ * pending copy itself always starts "Photography pending", so no extra
+ * chrome is added beyond the dashed treatment.
+ */
+export function PendingNote({ text }: { text: string }) {
+  return (
+    <p className="border border-dashed border-neutral-300 rounded-[12px] bg-white/60 p-4 text-xs md:text-sm text-neutral-500 leading-[160%]">
+      {renderRich(text)}
+    </p>
+  );
+}
+
+/**
+ * "Photo(s) to come" checklist card — the pending state for a photo spot
+ * with no drawing to stand in for it yet. `alt` is the spec's suggested
+ * alt text for the future photo, exposed to screen readers via figure.
+ */
+export function PendingCard({
+  kicker,
+  title,
+  brief,
+  shots,
+  alt,
+}: {
+  kicker: string;
+  title: string;
+  brief: string;
+  shots: (string | { title: string; text: string })[];
+  alt?: string;
+}) {
+  return (
+    <figure
+      aria-label={alt}
+      className="rounded-[16px] border border-dashed border-neutral-300 bg-white/60 p-5 md:p-8 flex flex-col gap-4"
+    >
+      <div className="flex flex-col gap-2">
+        <span
+          className="text-xs font-semibold uppercase tracking-wider text-neutral-500"
+          style={CLASH}
+        >
+          {kicker}
+        </span>
+        <h3
+          className="text-base md:text-xl font-bold tracking-[-1%] text-black uppercase leading-none"
+          style={CLASH}
+        >
+          {title}
+        </h3>
+        <p className="text-sm md:text-base text-neutral-600 leading-[150%]">
+          {renderRich(brief)}
+        </p>
+      </div>
+      <ul className="flex flex-col gap-2">
+        {shots.map((shot) => (
+          <li
+            key={typeof shot === "string" ? shot : shot.title}
+            className="flex gap-3 items-start"
+          >
+            <span
+              aria-hidden
+              className="w-1.5 h-1.5 rounded-full bg-neutral-400 mt-2 shrink-0"
+            />
+            <span className="text-sm text-neutral-600 leading-[150%]">
+              {typeof shot === "string" ? (
+                renderRich(shot)
+              ) : (
+                <>
+                  <span className="font-semibold text-black">{shot.title}</span>
+                  {" — "}
+                  {shot.text}
+                </>
+              )}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </figure>
   );
 }
