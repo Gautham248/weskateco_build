@@ -164,12 +164,36 @@ export default function NavLinks({
                 Skateboard Buying Guide
               </Link>
               <Link
+                href={getLocalizedPath("/guides/deck-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Deck Guide
+              </Link>
+              <Link
+                href={getLocalizedPath("/guides/truck-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Truck Guide
+              </Link>
+              <Link
                 href={getLocalizedPath("/guides/wheels-guide", locale)}
                 onClick={() => setIsGuidesOpen(false)}
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 Wheels Guide
+              </Link>
+              <Link
+                href={getLocalizedPath("/guides/griptape-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Griptape Guide
               </Link>
             </div>
           </div>

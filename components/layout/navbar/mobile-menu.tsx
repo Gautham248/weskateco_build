@@ -278,11 +278,35 @@ export default function MobileMenu() {
                         Skateboard Buying Guide
                       </Link>
                       <Link
+                        href={getLocalizedPath("/guides/deck-guide", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Deck Guide
+                      </Link>
+                      <Link
+                        href={getLocalizedPath("/guides/truck-guide", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Truck Guide
+                      </Link>
+                      <Link
                         href={getLocalizedPath("/guides/wheels-guide", locale)}
                         onClick={closeMobileMenu}
                         className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
                       >
                         Wheels Guide
+                      </Link>
+                      <Link
+                        href={getLocalizedPath(
+                          "/guides/griptape-guide",
+                          locale,
+                        )}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Griptape Guide
                       </Link>
                     </div>
                   )}

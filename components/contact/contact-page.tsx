@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import ContactDetails from "components/contact/contact-details";
 import EnquiryForm from "components/contact/enquiry-form";
 import Footer from "components/layout/footer";
 import { getDeflection } from "lib/contact/routes";
 import Link from "next/link";
+import { useCallback, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // ContactPage — client wrapper composing all four sections.
@@ -125,7 +125,7 @@ export default function ContactPage({ locale }: { locale: string }) {
           Currently no other page has a sticky bottom bar. */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-neutral-200 bg-white px-4 py-3 flex gap-3">
         <a
-          href="tel:+919999999999"
+          href="tel:+917204593003"
           className="flex-1 inline-flex items-center justify-center gap-2 rounded-full border border-black px-4 py-2.5 text-sm font-medium text-black hover:bg-neutral-50 transition-colors"
         >
           <svg

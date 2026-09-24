@@ -24,13 +24,13 @@ const locations = [
     title: "Head office & store — Bengaluru, Karnataka.",
     description:
       "Retail, distribution and the trade desk. Skatepark project coordination for South and West India.",
-    mapsUrl: "#", // TODO: real Google Maps URL
+    mapsUrl: "https://maps.app.goo.gl/nZY4yPC5h1buKgan6",
   },
   {
     title: "Skatepark build base — Kerala.",
     description:
       "WB Skateparks construction crew and equipment yard. Projects run across India and internationally.",
-    mapsUrl: "#", // TODO: real Google Maps URL
+    mapsUrl: "#", // TODO: add Kerala location Google Maps URL
   },
 ];
 
@@ -46,16 +46,15 @@ export default function ContactDetails() {
           >
             WeSkate Co
           </h2>
-          <p className="text-neutral-600 text-sm md:text-base mb-2">
+          <p className="text-neutral-600 text-sm md:text-base">
             Toucan Distribution Pvt Ltd · WB Skatepark Constructions LLP
           </p>
-          {/* TODO: replace with the real registered office address */}
           <address className="not-italic text-neutral-500 text-sm md:text-base leading-relaxed">
-            Registered office address line 1,
+           <br />
+           No 149/3, 5th Main Rd, Malleshpalya
+           Behind DS Upahara, Kaggadasapura
             <br />
-            Address line 2, Bengaluru,
-            <br />
-            Karnataka 560000, India.
+            Bangalore, Karnataka 560075
           </address>
         </div>
 
@@ -85,14 +84,11 @@ export default function ContactDetails() {
               <dd>
                 {/* TODO: replace with real number */}
                 <a
-                  href="tel:+919999999999"
+                  href="tel:+917204593003"
                   className="text-sm md:text-base text-black underline underline-offset-2 hover:text-neutral-500 transition-colors"
                 >
-                  +91-99999-99999
+                  +91-72045-93003
                 </a>
-                <span className="text-xs text-neutral-400 ml-2">
-                  (placeholder — TODO)
-                </span>
               </dd>
             </div>
           </dl>
@@ -151,10 +147,19 @@ export default function ContactDetails() {
           ))}
         </div>
 
-        {/* Map embed slot */}
-        {/* TODO: embed Google Maps iframe here once the centre coordinates are confirmed */}
-        <div className="w-full h-64 bg-neutral-100 rounded-lg flex items-center justify-center text-neutral-400 text-sm">
-          Google Maps embed — TODO
+        {/* Map embed */}
+        <div className="w-full rounded-lg overflow-hidden border border-neutral-200">
+          <iframe
+            title="WeSkate Co head office location"
+            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBVizdQeh3udy11xDc5Ao2YStR2gLc-rfc&amp;q=12%C2%B058'44.0%22N%2077%C2%B040'24.6%22E&amp;maptype=roadmap&amp;zoom=19"
+            width="100%"
+            height="400"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="w-full"
+          />
         </div>
       </div>
     </section>

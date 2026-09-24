@@ -51,6 +51,13 @@
 
 @theme {
   --font-clash: "Clash Display", sans-serif;
+
+  /* Guides-scope design tokens: the brand lime previously hand-copied as
+     arbitrary #CCFF02 values (plus its one dark hover shade) and the shared
+     4px control radius previously written as rounded-[4px]. */
+  --color-brand: #ccff02;
+  --color-brand-dark: #b8e602;
+  --radius-4: 4px;
 }
 
 [style*="Clash Display"],

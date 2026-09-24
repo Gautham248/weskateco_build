@@ -12,7 +12,7 @@ export async function generateStaticParams() {
 }
 
 export const metadata = {
-  title: "WB Skateparks | WeSkate Co",
+  title: "WB Skateparks",
   description:
     "From Bangalore and Kerala, WB Skateparks brings together riders and builders to create raw, purpose-built concrete skateparks.",
   openGraph: {

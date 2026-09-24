@@ -16,7 +16,7 @@ export async function generateStaticParams() {
 }
 
 export const metadata = {
-  title: "WeSkate School | WeSkate Co",
+  title: "WeSkate School",
   description: "Learn skateboarding and surfskating with WeSkate School.",
   openGraph: {
     type: "website",
