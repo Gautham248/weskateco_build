@@ -158,12 +158,15 @@ function ShopNowCard({
 
     if (!variant) return;
 
-    // Optimistic UI: badge and toast update instantly. addItem below performs
-    // the real server-side add.
-    addCartItem(variant, slide.product);
-    toast.success(`${slide.title} added to cart.`);
-
+    // The optimistic dispatch and the real server-side add have to share one
+    // transition. React only holds an optimistic value for as long as the
+    // transition that carried it, so dispatching outside one leaves the badge
+    // detached from the write meant to confirm or revert it — and React logs
+    // "An optimistic state update occurred outside a transition or action".
     startTransition(async () => {
+      addCartItem(variant, slide.product);
+      toast.success(`${slide.title} added to cart.`);
+
       const error = await addItem(null, variant.id);
 
       if (error) {
