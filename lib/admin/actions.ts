@@ -204,7 +204,23 @@ export async function changePasswordAction(
     return { error: "Your current password is incorrect." };
   }
 
-  await updateAdminUserPassword(user.id, await hashPassword(nextPassword.data));
+  const sessionVersion = await updateAdminUserPassword(
+    user.id,
+    await hashPassword(nextPassword.data),
+  );
+
+  // Rotate this device's session to the new version. The bump is what signs out every
+  // other device; without re-issuing here it would sign out this one too, and the admin
+  // would be bounced to the login screen straight after being told the change succeeded.
+  if (sessionVersion !== undefined) {
+    await setSessionCookie(
+      await createSessionToken({
+        userId: user.id,
+        username: user.username,
+        sessionVersion,
+      }),
+    );
+  }
 
   return { success: "Password updated." };
 }

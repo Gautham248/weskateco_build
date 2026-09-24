@@ -177,6 +177,71 @@ function main() {
   equal("an undefined meta blob yields nothing", describeMeta(undefined), []);
   equal("a null meta blob yields nothing", describeMeta(null), []);
 
+  console.log("\ndeeply nested values");
+
+  // answers is stored unvalidated from a public endpoint, so a crafted submission can nest
+  // arbitrarily deep. Walking it — or handing it to JSON.stringify — used to overflow the
+  // stack and take the admin's page down with it.
+  //
+  // Measured, not guessed: the unbounded version of prune survives 200 levels and throws
+  // RangeError from about 5,000, so 20,000 is the depth used here. A shallower fixture
+  // would have passed against the broken code and proved nothing.
+  const DEEP = 20_000;
+
+  function nested(depth: number): Record<string, unknown> {
+    let value: Record<string, unknown> = { leaf: "SECRET-LEAF" };
+
+    for (let level = 0; level < depth; level += 1) {
+      value = { nested: value };
+    }
+
+    return value;
+  }
+
+  check(
+    "a 20,000-level answer renders instead of overflowing the stack",
+    describeAnswers("product-info", { productName: nested(DEEP) }).length === 1,
+  );
+
+  check(
+    "past the bound the value is marked, not walked",
+    (() => {
+      const first = describeAnswers("product-info", {
+        productName: nested(DEEP),
+      })[0];
+
+      return (
+        first !== undefined &&
+        first.value.includes("nested value too deep to display")
+      );
+    })(),
+  );
+
+  check(
+    "the deep leaf never reaches the render",
+    describeAnswers("product-info", { productName: nested(DEEP) }).every(
+      (fact) => !fact.value.includes("SECRET-LEAF"),
+    ),
+    "descending that far is the crash path, so the bound has to actually bound",
+  );
+
+  check(
+    "a shallow object still renders in full",
+    (() => {
+      const first = describeAnswers("product-info", {
+        productName: nested(2),
+      })[0];
+
+      return first !== undefined && first.value.includes("SECRET-LEAF");
+    })(),
+    "the bound must not start truncating ordinary values",
+  );
+
+  check(
+    "describeMeta is bounded the same way",
+    describeMeta({ utm: nested(DEEP) }).length === 1,
+  );
+
   console.log("\nsummariseEnquiry");
 
   equal(

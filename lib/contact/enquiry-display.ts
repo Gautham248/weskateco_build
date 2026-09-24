@@ -65,12 +65,30 @@ function labelLookup(reason: string): Map<string, LabelEntry> {
 }
 
 /**
+ * How deep `prune` will walk before it stops descending.
+ *
+ * `answers` arrives from a public endpoint and is stored without any shape validation, so
+ * a crafted submission can nest objects arbitrarily deep. A few thousand levels is a ~30KB
+ * POST, and walking it — or handing it to `JSON.stringify`, which recurses just as
+ * happily — overflows the stack and takes the admin's page down with it. A real answer is
+ * at most two levels deep (answers → array → string), so this bound costs nothing.
+ */
+const MAX_ANSWER_DEPTH = 8;
+
+/** Shown in place of anything past the bound. Says what it is rather than going missing. */
+const NESTED_TOO_DEEP = "[nested value too deep to display]";
+
+/**
  * Drops everything that carries no information: null, undefined, blank strings,
  * empty arrays, and objects whose entries all prune away. That last case is what
  * stops `meta.utm` — currently written as five nulls — rendering as a noisy
  * `{"source":null,…}` blob.
+ *
+ * Past `MAX_ANSWER_DEPTH` the remainder is replaced by a marker instead of being walked,
+ * which also keeps the later `JSON.stringify` bounded — it would otherwise recurse through
+ * exactly the structure this is refusing to.
  */
-function prune(value: unknown): unknown {
+function prune(value: unknown, depth = 0): unknown {
   if (value === null || value === undefined) {
     return null;
   }
@@ -79,9 +97,13 @@ function prune(value: unknown): unknown {
     return value.trim() === "" ? null : value;
   }
 
+  if (depth >= MAX_ANSWER_DEPTH) {
+    return NESTED_TOO_DEEP;
+  }
+
   if (Array.isArray(value)) {
     const kept = value
-      .map((entry) => prune(entry))
+      .map((entry) => prune(entry, depth + 1))
       .filter((entry) => entry !== null);
 
     return kept.length > 0 ? kept : null;
@@ -91,7 +113,7 @@ function prune(value: unknown): unknown {
     const kept: Record<string, unknown> = {};
 
     for (const [key, entry] of Object.entries(value)) {
-      const pruned = prune(entry);
+      const pruned = prune(entry, depth + 1);
 
       if (pruned !== null) {
         kept[key] = pruned;

@@ -5,6 +5,7 @@ import {
   newEnquiryReference,
 } from "lib/contact/enquiry-reference";
 import {
+  clientIdentifierFromHeaders,
   RATE_LIMIT_MAX_HITS,
   RATE_LIMIT_WINDOW_MS,
   rateLimitKey,
@@ -201,6 +202,61 @@ function main() {
   check(
     "the key is prefixed by route, so buckets are readable in the table",
     rateLimitKey("contact/submit", "203.0.113.9").startsWith("contact/submit:"),
+  );
+
+  console.log("\nclientIdentifierFromHeaders");
+
+  equal(
+    "x-real-ip is used when the platform set it",
+    clientIdentifierFromHeaders({ realIp: "203.0.113.7" }),
+    "203.0.113.7",
+  );
+
+  check(
+    "a client-supplied x-forwarded-for cannot override x-real-ip",
+    clientIdentifierFromHeaders({
+      realIp: "203.0.113.7",
+      forwardedFor: "1.2.3.4",
+    }) === "203.0.113.7",
+    "otherwise the limiter is bypassed by rotating the forwarded value while the logs still look limited",
+  );
+
+  equal(
+    "x-forwarded-for is the fallback when x-real-ip is absent",
+    clientIdentifierFromHeaders({ forwardedFor: "1.2.3.4" }),
+    "1.2.3.4",
+  );
+
+  equal(
+    "only the first entry of a forwarded list is used",
+    clientIdentifierFromHeaders({
+      forwardedFor: "1.2.3.4, 5.6.7.8, 9.10.11.12",
+    }),
+    "1.2.3.4",
+  );
+
+  equal(
+    "surrounding whitespace is trimmed",
+    clientIdentifierFromHeaders({ realIp: "  203.0.113.7  " }),
+    "203.0.113.7",
+  );
+
+  equal(
+    "a blank x-real-ip falls through instead of becoming the identifier",
+    clientIdentifierFromHeaders({ realIp: "   ", forwardedFor: "1.2.3.4" }),
+    "1.2.3.4",
+  );
+
+  equal(
+    "no headers at all yields one shared bucket, not an unlimited one",
+    clientIdentifierFromHeaders({}),
+    "unknown",
+  );
+
+  equal(
+    "blank forwarded entries fall through to the shared bucket",
+    clientIdentifierFromHeaders({ forwardedFor: " , ," }),
+    "unknown",
   );
 
   console.log("\nconstants");

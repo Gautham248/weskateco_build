@@ -131,24 +131,32 @@ export async function createAdminUser(
 }
 
 /**
- * Changing a password also bumps `session_version`, which invalidates every token
- * already issued for this account — the point being that a password change should
- * end sessions on other devices, not just on this one.
+ * Changing a password also bumps `session_version`, which invalidates every token already
+ * issued for this account — the point being that a password change should end sessions on
+ * other devices, not on this one.
+ *
+ * Returns the new version so the caller can re-issue its own cookie carrying it. Without
+ * that, the admin who just triggered the change is signed out too, immediately after being
+ * told it succeeded. `undefined` means no row matched — the account is gone, and there is
+ * no session to rotate.
  */
 export async function updateAdminUserPassword(
   id: string,
   passwordHash: string,
-): Promise<void> {
+): Promise<number | undefined> {
   const db = getDb();
 
-  await db
+  const [updated] = await db
     .update(adminUsers)
     .set({
       passwordHash,
       sessionVersion: sql`${adminUsers.sessionVersion} + 1`,
       updatedAt: new Date(),
     })
-    .where(eq(adminUsers.id, id));
+    .where(eq(adminUsers.id, id))
+    .returning({ sessionVersion: adminUsers.sessionVersion });
+
+  return updated?.sessionVersion;
 }
 
 export async function getOverrideByHandle(
