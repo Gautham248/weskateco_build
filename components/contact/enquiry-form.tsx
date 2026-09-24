@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useState,
-  useRef,
-  useCallback,
-  useEffect,
-  type FormEvent,
-} from "react";
+import { useState, useRef, useCallback, type FormEvent } from "react";
 import {
   ROUTES,
   SHARED_FIELDS,
@@ -18,8 +12,6 @@ import ReasonPicker from "components/contact/reason-picker";
 // ---------------------------------------------------------------------------
 // enquiry-form.tsx — progressive contact-enquiry form
 // ---------------------------------------------------------------------------
-
-type OtpState = "idle" | "sending" | "sent" | "verifying" | "verified" | "error";
 
 interface Receipt {
   enquiryId: string;
@@ -36,20 +28,12 @@ export default function EnquiryForm({
   onReasonChange: (reason: string) => void;
 }) {
   // ── Form state ────────────────────────────────────────────────────────
-  const [answers, setAnswers] = useState<Record<string, string | string[]>>(
-    {},
-  );
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [submitting, setSubmitting] = useState(false);
-
-  // ── OTP state ─────────────────────────────────────────────────────────
-  const [otpState, setOtpState] = useState<OtpState>("idle");
-  const [otpCode, setOtpCode] = useState("");
-  const [otpError, setOtpError] = useState<string | null>(null);
-  const [otpPhone, setOtpPhone] = useState(""); // phone number OTP was sent to
 
   // ── Anti-spam ─────────────────────────────────────────────────────────
   const formOpenedAt = useRef<number>(Date.now());
@@ -71,10 +55,6 @@ export default function EnquiryForm({
       setAnswers({});
       setFieldErrors({});
       setFormError(null);
-      setOtpState("idle");
-      setOtpCode("");
-      setOtpError(null);
-      setOtpPhone("");
     },
     [onReasonChange],
   );
@@ -93,103 +73,23 @@ export default function EnquiryForm({
     [],
   );
 
-  const handleMultiToggle = useCallback(
-    (fieldName: string, option: string) => {
-      setAnswers((prev) => {
-        const current = Array.isArray(prev[fieldName])
-          ? (prev[fieldName] as string[])
-          : [];
-        const next = current.includes(option)
-          ? current.filter((v) => v !== option)
-          : [...current, option];
-        return { ...prev, [fieldName]: next };
-      });
-      setFieldErrors((prev) => {
-        if (!prev[fieldName]) return prev;
-        const next = { ...prev };
-        delete next[fieldName];
-        return next;
-      });
-    },
-    [],
-  );
-
-  // ── OTP handlers ──────────────────────────────────────────────────────
-
-  const phoneValue =
-    typeof answers.phone === "string" ? answers.phone : "";
-  const phoneDigits = phoneValue.replace(/\D/g, "");
-  const canSendOtp = phoneDigits.length >= 10 && otpState === "idle";
-  const canResendOtp =
-    phoneDigits.length >= 10 &&
-    (otpState === "sent" || otpState === "error");
-
-  const handleSendOtp = useCallback(async () => {
-    if (!canSendOtp && !canResendOtp) return;
-    setOtpState("sending");
-    setOtpError(null);
-    setOtpCode("");
-
-    try {
-      const res = await fetch("/api/otp/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: phoneValue }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setOtpState("sent");
-        setOtpPhone(phoneValue);
-      } else {
-        setOtpState("error");
-        setOtpError(data.error || "Could not send the OTP.");
-      }
-    } catch {
-      setOtpState("error");
-      setOtpError("Could not send the OTP. Check the number and try again.");
-    }
-  }, [canSendOtp, canResendOtp, phoneValue]);
-
-  const handleVerifyOtp = useCallback(async () => {
-    if (otpCode.length !== 6) return;
-    setOtpState("verifying");
-    setOtpError(null);
-
-    try {
-      const res = await fetch("/api/otp/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: otpPhone || phoneValue, code: otpCode }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setOtpState("verified");
-        // Clear phone error if it existed
-        setFieldErrors((prev) => {
-          if (!prev.phone) return prev;
-          const next = { ...prev };
-          delete next.phone;
-          return next;
-        });
-      } else {
-        setOtpState("sent");
-        setOtpError(data.error || "That code is not correct. Try again or resend.");
-      }
-    } catch {
-      setOtpState("sent");
-      setOtpError("Verification failed. Please try again.");
-    }
-  }, [otpCode, otpPhone, phoneValue]);
-
-  // Reset OTP when phone changes
-  useEffect(() => {
-    if (phoneValue !== otpPhone && otpState !== "idle") {
-      setOtpState("idle");
-      setOtpCode("");
-      setOtpError(null);
-      setOtpPhone("");
-    }
-  }, [phoneValue, otpPhone, otpState]);
+  const handleMultiToggle = useCallback((fieldName: string, option: string) => {
+    setAnswers((prev) => {
+      const current = Array.isArray(prev[fieldName])
+        ? (prev[fieldName] as string[])
+        : [];
+      const next = current.includes(option)
+        ? current.filter((v) => v !== option)
+        : [...current, option];
+      return { ...prev, [fieldName]: next };
+    });
+    setFieldErrors((prev) => {
+      if (!prev[fieldName]) return prev;
+      const next = { ...prev };
+      delete next[fieldName];
+      return next;
+    });
+  }, []);
 
   // ── Validation ────────────────────────────────────────────────────────
 
@@ -254,11 +154,6 @@ export default function EnquiryForm({
       }
     }
 
-    // OTP verification
-    if (otpState !== "verified") {
-      errors.phone = "Please verify your mobile number by OTP before submitting.";
-    }
-
     // Consent
     if (!answers.consent) {
       errors.consent =
@@ -286,7 +181,7 @@ export default function EnquiryForm({
     setFieldErrors({});
     setFormError(null);
     return true;
-  }, [route, answers, otpState]);
+  }, [route, answers]);
 
   // ── Submit ────────────────────────────────────────────────────────────
 
@@ -298,10 +193,12 @@ export default function EnquiryForm({
       setSubmitting(true);
       setFormError(null);
 
-      const honeypot =
-        typeof answers.company_website === "string"
-          ? answers.company_website
-          : "";
+      // Read the honeypot straight from the form. It is deliberately not wired
+      // to React state — a state-bound hidden input stays empty here, which is
+      // exactly what made this trap inert before.
+      const honeypot = formRef.current
+        ? String(new FormData(formRef.current).get("company_website") ?? "")
+        : "";
 
       try {
         const res = await fetch("/api/contact/submit", {
@@ -310,7 +207,6 @@ export default function EnquiryForm({
           body: JSON.stringify({
             reason: selectedReason,
             answers,
-            phoneVerified: otpState === "verified",
             consent: !!answers.consent,
             honeypot,
             secondsOnPage: Math.floor(
@@ -329,7 +225,10 @@ export default function EnquiryForm({
             responseSla: data.responseSla,
           });
           // Scroll to top of form
-          formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          formRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
         } else if (data.errors?.length) {
           setFormError(
             data.errors[0] ===
@@ -339,7 +238,9 @@ export default function EnquiryForm({
           );
           // If server returns field-level errors, map them
           if (data.errors.length > 1) {
-            setFormError("Some required fields are incomplete. They are marked below.");
+            setFormError(
+              "Some required fields are incomplete. They are marked below.",
+            );
           }
         }
       } catch {
@@ -348,7 +249,7 @@ export default function EnquiryForm({
         setSubmitting(false);
       }
     },
-    [validate, selectedReason, answers, otpState],
+    [validate, selectedReason, answers],
   );
 
   // ── Reset ─────────────────────────────────────────────────────────────
@@ -361,10 +262,6 @@ export default function EnquiryForm({
     setSubmitted(false);
     setReceipt(null);
     setSubmitting(false);
-    setOtpState("idle");
-    setOtpCode("");
-    setOtpError(null);
-    setOtpPhone("");
     formOpenedAt.current = Date.now();
   }, [onReasonChange]);
 
@@ -373,12 +270,10 @@ export default function EnquiryForm({
   const renderField = (field: RouteField) => {
     const errorId = `${field.name}-error`;
     const hintId = field.hint ? `${field.name}-hint` : undefined;
-    const describedBy = [
-      fieldErrors[field.name] ? errorId : undefined,
-      hintId,
-    ]
-      .filter(Boolean)
-      .join(" ") || undefined;
+    const describedBy =
+      [fieldErrors[field.name] ? errorId : undefined, hintId]
+        .filter(Boolean)
+        .join(" ") || undefined;
 
     const baseInputClasses =
       "w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 text-sm text-black placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black focus:outline-none transition-colors";
@@ -424,7 +319,11 @@ export default function EnquiryForm({
               ))}
             </div>
             {fieldErrors[field.name] && (
-              <p id={errorId} className="text-xs text-red-600 mt-1" role="alert">
+              <p
+                id={errorId}
+                className="text-xs text-red-600 mt-1"
+                role="alert"
+              >
                 {fieldErrors[field.name]}
               </p>
             )}
@@ -517,11 +416,7 @@ export default function EnquiryForm({
 
     // text, url, date
     const inputType =
-      field.type === "url"
-        ? "url"
-        : field.type === "date"
-          ? "date"
-          : "text";
+      field.type === "url" ? "url" : field.type === "date" ? "date" : "text";
 
     return (
       <div key={field.name} className={field.wide ? "col-span-full" : ""}>
@@ -573,138 +468,6 @@ export default function EnquiryForm({
     );
   };
 
-  const renderSharedField = (field: RouteField) => {
-    // Special handling for the phone field (OTP)
-    if (field.name === "phone") {
-      return renderPhoneField();
-    }
-    return renderField(field);
-  };
-
-  const renderPhoneField = () => {
-    const errorId = "phone-error";
-    const hintId = "phone-hint";
-    const describedBy = [
-      fieldErrors.phone ? errorId : undefined,
-      hintId,
-    ]
-      .filter(Boolean)
-      .join(" ") || undefined;
-
-    const baseInputClasses =
-      "w-full rounded-md border border-neutral-300 bg-white px-3 py-2.5 text-sm text-black placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black focus:outline-none transition-colors";
-
-    return (
-      <div key="phone" className="col-span-full">
-        <label
-          htmlFor="phone"
-          className="block text-sm font-medium text-black mb-1"
-        >
-          Mobile number
-          <span className="text-red-600 ml-0.5" aria-hidden="true">
-            *
-          </span>
-        </label>
-        <p id={hintId} className="text-xs text-neutral-500 mb-1">
-          We verify this by OTP before the enquiry is submitted.
-        </p>
-        <div className="flex gap-2">
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            value={phoneValue}
-            onChange={(e) => handleFieldChange("phone", e.target.value)}
-            placeholder="+91 99999 99999"
-            className={baseInputClasses + " flex-1"}
-            aria-describedby={describedBy}
-            aria-invalid={!!fieldErrors.phone}
-            autoComplete="tel"
-          />
-          <button
-            type="button"
-            onClick={handleSendOtp}
-            disabled={!canSendOtp && !canResendOtp}
-            className="shrink-0 rounded-md bg-black px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 disabled:bg-neutral-300 disabled:cursor-not-allowed transition-colors"
-          >
-            {otpState === "sending"
-              ? "Sending…"
-              : otpState === "verified"
-                ? "Verified"
-                : canResendOtp
-                  ? "Resend"
-                  : "Send OTP"}
-          </button>
-        </div>
-
-        {/* OTP sent confirmation */}
-        {otpState === "sent" && (
-          <p className="text-sm text-green-700 mt-2">
-            OTP sent successfully to {otpPhone || phoneValue}.
-          </p>
-        )}
-
-        {/* OTP code input */}
-        {(otpState === "sent" || otpState === "verifying") && (
-          <div className="flex gap-2 mt-3">
-            <input
-              type="text"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={6}
-              value={otpCode}
-              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              placeholder="6-digit code"
-              className={baseInputClasses + " w-40"}
-              aria-label="OTP verification code"
-            />
-            <button
-              type="button"
-              onClick={handleVerifyOtp}
-              disabled={otpCode.length !== 6 || otpState === "verifying"}
-              className="shrink-0 rounded-md border border-black px-4 py-2.5 text-sm font-medium text-black hover:bg-neutral-50 disabled:border-neutral-300 disabled:text-neutral-400 disabled:cursor-not-allowed transition-colors"
-            >
-              {otpState === "verifying" ? "Verifying…" : "Verify"}
-            </button>
-          </div>
-        )}
-
-        {/* OTP verified */}
-        {otpState === "verified" && (
-          <p className="text-sm text-green-700 mt-2 flex items-center gap-1">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-            Mobile number verified
-          </p>
-        )}
-
-        {/* OTP error */}
-        {otpError && (
-          <p className="text-xs text-red-600 mt-2" role="alert">
-            {otpError}
-          </p>
-        )}
-
-        {/* Phone field error */}
-        {fieldErrors.phone && (
-          <p id={errorId} className="text-xs text-red-600 mt-1" role="alert">
-            {fieldErrors.phone}
-          </p>
-        )}
-      </div>
-    );
-  };
-
   // ── Success state ─────────────────────────────────────────────────────
 
   if (submitted && receipt) {
@@ -720,15 +483,17 @@ export default function EnquiryForm({
             </h2>
             <p className="text-neutral-600 text-sm md:text-base leading-relaxed mb-8">
               Your enquiry is with <strong>{receipt.routedTo}</strong>. Expect a
-              first response within <strong>{receipt.responseSla}</strong>. Please
-              quote the reference below if you follow up.
+              first response within <strong>{receipt.responseSla}</strong>.
+              Please quote the reference below if you follow up.
             </p>
 
             <dl className="inline-grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-left bg-neutral-50 rounded-lg p-6 mb-8">
               <dt className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
                 Reference
               </dt>
-              <dd className="text-sm font-mono font-medium">{receipt.enquiryId}</dd>
+              <dd className="text-sm font-mono font-medium">
+                {receipt.enquiryId}
+              </dd>
 
               <dt className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
                 Reason
@@ -764,7 +529,10 @@ export default function EnquiryForm({
   // ── Form state ────────────────────────────────────────────────────────
 
   return (
-    <section className="w-full bg-white py-12 md:py-20 px-4 lg:px-15" id="enquiry">
+    <section
+      className="w-full bg-white py-12 md:py-20 px-4 lg:px-15"
+      id="enquiry"
+    >
       <div className="mx-auto max-w-(--breakpoint-2xl)">
         {/* Header */}
         <div className="max-w-3xl mb-8">
@@ -807,8 +575,7 @@ export default function EnquiryForm({
               type="text"
               tabIndex={-1}
               autoComplete="off"
-              value=""
-              onChange={() => {}}
+              defaultValue=""
             />
           </div>
 
@@ -830,7 +597,9 @@ export default function EnquiryForm({
               className="block text-sm font-medium text-black mb-1"
             >
               Reason for contacting us
-              <span className="text-red-600 ml-0.5" aria-hidden="true">*</span>
+              <span className="text-red-600 ml-0.5" aria-hidden="true">
+                *
+              </span>
             </label>
             <ReasonPicker
               value={selectedReason}
@@ -839,7 +608,11 @@ export default function EnquiryForm({
               describedBy={fieldErrors.reason ? "reason-error" : undefined}
             />
             {fieldErrors.reason && (
-              <p id="reason-error" className="text-xs text-red-600 mt-1" role="alert">
+              <p
+                id="reason-error"
+                className="text-xs text-red-600 mt-1"
+                role="alert"
+              >
                 {fieldErrors.reason}
               </p>
             )}
@@ -885,7 +658,7 @@ export default function EnquiryForm({
                   We use these to respond to your enquiry.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {SHARED_FIELDS.map((field) => renderSharedField(field))}
+                  {SHARED_FIELDS.map((field) => renderField(field))}
                 </div>
               </fieldset>
 
@@ -896,7 +669,10 @@ export default function EnquiryForm({
                     type="checkbox"
                     checked={!!answers.consent}
                     onChange={(e) =>
-                      handleFieldChange("consent", e.target.checked ? "yes" : "")
+                      handleFieldChange(
+                        "consent",
+                        e.target.checked ? "yes" : "",
+                      )
                     }
                     className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-black focus:ring-black"
                     aria-describedby={
@@ -938,7 +714,6 @@ export default function EnquiryForm({
             </>
           )}
         </form>
-
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   index,
   integer,
   jsonb,
@@ -178,6 +179,40 @@ export const heroSettings = pgTable("hero_settings", {
 /** The one and only row in `hero_settings`. */
 export const HERO_SETTINGS_ID = "default";
 
+/**
+ * Enquiries submitted through the public /contact form.
+ *
+ * Append-only: a row is written once and never edited, so there is no
+ * `updatedAt` to keep honest. `answers` holds the reason-specific qualifying
+ * questions, which differ per reason and so cannot be columns.
+ *
+ * `enquiryId` is the human-facing reference the customer is shown and may quote
+ * back to us; `id` is the real primary key. It is not unique-constrained yet —
+ * see docs/contact-enquiry-flow-decisions.md for the collision risk that leaves
+ * open. `meta` records where the submission came from.
+ */
+export const contactEnquiries = pgTable(
+  "contact_enquiries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    enquiryId: text("enquiry_id").notNull(),
+    reason: text("reason").notNull(),
+    reasonLabel: text("reason_label").notNull(),
+    routedTo: text("routed_to").notNull(),
+    responseSla: text("response_sla").notNull(),
+    answers: jsonb("answers").$type<Record<string, unknown>>().notNull(),
+    consent: boolean("consent").notNull(),
+    meta: jsonb("meta").$type<Record<string, unknown>>().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("contact_enquiries_created_at_idx").on(table.createdAt),
+    index("contact_enquiries_enquiry_id_idx").on(table.enquiryId),
+  ],
+);
+
 export const productOverridesRelations = relations(
   productOverrides,
   ({ many, one }) => ({
@@ -244,3 +279,5 @@ export type HeroItem = typeof heroItems.$inferSelect;
 export type NewHeroItem = typeof heroItems.$inferInsert;
 export type HeroSettings = typeof heroSettings.$inferSelect;
 export type NewHeroSettings = typeof heroSettings.$inferInsert;
+export type ContactEnquiry = typeof contactEnquiries.$inferSelect;
+export type NewContactEnquiry = typeof contactEnquiries.$inferInsert;
