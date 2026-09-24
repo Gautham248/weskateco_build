@@ -1,4 +1,4 @@
-import { count, desc, eq, inArray, notInArray } from "drizzle-orm";
+import { count, desc, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { getDb, schema } from "lib/db";
 import { HERO_SETTINGS_ID } from "lib/db/schema";
 
@@ -130,6 +130,11 @@ export async function createAdminUser(
   return user;
 }
 
+/**
+ * Changing a password also bumps `session_version`, which invalidates every token
+ * already issued for this account — the point being that a password change should
+ * end sessions on other devices, not just on this one.
+ */
 export async function updateAdminUserPassword(
   id: string,
   passwordHash: string,
@@ -138,7 +143,11 @@ export async function updateAdminUserPassword(
 
   await db
     .update(adminUsers)
-    .set({ passwordHash, updatedAt: new Date() })
+    .set({
+      passwordHash,
+      sessionVersion: sql`${adminUsers.sessionVersion} + 1`,
+      updatedAt: new Date(),
+    })
     .where(eq(adminUsers.id, id));
 }
 

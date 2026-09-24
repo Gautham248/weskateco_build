@@ -151,7 +151,11 @@ export async function loginAction(
       user &&
       (await verifyPassword(parsed.data.password, user.passwordHash))
     ) {
-      session = { userId: user.id, username: user.username };
+      session = {
+        userId: user.id,
+        username: user.username,
+        sessionVersion: user.sessionVersion,
+      };
     }
   } catch (error) {
     console.error("Admin login could not reach the database:", error);

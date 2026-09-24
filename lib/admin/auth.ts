@@ -1,4 +1,5 @@
 import { ADMIN_SESSION_COOKIE } from "lib/constants";
+import { getAdminUserById, type AdminUserRecord } from "lib/admin/queries";
 import { ADMIN_SESSION_DURATION_SECONDS } from "lib/admin/session";
 import { verifySessionToken, type AdminSession } from "lib/admin/session";
 import { cookies } from "next/headers";
@@ -51,7 +52,36 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     return null;
   }
 
-  return verifySessionToken(token);
+  const session = await verifySessionToken(token);
+
+  if (!session) {
+    return null;
+  }
+
+  // A valid signature only proves we issued the token — not that the account
+  // still exists, nor that its password has not changed since. Re-reading the row
+  // is what makes deleting an admin take effect immediately instead of leaving
+  // their token usable for up to ADMIN_SESSION_DURATION_SECONDS.
+  let user: AdminUserRecord | undefined;
+
+  try {
+    user = await getAdminUserById(session.userId);
+  } catch (error) {
+    // Fail closed, and say why: a database that cannot answer is not a reason to
+    // start trusting the claims inside a cookie.
+    console.error(
+      "[admin/auth] could not re-validate the session against the database; denying this request:",
+      error,
+    );
+
+    return null;
+  }
+
+  if (!user || user.sessionVersion !== session.sessionVersion) {
+    return null;
+  }
+
+  return session;
 }
 
 export async function requireAdmin(): Promise<AdminSession> {

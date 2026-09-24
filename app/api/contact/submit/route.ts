@@ -1,3 +1,8 @@
+import { generateEnquiryId } from "lib/contact/enquiry-reference";
+import {
+  checkContactRateLimit,
+  clientIdentifier,
+} from "lib/contact/rate-limit";
 import { ROUTES, REASON_LABELS } from "lib/contact/routes";
 import { getDb, schema } from "lib/db";
 import { NextResponse } from "next/server";
@@ -12,8 +17,9 @@ import { NextResponse } from "next/server";
 // There is deliberately no phone/OTP gate here. The form collects a mobile
 // number so the team can call back, but it is not verified: a verification step
 // that cannot deliver a code only blocks the one contact path the site has.
-// Consent, the honeypot field and the seconds-on-page check are the anti-spam
-// measures instead - see docs/contact-enquiry-flow-decisions.md.
+// Consent, the honeypot, the seconds-on-page check and a per-caller rate limit are
+// the anti-spam measures instead - see docs/contact-enquiry-flow-decisions.md.
+// The limiter fails open, so a limiter outage cannot close this route either.
 // ---------------------------------------------------------------------------
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -116,15 +122,6 @@ function validatePayload(data: SubmitPayload): string[] {
   return errors;
 }
 
-function generateEnquiryId(prefix: string): string {
-  const now = new Date();
-  const yy = String(now.getFullYear()).slice(-2);
-  const mm = String(now.getMonth() + 1).padStart(2, "0");
-  const dd = String(now.getDate()).padStart(2, "0");
-  const rand = String(Math.floor(1000 + Math.random() * 9000));
-  return `${prefix}-${yy}${mm}${dd}-${rand}`;
-}
-
 function stripEmpty(obj: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(obj)) {
@@ -143,6 +140,12 @@ export async function POST(request: Request) {
 
     // Bot trap — return fake success silently
     if (data.honeypot && errors.length === 0) {
+      // Logged so a spam wave is visible in the logs rather than silent, but the
+      // response tells the bot nothing.
+      console.info(
+        "[contact/submit] honeypot tripped; answering as if accepted",
+      );
+
       return NextResponse.json({
         success: true,
         enquiryId: generateEnquiryId("SPAM"),
@@ -153,6 +156,27 @@ export async function POST(request: Request) {
 
     if (errors.length > 0) {
       return NextResponse.json({ success: false, errors }, { status: 400 });
+    }
+
+    // Checked here rather than first: validating is cheap and the honeypot path
+    // writes nothing, whereas every submission that gets this far costs a row and
+    // somebody's attention.
+    const limit = await checkContactRateLimit(clientIdentifier(request));
+
+    if (!limit.allowed) {
+      console.info(
+        `[contact/submit] rate limited (${limit.hits} hits against a limit of ${limit.limit})`,
+      );
+
+      return NextResponse.json(
+        {
+          success: false,
+          errors: [
+            "That is a few too many enquiries from this connection. Please try again shortly.",
+          ],
+        },
+        { status: 429 },
+      );
     }
 
     const route = ROUTES[data.reason]!;
