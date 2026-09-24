@@ -1,9 +1,10 @@
-import { eq, inArray, notInArray } from "drizzle-orm";
+import { count, desc, eq, inArray, notInArray } from "drizzle-orm";
 import { getDb, schema } from "lib/db";
 import { HERO_SETTINGS_ID } from "lib/db/schema";
 
 const {
   adminUsers,
+  contactEnquiries,
   heroItems,
   heroSettings,
   newlyReleasedItems,
@@ -373,6 +374,54 @@ export async function listShopNowItems(): Promise<ShopNowItemRow[]> {
     })
     .from(shopNowItems)
     .orderBy(shopNowItems.position);
+}
+
+export type ContactEnquiryRow = schema.ContactEnquiry;
+
+/**
+ * How many enquiries this filter matches. Shares its predicate with
+ * listContactEnquiries, so the pager's total and the page it is describing can
+ * never be talking about different result sets.
+ */
+export async function countContactEnquiries(reason?: string): Promise<number> {
+  const db = getDb();
+
+  const [row] = await db
+    .select({ value: count() })
+    .from(contactEnquiries)
+    .where(reason ? eq(contactEnquiries.reason, reason) : undefined);
+
+  // Number() because Postgres count() arrives as a bigint, which some drivers
+  // hand back as a string.
+  return Number(row?.value ?? 0);
+}
+
+/**
+ * One page of enquiries, newest first.
+ *
+ * Offset paging here rather than the client-side slicing the other admin tabs
+ * use: contact_enquiries is append-only and unbounded, so loading the whole
+ * table to paginate in the browser would get slower every month it runs. Only
+ * `limit` rows are read, so the two jsonb columns stay cheap.
+ */
+export async function listContactEnquiries({
+  limit,
+  offset,
+  reason,
+}: {
+  limit: number;
+  offset: number;
+  reason?: string;
+}): Promise<ContactEnquiryRow[]> {
+  const db = getDb();
+
+  return db
+    .select()
+    .from(contactEnquiries)
+    .where(reason ? eq(contactEnquiries.reason, reason) : undefined)
+    .orderBy(desc(contactEnquiries.createdAt))
+    .limit(limit)
+    .offset(offset);
 }
 
 /**
