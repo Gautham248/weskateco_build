@@ -554,6 +554,40 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
   return merged;
 }
 
+/**
+ * What a product page read produced. Three outcomes, not two — see
+ * `productReadState` in lib/catalog/product-page.ts for what the page does with them
+ * and why a failure must never be confused with a missing product.
+ */
+export type ProductReadResult =
+  | { status: "ok"; product: Product | undefined }
+  | { status: "failed" };
+
+/**
+ * `getProduct` for a page render, resolving a Shopify failure to a state instead of
+ * throwing.
+ *
+ * Deliberately **not** cached, so an outage is never remembered: only `getProduct`'s own
+ * successful result is cached, and the next request asks Shopify again. That is the same
+ * arrangement `newly-released-feed.ts` and `shop-now-feed.ts` rely on for the homepage
+ * sections — catch around the `"use cache"` function, never inside a cached wrapper that
+ * would memorise the failure.
+ */
+export async function readProductForPage(
+  handle: string,
+): Promise<ProductReadResult> {
+  try {
+    return { status: "ok", product: await getProduct(handle) };
+  } catch (error) {
+    console.error(
+      `Could not read product "${handle}" from Shopify; the page will show the unavailable state:`,
+      error,
+    );
+
+    return { status: "failed" };
+  }
+}
+
 export async function getProductRecommendations(
   productId: string,
 ): Promise<Product[]> {
