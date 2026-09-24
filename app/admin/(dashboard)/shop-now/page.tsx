@@ -50,7 +50,11 @@ export default async function AdminShopNowPage() {
     loadError = true;
   }
 
-  const { items: catalog, truncated } = await getAdminProductCatalog();
+  const {
+    items: catalog,
+    truncated,
+    failed: catalogFailed,
+  } = await getAdminProductCatalog();
 
   let overrides: AdminProductOverrideSummary[] = [];
   let overrideLookupFailed = false;
@@ -88,6 +92,17 @@ export default async function AdminShopNowPage() {
         >
           Could not read the current Shop Now section. Saving now would replace
           whatever is stored with an empty list.
+        </p>
+      ) : null}
+
+      {catalogFailed ? (
+        <p
+          role="alert"
+          className="rounded-sm border border-amber-300 bg-amber-50 px-3 py-2.5 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300"
+        >
+          Could not read the product catalog from Shopify, so the picker below
+          is empty — you cannot add products until it responds. Anything already
+          in the row is unaffected.
         </p>
       ) : null}
 

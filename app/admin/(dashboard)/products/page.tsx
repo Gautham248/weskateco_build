@@ -12,7 +12,11 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminProductsPage() {
-  const { items, truncated } = await getAdminProductCatalog();
+  const {
+    items,
+    truncated,
+    failed: catalogFailed,
+  } = await getAdminProductCatalog();
 
   let overrides: AdminProductOverrideSummary[] = [];
   let overrideLookupFailed = false;
@@ -48,6 +52,17 @@ export default async function AdminProductsPage() {
           {overridden} override{overridden === 1 ? "" : "s"} across the catalog
         </span>
       </header>
+
+      {catalogFailed ? (
+        <p
+          role="alert"
+          className="rounded-sm border border-amber-300 bg-amber-50 px-3 py-2.5 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300"
+        >
+          Could not read the product catalog from Shopify, so no products are
+          listed. This is a loading failure, not an empty catalog — nothing has
+          been lost.
+        </p>
+      ) : null}
 
       {overrideLookupFailed ? (
         <p

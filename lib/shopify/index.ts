@@ -620,12 +620,28 @@ export type AdminProductCatalog = {
   items: ShopifyProductSummary[];
   /** True when the catalog is larger than the page cap, so the list is partial. */
   truncated: boolean;
+  /**
+   * True when the catalog could not be read at all. Distinguishes "Shopify is
+   * unreachable" from "there are no products" — an empty list with no explanation
+   * reads as the latter, which would be a lie.
+   */
+  failed: boolean;
 };
 
 /**
  * The whole admin catalog in one call, so the admin products page can filter
  * client-side exactly like the storefront does. Sorted by title for a
  * predictable, scannable list.
+ *
+ * A Shopify outage returns `failed` rather than throwing. The try/catch has to
+ * live in here rather than around a call site: an error escaping a "use cache"
+ * function surfaces as an unhandled 500 in this Next version even when the caller
+ * catches it — which is why all three admin pages using this were 500-ing while
+ * Shopify was unreachable.
+ *
+ * The cost of catching inside is that a failure is cached for this profile, so a
+ * transient blip can hold the banner until the entry expires. A visible, explained
+ * failure is still better than a broken page.
  */
 export async function getAdminProductCatalog(): Promise<AdminProductCatalog> {
   "use cache";
@@ -634,35 +650,44 @@ export async function getAdminProductCatalog(): Promise<AdminProductCatalog> {
 
   if (!endpoint) {
     console.log("Skipping getAdminProductCatalog - Shopify not configured");
-    return { items: [], truncated: false };
+    return { items: [], truncated: false, failed: true };
   }
 
-  const items: ShopifyProductSummary[] = [];
-  let after: string | undefined;
-  let hasMore = true;
-  let pages = 0;
+  try {
+    const items: ShopifyProductSummary[] = [];
+    let after: string | undefined;
+    let hasMore = true;
+    let pages = 0;
 
-  while (hasMore && pages < ADMIN_CATALOG_MAX_PAGES) {
-    const res = await shopifyFetch<ShopifyProductsPageOperation>({
-      query: getProductsPageQuery,
-      variables: {
-        first: ADMIN_CATALOG_PAGE_SIZE,
-        after,
-        sortKey: "TITLE",
-        reverse: false,
-      },
-    });
+    while (hasMore && pages < ADMIN_CATALOG_MAX_PAGES) {
+      const res = await shopifyFetch<ShopifyProductsPageOperation>({
+        query: getProductsPageQuery,
+        variables: {
+          first: ADMIN_CATALOG_PAGE_SIZE,
+          after,
+          sortKey: "TITLE",
+          reverse: false,
+        },
+      });
 
-    const connection = res.body.data.products;
+      const connection = res.body.data.products;
 
-    items.push(...removeEdgesAndNodes(connection));
+      items.push(...removeEdgesAndNodes(connection));
 
-    hasMore = connection.pageInfo.hasNextPage;
-    after = connection.pageInfo.endCursor ?? undefined;
-    pages += 1;
+      hasMore = connection.pageInfo.hasNextPage;
+      after = connection.pageInfo.endCursor ?? undefined;
+      pages += 1;
+    }
+
+    return { items, truncated: hasMore, failed: false };
+  } catch (error) {
+    console.error(
+      "Could not read the product catalog from Shopify; the admin product lists will be empty:",
+      error,
+    );
+
+    return { items: [], truncated: false, failed: true };
   }
-
-  return { items, truncated: hasMore };
 }
 
 // This is called from `app/api/revalidate.ts` so providers can control revalidation logic.
