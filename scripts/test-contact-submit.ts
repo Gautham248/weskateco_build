@@ -206,6 +206,37 @@ function main() {
 
   console.log("\nclientIdentifierFromHeaders");
 
+  // Precedence is the whole point: Vercel documents x-vercel-forwarded-for as the one that
+  // survives a proxy in front of Vercel, x-real-ip as identical to x-forwarded-for, and
+  // x-forwarded-for as platform-overwritten on Vercel but just a header off it.
+  equal(
+    "x-vercel-forwarded-for wins, being the one that stays correct behind a proxy",
+    clientIdentifierFromHeaders({
+      vercelForwardedFor: "203.0.113.9",
+      realIp: "203.0.113.7",
+      forwardedFor: "1.2.3.4",
+    }),
+    "203.0.113.9",
+  );
+
+  equal(
+    "a blank x-vercel-forwarded-for falls through instead of winning",
+    clientIdentifierFromHeaders({
+      vercelForwardedFor: "   ",
+      realIp: "203.0.113.7",
+      forwardedFor: "1.2.3.4",
+    }),
+    "203.0.113.7",
+  );
+
+  equal(
+    "only the first entry of x-vercel-forwarded-for is used",
+    clientIdentifierFromHeaders({
+      vercelForwardedFor: "1.2.3.4, 5.6.7.8",
+    }),
+    "1.2.3.4",
+  );
+
   equal(
     "x-real-ip is used when the platform set it",
     clientIdentifierFromHeaders({ realIp: "203.0.113.7" }),
@@ -213,7 +244,7 @@ function main() {
   );
 
   check(
-    "a client-supplied x-forwarded-for cannot override x-real-ip",
+    "a forwarded-for header cannot override x-real-ip",
     clientIdentifierFromHeaders({
       realIp: "203.0.113.7",
       forwardedFor: "1.2.3.4",

@@ -41,31 +41,41 @@ export function rateLimitKey(route: string, identifier: string): string {
 }
 
 /**
- * The caller's identifier, from the headers the platform sets.
+ * The caller's identifier, taken from the headers the platform sets, in order of how much
+ * they can be trusted.
  *
- * `x-real-ip` is preferred: the platform sets it from the connection itself, so a client
- * cannot forge it. `x-forwarded-for` is a list that may carry values the client supplied,
- * so it is only a fallback for local runs — and when it is used, its first entry stands in
- * for the caller.
+ * Vercel's own docs (see "Request headers") are the reason for this order, and are worth
+ * reading before changing it:
  *
- * Getting this precedence wrong makes the limiter silently bypassable: rotate the value and
- * every request gets a fresh bucket, while the logs still look like rate limiting is
- * happening. Hence a pure function and a test, rather than inline header reading.
+ * - `x-vercel-forwarded-for` first. It is documented as "identical to the x-forwarded-for
+ *   header. However, x-forwarded-for could be overwritten if you're using a proxy on top of
+ *   Vercel" — so it is the one that stays correct if a proxy is ever put in front.
+ * - `x-real-ip` next, documented as "identical to the x-forwarded-for header".
+ * - `x-forwarded-for` last, as the local-run fallback. On Vercel it is not client-spoofable:
+ *   the platform "overwrite[s] the X-Forwarded-For header and do[es] not forward external
+ *   IPs. This restriction is in place to prevent IP spoofing." Off the platform it is just
+ *   a header, which is why it is not the first choice.
+ *
+ * Getting the order wrong would make the limiter quietly bypassable — rotate the value and
+ * every request lands in a fresh bucket while the logs still look rate limited — so the
+ * precedence is a pure function with tests rather than inline header reads.
  */
 export function clientIdentifierFromHeaders(headers: {
+  vercelForwardedFor?: string | null;
   realIp?: string | null;
   forwardedFor?: string | null;
 }): string {
-  const realIp = headers.realIp?.trim();
+  for (const header of [
+    headers.vercelForwardedFor,
+    headers.realIp,
+    headers.forwardedFor,
+  ]) {
+    // Each of these can carry a list; the first entry stands in for the caller.
+    const candidate = header?.split(",")[0]?.trim();
 
-  if (realIp) {
-    return realIp;
-  }
-
-  const firstForwarded = headers.forwardedFor?.split(",")[0]?.trim();
-
-  if (firstForwarded) {
-    return firstForwarded;
+    if (candidate) {
+      return candidate;
+    }
   }
 
   // One shared bucket for callers we cannot identify, which is over-strict rather than
@@ -76,6 +86,7 @@ export function clientIdentifierFromHeaders(headers: {
 /** `clientIdentifierFromHeaders` applied to a live request. */
 export function clientIdentifier(request: Request): string {
   return clientIdentifierFromHeaders({
+    vercelForwardedFor: request.headers.get("x-vercel-forwarded-for"),
     realIp: request.headers.get("x-real-ip"),
     forwardedFor: request.headers.get("x-forwarded-for"),
   });
