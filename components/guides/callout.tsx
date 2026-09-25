@@ -5,7 +5,7 @@ import { useTranslation } from "lib/i18n/TranslationProvider";
 import Link from "next/link";
 
 /**
- * Cyan crosslink callout. Internal paths (`/…`) are localized; in-page
+ * Neutral crosslink callout. Internal paths (`/…`) are localized; in-page
  * anchors (`#…`) and external URLs are used as-is.
  */
 export default function GuideCrosslink({
@@ -25,7 +25,7 @@ export default function GuideCrosslink({
   const style = { fontFamily: "'Clash Display', sans-serif" };
 
   return (
-    <div className="w-full bg-[#EAFBFF] border border-[#80E5FF] rounded-[8px] p-5 md:py-6 md:px-8 flex flex-col lg:flex-row items-center justify-between gap-5 md:gap-6">
+    <div className="w-full bg-[#F7F7F9] border border-neutral-300 rounded-[8px] p-5 md:py-6 md:px-8 flex flex-col lg:flex-row items-center justify-between gap-5 md:gap-6">
       <p className="text-base md:text-lg font-normal text-black max-w-2xl">
         {text}
       </p>

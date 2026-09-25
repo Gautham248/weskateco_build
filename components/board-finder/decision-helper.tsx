@@ -153,7 +153,7 @@ export default function DecisionHelperSection() {
                 "Best value for money — a package price beats the sum of its parts.",
               ].map((item) => (
                 <li key={item} className="flex gap-3 items-start">
-                  <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-black mt-2 shrink-0" />
                   <span className="text-sm text-black leading-[150%] font-[400]">
                     {item}
                   </span>
@@ -189,7 +189,7 @@ export default function DecisionHelperSection() {
                 "You're replacing one worn part.",
               ].map((item) => (
                 <li key={item} className="flex gap-3 items-start">
-                  <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-black mt-2 shrink-0" />
                   <span className="text-sm text-black leading-[150%] font-[400]">
                     {item}
                   </span>

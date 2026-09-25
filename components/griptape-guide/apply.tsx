@@ -7,7 +7,14 @@ import {
 } from "lib/griptape-guide/data";
 import { useState } from "react";
 import { STEP_ICONS } from "./icons";
-import { PanelKicker, ProseCols, SectionHeader, Container, Section, GRID_CLASS } from "components/guides/ui";
+import {
+  PanelKicker,
+  ProseCols,
+  SectionHeader,
+  Container,
+  Section,
+  GRID_CLASS,
+} from "components/guides/ui";
 
 const CLASH = { fontFamily: "'Clash Display', sans-serif" };
 
@@ -42,7 +49,7 @@ export default function ApplySection() {
                     onClick={() => setStep(i)}
                     className={`w-full flex items-center gap-3 border-2 px-4 py-3 rounded-4 text-left cursor-pointer transition-colors ${
                       isActive
-                        ? "border-black bg-brand/30"
+                        ? "border-black bg-neutral-100"
                         : "border-neutral-300 bg-white hover:border-black"
                     }`}
                   >
@@ -87,14 +94,14 @@ export default function ApplySection() {
               {current.body}
             </p>
 
-            <div className="border border-amber-200 bg-amber-50/60 rounded-[12px] p-4 flex flex-col gap-1.5">
+            <div className="border border-neutral-300 bg-neutral-100 rounded-[12px] p-4 flex flex-col gap-1.5">
               <span className="flex items-center gap-2">
                 <span
                   aria-hidden
-                  className="w-1.5 h-1.5 rounded-full bg-amber-400"
+                  className="w-1.5 h-1.5 rounded-full bg-black"
                 />
                 <span
-                  className="text-xs font-semibold uppercase tracking-wider text-amber-800"
+                  className="text-xs font-semibold uppercase tracking-wider text-black"
                   style={CLASH}
                 >
                   Watch out

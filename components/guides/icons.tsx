@@ -9,7 +9,7 @@ export function GreenArrowIcon() {
     >
       <path
         d="M1 6.92096H12.6378M6.81888 12.8419L12.6378 6.92096L6.81888 1"
-        stroke="#1D6A2B"
+        stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -29,7 +29,7 @@ export function ChevronDownIcon() {
     >
       <path
         d="M4 6L8 10L12 6"
-        stroke="#1A1A1A"
+        stroke="currentColor"
         strokeWidth="1.75"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -49,7 +49,7 @@ export function GreenCheckIcon() {
     >
       <path
         d="M17 1L6 12L1 7"
-        stroke="#1D6A2B"
+        stroke="currentColor"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"

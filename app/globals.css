@@ -60,6 +60,17 @@
   --radius-4: 4px;
 }
 
+/* Guides use the brand token as a monochrome accent rather than lime. */
+.guides-monochrome {
+  --color-brand: #ffffff;
+  --color-brand-dark: #e5e5e5;
+}
+
+body .guides-monochrome ::selection {
+  background: #000000;
+  color: #ffffff;
+}
+
 [style*="Clash Display"],
 .font-clash {
   font-family: "Clash Display", sans-serif !important;

@@ -2,7 +2,14 @@
 
 import { WEAR, WEAR_NOTE, WEAR_SECTION } from "lib/griptape-guide/data";
 import { useState } from "react";
-import { Note, PanelKicker, SectionHeader, Container, Section, GRID_CLASS } from "components/guides/ui";
+import {
+  Note,
+  PanelKicker,
+  SectionHeader,
+  Container,
+  Section,
+  GRID_CLASS,
+} from "components/guides/ui";
 
 const CLASH = { fontFamily: "'Clash Display', sans-serif" };
 
@@ -36,7 +43,7 @@ export default function WearSection() {
                   onClick={() => setSelected(i)}
                   className={`flex items-center gap-3 border-2 px-4 py-3 rounded-4 text-left cursor-pointer transition-colors ${
                     isActive
-                      ? "border-black bg-brand/30"
+                      ? "border-black bg-neutral-100"
                       : "border-neutral-300 bg-white hover:border-black"
                   }`}
                 >
@@ -74,7 +81,9 @@ export default function WearSection() {
               </h3>
               <span
                 className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${
-                  mode.fatal ? "bg-black text-white" : "bg-brand text-black"
+                  mode.fatal
+                    ? "bg-black text-white"
+                    : "bg-white text-black border border-black"
                 }`}
                 style={CLASH}
               >

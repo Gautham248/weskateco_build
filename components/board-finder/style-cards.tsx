@@ -82,7 +82,7 @@ export default function StyleCardsSection() {
                 href={getLocalizedPath(style.href, locale)}
                 className="flex items-center gap-3 group cursor-pointer text-left w-fit"
               >
-                <span className="w-7 h-7 rounded-full bg-brand flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <span className="w-7 h-7 rounded-full border border-black bg-white text-black flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-black group-hover:text-white transition-colors">
                   <GreenArrowIcon />
                 </span>
                 <span

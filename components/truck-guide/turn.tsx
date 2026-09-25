@@ -7,8 +7,18 @@ import {
   TURN_SECTION,
 } from "lib/truck-guide/data";
 import { useState } from "react";
-import { FigCaption, FigCard, FigHint, PendingCard, PendingNote, ProseCols, Seg, SectionHeader, Container, Section } from "components/guides/ui";
-
+import {
+  FigCaption,
+  FigCard,
+  FigHint,
+  PendingCard,
+  PendingNote,
+  ProseCols,
+  Seg,
+  SectionHeader,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 /** Reference drawing: the truck seen from behind, deck level — both
  * bushings at rest. */
@@ -51,7 +61,7 @@ function FromBehind({ leaning }: { leaning: boolean }) {
           width="44"
           height={leaning ? 26 : 42}
           rx="6"
-          className={leaning ? "fill-brand" : "fill-[#EDEEF0]"}
+          className={leaning ? "fill-black" : "fill-[#EDEEF0]"}
           fillOpacity={leaning ? 0.85 : 1}
           stroke="#000000"
           strokeWidth="4"
@@ -116,7 +126,7 @@ function FromBehind({ leaning }: { leaning: boolean }) {
         width="44"
         height={leaning ? 58 : 42}
         rx="6"
-        className={leaning ? "fill-[#EDEEF0]" : "fill-brand"}
+        className={leaning ? "fill-[#EDEEF0]" : "fill-black"}
         fillOpacity={leaning ? 1 : 0.6}
         stroke="#000000"
         strokeWidth="4"
@@ -221,7 +231,7 @@ function FromAbove({ leaning }: { leaning: boolean }) {
           y1="216"
           x2="300"
           y2="216"
-          className={leaning ? "stroke-brand" : "stroke-black"}
+          className={leaning ? "stroke-black" : "stroke-neutral-400"}
           strokeOpacity={leaning ? 1 : 1}
           strokeWidth={leaning ? 8 : 5}
           strokeLinecap="round"

@@ -110,7 +110,7 @@ function GritScale({ selected }: { selected: string }) {
                 width={BAND_W - 14}
                 height="5"
                 rx="2.5"
-                className="fill-brand"
+                className="fill-black"
               />
             )}
           </g>
@@ -184,13 +184,13 @@ export default function GritSection() {
               {grit.warn && (
                 <span
                   aria-hidden
-                  className="w-1.5 h-1.5 rounded-full bg-amber-400"
+                  className="w-1.5 h-1.5 rounded-full bg-black"
                 />
               )}
               <PanelKicker>{grit.tag}</PanelKicker>
             </span>
             <h3
-              className={`text-xl md:text-[32px] font-bold tracking-[-1%] uppercase leading-none ${grit.warn ? "text-amber-800" : "text-black"}`}
+              className="text-xl md:text-[32px] font-bold tracking-[-1%] uppercase leading-none text-black"
               style={CLASH}
             >
               {grit.name}

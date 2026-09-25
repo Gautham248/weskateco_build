@@ -85,7 +85,7 @@ export default function RangeSection() {
         </p>
 
         {/* Callout */}
-        <div className="w-full bg-[#EAFBFF] border border-[#80E5FF] rounded-[8px] p-5 md:py-6 md:px-8 flex flex-col lg:flex-row items-center justify-between gap-5 md:gap-6">
+        <div className="w-full bg-[#F7F7F9] border border-neutral-300 rounded-[8px] p-5 md:py-6 md:px-8 flex flex-col lg:flex-row items-center justify-between gap-5 md:gap-6">
           <p className="text-base md:text-lg font-normal text-black max-w-2xl">
             {RANGE_CALLOUT}
           </p>

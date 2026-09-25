@@ -102,7 +102,7 @@ function renderCell(cell: Cell, locale: string) {
   if (cell.link) {
     const parts = cell.text.split(cell.link.label);
     return (
-      <span className={cell.warn ? "text-amber-800" : undefined}>
+      <span className={cell.warn ? "font-semibold text-black" : undefined}>
         {parts[0]}
         <Link
           href={getLocalizedPath(cell.link.href, locale)}
@@ -115,11 +115,11 @@ function renderCell(cell: Cell, locale: string) {
     );
   }
   return (
-    <span className={cell.warn ? "text-amber-800" : undefined}>
+    <span className={cell.warn ? "font-semibold text-black" : undefined}>
       {cell.warn && (
         <span
           aria-hidden
-          className="mr-1.5 inline-block w-1.5 h-1.5 rounded-full bg-amber-400 align-middle"
+          className="mr-1.5 inline-block w-1.5 h-1.5 rounded-full bg-black align-middle"
         />
       )}
       {cell.text}
@@ -172,7 +172,7 @@ export default function GriptapeSection() {
               {ROWS.map((row) => (
                 <tr
                   key={row.label}
-                  className={`border-t border-neutral-100 ${row.warnRow ? "bg-amber-50/60" : ""}`}
+                  className={`border-t border-neutral-100 ${row.warnRow ? "bg-neutral-100" : ""}`}
                 >
                   <th
                     scope="row"

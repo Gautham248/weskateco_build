@@ -183,7 +183,7 @@ export function ProseCols({
           >
             {item.title}
             {item.tag && (
-              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-4 bg-[#EAFBFF] border border-[#80E5FF] text-xs font-semibold uppercase tracking-wider align-middle">
+              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-4 bg-[#F7F7F9] border border-neutral-300 text-xs font-semibold uppercase tracking-wider align-middle">
                 {item.tag}
               </span>
             )}
@@ -277,11 +277,11 @@ function renderCell(cell: TableCell) {
     return <>{renderRich(cell)}</>;
   }
   return (
-    <span className={cell.warn ? "text-amber-800" : undefined}>
+    <span className={cell.warn ? "font-semibold text-black" : undefined}>
       {cell.warn && (
         <span
           aria-hidden
-          className="mr-1.5 inline-block w-1.5 h-1.5 rounded-full bg-amber-400 align-middle"
+          className="mr-1.5 inline-block w-1.5 h-1.5 rounded-full bg-black align-middle"
         />
       )}
       {renderRich(cell.text)}
@@ -335,11 +335,11 @@ export function GuideTable({
           {rows.map((row) => (
             <tr
               key={row.label}
-              className={`border-t border-neutral-100 ${row.warnRow ? "bg-amber-50/60" : ""}`}
+              className={`border-t border-neutral-100 ${row.warnRow ? "bg-neutral-100" : ""}`}
             >
               <th
                 scope="row"
-                className={`py-4 pr-6 text-xs md:text-sm font-semibold uppercase tracking-wider align-top ${row.warnRow ? "text-amber-800" : "text-neutral-500"}`}
+                className={`py-4 pr-6 text-xs md:text-sm font-semibold uppercase tracking-wider align-top ${row.warnRow ? "text-black" : "text-neutral-500"}`}
               >
                 {row.label}
                 {row.note && <> {row.note}</>}
