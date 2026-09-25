@@ -4,10 +4,12 @@ import { Gallery } from "components/product/gallery";
 import ProductCard from "components/product/product-card";
 import { ProductDescription } from "components/product/product-description";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
-import { createTranslator } from "lib/i18n";
-import { getProduct, getProductRecommendations } from "lib/shopify";
-import type { Image } from "lib/shopify/types";
+import { productReadState } from "lib/catalog/product-page";
+import { createTranslator, getLocalizedPath } from "lib/i18n";
+import { getProductRecommendations, readProductForPage } from "lib/shopify";
+import type { Image, Product } from "lib/shopify/types";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -21,16 +23,27 @@ export async function generateMetadata(props: {
   params: Promise<{ locale: string; handle: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const product = await getProduct(params.handle);
+  const state = productReadState(await readProductForPage(params.handle));
 
-  if (!product) return notFound();
+  if (state.kind === "missing") return notFound();
 
+  // A transient failure is not this product's content, so it must not be indexed in the
+  // product page's place. Losing a ranking is recoverable; having a crawler cache this
+  // render as the real page is not.
+  if (state.kind === "unavailable") {
+    return {
+      title: createTranslator(params.locale)("product.unavailable_title"),
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const product = state.product;
   const { url, width, height, altText: alt } = product.featuredImage || {};
   const indexable = !product.tags.includes(HIDDEN_PRODUCT_TAG);
 
   return {
-    title: product.seo.title || product.title,
-    description: product.seo.description || product.description,
+    title: product.seo?.title || product.title,
+    description: product.seo?.description || product.description,
     robots: {
       index: indexable,
       follow: indexable,
@@ -41,15 +54,15 @@ export async function generateMetadata(props: {
     },
     openGraph: url
       ? {
-        images: [
-          {
-            url,
-            width,
-            height,
-            alt,
-          },
-        ],
-      }
+          images: [
+            {
+              url,
+              width,
+              height,
+              alt,
+            },
+          ],
+        }
       : null,
   };
 }
@@ -58,9 +71,15 @@ export default async function ProductPage(props: {
   params: Promise<{ locale: string; handle: string }>;
 }) {
   const params = await props.params;
-  const product = await getProduct(params.handle);
+  const state = productReadState(await readProductForPage(params.handle));
 
-  if (!product) return notFound();
+  if (state.kind === "missing") return notFound();
+
+  if (state.kind === "unavailable") {
+    return <ProductUnavailable locale={params.locale} handle={params.handle} />;
+  }
+
+  const product = state.product;
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -149,7 +168,20 @@ export default async function ProductPage(props: {
 }
 
 async function RelatedProducts({ id, locale }: { id: string; locale: string }) {
-  const relatedProducts = await getProductRecommendations(id);
+  let relatedProducts: Product[] = [];
+
+  try {
+    relatedProducts = await getProductRecommendations(id);
+  } catch (error) {
+    // A secondary section must never take the page down with it — the product itself is
+    // the content, and it has already rendered by this point.
+    console.error(
+      "Could not read related products from Shopify; hiding that section:",
+      error,
+    );
+
+    return null;
+  }
 
   if (!relatedProducts.length) return null;
 
@@ -172,5 +204,54 @@ async function RelatedProducts({ id, locale }: { id: string; locale: string }) {
         ))}
       </div>
     </div>
+  );
+}
+
+/**
+ * Shown when Shopify could not be asked about this product.
+ *
+ * Deliberately its own page rather than a 404 or a thrown error: the product very likely
+ * exists, and telling a customer — or a crawler — otherwise is the one outcome worth
+ * avoiding. It keeps the footer so navigation still works, and offers a retry that is
+ * just a link back to this URL, so recovery needs no client-side state.
+ */
+function ProductUnavailable({
+  locale,
+  handle,
+}: {
+  locale: string;
+  handle: string;
+}) {
+  const t = createTranslator(locale);
+
+  return (
+    <>
+      <div className="mx-auto max-w-xl px-4 py-24 text-center lg:px-15">
+        <h1
+          className="text-2xl font-bold tracking-tight text-black sm:text-3xl dark:text-white"
+          style={{ fontFamily: "'Clash Display', sans-serif" }}
+        >
+          {t("product.unavailable_title")}
+        </h1>
+        <p className="mt-4 text-sm text-neutral-600 sm:text-base dark:text-neutral-400">
+          {t("product.unavailable_message")}
+        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href={getLocalizedPath(`/product/${handle}`, locale)}
+            className="rounded-full border border-black px-5 py-3 text-sm font-medium text-black transition-colors hover:bg-black hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black"
+          >
+            {t("product.unavailable_retry")}
+          </Link>
+          <Link
+            href={getLocalizedPath("/store", locale)}
+            className="rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+          >
+            {t("home.browse_all")}
+          </Link>
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 }

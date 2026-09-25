@@ -1,10 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ADMIN_SESSION_COOKIE } from "./lib/constants";
 
 const locales = ["en", "hi"];
 const defaultLocale = "en";
 
+const ADMIN_LOGIN_PATH = "/admin/login";
+const ADMIN_API_PREFIX = "/admin/api/";
+
+/**
+ * Cheap cookie-presence gate only. Signature verification happens in the admin
+ * layouts, server actions, and route handlers (Node runtime) — this exists so an
+ * unauthenticated request never even reaches a protected page, and the proxy
+ * bundle stays free of the bcrypt/jose dependency chain.
+ *
+ * Deliberately does NOT redirect away from /admin/login when a cookie is
+ * present: an invalid or expired token would then bounce between /admin/login
+ * and /admin/products forever.
+ */
+function handleAdminRequest(request: NextRequest, pathname: string) {
+  // API routes are exempt so their own auth check can answer with a 401 JSON
+  // response. Redirecting here would hand fetch() an HTML login page and a 200.
+  if (pathname.startsWith(ADMIN_API_PREFIX)) {
+    return NextResponse.next();
+  }
+
+  const hasSessionCookie = Boolean(
+    request.cookies.get(ADMIN_SESSION_COOKIE)?.value,
+  );
+
+  if (!hasSessionCookie && pathname !== ADMIN_LOGIN_PATH) {
+    const url = request.nextUrl.clone();
+    url.pathname = ADMIN_LOGIN_PATH;
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
+
+  return NextResponse.next();
+}
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // The admin panel lives outside the locale tree. It must be handled before
+  // the locale rewrite below, otherwise /admin becomes /en/admin and is
+  // swallowed by the [locale]/[page] catch-all.
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    return handleAdminRequest(request, pathname);
+  }
 
   // Skip static assets, API routes, and Next.js internals
   if (

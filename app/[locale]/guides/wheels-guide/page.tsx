@@ -1,10 +1,16 @@
-import ChoosingAWheelShapeSection from "components/guides/choosing-a-wheel-shape";
-import NarrowOrWideContactPatchSection from "components/guides/narrow-or-wide-contact-patch";
-import WheelDurometerSection from "components/guides/wheel-durometer";
+import GuideAnchorNav from "components/guides/anchor-nav";
+import GuideFaq from "components/guides/faq";
 import WheelGuideHeroBanner from "components/guides/wheel-guide-banner";
-import WhatsTheRightWheelSizeSection from "components/guides/whats-the-right-wheel-size";
-import WhereShouldYouStartSection from "components/guides/where-should-you-start";
+import DiameterSection from "components/wheel-guide/diameter";
+import DurometerSection from "components/wheel-guide/durometer";
+import IndianRoadsSection from "components/wheel-guide/indian-roads";
+import PartsSection from "components/wheel-guide/parts";
+import RangeSection from "components/wheel-guide/range";
+import ShapeSection from "components/wheel-guide/shape";
+import WearSection from "components/wheel-guide/wear";
 import Footer from "components/layout/footer";
+import { ANCHOR_NAV, WHEEL_FAQ } from "lib/wheel-guide/data";
+import { guideMetadata } from "lib/guides/metadata";
 
 export const dynamicParams = true;
 
@@ -12,23 +18,31 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = {
-  title: "Wheels Guide | WeSkate Co",
-  description: "Comprehensive guide to choosing the right skateboard wheels.",
-  openGraph: {
-    type: "website",
-  },
-};
+export const metadata = guideMetadata(
+  "Wheel Guide",
+  "What the two numbers printed on a skateboard wheel mean, what the shape does that the numbers cannot tell you, and how to choose for Indian roads.",
+);
 
 export default async function WheelsGuidePage() {
   return (
     <>
       <WheelGuideHeroBanner />
-      <WhatsTheRightWheelSizeSection />
-      <WheelDurometerSection />
-      <ChoosingAWheelShapeSection />
-      <NarrowOrWideContactPatchSection />
-      <WhereShouldYouStartSection />
+      <GuideAnchorNav items={ANCHOR_NAV} />
+      <PartsSection />
+      <DiameterSection />
+      <DurometerSection />
+      <ShapeSection />
+      <IndianRoadsSection />
+      <WearSection />
+      <RangeSection />
+      <GuideFaq
+        items={WHEEL_FAQ}
+        idBase="wheel-faq"
+        variant="chevron"
+        kicker="08 — FAQ"
+        title="FAQ"
+        stockLabel="What we stock:"
+      />
       <Footer />
     </>
   );

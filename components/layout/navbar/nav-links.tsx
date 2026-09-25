@@ -79,7 +79,7 @@ export default function NavLinks({
           </button>
 
           <div
-            className={`absolute left-6 right-6 lg:left-12 lg:right-12 z-50 shadow-lg top-full mt-5 ${
+            className={`absolute left-6 right-6 lg:left-12 lg:right-12 z-50 shadow-lg top-full mt-5 before:absolute before:-top-5 before:left-0 before:right-0 before:h-5 ${
               isDropdownOpen
                 ? "opacity-100 pointer-events-auto"
                 : "opacity-0 pointer-events-none"
@@ -98,11 +98,18 @@ export default function NavLinks({
               <MegaMenuLeft
                 activeCategory={activeCategory}
                 onCategoryHover={setActiveCategory}
-                onLinkClick={() => setIsDropdownOpen(false)}
+                onLinkClick={() => {
+                  setIsDropdownOpen(false);
+                  setActiveCategory(null);
+                }}
               />
               <MegaMenuRight
                 activeCategory={activeCategory}
                 onCollapse={() => setActiveCategory(null)}
+                onLinkClick={() => {
+                  setIsDropdownOpen(false);
+                  setActiveCategory(null);
+                }}
               />
             </div>
           </div>
@@ -157,12 +164,36 @@ export default function NavLinks({
                 Skateboard Buying Guide
               </Link>
               <Link
+                href={getLocalizedPath("/guides/deck-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Deck Guide
+              </Link>
+              <Link
+                href={getLocalizedPath("/guides/truck-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Truck Guide
+              </Link>
+              <Link
                 href={getLocalizedPath("/guides/wheels-guide", locale)}
                 onClick={() => setIsGuidesOpen(false)}
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 Wheels Guide
+              </Link>
+              <Link
+                href={getLocalizedPath("/guides/griptape-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Griptape Guide
               </Link>
             </div>
           </div>

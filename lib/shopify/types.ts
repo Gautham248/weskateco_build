@@ -265,6 +265,40 @@ export type ShopifyPagesOperation = {
   };
 };
 
+export type ShopifyProductSummary = {
+  id: string;
+  handle: string;
+  title: string;
+  vendor: string;
+  productType: string;
+  availableForSale: boolean;
+  updatedAt: string;
+  tags: string[];
+  featuredImage: Image;
+  priceRange: {
+    minVariantPrice: Money;
+  };
+};
+
+export type ShopifyProductsPageOperation = {
+  data: {
+    products: {
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor: string | null;
+      };
+      edges: Edge<ShopifyProductSummary>[];
+    };
+  };
+  variables: {
+    first: number;
+    after?: string;
+    sortKey?: string;
+    reverse?: boolean;
+    query?: string;
+  };
+};
+
 export type ShopifyProductOperation = {
   data: { product: ShopifyProduct };
   variables: {

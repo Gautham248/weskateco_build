@@ -1,0 +1,197 @@
+@import "@fontsource/archivo";
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Extralight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-clash: "Clash Display", sans-serif;
+
+  /* Guides-scope design tokens: the brand lime previously hand-copied as
+     arbitrary #CCFF02 values (plus its one dark hover shade) and the shared
+     4px control radius previously written as rounded-[4px]. */
+  --color-brand: #ccff02;
+  --color-brand-dark: #b8e602;
+  --radius-4: 4px;
+}
+
+[style*="Clash Display"],
+.font-clash {
+  font-family: "Clash Display", sans-serif !important;
+}
+
+@plugin "@tailwindcss/container-queries";
+@plugin "@tailwindcss/typography";
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  body,
+  input,
+  button,
+  select,
+  textarea {
+    font-family: "Archivo", sans-serif;
+  }
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html {
+  color-scheme: light;
+}
+
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+  img[loading="lazy"] {
+    clip-path: inset(0.6px);
+  }
+}
+
+/* Navbar scroll-aware colors */
+[data-scrolled="false"] nav a,
+[data-scrolled="false"] nav button,
+[data-scrolled="false"] nav svg {
+  @apply text-white/90;
+}
+
+[data-scrolled="false"] nav .border {
+  @apply border-white/20;
+}
+
+[data-scrolled="false"] nav input {
+  @apply border-white/20 bg-white/10 text-white placeholder-white/50;
+}
+
+[data-scrolled="false"] nav img[alt*="Weskateco"] {
+  filter: brightness(0) invert(1);
+}
+
+[data-scrolled="true"] nav a {
+  @apply text-black dark:text-white;
+}
+
+[data-scrolled="true"] nav .border {
+  @apply border-neutral-200 dark:border-neutral-700;
+}
+
+[data-scrolled="true"] nav button {
+  @apply text-black dark:text-white;
+}
+
+/* Hide scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+a,
+input,
+button {
+  @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-50 dark:focus-visible:ring-neutral-600 dark:focus-visible:ring-offset-neutral-900;
+}
+
+@layer utilities {
+  .group:hover .animate-nudge-x {
+    animation: nudgeX 0.8s ease-in-out infinite;
+  }
+  @keyframes nudgeX {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(4px);
+    }
+  }
+
+  /* Fluid heading - scales smoothly from sm to 2xl screens */
+  .fluid-heading {
+    font-size: clamp(1.5rem, 4vw, 3.75rem);
+  }
+
+  /* Fluid text sizes - scale from ~640px to ~1536px viewport */
+  .fluid-text-xs {
+    font-size: clamp(0.625rem, 1vw + 0.25rem, 0.75rem);
+  }
+  .fluid-text-sm {
+    font-size: clamp(0.75rem, 1vw + 0.35rem, 0.875rem);
+  }
+  .fluid-text-base {
+    font-size: clamp(0.875rem, 1.5vw + 0.25rem, 1.125rem);
+  }
+  .fluid-text-lg {
+    font-size: clamp(1rem, 2vw + 0.25rem, 1.25rem);
+  }
+  .fluid-text-xl {
+    font-size: clamp(1.125rem, 2.5vw + 0.2rem, 1.5rem);
+  }
+  .fluid-text-2xl {
+    font-size: clamp(1.25rem, 3vw + 0.15rem, 1.75rem);
+  }
+  .fluid-text-3xl {
+    font-size: clamp(1.5rem, 3.5vw + 0.2rem, 2.25rem);
+  }
+  .fluid-text-4xl {
+    font-size: clamp(1.75rem, 4vw + 0.25rem, 2.75rem);
+  }
+
+  /* Fluid leading for headings */
+  .fluid-leading-tight {
+    line-height: clamp(1, 1.1, 1.25);
+  }
+}

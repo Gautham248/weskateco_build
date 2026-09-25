@@ -3,7 +3,7 @@
 import {
   ChevronDownIcon,
   ChevronUpIcon,
-  XMarkIcon
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { sorting } from "lib/constants";
@@ -192,13 +192,13 @@ export default function FilterSortBar({
     propFilters !== undefined
       ? propFilters
       : (() => {
-        const result: Record<string, string> = {};
-        searchParams.forEach((value, key) => {
-          if (key !== "sort" && key !== "page" && key !== "filter")
-            result[key] = value;
-        });
-        return result;
-      })();
+          const result: Record<string, string> = {};
+          searchParams.forEach((value, key) => {
+            if (key !== "sort" && key !== "page" && key !== "filter")
+              result[key] = value;
+          });
+          return result;
+        })();
 
   const currentSort =
     propSort !== undefined ? propSort : searchParams.get("sort") || "";
@@ -207,7 +207,11 @@ export default function FilterSortBar({
     const params = new URLSearchParams(searchParams.toString());
     params.set("filter", "open");
     const searchStr = params.toString();
-    window.history.pushState(null, "", searchStr ? `${pathname}?${searchStr}` : pathname);
+    window.history.pushState(
+      null,
+      "",
+      searchStr ? `${pathname}?${searchStr}` : pathname,
+    );
     setIsFilterOpen(true);
   };
 
@@ -215,7 +219,11 @@ export default function FilterSortBar({
     const params = new URLSearchParams(searchParams.toString());
     params.delete("filter");
     const searchStr = params.toString();
-    window.history.pushState(null, "", searchStr ? `${pathname}?${searchStr}` : pathname);
+    window.history.pushState(
+      null,
+      "",
+      searchStr ? `${pathname}?${searchStr}` : pathname,
+    );
     setIsFilterOpen(false);
   };
 
@@ -286,8 +294,20 @@ export default function FilterSortBar({
               aria-label="Filter and Sort"
               className="p-1 cursor-pointer hover:opacity-75 transition-opacity relative"
             >
-              <svg width="21" height="19" viewBox="0 0 21 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8.21735 16.4075C8.21726 16.5787 8.26552 16.7465 8.3567 16.8921C8.44788 17.0377 8.57838 17.1553 8.73355 17.2318L10.6005 18.1529C10.7428 18.223 10.901 18.2562 11.06 18.2491C11.2189 18.242 11.3734 18.1949 11.5088 18.1123C11.6441 18.0297 11.7558 17.9143 11.8332 17.7772C11.9107 17.64 11.9513 17.4856 11.9512 17.3285V10.8813C11.9514 10.4249 12.1234 9.98471 12.4338 9.64623L19.1762 2.28812C19.297 2.15601 19.3765 1.99218 19.405 1.81645C19.4334 1.64071 19.4097 1.4606 19.3366 1.2979C19.2636 1.13519 19.1443 0.996857 18.9932 0.899623C18.8422 0.802389 18.6658 0.75042 18.4854 0.75H1.68312C1.5026 0.750064 1.32597 0.801776 1.17462 0.898872C1.02328 0.995968 0.903712 1.13428 0.830412 1.29706C0.757112 1.45983 0.733222 1.64009 0.761635 1.81599C0.790048 1.99189 0.869545 2.15589 0.990496 2.28812L7.73475 9.64623C8.04516 9.98471 8.21714 10.4249 8.21735 10.8813V16.4075Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              <svg
+                width="21"
+                height="19"
+                viewBox="0 0 21 19"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.21735 16.4075C8.21726 16.5787 8.26552 16.7465 8.3567 16.8921C8.44788 17.0377 8.57838 17.1553 8.73355 17.2318L10.6005 18.1529C10.7428 18.223 10.901 18.2562 11.06 18.2491C11.2189 18.242 11.3734 18.1949 11.5088 18.1123C11.6441 18.0297 11.7558 17.9143 11.8332 17.7772C11.9107 17.64 11.9513 17.4856 11.9512 17.3285V10.8813C11.9514 10.4249 12.1234 9.98471 12.4338 9.64623L19.1762 2.28812C19.297 2.15601 19.3765 1.99218 19.405 1.81645C19.4334 1.64071 19.4097 1.4606 19.3366 1.2979C19.2636 1.13519 19.1443 0.996857 18.9932 0.899623C18.8422 0.802389 18.6658 0.75042 18.4854 0.75H1.68312C1.5026 0.750064 1.32597 0.801776 1.17462 0.898872C1.02328 0.995968 0.903712 1.13428 0.830412 1.29706C0.757112 1.45983 0.733222 1.64009 0.761635 1.81599C0.790048 1.99189 0.869545 2.15589 0.990496 2.28812L7.73475 9.64623C8.04516 9.98471 8.21714 10.4249 8.21735 10.8813V16.4075Z"
+                  stroke="black"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
               {badgeCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black text-white text-[10px] font-black shadow-sm">
@@ -304,11 +324,23 @@ export default function FilterSortBar({
               className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity py-1.5"
             >
               <div className="relative">
-                <svg width="21" height="19" viewBox="0 0 21 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M8.21735 16.4075C8.21726 16.5787 8.26552 16.7465 8.3567 16.8921C8.44788 17.0377 8.57838 17.1553 8.73355 17.2318L10.6005 18.1529C10.7428 18.223 10.901 18.2562 11.06 18.2491C11.2189 18.242 11.3734 18.1949 11.5088 18.1123C11.6441 18.0297 11.7558 17.9143 11.8332 17.7772C11.9107 17.64 11.9513 17.4856 11.9512 17.3285V10.8813C11.9514 10.4249 12.1234 9.98471 12.4338 9.64623L19.1762 2.28812C19.297 2.15601 19.3765 1.99218 19.405 1.81645C19.4334 1.64071 19.4097 1.4606 19.3366 1.2979C19.2636 1.13519 19.1443 0.996857 18.9932 0.899623C18.8422 0.802389 18.6658 0.75042 18.4854 0.75H1.68312C1.5026 0.750064 1.32597 0.801776 1.17462 0.898872C1.02328 0.995968 0.903712 1.13428 0.830412 1.29706C0.757112 1.45983 0.733222 1.64009 0.761635 1.81599C0.790048 1.99189 0.869545 2.15589 0.990496 2.28812L7.73475 9.64623C8.04516 9.98471 8.21714 10.4249 8.21735 10.8813V16.4075Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <svg
+                  width="21"
+                  height="19"
+                  viewBox="0 0 21 19"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8.21735 16.4075C8.21726 16.5787 8.26552 16.7465 8.3567 16.8921C8.44788 17.0377 8.57838 17.1553 8.73355 17.2318L10.6005 18.1529C10.7428 18.223 10.901 18.2562 11.06 18.2491C11.2189 18.242 11.3734 18.1949 11.5088 18.1123C11.6441 18.0297 11.7558 17.9143 11.8332 17.7772C11.9107 17.64 11.9513 17.4856 11.9512 17.3285V10.8813C11.9514 10.4249 12.1234 9.98471 12.4338 9.64623L19.1762 2.28812C19.297 2.15601 19.3765 1.99218 19.405 1.81645C19.4334 1.64071 19.4097 1.4606 19.3366 1.2979C19.2636 1.13519 19.1443 0.996857 18.9932 0.899623C18.8422 0.802389 18.6658 0.75042 18.4854 0.75H1.68312C1.5026 0.750064 1.32597 0.801776 1.17462 0.898872C1.02328 0.995968 0.903712 1.13428 0.830412 1.29706C0.757112 1.45983 0.733222 1.64009 0.761635 1.81599C0.790048 1.99189 0.869545 2.15589 0.990496 2.28812L7.73475 9.64623C8.04516 9.98471 8.21714 10.4249 8.21735 10.8813V16.4075Z"
+                    stroke="black"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
                 {badgeCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-black font-white text-[8px] font-black text-white shadow-sm">
+                  <span className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-black text-[8px] font-black text-white shadow-sm">
                     {badgeCount}
                   </span>
                 )}
@@ -797,7 +829,7 @@ function FilterDrawer({
                   : group.id === "subcategory"
                     ? activeCollectionHandle &&
                       activeCollectionHandle !==
-                      getParentCategory(activeCollectionHandle)
+                        getParentCategory(activeCollectionHandle)
                       ? 1
                       : 0
                     : filterVal
@@ -823,7 +855,7 @@ function FilterDrawer({
                     <span
                       className={clsx(
                         activeCount > 0 &&
-                        "text-rose-600 dark:text-rose-400 font-bold",
+                          "text-rose-600 dark:text-rose-400 font-bold",
                       )}
                     >
                       {group.label}
@@ -888,7 +920,10 @@ function FilterDrawer({
           &#x24D8;&nbsp;{previewCount} items were found
         </p>
         {/* Footer */}
-        <div className="p-6 border-t border-neutral-200 dark:border-neutral-900" style={{ boxShadow: "0px -3px 44px 0px rgba(0, 0, 0, 0.15)" }}>
+        <div
+          className="p-6 border-t border-neutral-200 dark:border-neutral-900"
+          style={{ boxShadow: "0px -3px 44px 0px rgba(0, 0, 0, 0.15)" }}
+        >
           <div className="flex flex-col gap-3">
             <button
               type="button"
@@ -1269,7 +1304,7 @@ function CategoryGroup({
           group.id === "subcategory"
             ? activeCollectionHandle === opt.value
             : activeParent === opt.value ||
-            (opt.value === "" && activeCollectionHandle === "");
+              (opt.value === "" && activeCollectionHandle === "");
         return (
           <button
             type="button"

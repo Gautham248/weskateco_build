@@ -2,17 +2,24 @@
 
 import shopImg1 from "components/icons/shop_image_1.png";
 import shopImg2 from "components/icons/shop_image_2.png";
+import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import MegaMenuSubItems, { hasSubItems } from "./mega-menu-sub-items";
 
 export default function MegaMenuRight({
   activeCategory,
   onCollapse,
+  onLinkClick,
 }: {
   activeCategory: string | null;
   onCollapse?: () => void;
+  onLinkClick?: () => void;
 }) {
+  const params = useParams();
+  const locale = (params?.locale as string) || "en";
   const showPanel = hasSubItems(activeCategory);
   const [lastCategory, setLastCategory] = useState<string | null>(null);
 
@@ -35,7 +42,7 @@ export default function MegaMenuRight({
           marginRight: showPanel ? "12px" : "0",
         }}
       >
-        <MegaMenuSubItems category={lastCategory} />
+        <MegaMenuSubItems category={lastCategory} onLinkClick={onLinkClick} />
       </div>
 
       {/* Main Content Grid Container */}
@@ -44,17 +51,21 @@ export default function MegaMenuRight({
         onMouseEnter={onCollapse}
       >
         {/* Left Image Component */}
-        <div
-          className={`relative flex-shrink-0 h-full rounded-lg overflow-hidden transition-all duration-700 ease-in-out ${
+        <Link
+          href={getLocalizedPath("/store/skateboards", locale)}
+          onClick={onLinkClick}
+          className={`relative flex-shrink-0 h-full rounded-lg overflow-hidden transition-all duration-700 ease-in-out block group ${
             showPanel ? "w-[65%]" : "w-[55%]"
           }`}
         >
-          <Image src={shopImg1} alt="" fill className="object-cover" priority />
-        </div>
+          <Image src={shopImg1} alt="Shop Skateboards" fill className="object-cover transition-transform duration-500 group-hover:scale-105" priority />
+        </Link>
 
         {/* Right Composite Component */}
-        <div
-          className="relative flex-1 h-full rounded-lg overflow-hidden flex bg-white dark:bg-neutral-900 transition-all duration-700 ease-in-out"
+        <Link
+          href={getLocalizedPath("/store/newly-released", locale)}
+          onClick={onLinkClick}
+          className="relative flex-1 h-full rounded-lg overflow-hidden flex bg-white dark:bg-neutral-900 transition-all duration-700 ease-in-out block group"
           style={{
             paddingRight: showPanel ? "0px" : "43px",
           }}
@@ -72,9 +83,9 @@ export default function MegaMenuRight({
             >
               <Image
                 src={shopImg2}
-                alt=""
+                alt="Newly Released"
                 fill
-                className="object-cover"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
                 priority
               />
             </div>
@@ -117,8 +128,8 @@ export default function MegaMenuRight({
           </div>
 
           {/* Floating Action Button */}
-          <button
-            className={`absolute cursor-pointer bottom-6 z-10 w-11 h-11 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center shadow-lg transition-all duration-700 hover:scale-105 active:scale-95 ${
+          <div
+            className={`absolute cursor-pointer bottom-6 z-10 w-11 h-11 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center shadow-lg transition-all duration-700 group-hover:scale-105 active:scale-95 ${
               showPanel ? "right-6" : "right-16"
             }`}
           >
@@ -135,8 +146,8 @@ export default function MegaMenuRight({
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
-          </button>
-        </div>
+          </div>
+        </Link>
       </div>
     </div>
   );
