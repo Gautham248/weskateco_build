@@ -1,3 +1,7 @@
+// Requires React's development build: `act` throws "act(...) is not supported in
+// production builds of React", and React picks its build from NODE_ENV at require
+// time. The `test:drag-scroll` script pins NODE_ENV=development so this passes
+// regardless of the ambient environment.
 import { JSDOM } from "jsdom";
 import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
