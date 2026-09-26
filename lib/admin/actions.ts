@@ -209,18 +209,25 @@ export async function changePasswordAction(
     await hashPassword(nextPassword.data),
   );
 
+  // `undefined` means the update matched no row — the account was deleted between the
+  // read above and here. Reporting success would tell the admin their password changed
+  // when nothing did, and the stale session would outlive the account.
+  if (sessionVersion === undefined) {
+    return {
+      error: "That account no longer exists, so the password was not changed.",
+    };
+  }
+
   // Rotate this device's session to the new version. The bump is what signs out every
   // other device; without re-issuing here it would sign out this one too, and the admin
   // would be bounced to the login screen straight after being told the change succeeded.
-  if (sessionVersion !== undefined) {
-    await setSessionCookie(
-      await createSessionToken({
-        userId: user.id,
-        username: user.username,
-        sessionVersion,
-      }),
-    );
-  }
+  await setSessionCookie(
+    await createSessionToken({
+      userId: user.id,
+      username: user.username,
+      sessionVersion,
+    }),
+  );
 
   return { success: "Password updated." };
 }
