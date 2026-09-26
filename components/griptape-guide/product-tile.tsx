@@ -2,6 +2,7 @@
 
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -32,7 +33,7 @@ export default function ProductTile({
     >
       <span className="relative block w-full aspect-[4/3] overflow-hidden rounded-[8px] bg-[#F7F7F9]">
         <Image
-          src={image}
+          src={shopifyImageUrl(image, SHOPIFY_IMAGE_WIDTH.card)}
           alt={alt}
           fill
           sizes="(max-width: 768px) 50vw, 25vw"

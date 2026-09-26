@@ -1,5 +1,6 @@
 "use client";
 
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
 import clsx from "clsx";
 import type {
@@ -137,7 +138,7 @@ export function ConfiguratorProductCard({
       <div className="relative mb-0 aspect-square w-full overflow-hidden bg-neutral-50 dark:bg-neutral-900">
         {item.productImage ? (
           <Image
-            src={item.productImage}
+            src={shopifyImageUrl(item.productImage, SHOPIFY_IMAGE_WIDTH.card)}
             alt={item.productTitle}
             fill
             sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"

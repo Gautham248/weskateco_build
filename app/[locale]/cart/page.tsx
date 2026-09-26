@@ -11,6 +11,7 @@ import { QuickBuySidebar } from "components/product/quick-buy-sidebar";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -171,13 +172,17 @@ function CartPageContent() {
                             <div className="relative aspect-square w-24 h-24 overflow-hidden rounded-md bg-neutral-50 dark:bg-neutral-900 flex-shrink-0 border border-neutral-100 dark:border-neutral-800">
                               {hasImage ? (
                                 <Image
-                                  src={item.merchandise.product.featuredImage.url}
+                                  src={shopifyImageUrl(
+                                    item.merchandise.product.featuredImage.url,
+                                    SHOPIFY_IMAGE_WIDTH.thumb,
+                                  )}
                                   alt={
                                     item.merchandise.product.featuredImage
                                       .altText || item.merchandise.product.title
                                   }
                                   fill
                                   className="object-cover object-top"
+                                  sizes="96px"
                                 />
                               ) : (
                                 <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
@@ -269,13 +274,17 @@ function CartPageContent() {
                           <div className="relative aspect-square w-24 h-24 sm:w-28 sm:h-28 overflow-hidden rounded-md bg-neutral-100 dark:bg-neutral-800 flex-shrink-0 border border-neutral-200/50 dark:border-neutral-800">
                             {hasImage ? (
                               <Image
-                                src={item.merchandise.product.featuredImage.url}
+                                src={shopifyImageUrl(
+                                  item.merchandise.product.featuredImage.url,
+                                  SHOPIFY_IMAGE_WIDTH.thumb,
+                                )}
                                 alt={
                                   item.merchandise.product.featuredImage
                                     .altText || item.merchandise.product.title
                                 }
                                 fill
                                 className="object-cover object-top"
+                                sizes="112px"
                               />
                             ) : (
                               <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
