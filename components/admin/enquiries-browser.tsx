@@ -242,7 +242,13 @@ function AnswerList({ title, facts }: { title: string; facts: AnswerFact[] }) {
                 {fact.label}
               </dt>
               <dd className="text-sm break-words whitespace-pre-wrap">
-                {fact.value}
+                {fact.truncated ? (
+                  // Muted and italic so a value the admin was shown a marker for never
+                  // reads as text the submitter actually typed.
+                  <span className="text-neutral-400 italic">{fact.value}</span>
+                ) : (
+                  fact.value
+                )}
               </dd>
             </div>
           ))}
