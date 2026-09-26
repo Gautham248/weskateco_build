@@ -1,5 +1,6 @@
 "use client";
 
+import { DragScrollArea } from "components/guides/drag-scroll-area";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import Link from "next/link";
@@ -102,7 +103,7 @@ function renderCell(cell: Cell, locale: string) {
   if (cell.link) {
     const parts = cell.text.split(cell.link.label);
     return (
-      <span className={cell.warn ? "text-amber-800" : undefined}>
+      <span className={cell.warn ? "font-semibold text-black" : undefined}>
         {parts[0]}
         <Link
           href={getLocalizedPath(cell.link.href, locale)}
@@ -115,11 +116,11 @@ function renderCell(cell: Cell, locale: string) {
     );
   }
   return (
-    <span className={cell.warn ? "text-amber-800" : undefined}>
+    <span className={cell.warn ? "font-semibold text-black" : undefined}>
       {cell.warn && (
         <span
           aria-hidden
-          className="mr-1.5 inline-block w-1.5 h-1.5 rounded-full bg-amber-400 align-middle"
+          className="mr-1.5 inline-block w-1.5 h-1.5 rounded-full bg-black align-middle"
         />
       )}
       {cell.text}
@@ -148,7 +149,10 @@ export default function GriptapeSection() {
         </div>
 
         {/* Comparison table */}
-        <div className="overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0">
+        <DragScrollArea
+          className="-mx-4 px-4 lg:mx-0 lg:px-0"
+          ariaLabel="Griptape grade comparison, scrollable"
+        >
           <table className="w-full min-w-[720px] border-collapse text-left">
             <thead>
               <tr>
@@ -172,7 +176,7 @@ export default function GriptapeSection() {
               {ROWS.map((row) => (
                 <tr
                   key={row.label}
-                  className={`border-t border-neutral-100 ${row.warnRow ? "bg-amber-50/60" : ""}`}
+                  className={`border-t border-neutral-100 ${row.warnRow ? "bg-neutral-100" : ""}`}
                 >
                   <th
                     scope="row"
@@ -192,7 +196,7 @@ export default function GriptapeSection() {
               ))}
             </tbody>
           </table>
-        </div>
+        </DragScrollArea>
 
         {/* Footnote */}
         <p className="text-sm md:text-base text-neutral-600 leading-[150%] max-w-3xl">

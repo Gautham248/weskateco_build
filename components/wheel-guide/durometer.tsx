@@ -1,3 +1,4 @@
+import { DragScrollArea } from "components/guides/drag-scroll-area";
 import {
   DURO_BANDS,
   DURO_INTRO,
@@ -39,7 +40,10 @@ export default function DurometerSection() {
         </div>
 
         {/* Band table */}
-        <div className="overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0">
+        <DragScrollArea
+          className="-mx-4 px-4 lg:mx-0 lg:px-0"
+          ariaLabel="Durometer scale bands, scrollable"
+        >
           <table className="w-full min-w-[860px] border-collapse text-left">
             <thead>
               <tr>
@@ -80,7 +84,7 @@ export default function DurometerSection() {
               ))}
             </tbody>
           </table>
-        </div>
+        </DragScrollArea>
 
         {/* Closing note */}
         <p className="text-sm md:text-base text-neutral-600 leading-[150%] max-w-3xl">

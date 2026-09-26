@@ -27,11 +27,11 @@ type Answers = Pick<QuizAnswers, "who" | "goal" | "form">;
 function tagClasses(tone: "cyan" | "pink" | "neutral") {
   switch (tone) {
     case "cyan":
-      return "bg-[#EAFBFF] border border-[#80E5FF] text-black";
+      return "bg-neutral-100 border border-neutral-300 text-black";
     case "pink":
-      return "bg-brand border border-brand text-black";
+      return "bg-black border border-black text-white";
     default:
-      return "bg-[#F7F7F9] border border-neutral-200 text-black";
+      return "bg-white border border-neutral-300 text-black";
   }
 }
 import { Container, Section, H2_CLASS } from "components/guides/ui";
@@ -127,9 +127,9 @@ export default function QuizSection({
                     aria-current={state === "current" ? "step" : undefined}
                     className={`w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold transition-colors ${
                       state === "done"
-                        ? "bg-brand text-black"
+                        ? "bg-white text-black border border-black"
                         : state === "current"
-                          ? "bg-black text-white"
+                          ? "bg-black text-white border border-black"
                           : "bg-neutral-100 text-neutral-400"
                     }`}
                   >
@@ -139,7 +139,7 @@ export default function QuizSection({
                     <span
                       aria-hidden
                       className={`w-5 md:w-10 h-px ${
-                        i < currentForPips ? "bg-brand" : "bg-neutral-200"
+                        i < currentForPips ? "bg-black" : "bg-neutral-200"
                       }`}
                     />
                   )}
@@ -290,7 +290,7 @@ export default function QuizSection({
                   <ul className="flex flex-col gap-3">
                     {result.reasons.map((reason, i) => (
                       <li key={i} className="flex gap-3 items-start">
-                        <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-black mt-2 shrink-0" />
                         <span className="text-sm md:text-base text-black leading-[150%] font-[400]">
                           {renderTagged(reason)}
                         </span>
@@ -333,7 +333,7 @@ export default function QuizSection({
                     onClick={startOver}
                     className="flex items-center gap-3 group cursor-pointer w-fit"
                   >
-                    <span className="w-7 h-7 rounded-full bg-brand flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <span className="w-7 h-7 rounded-full border border-black bg-white text-black flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-black group-hover:text-white transition-colors">
                       <GreenArrowIcon />
                     </span>
                     <span

@@ -14,15 +14,23 @@ import {
   TOUCAN_MAP,
 } from "lib/truck-guide/data";
 import { useState } from "react";
-import { ProseCols, Note, SectionHeader, SubHead, Container, Section, GRID_CLASS } from "components/guides/ui";
+import {
+  ProseCols,
+  Note,
+  SectionHeader,
+  SubHead,
+  Container,
+  Section,
+  GRID_CLASS,
+} from "components/guides/ui";
 
 function statusChip(label: string) {
-  const cyan = label === "Coming soon";
+  const highlighted = label === "Coming soon";
   return (
     <span
       className={`rounded-full px-2.5 py-0.5 text-[10px] md:text-xs font-semibold uppercase tracking-wider border whitespace-nowrap ${
-        cyan
-          ? "bg-[#EAFBFF] border-[#80E5FF] text-black"
+        highlighted
+          ? "bg-black border-black text-white"
           : "bg-neutral-100 border-neutral-200 text-neutral-500"
       }`}
       style={{ fontFamily: "'Clash Display', sans-serif" }}

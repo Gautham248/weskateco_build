@@ -7,7 +7,12 @@ import {
   DIAMETER_DEFAULT,
   DIAMETER_INTRO,
 } from "lib/wheel-guide/data";
-import { SectionHeader, Container, Section, GRID_CLASS } from "components/guides/ui";
+import {
+  SectionHeader,
+  Container,
+  Section,
+  GRID_CLASS,
+} from "components/guides/ui";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import Link from "next/link";
@@ -46,12 +51,12 @@ export default function DiameterSection() {
                   </span>
                   <div
                     className={`rounded-full border-2 border-black flex items-center justify-center transition-colors ${
-                      isActive ? "bg-brand" : "bg-white"
+                      isActive ? "bg-black" : "bg-white"
                     }`}
                     style={{ width: px, height: px }}
                   >
                     <span
-                      className="text-[10px] md:text-xs font-bold"
+                      className={`text-[10px] md:text-xs font-bold ${isActive ? "text-white" : "text-black"}`}
                       style={{ fontFamily: "'Clash Display', sans-serif" }}
                     >
                       {d.id}

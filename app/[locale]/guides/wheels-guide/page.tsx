@@ -1,6 +1,8 @@
 import GuideAnchorNav from "components/guides/anchor-nav";
 import GuideFaq from "components/guides/faq";
-import WheelGuideHeroBanner from "components/guides/wheel-guide-banner";
+import GuideHero from "components/guides/hero";
+import wheelsGuideBanner from "components/icons/skateboard_guide/wheel_guide.png";
+import wheelsGuideBannerMobile from "components/icons/skateboard_guide/wheel_guide_mobile.png";
 import DiameterSection from "components/wheel-guide/diameter";
 import DurometerSection from "components/wheel-guide/durometer";
 import IndianRoadsSection from "components/wheel-guide/indian-roads";
@@ -9,7 +11,7 @@ import RangeSection from "components/wheel-guide/range";
 import ShapeSection from "components/wheel-guide/shape";
 import WearSection from "components/wheel-guide/wear";
 import Footer from "components/layout/footer";
-import { ANCHOR_NAV, WHEEL_FAQ } from "lib/wheel-guide/data";
+import { ANCHOR_NAV, WHEEL_FAQ, WHEEL_HERO } from "lib/wheel-guide/data";
 import { guideMetadata } from "lib/guides/metadata";
 
 export const dynamicParams = true;
@@ -26,7 +28,15 @@ export const metadata = guideMetadata(
 export default async function WheelsGuidePage() {
   return (
     <>
-      <WheelGuideHeroBanner />
+      <GuideHero
+        hero={WHEEL_HERO}
+        background={{
+          src: wheelsGuideBanner,
+          mobileSrc: wheelsGuideBannerMobile,
+          alt: "Close-up of a skateboard truck and red wheels",
+          mobileAlt: "Skateboard truck and wheels on a skateboard",
+        }}
+      />
       <GuideAnchorNav items={ANCHOR_NAV} />
       <PartsSection />
       <DiameterSection />

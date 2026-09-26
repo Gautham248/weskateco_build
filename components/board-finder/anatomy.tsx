@@ -103,8 +103,8 @@ export default function AnatomySection() {
                   aria-label={`${part.n}. ${part.name}`}
                   className={`absolute -translate-x-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-sm md:text-base font-bold transition-all cursor-pointer border-2 ${
                     isActive
-                      ? "bg-brand border-black text-black scale-110"
-                      : "bg-white/90 border-black text-black hover:bg-brand"
+                      ? "bg-black border-black text-white scale-110"
+                      : "bg-white/90 border-black text-black hover:bg-neutral-200"
                   }`}
                   style={{
                     left: `${part.x}%`,

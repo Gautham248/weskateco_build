@@ -1,5 +1,7 @@
 "use client";
 
+import { DragScrollArea } from "components/guides/drag-scroll-area";
+
 // Trucks sizing table: columns are deck-width bands, 2 rows.
 const BAND_COLUMNS = [
   {
@@ -51,7 +53,10 @@ export default function TrucksSection() {
         </div>
 
         {/* Sizing table */}
-        <div className="overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0">
+        <DragScrollArea
+          className="-mx-4 px-4 lg:mx-0 lg:px-0"
+          ariaLabel="Truck size by deck width, scrollable"
+        >
           <table className="w-full min-w-[640px] border-collapse text-left">
             <thead>
               <tr>
@@ -107,7 +112,7 @@ export default function TrucksSection() {
               </tr>
             </tbody>
           </table>
-        </div>
+        </DragScrollArea>
 
         {/* Footnote: two rulers */}
         <p className="text-sm md:text-base text-neutral-600 leading-[150%] max-w-3xl">
@@ -154,7 +159,7 @@ export default function TrucksSection() {
                 "Usually the first part a rider upgrades.",
               ].map((item) => (
                 <li key={item} className="flex gap-3 items-start">
-                  <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-black mt-2 shrink-0" />
                   <span className="text-sm text-black leading-[150%] font-[400]">
                     {item}
                   </span>
@@ -184,13 +189,13 @@ export default function TrucksSection() {
             </p>
             <ul className="flex flex-col gap-2 mt-auto">
               <li className="flex gap-3 items-start">
-                <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-black mt-2 shrink-0" />
                 <span className="text-sm text-black leading-[150%] font-[400]">
                   Double Hollow in 5.0″, 5.25″ and 5.5″.
                 </span>
               </li>
               <li className="flex gap-3 items-start">
-                <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-black mt-2 shrink-0" />
                 <span className="text-sm text-black leading-[150%] font-[400] flex items-center gap-2 flex-wrap">
                   Solid Toucan pro trucks
                   <span
@@ -202,7 +207,7 @@ export default function TrucksSection() {
                 </span>
               </li>
               <li className="flex gap-3 items-start">
-                <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-black mt-2 shrink-0" />
                 <span className="text-sm text-black leading-[150%] font-[400] flex items-center gap-2 flex-wrap">
                   A range of ACE trucks
                   <span

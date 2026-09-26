@@ -6,7 +6,20 @@ import {
   TRUCK_PARTS,
 } from "lib/truck-guide/data";
 import { useState } from "react";
-import { FigCaption, FigCard, FigHint, PanelKicker, PendingCard, PendingNote, SectionHeader, Seg, SpecList, Container, Section, GRID_CLASS } from "components/guides/ui";
+import {
+  FigCaption,
+  FigCard,
+  FigHint,
+  PanelKicker,
+  PendingCard,
+  PendingNote,
+  SectionHeader,
+  Seg,
+  SpecList,
+  Container,
+  Section,
+  GRID_CLASS,
+} from "components/guides/ui";
 
 // Hotspot button positions, as % centres over the front-view drawing
 // (viewBox 0 0 560 340). Dashed hotspots mark the parts hidden inside
@@ -25,7 +38,6 @@ const HOTSPOTS: Record<
   8: { left: "78.6%", top: "41.2%" },
   9: { left: "90%", top: "41.2%" },
 };
-
 
 /** Front view of an assembled truck, wheels removed — reference drawing
  * standing in for the assembled photograph. */
@@ -55,7 +67,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           width="368"
           height="28"
           rx="8"
-          className="fill-brand"
+          className="fill-black"
           opacity="0.45"
         />
       )}
@@ -78,7 +90,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           width="88"
           height="82"
           rx="10"
-          className="fill-brand"
+          className="fill-black"
           opacity="0.45"
         />
       )}
@@ -101,7 +113,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           width="300"
           height="18"
           rx="4"
-          className="fill-brand"
+          className="fill-black"
           opacity="0.75"
         />
       )}
@@ -132,7 +144,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           y1="140"
           x2="516"
           y2="140"
-          className="stroke-brand"
+          className="stroke-black"
           strokeWidth="16"
           strokeLinecap="round"
           opacity="0.85"
@@ -161,7 +173,7 @@ function TruckFrontView({ selected }: { selected: number }) {
         strokeWidth="4"
       />
       {selected === 9 && (
-        <g className="fill-brand" stroke="#000000" strokeWidth="4">
+        <g className="fill-black" stroke="#000000" strokeWidth="4">
           <rect x="44" y="126" width="26" height="28" rx="3" />
           <rect x="490" y="126" width="26" height="28" rx="3" />
         </g>
@@ -185,7 +197,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           width="52"
           height="26"
           rx="5"
-          className="fill-brand"
+          className="fill-black"
           opacity="0.85"
         />
       )}
@@ -205,7 +217,7 @@ function TruckFrontView({ selected }: { selected: number }) {
           y1="52"
           x2="280"
           y2="224"
-          className="stroke-brand"
+          className="stroke-black"
           strokeWidth="14"
           strokeLinecap="round"
           opacity="0.9"
@@ -280,8 +292,8 @@ export default function PartsSection() {
                             pos.hidden ? "border-dashed " : ""
                           }${
                             isActive
-                              ? "bg-brand text-black border-2 border-black"
-                              : "bg-white text-black border-2 border-black hover:bg-brand"
+                              ? "bg-black text-white border-2 border-black"
+                              : "bg-white text-black border-2 border-black hover:bg-neutral-200"
                           }`}
                           style={{
                             left: pos.left,

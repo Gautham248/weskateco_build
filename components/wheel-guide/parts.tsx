@@ -43,7 +43,7 @@ function WheelCrossSection({ selected }: { selected: number }) {
           width="270"
           height="470"
           rx="58"
-          className="fill-brand"
+          className="fill-black"
           opacity="0.3"
         />
       )}
@@ -105,13 +105,13 @@ function WheelCrossSection({ selected }: { selected: number }) {
           <path
             d="M 35 95 Q 35 35 95 35 L 235 35 Q 295 35 295 95"
             fill="none"
-            className="stroke-brand"
+            className="stroke-black"
             strokeWidth="26"
           />
           <path
             d="M 35 435 Q 35 495 95 495 L 235 495 Q 295 495 295 435"
             fill="none"
-            className="stroke-brand"
+            className="stroke-black"
             strokeWidth="26"
           />
         </g>
@@ -122,14 +122,14 @@ function WheelCrossSection({ selected }: { selected: number }) {
           y1="33"
           x2="190"
           y2="33"
-          className="stroke-brand"
+          className="stroke-black"
           strokeWidth="30"
           strokeLinecap="round"
           opacity="0.9"
         />
       )}
       {selected === 3 && (
-        <g opacity="0.85" fill="none" className="stroke-brand" strokeWidth="26">
+        <g opacity="0.85" fill="none" className="stroke-black" strokeWidth="26">
           <path d="M 35 95 Q 35 35 95 35" />
           <path d="M 295 95 Q 295 35 235 35" />
         </g>
@@ -137,7 +137,7 @@ function WheelCrossSection({ selected }: { selected: number }) {
       {selected === 4 && (
         <g
           opacity="0.85"
-          className="stroke-brand"
+          className="stroke-black"
           strokeWidth="26"
           strokeLinecap="round"
         >
@@ -152,14 +152,14 @@ function WheelCrossSection({ selected }: { selected: number }) {
           width="110"
           height="130"
           rx="16"
-          className="fill-brand"
+          className="fill-black"
           opacity="0.75"
         />
       )}
       {selected === 6 && (
         <g opacity="0.8">
-          <rect x="45" y="245" width="65" height="40" className="fill-brand" />
-          <rect x="220" y="245" width="65" height="40" className="fill-brand" />
+          <rect x="45" y="245" width="65" height="40" className="fill-black" />
+          <rect x="220" y="245" width="65" height="40" className="fill-black" />
         </g>
       )}
     </svg>
@@ -225,8 +225,8 @@ export default function PartsSection() {
                     aria-label={`Part ${p.n}: ${p.name}`}
                     className={`absolute w-6 h-6 text-[10px] md:w-9 md:h-9 md:text-sm -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center font-bold cursor-pointer transition-colors ${
                       isActive
-                        ? "bg-brand text-black border-2 border-black"
-                        : "bg-white text-black border-2 border-black hover:bg-brand"
+                        ? "bg-black text-white border-2 border-black"
+                        : "bg-white text-black border-2 border-black hover:bg-neutral-200"
                     }`}
                     style={{
                       left: pos.left,

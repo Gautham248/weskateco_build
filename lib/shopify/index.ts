@@ -197,6 +197,12 @@ const reshapeCollection = (
 
   return {
     ...collection,
+    image: collection.image
+      ? {
+          ...collection.image,
+          altText: collection.image.altText || `${collection.title} collection`,
+        }
+      : null,
     path: `/store/${collection.handle}`,
   };
 };
@@ -421,6 +427,7 @@ export async function getCollections(): Promise<Collection[]> {
           description: "All products",
         },
         path: "/search",
+        image: null,
         updatedAt: new Date().toISOString(),
       },
     ];
@@ -440,6 +447,7 @@ export async function getCollections(): Promise<Collection[]> {
         description: "All products",
       },
       path: "/search",
+      image: null,
       updatedAt: new Date().toISOString(),
     },
     // Filter out the `hidden` collections.

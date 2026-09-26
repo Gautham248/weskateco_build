@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { WEAR, WEAR_SECTION } from "lib/deck-guide/data";
-import { PanelKicker, SectionHeader, SpecList, Container, Section } from "components/guides/ui";
+import {
+  PanelKicker,
+  SectionHeader,
+  SpecList,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 const CLASH = { fontFamily: "'Clash Display', sans-serif" };
 
@@ -36,7 +42,7 @@ export default function WearSection() {
                   onClick={() => setActive(i)}
                   className={`text-left rounded-[12px] p-4 flex flex-col gap-1 border-2 transition-colors cursor-pointer ${
                     isActive
-                      ? "border-black bg-brand/30"
+                      ? "border-black bg-neutral-100"
                       : "border-neutral-200 bg-white hover:border-black"
                   }`}
                 >
@@ -73,7 +79,9 @@ export default function WearSection() {
             </p>
             <span
               className={`inline-flex items-center self-start mt-1 px-4 py-2 rounded-4 text-sm font-semibold uppercase tracking-wider ${
-                w.fatal ? "bg-black text-white" : "bg-brand text-black"
+                w.fatal
+                  ? "bg-black text-white"
+                  : "bg-white text-black border border-black"
               }`}
               style={CLASH}
             >

@@ -210,7 +210,7 @@ export default function CartModal() {
                                           );
 
                                           const merchandiseUrl = createUrl(
-                                            `/product/${item.merchandise.product.handle}`,
+                                            `/products/${item.merchandise.product.handle}`,
                                             new URLSearchParams(
                                               merchandiseSearchParams,
                                             ),
@@ -338,7 +338,7 @@ export default function CartModal() {
                                     );
 
                                     const merchandiseUrl = createUrl(
-                                      `/product/${item.merchandise.product.handle}`,
+                                      `/products/${item.merchandise.product.handle}`,
                                       new URLSearchParams(merchandiseSearchParams),
                                     );
 

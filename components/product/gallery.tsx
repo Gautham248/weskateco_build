@@ -18,8 +18,15 @@ export function Gallery({
     5: true,
   });
 
+  const [failedStates, setFailedStates] = useState<Record<number, boolean>>({});
+
   const handleImageLoad = (index: number) => {
     setLoadingStates((prev) => ({ ...prev, [index]: false }));
+  };
+
+  const handleImageError = (index: number) => {
+    setLoadingStates((prev) => ({ ...prev, [index]: false }));
+    setFailedStates((prev) => ({ ...prev, [index]: true }));
   };
 
   if (images.length === 0) return null;
@@ -32,6 +39,14 @@ export function Gallery({
         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
+    </div>
+  );
+
+  const renderFallback = () => (
+    <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#e5e5e5] px-6 text-center dark:bg-neutral-900">
+      <span className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">
+        Image unavailable
+      </span>
     </div>
   );
 
@@ -69,7 +84,9 @@ export function Gallery({
               src={shopifyImageUrl(image.src, SHOPIFY_IMAGE_WIDTH.hero)}
               priority={idx === 0}
               onLoad={() => handleImageLoad(idx)}
+              onError={() => handleImageError(idx)}
             />
+            {failedStates[idx] && renderFallback()}
           </div>
         ))}
 
@@ -107,7 +124,9 @@ export function Gallery({
               src={shopifyImageUrl(image.src, SHOPIFY_IMAGE_WIDTH.hero)}
               priority={idx === 0}
               onLoad={() => handleImageLoad(idx)}
+              onError={() => handleImageError(idx)}
             />
+            {failedStates[idx] && renderFallback()}
           </div>
         ))}
       </div>

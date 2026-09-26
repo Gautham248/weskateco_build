@@ -19,7 +19,7 @@ export default async function sitemap(props: {
   const params = await props.params;
   validateEnvironmentVariables();
 
-  const routesMap = [""].map((route) => ({
+  const routesMap = ["", "/products"].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString(),
   }));
@@ -33,7 +33,7 @@ export default async function sitemap(props: {
 
   const productsPromise = getProducts({}).then((products) =>
     products.map((product) => ({
-      url: `${baseUrl}/product/${product.handle}`,
+      url: `${baseUrl}/products/${product.handle}`,
       lastModified: product.updatedAt,
     })),
   );

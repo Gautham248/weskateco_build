@@ -46,7 +46,9 @@ export default function WearSection() {
           <div className="flex flex-wrap items-center gap-3">
             <span
               className={`inline-flex items-center px-3 py-1.5 rounded-4 text-xs font-bold uppercase tracking-wider ${
-                active.fatal ? "bg-black text-white" : "bg-brand text-black"
+                active.fatal
+                  ? "bg-black text-white"
+                  : "bg-white text-black border border-black"
               }`}
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >

@@ -26,7 +26,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
     product;
   const isSoldOut = !availableForSale;
 
-  const productPath = getLocalizedPath(`/product/${handle}`, locale);
+  const productPath = getLocalizedPath(`/products/${handle}`, locale);
 
   const imgRef = useRef<HTMLDivElement>(null);
   const [showIndex, setShowIndex] = useState(0);

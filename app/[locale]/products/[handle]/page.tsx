@@ -152,7 +152,7 @@ export default async function ProductPage(props: {
             </Suspense>
           </div>
 
-          <div className="basis-full lg:basis-5/12">
+          <div className="min-w-0 basis-full lg:basis-5/12">
             <Suspense fallback={null}>
               <ProductDescription product={product} locale={params.locale} />
             </Suspense>
@@ -238,7 +238,7 @@ function ProductUnavailable({
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
-            href={getLocalizedPath(`/product/${handle}`, locale)}
+            href={getLocalizedPath(`/products/${handle}`, locale)}
             className="rounded-full border border-black px-5 py-3 text-sm font-medium text-black transition-colors hover:bg-black hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black"
           >
             {t("product.unavailable_retry")}

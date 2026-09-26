@@ -134,7 +134,7 @@ export default function SizeToolSection({
                     aria-selected={isActive}
                     onClick={() => setBandIndex(i)}
                     className={`flex items-center justify-between gap-4 w-full text-left py-4 px-4 transition-colors cursor-pointer ${
-                      isActive ? "bg-brand" : "hover:bg-[#F7F7F9]"
+                      isActive ? "bg-neutral-100" : "hover:bg-[#F7F7F9]"
                     }`}
                   >
                     <span
@@ -170,7 +170,7 @@ export default function SizeToolSection({
                 <div className="relative h-10">
                   {/* Highlight range */}
                   <div
-                    className="absolute top-4 h-2 bg-brand rounded-full"
+                    className="absolute top-4 h-2 bg-black rounded-full"
                     style={{
                       left: `${((band.lo - 7) / 2) * 100}%`,
                       width: `${((band.hi - band.lo) / 2) * 100}%`,
@@ -289,7 +289,7 @@ export default function SizeToolSection({
                         className={`rounded-full px-3 py-1 text-[10px] md:text-xs font-bold uppercase tracking-wider ${
                           card.muted
                             ? "bg-neutral-100 text-neutral-500 border border-neutral-200"
-                            : "bg-brand text-black"
+                            : "bg-black text-white"
                         }`}
                         style={{ fontFamily: "'Clash Display', sans-serif" }}
                       >
@@ -309,7 +309,7 @@ export default function SizeToolSection({
                 <ul className="flex flex-col gap-2 mt-auto">
                   {card.bullets.map((bullet) => (
                     <li key={bullet} className="flex gap-3 items-start">
-                      <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
+                      <span className="w-2 h-2 rounded-full bg-black mt-2 shrink-0" />
                       <span className="text-sm text-black leading-[150%] font-[400]">
                         {bullet}
                       </span>

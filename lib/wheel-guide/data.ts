@@ -547,5 +547,16 @@ export const ANCHOR_NAV: { label: string; href: string }[] = [
   { label: "FAQ", href: "#faq" },
 ];
 
-export const HERO_LEDE =
+const HERO_LEDE =
   "Four lumps of urethane, two numbers printed on the side, and more disagreement per gram than any other part of a skateboard. This is what the numbers mean, why the one everybody quotes is the less important of the two, what the shape does that the numbers cannot tell you, and how to choose for roads that were not built for this.";
+
+export const WHEEL_HERO = {
+  eyebrow: "Sphere Skateboards · WeSkate Co. · Guide 04",
+  titleLead: "The Wheels",
+  lede: HERO_LEDE,
+  ctaPrimary: { label: "Start with durometer", href: "#durometer" },
+  ctaSecondary: {
+    label: "The buying guide",
+    href: "/guides/skateboard-buying-guide",
+  },
+};

@@ -1,5 +1,6 @@
 "use client";
 
+import { DragScrollArea } from "components/guides/drag-scroll-area";
 import {
   RANGE_BEARINGS,
   RANGE_CALLOUT,
@@ -27,7 +28,10 @@ export default function RangeSection() {
         />
 
         {/* Comparison table */}
-        <div className="overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0">
+        <DragScrollArea
+          className="-mx-4 px-4 lg:mx-0 lg:px-0"
+          ariaLabel="Wheel hardness comparison, scrollable"
+        >
           <table className="w-full min-w-[720px] border-collapse text-left">
             <thead>
               <tr>
@@ -77,7 +81,7 @@ export default function RangeSection() {
               </tr>
             </tbody>
           </table>
-        </div>
+        </DragScrollArea>
 
         {/* Note */}
         <p className="text-sm md:text-base text-neutral-600 leading-[150%] max-w-3xl">
@@ -85,7 +89,7 @@ export default function RangeSection() {
         </p>
 
         {/* Callout */}
-        <div className="w-full bg-[#EAFBFF] border border-[#80E5FF] rounded-[8px] p-5 md:py-6 md:px-8 flex flex-col lg:flex-row items-center justify-between gap-5 md:gap-6">
+        <div className="w-full bg-[#F7F7F9] border border-neutral-300 rounded-[8px] p-5 md:py-6 md:px-8 flex flex-col lg:flex-row items-center justify-between gap-5 md:gap-6">
           <p className="text-base md:text-lg font-normal text-black max-w-2xl">
             {RANGE_CALLOUT}
           </p>

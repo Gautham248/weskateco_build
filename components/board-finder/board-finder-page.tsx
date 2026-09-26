@@ -2,6 +2,7 @@
 
 import GuideFaq from "components/guides/faq";
 import GuideHero from "components/guides/hero";
+import skateboardGuideBanner from "components/icons/skateboard_guide/skateboard_guide_banner.png";
 import { FAQ } from "lib/board-finder/data";
 import { useState } from "react";
 import AnatomySection from "./anatomy";
@@ -38,7 +39,12 @@ export default function BoardFinderPage() {
     <>
       <GuideHero
         hero={BOARD_FINDER_HERO}
-        ctaStyle={{ fontFamily: "'Clash Display', sans-serif" }}
+        background={{
+          src: skateboardGuideBanner,
+          alt: "A skateboarder choosing wheels at a skatepark",
+          objectPosition: "center",
+          mobileObjectPosition: "55% center",
+        }}
       />
       <QuizSection
         unit={unit}

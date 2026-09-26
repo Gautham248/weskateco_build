@@ -28,7 +28,7 @@ export default function ProductTile({
 
   return (
     <Link
-      href={getLocalizedPath(`/product/${handle}`, locale)}
+      href={getLocalizedPath(`/products/${handle}`, locale)}
       className="group flex flex-col gap-3 h-full rounded-[16px] border border-neutral-200 bg-white p-4 transition-colors hover:border-black"
     >
       <span className="relative block w-full aspect-[4/3] overflow-hidden rounded-[8px] bg-[#F7F7F9]">

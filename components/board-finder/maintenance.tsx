@@ -98,7 +98,7 @@ export default function MaintenanceSection() {
                 aria-label="Maintenance checklist progress"
               >
                 <div
-                  className="h-full bg-brand rounded-full transition-all duration-300"
+                  className="h-full bg-black rounded-full transition-all duration-300"
                   style={{ width: `${(doneCount / CARE_ITEMS.length) * 100}%` }}
                 />
               </div>
@@ -177,7 +177,7 @@ export default function MaintenanceSection() {
               <ul className="flex flex-col gap-3">
                 {QUICK_BULLETS.map((bullet) => (
                   <li key={bullet} className="flex gap-3 items-start">
-                    <span className="w-2 h-2 rounded-full bg-brand mt-2 shrink-0" />
+                    <span className="w-2 h-2 rounded-full bg-black mt-2 shrink-0" />
                     <span className="text-sm md:text-base text-black leading-[150%] font-[400]">
                       {bullet}
                     </span>

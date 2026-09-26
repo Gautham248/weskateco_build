@@ -219,7 +219,7 @@ export default function NewlyReleaseContent({
                   >
                     <Link
                       href={getLocalizedPath(
-                        `/product/${slide.handle}`,
+                        `/products/${slide.handle}`,
                         locale,
                       )}
                       onClick={(e) => {

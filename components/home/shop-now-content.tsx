@@ -198,7 +198,7 @@ function ShopNowCard({
 
   return (
     <Link
-      href={getLocalizedPath(`/product/${slide.handle}`, locale)}
+      href={getLocalizedPath(`/products/${slide.handle}`, locale)}
       onClick={handleClick}
       className="group/card flex flex-col bg-transparent w-[calc(50vw-1.25rem)] sm:w-[340px] lg:w-[384px] flex-shrink-0 snap-start"
       style={{
