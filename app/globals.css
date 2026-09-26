@@ -71,6 +71,152 @@ body .guides-monochrome ::selection {
   color: #ffffff;
 }
 
+/* Shopify product descriptions can contain wide specification tables. Keep
+   them inside the product-details column and make the overflow discoverable. */
+.product-description-table-scroll {
+  max-width: 100%;
+  margin-block: 1.5rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-padding-inline: 1rem;
+  scrollbar-color: #a3a3a3 transparent;
+  scrollbar-width: thin;
+}
+
+.product-description-table-scroll > table {
+  width: 100%;
+  min-width: 40rem;
+  margin-block: 0;
+}
+
+.product-description-table-scroll > table th {
+  white-space: nowrap;
+}
+
+.product-description-table-scroll:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Applied by the drag-scroll hook while the pointer is over an overflowing
+   region. Kept in CSS so the hook can toggle it without inline styles. */
+.cursor-grab,
+.cursor-grab * {
+  cursor: grab !important;
+}
+
+.cursor-grabbing,
+.cursor-grabbing * {
+  cursor: grabbing !important;
+}
+
+.product-description-table-scroll::-webkit-scrollbar {
+  display: block;
+  height: 6px;
+}
+
+.product-description-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.product-description-table-scroll::-webkit-scrollbar-thumb {
+  background: #a3a3a3;
+  border-radius: 999px;
+}
+
+/* Drag-to-scroll tables (guides and product descriptions). The grab cursor is
+   applied by JS only while the region actually overflows, so a table that fits
+   keeps a normal cursor. */
+.drag-scroll-region:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Admin rich text editor. Mirrors the ProseMirror table defaults shipped by
+   prosemirror-tables, but scoped to the editor and in the admin palette. */
+.admin-editor-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-color: #a3a3a3 transparent;
+  scrollbar-width: thin;
+}
+
+.admin-editor-scroll::-webkit-scrollbar {
+  display: block;
+  height: 6px;
+}
+
+.admin-editor-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-editor-scroll::-webkit-scrollbar-thumb {
+  background: #a3a3a3;
+  border-radius: 999px;
+}
+
+.tiptap .tableWrapper {
+  max-width: 100%;
+  margin-block: 1rem;
+  overflow-x: auto;
+}
+
+.tiptap table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  overflow: hidden;
+}
+
+.tiptap td,
+.tiptap th {
+  position: relative;
+  box-sizing: border-box;
+  min-width: 7rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid #d4d4d8;
+  vertical-align: top;
+}
+
+.tiptap th {
+  background: #f4f4f5;
+  font-weight: 600;
+  text-align: left;
+}
+
+.dark .tiptap th {
+  background: #262626;
+}
+
+.dark .tiptap td,
+.dark .tiptap th {
+  border-color: #404040;
+}
+
+.tiptap .column-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  bottom: 0;
+  z-index: 20;
+  width: 4px;
+  background-color: #171717;
+  pointer-events: none;
+}
+
+.tiptap.resize-cursor {
+  cursor: col-resize;
+}
+
+.tiptap .selectedCell::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  content: "";
+  background: rgba(24, 24, 27, 0.12);
+  pointer-events: none;
+}
+
 [style*="Clash Display"],
 .font-clash {
   font-family: "Clash Display", sans-serif !important;

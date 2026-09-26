@@ -165,7 +165,7 @@ export function ProductOverrideForm({
         </div>
 
         <Link
-          href={`/product/${handle}`}
+          href={`/products/${handle}`}
           target="_blank"
           rel="noreferrer"
           className="rounded-sm border border-neutral-300 px-4 py-2 text-xs font-bold tracking-wider uppercase transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-900"

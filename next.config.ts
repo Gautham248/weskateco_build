@@ -4,6 +4,8 @@ export default {
     useCache: true,
   },
   images: {
+    loader: "custom",
+    loaderFile: "./lib/image-loader.ts",
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {

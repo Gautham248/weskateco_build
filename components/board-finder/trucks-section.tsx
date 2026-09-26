@@ -1,5 +1,7 @@
 "use client";
 
+import { DragScrollArea } from "components/guides/drag-scroll-area";
+
 // Trucks sizing table: columns are deck-width bands, 2 rows.
 const BAND_COLUMNS = [
   {
@@ -51,7 +53,10 @@ export default function TrucksSection() {
         </div>
 
         {/* Sizing table */}
-        <div className="overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0">
+        <DragScrollArea
+          className="-mx-4 px-4 lg:mx-0 lg:px-0"
+          ariaLabel="Truck size by deck width, scrollable"
+        >
           <table className="w-full min-w-[640px] border-collapse text-left">
             <thead>
               <tr>
@@ -107,7 +112,7 @@ export default function TrucksSection() {
               </tr>
             </tbody>
           </table>
-        </div>
+        </DragScrollArea>
 
         {/* Footnote: two rulers */}
         <p className="text-sm md:text-base text-neutral-600 leading-[150%] max-w-3xl">

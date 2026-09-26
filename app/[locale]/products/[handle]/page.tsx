@@ -133,7 +133,7 @@ export default async function ProductPage(props: {
             </Suspense>
           </div>
 
-          <div className="basis-full lg:basis-5/12">
+          <div className="min-w-0 basis-full lg:basis-5/12">
             <Suspense fallback={null}>
               <ProductDescription product={product} locale={params.locale} />
             </Suspense>

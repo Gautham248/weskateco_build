@@ -1,3 +1,4 @@
+import { DragScrollArea } from "components/guides/drag-scroll-area";
 import type { TableCol, TableCell, TableRow } from "lib/guides/types";
 import type { HTMLAttributes, ReactNode } from "react";
 import { renderRich } from "./rich";
@@ -307,7 +308,10 @@ export function GuideTable({
   minW?: string;
 }) {
   return (
-    <div className="overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0">
+    <DragScrollArea
+      className="-mx-4 px-4 lg:mx-0 lg:px-0"
+      ariaLabel={`${srLabel}, scrollable`}
+    >
       <table className={`w-full ${minW} border-collapse text-left`}>
         <thead>
           <tr>
@@ -357,7 +361,7 @@ export function GuideTable({
           ))}
         </tbody>
       </table>
-    </div>
+    </DragScrollArea>
   );
 }
 

@@ -3,9 +3,10 @@ import { createSingleItemCartAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
 import Price from "components/price";
-import Prose from "components/prose";
+import { DraggableProse } from "./draggable-prose";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { createTranslator } from "lib/i18n";
+import { prepareProductDescriptionHtml } from "lib/shopify/description-html";
 import { Product } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
 import { useTransition } from "react";
@@ -51,9 +52,14 @@ export function ProductDescription({
 
   // Extract artist name if exists
   const getArtistName = (html: string, text: string) => {
-    const htmlMatch = html.match(/Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*((?:<[^>]+>|[^<>\n\r])+?)(?:<br\s*\/?>|<\/p>|\n|$)/i);
+    const htmlMatch = html.match(
+      /Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*((?:<[^>]+>|[^<>\n\r])+?)(?:<br\s*\/?>|<\/p>|\n|$)/i,
+    );
     if (htmlMatch && htmlMatch[1]) {
-      const extracted = htmlMatch[1].replace(/<[^>]+>/g, "").replace(/&nbsp;|\u00a0/g, " ").trim();
+      const extracted = htmlMatch[1]
+        .replace(/<[^>]+>/g, "")
+        .replace(/&nbsp;|\u00a0/g, " ")
+        .trim();
       if (extracted) return extracted;
     }
     const textMatch = text.match(/Deck\s+Artwork\s+by\s+(.+)/i);
@@ -63,7 +69,10 @@ export function ProductDescription({
     return null;
   };
 
-  const artistName = getArtistName(product.descriptionHtml || "", product.description || "");
+  const artistName = getArtistName(
+    product.descriptionHtml || "",
+    product.description || "",
+  );
 
   // Helper function to format "Deck Artwork by..." in-place
   const formatArtworkBadgeHtml = (html: string) => {
@@ -87,11 +96,16 @@ export function ProductDescription({
             </span>
           </div>
         `;
-      }
+      },
     );
   };
 
-  const formattedHtml = product.descriptionHtml ? formatArtworkBadgeHtml(product.descriptionHtml) : "";
+  const formattedHtml = product.descriptionHtml
+    ? prepareProductDescriptionHtml(
+        formatArtworkBadgeHtml(product.descriptionHtml),
+        locale,
+      )
+    : "";
 
   return (
     <>
@@ -182,7 +196,7 @@ export function ProductDescription({
 
         <div className="pt-4 pb-6 animate-fadeIn">
           {formattedHtml ? (
-            <Prose
+            <DraggableProse
               className="text-[clamp(0.75rem,1.5vw,0.875rem)] leading-relaxed text-black dark:text-neutral-300"
               html={formattedHtml}
             />
