@@ -22,6 +22,9 @@
     "test:admin-filters": "tsx scripts/test-admin-product-filters.ts",
     "test:admin-pagination": "tsx scripts/test-admin-pagination.ts",
     "test:hero": "tsx scripts/test-hero.ts",
+    "test:enquiries": "tsx scripts/test-contact-enquiries.ts",
+    "test:contact-submit": "tsx scripts/test-contact-submit.ts",
+    "test:product-page": "tsx scripts/test-product-page.ts",
     "deploy": "node scripts/deploy.js --prod",
     "vercel": "node scripts/deploy.js"
   },

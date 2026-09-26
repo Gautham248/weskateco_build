@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: "/admin/newly-released", label: "Newly Released" },
   { href: "/admin/shop-now", label: "Shop Now" },
   { href: "/admin/hero", label: "Hero" },
+  { href: "/admin/enquiries", label: "Enquiries" },
   { href: "/admin/settings", label: "Settings" },
 ];
 

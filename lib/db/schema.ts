@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   index,
   integer,
   jsonb,
@@ -13,6 +14,12 @@ export const adminUsers = pgTable("admin_users", {
   id: uuid("id").primaryKey().defaultRandom(),
   username: text("username").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
+  /**
+   * Bumped whenever the password changes, and carried inside the session token. A
+   * token whose version is behind the row is refused, so changing a password signs
+   * other devices out without needing a session table.
+   */
+  sessionVersion: integer("session_version").notNull().default(1),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -178,6 +185,56 @@ export const heroSettings = pgTable("hero_settings", {
 /** The one and only row in `hero_settings`. */
 export const HERO_SETTINGS_ID = "default";
 
+/**
+ * Enquiries submitted through the public /contact form.
+ *
+ * Append-only: a row is written once and never edited, so there is no
+ * `updatedAt` to keep honest. `answers` holds the reason-specific qualifying
+ * questions, which differ per reason and so cannot be columns.
+ *
+ * `enquiryId` is the human-facing reference the customer is shown and may quote
+ * back to us; `id` is the real primary key. It is not unique-constrained yet —
+ * see docs/contact-enquiry-flow-decisions.md for the collision risk that leaves
+ * open. `meta` records where the submission came from.
+ */
+export const contactEnquiries = pgTable(
+  "contact_enquiries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // Unique, not merely indexed: the customer is told this reference identifies
+    // their enquiry, and support relies on that when they quote it back. Safe to
+    // enforce because the generator draws from 31^6 values rather than 9,000.
+    enquiryId: text("enquiry_id").notNull().unique(),
+    reason: text("reason").notNull(),
+    reasonLabel: text("reason_label").notNull(),
+    routedTo: text("routed_to").notNull(),
+    responseSla: text("response_sla").notNull(),
+    answers: jsonb("answers").$type<Record<string, unknown>>().notNull(),
+    consent: boolean("consent").notNull(),
+    meta: jsonb("meta").$type<Record<string, unknown>>().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [index("contact_enquiries_created_at_idx").on(table.createdAt)],
+);
+
+/**
+ * Fixed-window rate-limit buckets for the public endpoints.
+ *
+ * `key` is a hash of the caller identifier rather than the identifier itself, so
+ * this table holds no raw IP addresses. Rows are disposable: `window_started_at`
+ * is only ever compared against the current window, and stale rows are pruned
+ * when a fresh window opens.
+ */
+export const rateLimitCounters = pgTable("rate_limit_counters", {
+  key: text("key").primaryKey(),
+  windowStartedAt: timestamp("window_started_at", {
+    withTimezone: true,
+  }).notNull(),
+  hits: integer("hits").notNull(),
+});
+
 export const productOverridesRelations = relations(
   productOverrides,
   ({ many, one }) => ({
@@ -244,3 +301,6 @@ export type HeroItem = typeof heroItems.$inferSelect;
 export type NewHeroItem = typeof heroItems.$inferInsert;
 export type HeroSettings = typeof heroSettings.$inferSelect;
 export type NewHeroSettings = typeof heroSettings.$inferInsert;
+export type ContactEnquiry = typeof contactEnquiries.$inferSelect;
+export type NewContactEnquiry = typeof contactEnquiries.$inferInsert;
+export type RateLimitCounter = typeof rateLimitCounters.$inferSelect;

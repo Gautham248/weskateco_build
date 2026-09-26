@@ -5,6 +5,12 @@ export const ADMIN_SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7;
 export type AdminSession = {
   userId: string;
   username: string;
+  /**
+   * The admin row's `session_version` at the moment this token was issued. The
+   * caller compares it against the live row on every request, which is what lets
+   * a password change invalidate tokens already handed out.
+   */
+  sessionVersion: number;
 };
 
 export type SessionTokenOptions = {
@@ -32,7 +38,10 @@ export async function createSessionToken(
     options.expiresInSeconds ?? ADMIN_SESSION_DURATION_SECONDS;
   const issuedAt = Math.floor(Date.now() / 1000);
 
-  return new SignJWT({ username: session.username })
+  return new SignJWT({
+    username: session.username,
+    sessionVersion: session.sessionVersion,
+  })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(session.userId)
     .setIssuedAt(issuedAt)
@@ -43,6 +52,10 @@ export async function createSessionToken(
 /**
  * Returns null for any invalid token rather than throwing, so callers can treat
  * "not signed in" and "forged cookie" identically.
+ *
+ * A token issued before session versions existed carries no `sessionVersion` and
+ * is refused — deliberate, because accepting it would mean an old token survived
+ * a password change. Deploying this signs everyone out once.
  */
 export async function verifySessionToken(
   token: string,
@@ -55,12 +68,17 @@ export async function verifySessionToken(
 
     const userId = payload.sub;
     const username = payload.username;
+    const sessionVersion = payload.sessionVersion;
 
-    if (typeof userId !== "string" || typeof username !== "string") {
+    if (
+      typeof userId !== "string" ||
+      typeof username !== "string" ||
+      typeof sessionVersion !== "number"
+    ) {
       return null;
     }
 
-    return { userId, username };
+    return { userId, username, sessionVersion };
   } catch {
     return null;
   }

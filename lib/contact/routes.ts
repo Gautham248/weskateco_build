@@ -44,9 +44,15 @@ export const REASONS: readonly ReasonGroup[] = [
   {
     group: "Products — Sphere & the WeSkate store",
     options: [
-      { value: "product-info", label: "Product details, sizing or availability" },
+      {
+        value: "product-info",
+        label: "Product details, sizing or availability",
+      },
       { value: "product-advice", label: "Help me choose the right setup" },
-      { value: "sphere", label: "Sphere Skateboards — pro decks, custom and team" },
+      {
+        value: "sphere",
+        label: "Sphere Skateboards — pro decks, custom and team",
+      },
     ],
   },
   {
@@ -59,8 +65,14 @@ export const REASONS: readonly ReasonGroup[] = [
     group: "Skateparks — WB Skateparks",
     options: [
       { value: "park-build", label: "Build a new skatepark" },
-      { value: "park-upgrade", label: "Repair, resurface or upgrade an existing park" },
-      { value: "park-consult", label: "Skatepark consultation or feasibility study" },
+      {
+        value: "park-upgrade",
+        label: "Repair, resurface or upgrade an existing park",
+      },
+      {
+        value: "park-consult",
+        label: "Skatepark consultation or feasibility study",
+      },
     ],
   },
   {
@@ -554,7 +566,13 @@ export const ROUTES: Record<string, RouteEntry> = {
         name: "parkAge",
         type: "select",
         label: "Age of the park",
-        options: ["Under 2 years", "2 – 5 years", "5 – 10 years", "Over 10 years", "Not sure"],
+        options: [
+          "Under 2 years",
+          "2 – 5 years",
+          "5 – 10 years",
+          "Over 10 years",
+          "Not sure",
+        ],
       },
       {
         name: "workType",
@@ -574,7 +592,12 @@ export const ROUTES: Record<string, RouteEntry> = {
         name: "originalBuilder",
         type: "select",
         label: "Who built the original park",
-        options: ["WB Skateparks", "Another contractor", "Built in-house", "Not known"],
+        options: [
+          "WB Skateparks",
+          "Another contractor",
+          "Built in-house",
+          "Not known",
+        ],
       },
       {
         name: "budget",
@@ -671,7 +694,12 @@ export const ROUTES: Record<string, RouteEntry> = {
         name: "timeline",
         type: "select",
         label: "When the output is needed",
-        options: ["Within 2 weeks", "Within a month", "1 – 3 months", "No fixed date"],
+        options: [
+          "Within 2 weeks",
+          "Within a month",
+          "1 – 3 months",
+          "No fixed date",
+        ],
       },
       {
         name: "docsLink",
@@ -725,7 +753,11 @@ export const ROUTES: Record<string, RouteEntry> = {
         type: "select",
         label: "Where you sell",
         required: true,
-        options: ["Physical store only", "Online only", "Both store and online"],
+        options: [
+          "Physical store only",
+          "Online only",
+          "Both store and online",
+        ],
       },
       {
         name: "bizAge",
@@ -1232,7 +1264,7 @@ export const SHARED_FIELDS: readonly RouteField[] = [
     type: "text",
     label: "Mobile number",
     required: true,
-    hint: "We verify this by OTP before the enquiry is submitted.",
+    hint: "So the team can call you about this enquiry.",
   },
   {
     name: "city",

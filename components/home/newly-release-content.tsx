@@ -96,21 +96,22 @@ export default function NewlyReleaseContent({
     const variant = slide.product.variants[0];
     if (!variant) return;
 
-    // Optimistic UI: badge and toast update instantly. addItem below performs
-    // the real server-side add.
-    addCartItem(variant, slide.product);
-    toast.success(`${slide.title} added to cart!`, {
-      position: "top-right",
-      style: {
-        backgroundColor: "#ffffff",
-        color: "#10b981",
-        borderColor: "#10b981",
-        position: "relative",
-        top: "60px",
-      },
-    });
-
+    // Same shape as the Shop Now row: the optimistic dispatch and the awaited
+    // server action must live in one transition, or React holds no optimistic
+    // value to revert and logs that the update happened outside a transition.
     startTransition(async () => {
+      addCartItem(variant, slide.product);
+      toast.success(`${slide.title} added to cart!`, {
+        position: "top-right",
+        style: {
+          backgroundColor: "#ffffff",
+          color: "#10b981",
+          borderColor: "#10b981",
+          position: "relative",
+          top: "60px",
+        },
+      });
+
       const error = await addItem(null, variant.id);
 
       if (error) {

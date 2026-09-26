@@ -8,6 +8,7 @@ import {
   getSecretKey,
   verifySessionToken,
 } from "lib/admin/session";
+import { SignJWT } from "jose";
 
 const SECRET = "a".repeat(48);
 const OTHER_SECRET = "b".repeat(48);
@@ -68,13 +69,27 @@ async function main() {
 
   console.log("\nsession tokens");
 
-  const session = { userId: "user-1", username: "gautham" };
+  const session = { userId: "user-1", username: "gautham", sessionVersion: 3 };
   const token = await createSessionToken(session, { secret: SECRET });
 
   equal(
-    "a token round-trips back to its session",
+    "a token round-trips back to its session, session version included",
     await verifySessionToken(token, { secret: SECRET }),
     session,
+  );
+
+  const legacySecretKey = new TextEncoder().encode(SECRET);
+  const issuedAt = Math.floor(Date.now() / 1000);
+  const legacyToken = await new SignJWT({ username: "gautham" })
+    .setProtectedHeader({ alg: "HS256" })
+    .setSubject("user-1")
+    .setIssuedAt(issuedAt)
+    .setExpirationTime(issuedAt + 60)
+    .sign(legacySecretKey);
+
+  check(
+    "a token with no session version is refused, so pre-version sessions cannot outlive a password change",
+    (await verifySessionToken(legacyToken, { secret: SECRET })) === null,
   );
   check(
     "a token signed with a different secret is rejected",

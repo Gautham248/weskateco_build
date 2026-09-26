@@ -1,7 +1,13 @@
 "use client";
 
 import clsx from "clsx";
-import { pageList } from "lib/admin/pagination";
+import {
+  pageList,
+  PRODUCT_RESULTS_NOUN,
+  resultsNoun,
+  resultsNounLabel,
+  type ResultsNoun,
+} from "lib/admin/pagination";
 
 export function ResultsPager({
   rangeStart,
@@ -10,6 +16,7 @@ export function ResultsPager({
   currentPage,
   totalPages,
   onPageChange,
+  noun = PRODUCT_RESULTS_NOUN,
 }: {
   rangeStart: number;
   rangeEnd: number;
@@ -17,16 +24,20 @@ export function ResultsPager({
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  /** What the rows are, so one shared pager stops calling every list "products". */
+  noun?: ResultsNoun;
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <span className="text-xs text-neutral-500 dark:text-neutral-400">
-        Showing {rangeStart}–{rangeEnd} of {total} product
-        {total === 1 ? "" : "s"}
+        Showing {rangeStart}–{rangeEnd} of {total} {resultsNoun(total, noun)}
       </span>
 
       {totalPages > 1 ? (
-        <nav aria-label="Product pages" className="flex items-center gap-1">
+        <nav
+          aria-label={resultsNounLabel(noun)}
+          className="flex items-center gap-1"
+        >
           <button
             type="button"
             onClick={() => onPageChange(currentPage - 1)}
