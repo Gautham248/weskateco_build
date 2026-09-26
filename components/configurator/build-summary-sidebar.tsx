@@ -1,5 +1,6 @@
 "use client";
 
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
 import clsx from "clsx";
 import type { ConfiguratorState, ConfiguratorItem } from "lib/configurator/types";
@@ -148,7 +149,10 @@ export function BuildSummarySidebar({
                   {item.productImage && (
                     <div className="relative mb-2 h-24 w-24 flex-shrink-0">
                       <Image
-                        src={item.productImage}
+                        src={shopifyImageUrl(
+                          item.productImage,
+                          SHOPIFY_IMAGE_WIDTH.thumb,
+                        )}
                         alt={item.productTitle}
                         fill
                         className="object-contain"

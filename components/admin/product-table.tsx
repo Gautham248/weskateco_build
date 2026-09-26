@@ -3,6 +3,7 @@
 import Price from "components/price";
 import clsx from "clsx";
 import type { AdminProductOverrideSummary } from "lib/admin/product-filters";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import type { ShopifyProductSummary } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,10 +57,14 @@ export function ProductTable({
                   <div className="flex items-center gap-3">
                     {image?.url ? (
                       <Image
-                        src={image.url}
+                        src={shopifyImageUrl(
+                          image.url,
+                          SHOPIFY_IMAGE_WIDTH.thumb,
+                        )}
                         alt={image.altText || title}
-                        width={image.width || 48}
-                        height={image.height || 48}
+                        width={48}
+                        height={48}
+                        sizes="48px"
                         className="h-12 w-12 shrink-0 rounded-sm bg-neutral-100 object-contain dark:bg-neutral-900"
                       />
                     ) : (

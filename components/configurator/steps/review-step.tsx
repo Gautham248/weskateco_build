@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { addConfiguratorBundle } from "components/cart/actions";
@@ -29,7 +30,7 @@ function ReviewLineItem({
       <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800">
         {item.productImage ? (
           <Image
-            src={item.productImage}
+            src={shopifyImageUrl(item.productImage, SHOPIFY_IMAGE_WIDTH.thumb)}
             alt={item.productTitle}
             fill
             sizes="64px"

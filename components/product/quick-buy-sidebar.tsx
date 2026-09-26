@@ -7,6 +7,7 @@ import { editCartItemVariantAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
 import { useModalHistory } from "lib/hooks/use-modal-history";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import { Product } from "lib/shopify/types";
 import Image from "next/image";
 import { Fragment, useEffect, useState, useTransition } from "react";
@@ -178,7 +179,10 @@ export function QuickBuySidebar({
                 {product.featuredImage ? (
                   <div className="relative aspect-square w-24 overflow-hidden rounded-sm bg-[#f4f4f4] dark:bg-neutral-900 flex-shrink-0 flex items-center justify-center">
                     <Image
-                      src={product.featuredImage.url}
+                      src={shopifyImageUrl(
+                        product.featuredImage.url,
+                        SHOPIFY_IMAGE_WIDTH.thumb,
+                      )}
                       alt={product.featuredImage.altText || product.title}
                       fill
                       sizes="96px"

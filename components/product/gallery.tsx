@@ -1,5 +1,6 @@
 "use client";
 
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
 import { useRef, useState } from "react";
 
@@ -65,7 +66,7 @@ export function Gallery({
               fill
               sizes="100vw"
               alt={image.altText || "Product image"}
-              src={image.src}
+              src={shopifyImageUrl(image.src, SHOPIFY_IMAGE_WIDTH.hero)}
               priority={idx === 0}
               onLoad={() => handleImageLoad(idx)}
             />
@@ -103,7 +104,7 @@ export function Gallery({
               fill
               sizes="(min-width: 1024px) 35vw, 100vw"
               alt={image.altText || "Product image"}
-              src={image.src}
+              src={shopifyImageUrl(image.src, SHOPIFY_IMAGE_WIDTH.hero)}
               priority={idx === 0}
               onLoad={() => handleImageLoad(idx)}
             />
