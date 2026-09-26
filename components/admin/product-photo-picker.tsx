@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -185,7 +186,7 @@ export function ProductPhotoPicker({
                   )}
                 >
                   <img
-                    src={photo.url}
+                    src={shopifyImageUrl(photo.url, SHOPIFY_IMAGE_WIDTH.thumb)}
                     alt={photo.altText || `Photo ${index + 1}`}
                     className="h-16 w-16 rounded-sm bg-neutral-100 object-contain dark:bg-neutral-900"
                   />

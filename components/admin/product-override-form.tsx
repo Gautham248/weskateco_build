@@ -11,6 +11,7 @@ import {
   deleteProductOverrideAction,
   saveProductOverrideAction,
 } from "lib/admin/actions";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -263,7 +264,7 @@ export function ProductOverrideForm({
                 className="relative rounded-sm border border-neutral-200 p-1 dark:border-neutral-800"
               >
                 <img
-                  src={url}
+                  src={shopifyImageUrl(url, SHOPIFY_IMAGE_WIDTH.thumb)}
                   alt={`Gallery position ${index + 1}`}
                   className="h-20 w-20 rounded-sm bg-neutral-100 object-contain dark:bg-neutral-900"
                 />
