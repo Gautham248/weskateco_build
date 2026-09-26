@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -276,7 +277,7 @@ export function ImageManager({
                   )}
                 >
                   <img
-                    src={image.url}
+                    src={shopifyImageUrl(image.url, SHOPIFY_IMAGE_WIDTH.thumb)}
                     alt={image.altText || "Shopify photo"}
                     className="h-24 w-full rounded-sm bg-neutral-100 object-contain dark:bg-neutral-900"
                   />

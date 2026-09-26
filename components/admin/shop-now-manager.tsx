@@ -22,6 +22,7 @@ import {
   type AdminProductFilters,
   type AdminProductOverrideSummary,
 } from "lib/admin/product-filters";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import type { ShopifyProductSummary } from "lib/shopify/types";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -327,7 +328,10 @@ export function ShopNowManager({
                         <div className="flex min-w-0 items-center gap-3">
                           {product.featuredImage?.url ? (
                             <img
-                              src={product.featuredImage.url}
+                              src={shopifyImageUrl(
+                                product.featuredImage.url,
+                                SHOPIFY_IMAGE_WIDTH.thumb,
+                              )}
                               alt={product.title}
                               className="h-10 w-10 flex-none rounded-sm bg-neutral-100 object-contain dark:bg-neutral-900"
                             />
@@ -420,7 +424,10 @@ export function ShopNowManager({
                     </span>
                     {item.thumbnailUrl ? (
                       <img
-                        src={item.thumbnailUrl}
+                        src={shopifyImageUrl(
+                          item.thumbnailUrl,
+                          SHOPIFY_IMAGE_WIDTH.thumb,
+                        )}
                         alt={item.title}
                         className="h-10 w-10 flex-none rounded-sm bg-neutral-100 object-contain dark:bg-neutral-900"
                       />

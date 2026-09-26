@@ -218,6 +218,35 @@ function main() {
   );
 
   check(
+    "the marker is carried structurally, not only as text",
+    describeAnswers("product-info", { productName: nested(DEEP) })[0]
+      ?.truncated === true,
+  );
+
+  // The rule the flag exists for. `answers` is unvalidated, so a submitter can send the
+  // marker text verbatim, and it has to read as something they typed rather than as
+  // truncation the panel performed.
+  check(
+    "a stored value equal to the marker is not reported as truncation",
+    describeAnswers("product-info", {
+      productName: "[nested value too deep to display]",
+    })[0]?.truncated === undefined,
+  );
+
+  check(
+    "a stored object shaped like the marker is not reported as truncation",
+    describeAnswers("product-info", {
+      productName: { truncated: true },
+    })[0]?.truncated === undefined,
+  );
+
+  check(
+    "an ordinary shallow value is never reported as truncation",
+    describeAnswers("product-info", { productName: "Sphere Heavy" })[0]
+      ?.truncated === undefined,
+  );
+
+  check(
     "the deep leaf never reaches the render",
     describeAnswers("product-info", { productName: nested(DEEP) }).every(
       (fact) => !fact.value.includes("SECRET-LEAF"),

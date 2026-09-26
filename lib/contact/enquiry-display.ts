@@ -18,6 +18,12 @@ export type AnswerFact = {
   key: string;
   label: string;
   value: string;
+  /**
+   * Set when the stored value was deeper than `MAX_ANSWER_DEPTH`, so only its marker
+   * survived. Absent means `value` is exactly what was stored — the two cases stay
+   * distinguishable even when the stored text happens to match the marker.
+   */
+  truncated?: true;
 };
 
 export type EnquiryContact = {
@@ -75,8 +81,21 @@ function labelLookup(reason: string): Map<string, LabelEntry> {
  */
 const MAX_ANSWER_DEPTH = 8;
 
-/** Shown in place of anything past the bound. Says what it is rather than going missing. */
+/**
+ * Shown in place of anything past the bound. Says what it is rather than going missing.
+ *
+ * Presentation only: `answers` is unvalidated, so a stored string can be exactly this
+ * text. Truncation is carried structurally by `TRUNCATED` and surfaces as
+ * `AnswerFact.truncated`, which is what the admin styles — so stored text and truncation
+ * can never be read as each other.
+ */
 const NESTED_TOO_DEEP = "[nested value too deep to display]";
+
+/**
+ * Stands in for a subtree that was not walked. An object compared by identity, so no
+ * stored value — not even one shaped like this — can be mistaken for it.
+ */
+const TRUNCATED = Object.freeze({ truncated: true });
 
 /**
  * Drops everything that carries no information: null, undefined, blank strings,
@@ -98,7 +117,7 @@ function prune(value: unknown, depth = 0): unknown {
   }
 
   if (depth >= MAX_ANSWER_DEPTH) {
-    return NESTED_TOO_DEEP;
+    return TRUNCATED;
   }
 
   if (Array.isArray(value)) {
@@ -126,36 +145,62 @@ function prune(value: unknown, depth = 0): unknown {
   return value;
 }
 
+/** A rendered value, and whether anything inside it had to be replaced by the marker. */
+type Formatted = {
+  text: string;
+  truncated: boolean;
+};
+
 /**
  * Arrays join for display, scalars stringify, and anything that pruned away is
  * omitted. A surviving object is serialised rather than dropped — it cannot
  * arrive through the form today, but hiding a stored value would be worse than
  * showing it raw.
  */
-function format(value: unknown): string | null {
+function format(value: unknown): Formatted | null {
   const pruned = prune(value);
 
   if (pruned === null) {
     return null;
   }
 
+  if (pruned === TRUNCATED) {
+    return { text: NESTED_TOO_DEEP, truncated: true };
+  }
+
   if (typeof pruned === "string") {
-    return pruned.trim();
+    return { text: pruned.trim(), truncated: false };
   }
 
   if (Array.isArray(pruned)) {
     const parts = pruned
       .map((entry) => format(entry))
-      .filter((part): part is string => part !== null);
+      .filter((part): part is Formatted => part !== null);
 
-    return parts.join(", ");
+    return {
+      text: parts.map((part) => part.text).join(", "),
+      truncated: parts.some((part) => part.truncated),
+    };
   }
 
   if (typeof pruned === "object") {
-    return JSON.stringify(pruned);
+    // The marker is an object, so it has to be swapped back to its text while
+    // serialising — otherwise a nested object renders as `{"truncated":true}`.
+    let truncated = false;
+
+    const text = JSON.stringify(pruned, (_key, entry) => {
+      if (entry === TRUNCATED) {
+        truncated = true;
+        return NESTED_TOO_DEEP;
+      }
+
+      return entry;
+    });
+
+    return { text, truncated };
   }
 
-  return String(pruned);
+  return { text: String(pruned), truncated: false };
 }
 
 /**
@@ -178,23 +223,24 @@ export function describeAnswers(
   const facts: (AnswerFact & { order: number })[] = [];
 
   for (const [key, raw] of Object.entries(record)) {
-    const value = format(raw);
+    const formatted = format(raw);
 
-    if (value === null) {
+    if (formatted === null) {
       continue;
     }
 
     facts.push({
       key,
       label: lookup.get(key)?.label ?? key,
-      value,
+      value: formatted.text,
+      ...(formatted.truncated ? { truncated: true as const } : {}),
       order: lookup.get(key)?.order ?? UNKNOWN_ORDER,
     });
   }
 
   return facts
     .sort((a, b) => a.order - b.order || a.key.localeCompare(b.key))
-    .map(({ key, label, value }) => ({ key, label, value }));
+    .map(({ order: _order, ...fact }) => fact);
 }
 
 /** The provenance fields, declared in the order they read best. */
@@ -222,9 +268,9 @@ export function describeMeta(meta: unknown): AnswerFact[] {
   const facts: (AnswerFact & { order: number })[] = [];
 
   for (const [key, raw] of Object.entries(record)) {
-    const value = format(raw);
+    const formatted = format(raw);
 
-    if (value === null) {
+    if (formatted === null) {
       continue;
     }
 
@@ -233,14 +279,15 @@ export function describeMeta(meta: unknown): AnswerFact[] {
     facts.push({
       key,
       label: known?.label ?? key,
-      value,
+      value: formatted.text,
+      ...(formatted.truncated ? { truncated: true as const } : {}),
       order: known?.order ?? UNKNOWN_ORDER,
     });
   }
 
   return facts
     .sort((a, b) => a.order - b.order || a.key.localeCompare(b.key))
-    .map(({ key, label, value }) => ({ key, label, value }));
+    .map(({ order: _order, ...fact }) => fact);
 }
 
 /**
@@ -250,14 +297,16 @@ export function describeMeta(meta: unknown): AnswerFact[] {
 export function summariseEnquiry(answers: unknown): EnquiryContact {
   const record = asRecord(answers);
 
-  const name = [format(record.firstName), format(record.lastName)]
-    .filter((part): part is string => part !== null)
+  const name = [record.firstName, record.lastName]
+    .map((part) => format(part))
+    .filter((part): part is Formatted => part !== null)
+    .map((part) => part.text)
     .join(" ");
 
   return {
     name,
-    email: format(record.email) ?? "",
-    phone: format(record.phone) ?? "",
+    email: format(record.email)?.text ?? "",
+    phone: format(record.phone)?.text ?? "",
   };
 }
 
