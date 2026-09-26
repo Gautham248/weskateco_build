@@ -4,6 +4,7 @@ import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -167,7 +168,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
                 className="relative h-full w-full flex-shrink-0"
               >
                 <Image
-                  src={img.url}
+                  src={shopifyImageUrl(img.url, SHOPIFY_IMAGE_WIDTH.card)}
                   alt={img.altText || title}
                   fill
                   sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"

@@ -9,6 +9,7 @@ import { useGoKwikCheckout } from "lib/gokwik";
 import { useModalHistory } from "lib/hooks/use-modal-history";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import type { CartItem } from "lib/shopify/types";
 import { createUrl } from "lib/utils";
 import Image from "next/image";
@@ -232,15 +233,17 @@ export default function CartModal() {
                                                     className="h-full w-full object-cover"
                                                     width={48}
                                                     height={48}
+                                                    sizes="48px"
                                                     alt={
                                                       item.merchandise.product
                                                         .featuredImage?.altText ||
                                                       item.merchandise.product.title
                                                     }
-                                                    src={
+                                                    src={shopifyImageUrl(
                                                       item.merchandise.product
-                                                        .featuredImage?.url || ""
-                                                    }
+                                                        .featuredImage?.url || "",
+                                                      SHOPIFY_IMAGE_WIDTH.thumb,
+                                                    )}
                                                   />
                                                 </div>
                                                 <div className="ml-2 flex flex-col justify-center">
@@ -346,7 +349,11 @@ export default function CartModal() {
                                           <div className="relative aspect-square w-20 overflow-hidden rounded-md bg-[#f4f4f4] dark:bg-neutral-900 flex-shrink-0 flex items-center justify-center">
                                             {item.merchandise.product.featuredImage ? (
                                               <Image
-                                                src={item.merchandise.product.featuredImage.url}
+                                                src={shopifyImageUrl(
+                                                  item.merchandise.product
+                                                    .featuredImage.url,
+                                                  SHOPIFY_IMAGE_WIDTH.thumb,
+                                                )}
                                                 alt={
                                                   item.merchandise.product.featuredImage.altText ||
                                                   item.merchandise.product.title

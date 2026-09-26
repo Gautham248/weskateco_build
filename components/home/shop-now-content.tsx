@@ -7,6 +7,7 @@ import { QuickBuySidebar } from "components/product/quick-buy-sidebar";
 import { SnapmintEmiBadge } from "components/product/snapmint-emi-badge";
 import type { ShopNowSlide } from "lib/catalog/shop-now";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
@@ -247,7 +248,7 @@ function ShopNowCard({
                 className="relative h-full w-full flex-shrink-0 touch-pan-x"
               >
                 <Image
-                  src={image.url}
+                  src={shopifyImageUrl(image.url, SHOPIFY_IMAGE_WIDTH.card)}
                   alt={image.altText}
                   fill
                   className="object-contain touch-pan-x"

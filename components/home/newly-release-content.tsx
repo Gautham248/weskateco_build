@@ -8,6 +8,7 @@ import { NewlyReleaseErrorBoundary } from "./newly-release-error-boundary";
 import clsx from "clsx";
 import type { NewlyReleasedSlide } from "lib/catalog/newly-released";
 import { getLocalizedPath } from "lib/i18n";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
@@ -229,7 +230,10 @@ export default function NewlyReleaseContent({
                       <div className="relative w-full aspect-[414/552]">
                         {slide.cardImage ? (
                           <Image
-                            src={slide.cardImage.url}
+                            src={shopifyImageUrl(
+                              slide.cardImage.url,
+                              SHOPIFY_IMAGE_WIDTH.card,
+                            )}
                             alt={slide.cardImage.altText}
                             fill
                             className="object-contain"
@@ -334,7 +338,10 @@ export default function NewlyReleaseContent({
                   >
                     {slide.heroImage ? (
                       <Image
-                        src={slide.heroImage.url}
+                        src={shopifyImageUrl(
+                          slide.heroImage.url,
+                          SHOPIFY_IMAGE_WIDTH.hero,
+                        )}
                         alt={slide.heroImage.altText}
                         fill
                         className="object-contain object-top"
@@ -373,10 +380,14 @@ export default function NewlyReleaseContent({
                     <div className="relative w-full h-[95%]">
                       {slide.heroImage ? (
                         <Image
-                          src={slide.heroImage.url}
+                          src={shopifyImageUrl(
+                            slide.heroImage.url,
+                            SHOPIFY_IMAGE_WIDTH.card,
+                          )}
                           alt={slide.heroImage.altText}
                           fill
                           className="object-contain"
+                          sizes="288px"
                           priority={idx === 0}
                         />
                       ) : null}
