@@ -1,6 +1,6 @@
-import services1 from "components/icons/skatepark/services1.png";
-import services2 from "components/icons/skatepark/services2.png";
-import services3 from "components/icons/skatepark/services3.png";
+import services1 from "components/icons/skatepark/services1.jpg";
+import services2 from "components/icons/skatepark/services2.jpg";
+import services3 from "components/icons/skatepark/services3.jpg";
 import Image from "next/image";
 
 const SERVICES = [
@@ -10,7 +10,7 @@ const SERVICES = [
     description:
       "Engaging with communities to ensure skatepark projects meet local needs, safety standards, and accessibility requirements.",
     image: services1,
-    alt: "Skatepark consultation and planning",
+    alt: "Skatepark construction crew lifting a steel rail into place on site",
   },
   {
     id: "design",
@@ -18,7 +18,7 @@ const SERVICES = [
     description:
       "Creating unique, functional, and aesthetically pleasing skatepark designs that offer fun and challenge in a supportive environment.",
     image: services2,
-    alt: "Skatepark architectural design and blueprints",
+    alt: "Designer working through skatepark plans and drawings",
   },
   {
     id: "construction",
@@ -26,7 +26,7 @@ const SERVICES = [
     description:
       "Bringing designs to life with precision, ensuring safety, durability, and an enjoyable experience for all users.",
     image: services3,
-    alt: "Skatepark concrete construction",
+    alt: "Skatepark bowl taking shape on site with excavators at work",
   },
 ];
 

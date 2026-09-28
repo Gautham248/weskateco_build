@@ -1,5 +1,4 @@
 import schoolBanner from "components/icons/school/school_banner.png";
-import schoolBannerMobile from "components/icons/school/school_banner_mobile.png";
 import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,19 +6,16 @@ import Link from "next/link";
 export default function SchoolHeroBanner({ locale }: { locale?: string }) {
   return (
     <section className="relative h-screen w-full overflow-hidden -mt-[72px]">
-      {/* Background Image */}
+      {/* Background Image — one asset serves every breakpoint */}
       <div className="absolute inset-0">
-        <picture>
-          <source srcSet={schoolBanner.src} media="(min-width: 768px)" />
-          <Image
-            src={schoolBannerMobile}
-            alt="School Hero background"
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority
-          />
-        </picture>
+        <Image
+          src={schoolBanner}
+          alt="School students with skateboards wearing helmets and pads"
+          fill
+          className="object-cover"
+          sizes="100vw"
+          priority
+        />
       </div>
       <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.1),rgba(0,0,0,0.1)),linear-gradient(310.04deg,rgba(0,0,0,0.45)_15%,rgba(0,0,0,0)_55%)]" />
       {/* Content Overlay */}
@@ -31,11 +27,11 @@ export default function SchoolHeroBanner({ locale }: { locale?: string }) {
               className="text-[clamp(32px,5.2vw,90px)] font-bold text-white tracking-[-1%] uppercase leading-[0.95] select-none whitespace-nowrap"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              FROM FIRST
+              SKATEBOARDING,
               <br />
-              PUSH-OFF TO
+              BUILT FOR
               <br />
-              OLYMPIC-LEVEL
+              SCHOOLS
             </h1>
           </div>
 

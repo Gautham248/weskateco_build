@@ -227,7 +227,7 @@ export default function NewlyReleaseContent({
                       }}
                       className="flex flex-col gap-4 w-full h-full cursor-pointer"
                     >
-                      <div className="relative w-full aspect-[414/552]">
+                      <div className="relative w-full aspect-[414/552] bg-white rounded-[16px] p-4 overflow-hidden">
                         {slide.cardImage ? (
                           <Image
                             src={shopifyImageUrl(

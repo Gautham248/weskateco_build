@@ -2,7 +2,6 @@ import more1 from "components/icons/school/more_1.png";
 import more2 from "components/icons/school/more_2.png";
 import more3 from "components/icons/school/more_3.png";
 import more4 from "components/icons/school/more_4.png";
-import more5 from "components/icons/school/more_5.jpg";
 import Image from "next/image";
 
 const cards = [
@@ -25,11 +24,6 @@ const cards = [
     image: more4,
     title: "Creates Healthy Habits",
     description: "Physical activity with creativity and self-expression.",
-  },
-  {
-    image: more5,
-    title: "Builds Resilience",
-    description: "Overcoming challenges builds confidence and character.",
   },
 ];
 

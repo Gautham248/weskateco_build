@@ -36,7 +36,7 @@ export default function NoSkateparkSection() {
   } = useCarousel(PLACES.length);
 
   return (
-    <section className="w-full bg-[#F4F4F6] py-12 md:py-[120px]">
+    <section className="w-full bg-white py-12 md:py-[120px]">
       <div className="mx-auto w-full max-w-(--breakpoint-2xl) px-4 lg:px-15 flex flex-col gap-8 md:gap-12">
         {/* Section Heading */}
         <h2

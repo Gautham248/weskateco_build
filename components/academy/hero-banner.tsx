@@ -1,5 +1,4 @@
-import academyBanner from "components/icons/academy/academy_banner.png";
-import academyMobileBanner from "components/icons/academy/academy_mobile_hero.png";
+import academyHero from "components/icons/academy/hero.png";
 import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,8 +9,8 @@ export default function AcademyHeroBanner({ locale }: { locale?: string }) {
       {/* Mobile Image */}
       <div className="absolute inset-0 md:hidden">
         <Image
-          src={academyMobileBanner}
-          alt="Academy Hero background"
+          src={academyHero}
+          alt="WeSkate Academy riders with their skateboards at the park"
           fill
           className="object-cover"
           priority
@@ -20,8 +19,8 @@ export default function AcademyHeroBanner({ locale }: { locale?: string }) {
       {/* Desktop Image */}
       <div className="absolute inset-0 hidden md:block">
         <Image
-          src={academyBanner}
-          alt="Academy Hero background"
+          src={academyHero}
+          alt="WeSkate Academy riders with their skateboards at the park"
           fill
           className="object-cover"
           priority
@@ -49,9 +48,10 @@ export default function AcademyHeroBanner({ locale }: { locale?: string }) {
               className="text-sm md:text-xl text-white leading-[130%] font-[400]"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              Whether you&apos;re a first-timer or Olympic-bound, WeSkate Academy
-              has a place for you—with group sessions at Cubbon Park, Indiranagar,
-              and CV Raman Nagar, plus one-on-one coaching anywhere in Bangalore.
+              Whether you&apos;re a first-timer or Olympic-bound, WeSkate
+              Academy has a place for you—with group sessions at Cubbon Park,
+              Indiranagar, and CV Raman Nagar, plus one-on-one coaching anywhere
+              in Bangalore.
             </p>
 
             <Link
