@@ -1,37 +1,29 @@
 import mission1 from "components/icons/skatepark/mission1.png";
 import mission2 from "components/icons/skatepark/mission2.png";
 import mission3 from "components/icons/skatepark/mission3.png";
-import mission4 from "components/icons/skatepark/mission4.png";
 import Image from "next/image";
 
 const MISSIONS = [
   {
     id: "mission1",
     src: mission1,
-    alt: "Skatepark concrete design",
+    alt: "Concrete bowl under construction with a cement mixer on site",
     aspect: "aspect-[754/581]",
     widthClass: "w-[300px] sm:w-[500px] md:w-[754px]",
   },
   {
     id: "mission2",
     src: mission2,
-    alt: "Ramp construction and skating",
+    alt: "Skater flipping above a concrete bank with spectators watching",
     aspect: "aspect-[361/342]",
     widthClass: "w-[180px] sm:w-[280px] md:w-[361px]",
   },
   {
     id: "mission3",
     src: mission3,
-    alt: "Design office workspace",
+    alt: "Designer reviewing skatepark plans and drawings",
     aspect: "aspect-[594/457]",
     widthClass: "w-[240px] sm:w-[400px] md:w-[594px]",
-  },
-  {
-    id: "mission4",
-    src: mission4,
-    alt: "Skatepark project build",
-    aspect: "aspect-[501/385]",
-    widthClass: "w-[220px] sm:w-[340px] md:w-[501px]",
   },
 ];
 
@@ -52,7 +44,8 @@ export default function OurMissionSection() {
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
             To foster the growth of skateboarding by designing and constructing
-            spaces that inspire creativity, inclusivity, and community engagement.
+            spaces that inspire creativity, inclusivity, and community
+            engagement.
           </p>
         </div>
       </div>

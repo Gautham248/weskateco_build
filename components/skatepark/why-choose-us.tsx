@@ -1,7 +1,7 @@
 "use client";
 
-import chooseBg from "components/icons/skatepark/choose_bg.png";
-import chooseMobileBg from "components/icons/skatepark/choose_mobile_bg.png";
+import chooseBg from "components/icons/skatepark/choose_bg.jpg";
+import chooseMobileBg from "components/icons/skatepark/choose_mobile_bg.jpg";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -173,9 +173,9 @@ export default function WhyChooseUsSection() {
                 className="text-sm md:text-lg leading-[130%] text-white/90 font-[400] max-w-[500px]"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                Delivering innovative skateparks through expert design, precision
-                construction, and a commitment to quality, safety, and lasting
-                impact.
+                Delivering innovative skateparks through expert design,
+                precision construction, and a commitment to quality, safety, and
+                lasting impact.
               </p>
             </div>
 
@@ -247,7 +247,8 @@ export default function WhyChooseUsSection() {
           ref={scrollRef}
           className="w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth"
           style={{
-            clipPath: leftClip !== "0px" ? `inset(0px 0px 0px ${leftClip})` : "none",
+            clipPath:
+              leftClip !== "0px" ? `inset(0px 0px 0px ${leftClip})` : "none",
           }}
         >
           <div className="flex gap-4 items-stretch min-w-max pb-0 px-4 lg:pl-[calc((100vw-120px)*0.35+60px)] 2xl:pl-[calc((100vw-1536px)/2+555px)] pr-4 lg:pr-15 2xl:pr-[calc((100vw-1536px)/2+3.75rem)]">

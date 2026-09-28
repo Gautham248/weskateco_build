@@ -12,13 +12,13 @@ export default function ClassroomSection() {
               className="text-[clamp(24px,4.2vw,60px)] font-bold tracking-tight uppercase leading-[0.93] text-black md:text-white select-none"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              WHAT IF INDIA&apos;S NEXT
+              SKATEBOARDING IS A SPORT
               <br />
-              OLYMPIC SKATEBOARDER
+              BUILT AROUND TRYING,
               <br />
-              IS SITTING IN YOUR
+              FALLING, ADAPTING AND
               <br />
-              CLASSROOM?
+              TRYING AGAIN
             </h2>
           </div>
 
@@ -27,7 +27,7 @@ export default function ClassroomSection() {
             <div className="relative max-h-full max-w-full overflow-hidden rounded-2xl sm:rounded-3xl shadow-sm">
               <Image
                 src={classroomImg}
-                alt="Classroom skateboarding"
+                alt="Student skateboarding over a rail in front of a crowd"
                 className="w-full h-auto md:w-auto md:h-auto md:max-h-[42vh] lg:max-h-[48vh] object-contain rounded-[16px]"
                 priority
               />
