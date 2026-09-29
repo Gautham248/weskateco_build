@@ -28,7 +28,7 @@ export default function MegaMenuLeft({
     { title: t("nav.apparel"),         href: "/store/apparel-1", id: "apparel"                 },
     { title: t("nav.protective_gear"), href: "/store/protection-gears", id: "protective_gear", },
     { title: t("nav.brands"),          href: "/store", id: "brands"                            },
-    { title: t("nav.configurator"),        href: "/configurator", id: "configurator"           },
+    { title: t("nav.configurator"),    href: "/configurator", id: "configurator"               },
   ];
 
   return (
