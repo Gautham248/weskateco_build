@@ -58,7 +58,13 @@ export default function MegaMenuRight({
             showPanel ? "w-[65%]" : "w-[55%]"
           }`}
         >
-          <Image src={shopImg1} alt="Shop Skateboards" fill className="object-cover transition-transform duration-500 group-hover:scale-105" priority />
+          <Image
+            src={shopImg1}
+            alt="Shop Skateboards"
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            priority
+          />
         </Link>
 
         {/* Right Composite Component */}

@@ -1,187 +1,141 @@
-import { deriveFiltersForCategory } from "../lib/filters/category-filter-config";
+import {
+  CATEGORY_GROUP,
+  SORT_GROUP,
+  getLabelForFilterValue,
+} from "../lib/filters/category-filter-config";
+import {
+  countMatching,
+  deriveFilterGroups,
+  normalizeValue,
+  normalizeVendor,
+  productMatches,
+} from "../lib/filters/derive";
 import { Product } from "../lib/shopify/types";
 
-// Mock Products for test validation
+/**
+ * Exercises the derived filter groups and the shared matcher.
+ *
+ * The previous version of this file tested a hand-copied version of the filter
+ * logic against hand-written mock products, which is how the real drawer ended
+ * up offering options that matched nothing: the copy being tested was not the
+ * copy the drawer ran. These tests now exercise `lib/filters/derive` itself, and
+ * the fixtures use real Shopify option names and values from the live
+ * catalogue.
+ */
+
+function product(overrides: Partial<Product>): Product {
+  return {
+    id: overrides.handle ?? "p",
+    handle: "p",
+    title: "Product",
+    description: "",
+    descriptionHtml: "",
+    vendor: "",
+    availableForSale: true,
+    tags: [],
+    options: [],
+    images: [],
+    collections: { edges: [] },
+    priceRange: {
+      minVariantPrice: { amount: "1000", currencyCode: "INR" },
+      maxVariantPrice: { amount: "1000", currencyCode: "INR" },
+    },
+    variants: [],
+    ...overrides,
+  } as unknown as Product;
+}
+
+/**
+ * Shapes copied from the live catalogue: vendors like "Sphere Skateboards",
+ * Size values like `7.75` and `8`, a `SIZES` option in millimetres, and a
+ * `Title` placeholder Shopify always emits.
+ */
 const MOCK_PRODUCTS: Product[] = [
-  {
-    id: "prod-1",
-    handle: "popsicle-deck-8",
-    title: "Classic Popsicle Deck 8.0\"",
-    description: "7-ply maple construction popsicle shape skateboard deck.",
+  product({
+    handle: "oldman-sphere-deck",
+    title: "Oldman Sphere X Akil Deck",
+    vendor: "Sphere Skateboards",
+    tags: ["SKATE DECK"],
     priceRange: {
-      minVariantPrice: { amount: "1800", currencyCode: "INR" },
-      maxVariantPrice: { amount: "1800", currencyCode: "INR" },
+      minVariantPrice: { amount: "2899", currencyCode: "INR" },
+      maxVariantPrice: { amount: "2899", currencyCode: "INR" },
     },
-    vendor: "Sphere",
-    tags: ["skateboard", "deck", "8.0", "medium", "popsicle"],
     options: [
-      { id: "opt-1", name: "Width", values: ["8.0"] },
-      { id: "opt-2", name: "Color", values: ["Black"] },
+      { id: "o1", name: "Size", values: ["8", "8.25"] },
+      { id: "o2", name: "Concave", values: ["Medium"] },
+      { id: "o3", name: "Shape", values: ["Rounded End"] },
+      { id: "o4", name: "Title", values: ["Default Title"] },
     ],
-    featuredImage: { url: "", altText: "", width: 100, height: 100 },
-    images: [],
-    availableForSale: true,
-    variants: [],
-    updatedAt: "2026-07-19T00:00:00Z",
-  },
-  {
-    id: "prod-2",
-    handle: "surfskate-complete-30",
-    title: "Mon Amour Surfskate Complete 30\"",
-    description: "Perfect cruiser complete surfskate board for street surfing.",
+  }),
+  product({
+    handle: "bubblegum-left-deck",
+    title: "Sphere Bubblegum Left Deck",
+    vendor: "Sphere Skateboards",
+    tags: ["SKATE DECK"],
     priceRange: {
-      minVariantPrice: { amount: "7500", currencyCode: "INR" },
-      maxVariantPrice: { amount: "7500", currencyCode: "INR" },
+      minVariantPrice: { amount: "2199", currencyCode: "INR" },
+      maxVariantPrice: { amount: "2199", currencyCode: "INR" },
     },
-    vendor: "Mon Amour Nepal",
-    tags: ["surfskate", "complete", "30", "intermediate", "orange"],
     options: [
-      { id: "opt-3", name: "Size", values: ["30\""] },
-      { id: "opt-4", name: "Color", values: ["Orange"] },
+      { id: "o1", name: "Size", values: ["8.125"] },
+      { id: "o2", name: "Concave", values: ["Mellow"] },
+      { id: "o3", name: "Shape", values: ["Squared End"] },
     ],
-    featuredImage: { url: "", altText: "", width: 100, height: 100 },
-    images: [],
-    availableForSale: true,
-    variants: [],
-    updatedAt: "2026-07-19T00:00:00Z",
-  },
-  {
-    id: "prod-3",
-    handle: "wes-tee-black",
-    title: "We Skate Co Classic Tee - Black",
-    description: "Premium cotton apparel skater tee.",
+  }),
+  product({
+    handle: "tropical-wheels",
+    title: "Toucan Tropical Wheels 53mm 55mm",
+    vendor: "Toucan Distribution",
+    tags: ["SKATEBOARD"],
     priceRange: {
       minVariantPrice: { amount: "1200", currencyCode: "INR" },
       maxVariantPrice: { amount: "1200", currencyCode: "INR" },
     },
+    options: [
+      { id: "o1", name: "SIZES", values: ["53mm", "55mm"] },
+      { id: "o2", name: "Wheel Size", values: ["53mm", "55mm"] },
+    ],
+  }),
+  product({
+    handle: "classic-tee-black",
+    title: "We Skate Co Classic Tee - Black",
     vendor: "Wasted Angels",
-    tags: ["apparel", "tee", "black", "cotton"],
-    options: [{ id: "opt-5", name: "Size", values: ["M", "L", "XL"] }],
-    featuredImage: { url: "", altText: "", width: 100, height: 100 },
-    images: [],
-    availableForSale: true,
-    variants: [],
-    updatedAt: "2026-07-19T00:00:00Z",
-  }
-] as unknown as Product[];
-
-function toggleFilterValue(
-  currentVal: string | undefined,
-  optionVal: string
-): string | null {
-  const list = currentVal ? currentVal.split(",").filter(Boolean) : [];
-  const idx = list.indexOf(optionVal);
-  if (idx > -1) {
-    list.splice(idx, 1);
-  } else {
-    list.push(optionVal);
-  }
-  return list.length > 0 ? list.join(",") : null;
-}
+    tags: ["tshirt"],
+    priceRange: {
+      minVariantPrice: { amount: "699", currencyCode: "INR" },
+      maxVariantPrice: { amount: "699", currencyCode: "INR" },
+    },
+    options: [{ id: "o1", name: "Size", values: ["S", "M", "L"] }],
+  }),
+];
 
 function applyFilterMap(
   products: Product[],
-  filters: Record<string, string>
+  filters: Record<string, string>,
 ): Product[] {
-  let result = [...products];
-
-  Object.entries(filters).forEach(([key, value]) => {
-    if (!value || key === "sort") return;
-    const values = value.split(",").filter(Boolean);
-    if (values.length === 0) return;
-
-    if (key === "price") {
-      result = result.filter((p) => {
-        const price = Number(p.priceRange.minVariantPrice.amount);
-        return values.some((val) => {
-          const parts = val.split("-").map(Number);
-          const min = parts[0] ?? 0;
-          const max = parts[1] ?? Infinity;
-          return price >= min && price <= max;
-        });
-      });
-    } else if (key === "color") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.options?.some(
-              (o) =>
-                o.name.toLowerCase() === "color" &&
-                o.values.some((v) => v.toLowerCase() === vl)
-            ) ||
-            p.tags?.some((t) => t.toLowerCase() === vl) ||
-            p.title.toLowerCase().includes(vl)
-          );
-        });
-      });
-    } else if (key === "level") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.tags?.some((t) => t.toLowerCase() === vl) ||
-            p.title.toLowerCase().includes(vl)
-          );
-        });
-      });
-    } else if (key === "size") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.options?.some((o) =>
-              o.values.some((v) => v.toLowerCase() === vl)
-            ) || p.tags?.some((t) => t.toLowerCase().includes(vl))
-          );
-        });
-      });
-    } else if (key === "brand") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.vendor?.toLowerCase().replace(/\s+/g, "-") === vl ||
-            p.tags?.some((t) => t.toLowerCase() === vl) ||
-            p.title.toLowerCase().includes(vl)
-          );
-        });
-      });
-    } else {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.tags?.some((t) => t.toLowerCase().includes(vl)) ||
-            p.title.toLowerCase().includes(vl) ||
-            p.options?.some((o) =>
-              o.values.some((v) => v.toLowerCase().includes(vl))
-            )
-          );
-        });
-      });
-    }
-  });
-
-  return result;
+  return products.filter((p) =>
+    Object.entries(filters).every(([groupId, value]) => {
+      if (!value) return true;
+      const selected = value.split(",").filter(Boolean);
+      if (selected.length === 0) return true;
+      return selected.some((optionValue) =>
+        productMatches(p, groupId, optionValue),
+      );
+    }),
+  );
 }
 
 function simulateCount(
   products: Product[],
   activeFilters: Record<string, string>,
   groupId: string,
-  optionValue: string
+  optionValue: string,
 ): number {
-  const testFilters = { ...activeFilters };
-  testFilters[groupId] = optionValue;
-  return applyFilterMap(products, testFilters).length;
+  return countMatching(products, { ...activeFilters, [groupId]: optionValue });
 }
 
-// ---------------------------------------------------------------------------
-// Test Execution Block
-// ---------------------------------------------------------------------------
 function runTests() {
-  console.log("🧪 STARTING FILTRATION SYSTEM END-TO-END TESTS...");
+  console.log("🧪 STARTING FILTRATION SYSTEM END-TO-ENT TESTS...");
   let passed = 0;
   let failed = 0;
 
@@ -195,105 +149,175 @@ function runTests() {
     }
   }
 
-  // 1. Check Category configuration mapping
-  const skateFilters = deriveFiltersForCategory("skateboards");
+  // 1. Normalisation. These mismatches were the original bug: the old config
+  //    offered `8.0` while Shopify stores `8`.
+  assert(normalizeValue("8.0") === normalizeValue("8"), "8.0 normalises to 8");
   assert(
-    skateFilters.some((f) => f.id === "brand") && !skateFilters.some((f) => f.id === "level"),
-    "deriveFiltersForCategory('skateboards') resolves with Brand and without Level filters"
+    normalizeValue('7.75"') === normalizeValue("7.75"),
+    '7.75" normalises to 7.75',
+  );
+  assert(
+    normalizeValue("Default Title") === "",
+    "Shopify's 'Default Title' placeholder is not a filterable value",
+  );
+  assert(
+    normalizeValue("Rounded End") === "rounded end",
+    "Multi-word values normalise consistently",
+  );
+  assert(
+    normalizeVendor("Sphere Skateboards") === "sphere-skateboards",
+    "Vendor slugifies to a usable filter value",
   );
 
-  const surfFilters = deriveFiltersForCategory("surfskates");
+  // 2. Derived groups only contain options that match something.
+  const groups = deriveFilterGroups(MOCK_PRODUCTS, [
+    SORT_GROUP,
+    CATEGORY_GROUP,
+  ]);
+  const groupIds = groups.map((g) => g.id);
+
   assert(
-    surfFilters.some((f) => f.id === "brand") && !surfFilters.some((f) => f.id === "level"),
-    "deriveFiltersForCategory('surfskates') resolves with Brand and without Level filters"
+    groupIds.includes("category") && groupIds.includes("sort"),
+    "Static groups (sorting, category) are preserved",
+  );
+  assert(groupIds.includes("brand"), "Brand group is derived from vendor");
+  assert(groupIds.includes("price"), "Price group is derived from prices");
+  assert(
+    groupIds.includes("size") && groupIds.includes("concave"),
+    "Size and Concave groups come from real Shopify options",
+  );
+  assert(
+    groupIds.indexOf("price") < groupIds.indexOf("brand"),
+    "Groups render in a sensible order (price before brand)",
   );
 
-  const apparelFilters = deriveFiltersForCategory("apparel-1");
+  const sizeGroup = groups.find((g) => g.id === "size")!;
   assert(
-    apparelFilters.some((f) => f.id === "size") &&
-      !!apparelFilters.find((f) => f.id === "size")?.options.some((o) => o.value === "m"),
-    "deriveFiltersForCategory('apparel-1') resolves sizes like 'm'"
+    sizeGroup.options.some((o) => o.value === "8") &&
+      !sizeGroup.options.some((o) => o.value === "8.0"),
+    "Size options use Shopify's own values, not a hand-written list",
+  );
+  assert(
+    sizeGroup.options.some((o) => o.value === "53mm") ||
+      !groupIds.includes("size"),
+    "Millimetre sizes do not masquerade as deck widths",
   );
 
-  const baseFilters = deriveFiltersForCategory("");
+  const deadOptions = groups.flatMap((group) =>
+    group.options
+      .filter(
+        (option) =>
+          group.type !== "category" &&
+          group.id !== "sort" &&
+          countMatching(MOCK_PRODUCTS, { [group.id]: option.value }) === 0,
+      )
+      .map((option) => `${group.id}:${option.value}`),
+  );
   assert(
-    baseFilters.length === 4 && baseFilters.some((f) => f.id === "category"),
-    "Empty handle maps correctly to base configuration filters"
+    deadOptions.length === 0,
+    `No derived option matches zero products (found: ${deadOptions.join(", ") || "none"})`,
   );
 
-  // 2. Test Filtering Logic on mock products
-  const priceFiltered = applyFilterMap(MOCK_PRODUCTS, { price: "0-2000" });
+  // 3. Matching.
   assert(
-    priceFiltered.length === 2 &&
-      priceFiltered.some((p) => p.handle === "wes-tee-black") &&
-      priceFiltered.some((p) => p.handle === "popsicle-deck-8"),
-    "Price filtering correctly returns products under 2000 INR"
+    productMatches(MOCK_PRODUCTS[0]!, "size", "8"),
+    "Size '8' matches a product whose Size option contains 8",
+  );
+  assert(
+    !productMatches(MOCK_PRODUCTS[0]!, "size", "8.125"),
+    "Size '8.125' does not match a product offering only 8 and 8.25",
+  );
+  assert(
+    productMatches(MOCK_PRODUCTS[0]!, "brand", "sphere-skateboards"),
+    "Brand matches a slugified vendor",
+  );
+  assert(
+    productMatches(MOCK_PRODUCTS[3]!, "size", "m"),
+    "Apparel size 'm' matches case-insensitively",
+  );
+  assert(
+    productMatches(MOCK_PRODUCTS[2]!, "wheel_size", "53mm"),
+    "Wheel Size group matches its own option",
+  );
+  // `SIZES` is folded into the size group on purpose — wheel millimetre sizes
+  // would otherwise be unfilterable, since only a few products carry a
+  // `Wheel Size` option. It must still come from the option, not the title.
+  assert(
+    productMatches(MOCK_PRODUCTS[2]!, "size", "53mm"),
+    "A Size filter matches 53mm via the product's SIZES option",
+  );
+  assert(
+    !productMatches(MOCK_PRODUCTS[0]!, "size", "53mm"),
+    "A Size filter does not match a deck on title text alone",
   );
 
-  const colorFiltered = applyFilterMap(MOCK_PRODUCTS, { color: "orange" });
+  // 4. Filtering the grid.
+  const priceFiltered = applyFilterMap(MOCK_PRODUCTS, { price: "0-1000" });
   assert(
-    colorFiltered.length === 1 && colorFiltered[0]?.handle === "surfskate-complete-30",
-    "Color filtering correctly resolves values from tags/options"
+    priceFiltered.length === 1 &&
+      priceFiltered[0]?.handle === "classic-tee-black",
+    "Price filtering returns only products under 1000",
   );
 
-  const compoundFiltered = applyFilterMap(MOCK_PRODUCTS, {
-    price: "0-2000",
-    color: "black",
+  const sizeFiltered = applyFilterMap(MOCK_PRODUCTS, { size: "8" });
+  assert(
+    sizeFiltered.length === 1 &&
+      sizeFiltered[0]?.handle === "oldman-sphere-deck",
+    "Size filtering returns the deck offering 8",
+  );
+
+  const multiBrand = applyFilterMap(MOCK_PRODUCTS, {
+    brand: "sphere-skateboards,wasted-angels",
   });
   assert(
-    compoundFiltered.length === 2 &&
-      compoundFiltered.some((p) => p.handle === "popsicle-deck-8") &&
-      compoundFiltered.some((p) => p.handle === "wes-tee-black"),
-    "Multiple filters combine correctly"
+    multiBrand.length === 3,
+    "Multi-brand select returns the union of both vendors",
   );
 
-  const multiBrandFiltered = applyFilterMap(MOCK_PRODUCTS, { brand: "sphere,wasted-angels" });
+  const multiSize = applyFilterMap(MOCK_PRODUCTS, { size: "s,l" });
   assert(
-    multiBrandFiltered.length === 2 &&
-      multiBrandFiltered.some((p) => p.handle === "popsicle-deck-8") &&
-      multiBrandFiltered.some((p) => p.handle === "wes-tee-black"),
-    "Multi-brand select returns union of Sphere and Wasted Angels products"
+    multiSize.length === 1 && multiSize[0]?.handle === "classic-tee-black",
+    "Multi-size select unions values within one group",
   );
 
-  const multiColorFiltered = applyFilterMap(MOCK_PRODUCTS, { color: "orange,black" });
+  const compound = applyFilterMap(MOCK_PRODUCTS, {
+    brand: "sphere-skateboards",
+    size: "8.125",
+  });
   assert(
-    multiColorFiltered.length === 3 &&
-      multiColorFiltered.some((p) => p.handle === "surfskate-complete-30") &&
-      multiColorFiltered.some((p) => p.handle === "popsicle-deck-8") &&
-      multiColorFiltered.some((p) => p.handle === "wes-tee-black"),
-    "Multi-color select returns union of orange and black products"
+    compound.length === 1 && compound[0]?.handle === "bubblegum-left-deck",
+    "Multiple filters combine (AND across groups)",
   );
 
-  // 3. Option Simulating Counts (For Disabling Option Logic)
-  // Ensure that option counts are computed independently of other active choices in their own group
-  const sphereCountWithBrandSelected = simulateCount(
+  // 5. Drawer counts agree with what the grid would show.
+  const sphereWithOtherBrand = simulateCount(
+    MOCK_PRODUCTS,
+    {},
+    "brand",
+    "sphere-skateboards",
+  );
+  assert(
+    sphereWithOtherBrand === 2,
+    "Brand option count reflects the products actually carrying that vendor",
+  );
+
+  // Selecting an option within a group replaces that group's selection, so the
+  // preview count matches what clicking it in the drawer would produce.
+  const switchedBrand = simulateCount(
     MOCK_PRODUCTS,
     { brand: "wasted-angels" },
     "brand",
-    "sphere"
+    "sphere-skateboards",
   );
   assert(
-    sphereCountWithBrandSelected === 1,
-    "Brand 'sphere' count simulates as 1 product independently of selected brand 'wasted-angels'"
+    switchedBrand === 2,
+    "Switching brands within a group recomputes the count from the new value",
   );
 
-  const orangeApparelCount = simulateCount(
-    MOCK_PRODUCTS,
-    { brand: "wasted-angels" }, // Apparel item brand
-    "color",
-    "orange" // Not applicable to this brand in our mock products
-  );
-  assert(
-    orangeApparelCount === 0,
-    "Option simulating resolves to 0 when filter combinations across groups produce no products"
-  );
-
-  // 4. Test price range formatting utility
-  const { getLabelForFilterValue } = require("../lib/filters/category-filter-config");
   const priceLabel = getLabelForFilterValue("price", "1200-7500", []);
   assert(
     priceLabel === "₹1,200 - ₹7,500",
-    "getLabelForFilterValue('price', '1200-7500') formats properly as currency range"
+    "getLabelForFilterValue('price', ...) formats as a currency range",
   );
 
   console.log(`\n🎉 TEST RESULTS: ${passed} Passed, ${failed} Failed.`);

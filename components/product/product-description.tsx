@@ -171,7 +171,11 @@ export function ProductDescription({
       </div>
 
       {/* Options Selectors */}
-      <VariantSelector options={product.options} variants={product.variants} />
+      <VariantSelector
+        options={product.options}
+        variants={product.variants}
+        locale={locale}
+      />
 
       {/* Snapmint EMI Banner */}
       <SnapmintEmiCartBanner

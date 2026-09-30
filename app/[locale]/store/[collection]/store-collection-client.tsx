@@ -5,6 +5,11 @@ import FilterSortBar from "components/layout/search/filter-sort-bar";
 import ProductCard, {
   ProductCardSkeleton,
 } from "components/product/product-card";
+import {
+  CATEGORY_PREFIXES,
+  getParentCategory,
+} from "lib/filters/category-filter-config";
+import { productMatches } from "lib/filters/derive";
 import { createTranslator } from "lib/i18n";
 import { Collection, Product } from "lib/shopify/types";
 import Link from "next/link";
@@ -45,9 +50,8 @@ export default function StoreCollectionClient({
   // Local state
   const [activeHandle, setActiveHandle] = useState(initialCollectionHandle);
   // Generalised filter map: { color: "blue", price: "0-2000", size: "8.0", ... }
-  const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    initialFilters,
-  );
+  const [activeFilters, setActiveFilters] =
+    useState<Record<string, string>>(initialFilters);
   const [sort, setSort] = useState<string>(initialSort);
   const [page, setPage] = useState<number>(initialPage);
   const [isPending, startTransition] = useTransition();
@@ -138,68 +142,12 @@ export default function StoreCollectionClient({
     return handles;
   }, [productsByCollection, allCollections]);
 
-  // Mapping of subcollection handles to their main category handle
-  const SUB_TO_PARENT: Record<string, string> = {
-    // Skateboards
-    skateboards: "skateboards",
-    decks: "skateboards",
-    trucks: "skateboards",
-    wheels: "skateboards",
-    completes: "skateboards",
-    accessories: "skateboards",
-    "skateboard-completes": "skateboards",
-    "skateboard-decks": "skateboards",
-    "skateboard-trucks": "skateboards",
-    "skateboard-wheels": "skateboards",
-    "skateboard-accessories": "skateboards",
-
-    // Surfskates
-    surfskates: "surfskates",
-    "surfskate-completes": "surfskates",
-    "surfskate-decks": "surfskates",
-    "surfskate-trucks": "surfskates",
-    "surfskate-wheels": "surfskates",
-    "surfskate-accessories": "surfskates",
-
-    // Apparel
-    "apparel-1": "apparel-1",
-    apparel: "apparel-1",
-
-    // Protection Gears
-    "protection-gears": "protection-gears",
-    "protective-gears": "protection-gears",
-    helmets: "protection-gears",
-    pads: "protection-gears",
-    gloves: "protection-gears",
-  };
-
-  const CATEGORY_PREFIXES: Record<string, string> = {
-    skateboards: "skateboard",
-    surfskates: "surfskate",
-    "apparel-1": "apparel",
-    "protection-gears": "protection",
-  };
-
-  const activeParent = useMemo(() => {
-    let parent = SUB_TO_PARENT[activeHandle];
-    if (!parent && activeHandle) {
-      const handleLower = activeHandle.toLowerCase();
-      if (handleLower.includes("skateboard")) {
-        parent = "skateboards";
-      } else if (handleLower.includes("surfskate")) {
-        parent = "surfskates";
-      } else if (handleLower.includes("apparel")) {
-        parent = "apparel-1";
-      } else if (
-        handleLower.includes("protect") ||
-        handleLower.includes("helmet") ||
-        handleLower.includes("pad")
-      ) {
-        parent = "protection-gears";
-      }
-    }
-    return parent;
-  }, [activeHandle]);
+  // Parent mapping and title prefixes live in lib/filters/category-filter-config
+  // so the drawer and this client agree on them.
+  const activeParent = useMemo(
+    () => getParentCategory(activeHandle),
+    [activeHandle],
+  );
 
   // Compute collections dynamically for tab/subcollection pills
   const collections = useMemo(() => {
@@ -341,99 +289,19 @@ export default function StoreCollectionClient({
   // Raw products for the active collection
   const rawProducts = productsByCollection[activeHandle] || [];
 
-  // Apply all active filters generically
-  let filteredProducts = [...rawProducts];
-
-  Object.entries(activeFilters).forEach(([key, value]) => {
-    if (!value) return;
-    const values = value.split(",").filter(Boolean);
-    if (values.length === 0) return;
-
-    if (key === "price") {
-      filteredProducts = filteredProducts.filter((product) => {
-        const productPrice = Number(product.priceRange.minVariantPrice.amount);
-        return values.some((val) => {
-          const parts = val.split("-").map(Number);
-          const minPrice = parts[0] ?? 0;
-          const maxPrice = parts[1] ?? Infinity;
-          return productPrice >= minPrice && productPrice <= maxPrice;
-        });
-      });
-    } else if (key === "color") {
-      filteredProducts = filteredProducts.filter((product) => {
-        return values.some((val) => {
-          const valLower = val.toLowerCase();
-          const matchesOption = product.options?.some(
-            (opt) =>
-              opt.name.toLowerCase() === "color" &&
-              opt.values.some((v) => v.toLowerCase() === valLower),
-          );
-          const matchesTag = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower,
-          );
-          const matchesTitle = product.title.toLowerCase().includes(valLower);
-          const matchesDesc = product.description
-            ?.toLowerCase()
-            .includes(valLower);
-          return matchesOption || matchesTag || matchesTitle || matchesDesc;
-        });
-      });
-    } else if (key === "level") {
-      filteredProducts = filteredProducts.filter((product) => {
-        return values.some((val) => {
-          const valLower = val.toLowerCase();
-          const matchesTag = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower,
-          );
-          const matchesTitle = product.title.toLowerCase().includes(valLower);
-          const matchesDesc = product.description
-            ?.toLowerCase()
-            .includes(valLower);
-          return matchesTag || matchesTitle || matchesDesc;
-        });
-      });
-    } else if (key === "size") {
-      filteredProducts = filteredProducts.filter((product) => {
-        return values.some((val) => {
-          const valLower = val.toLowerCase();
-          const matchesOption = product.options?.some((opt) =>
-            opt.values.some((v) => v.toLowerCase() === valLower),
-          );
-          const matchesTag = product.tags?.some((tag) =>
-            tag.toLowerCase().includes(valLower),
-          );
-          return matchesOption || matchesTag;
-        });
-      });
-    } else if (key === "brand") {
-      filteredProducts = filteredProducts.filter((product) => {
-        return values.some((val) => {
-          const valLower = val.toLowerCase();
-          const vendorMatch =
-            product.vendor?.toLowerCase().replace(/\s+/g, "-") === valLower;
-          const tagMatch = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower,
-          );
-          const titleMatch = product.title.toLowerCase().includes(valLower);
-          return vendorMatch || tagMatch || titleMatch;
-        });
-      });
-    } else {
-      filteredProducts = filteredProducts.filter((product) => {
-        return values.some((val) => {
-          const valLower = val.toLowerCase();
-          const matchesTag = product.tags?.some((tag) =>
-            tag.toLowerCase().includes(valLower),
-          );
-          const matchesTitle = product.title.toLowerCase().includes(valLower);
-          const matchesOption = product.options?.some((opt) =>
-            opt.values.some((v) => v.toLowerCase().includes(valLower)),
-          );
-          return matchesTag || matchesTitle || matchesOption;
-        });
-      });
-    }
-  });
+  // Apply all active filters. Matching lives in lib/filters/derive so this
+  // grid and the drawer's counts and disabled states always agree — they were
+  // previously separate copies of the same rules.
+  let filteredProducts = rawProducts.filter((product) =>
+    Object.entries(activeFilters).every(([groupId, value]) => {
+      if (!value) return true;
+      const selected = value.split(",").filter(Boolean);
+      if (selected.length === 0) return true;
+      return selected.some((optionValue) =>
+        productMatches(product, groupId, optionValue),
+      );
+    }),
+  );
 
   // Sort
   const activeIndexMap = initialIndexMap[activeHandle] || {};
@@ -598,10 +466,11 @@ export default function StoreCollectionClient({
                           Number(p),
                         );
                       }}
-                      className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${isCurrent
-                        ? "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-xs"
-                        : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                        }`}
+                      className={`flex h-10 w-10 items-center justify-center rounded-md text-sm font-medium transition-all ${
+                        isCurrent
+                          ? "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-xs"
+                          : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      }`}
                     >
                       {p}
                     </Link>

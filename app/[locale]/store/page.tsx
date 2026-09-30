@@ -28,7 +28,12 @@ export default async function StorePage(props: {
   const initialFilters: Record<string, string> = {};
   if (searchParams) {
     Object.entries(searchParams).forEach(([key, value]) => {
-      if (key !== "sort" && key !== "page" && key !== "filter" && typeof value === "string") {
+      if (
+        key !== "sort" &&
+        key !== "page" &&
+        key !== "filter" &&
+        typeof value === "string"
+      ) {
         initialFilters[key] = value;
       }
     });

@@ -8,16 +8,18 @@ import {
 import clsx from "clsx";
 import { sorting } from "lib/constants";
 import {
+  CATEGORY_GROUP,
   FilterGroup,
-  deriveFiltersForCategory,
+  SORT_GROUP,
   getHexForColorValue,
   getLabelForFilterValue,
   getParentCategory,
 } from "lib/filters/category-filter-config";
+import { countMatching, deriveFilterGroups } from "lib/filters/derive";
 import { Product } from "lib/shopify/types";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface CollectionItem {
   handle: string;
@@ -61,92 +63,10 @@ export function toggleFilterValue(
   return list.length > 0 ? list.join(",") : null;
 }
 
-function applyFilterMap(
-  products: Product[],
-  filters: Record<string, string>,
-): Product[] {
-  let result = [...products];
-
-  Object.entries(filters).forEach(([key, value]) => {
-    if (!value || key === "sort") return;
-    const values = value.split(",").filter(Boolean);
-    if (values.length === 0) return;
-
-    if (key === "price") {
-      result = result.filter((p) => {
-        const price = Number(p.priceRange.minVariantPrice.amount);
-        return values.some((val) => {
-          const parts = val.split("-").map(Number);
-          const min = parts[0] ?? 0;
-          const max = parts[1] ?? Infinity;
-          return price >= min && price <= max;
-        });
-      });
-    } else if (key === "color") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.options?.some(
-              (o) =>
-                o.name.toLowerCase() === "color" &&
-                o.values.some((v) => v.toLowerCase() === vl),
-            ) ||
-            p.tags?.some((t) => t.toLowerCase() === vl) ||
-            p.title.toLowerCase().includes(vl)
-          );
-        });
-      });
-    } else if (key === "level") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.tags?.some((t) => t.toLowerCase() === vl) ||
-            p.title.toLowerCase().includes(vl)
-          );
-        });
-      });
-    } else if (key === "size") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.options?.some((o) =>
-              o.values.some((v) => v.toLowerCase() === vl),
-            ) || p.tags?.some((t) => t.toLowerCase().includes(vl))
-          );
-        });
-      });
-    } else if (key === "brand") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.vendor?.toLowerCase().replace(/\s+/g, "-") === vl ||
-            p.tags?.some((t) => t.toLowerCase() === vl) ||
-            p.title.toLowerCase().includes(vl)
-          );
-        });
-      });
-    } else {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.tags?.some((t) => t.toLowerCase().includes(vl)) ||
-            p.title.toLowerCase().includes(vl) ||
-            p.options?.some((o) =>
-              o.values.some((v) => v.toLowerCase().includes(vl)),
-            )
-          );
-        });
-      });
-    }
-  });
-
-  return result;
-}
+// Matching and counting live in lib/filters/derive so the drawer's per-option
+// counts and the product grid's filtering run the exact same rules. They used
+// to be separate copies of the same logic in three files, which is how they
+// drifted apart.
 
 function simulateCount(
   products: Product[],
@@ -154,9 +74,10 @@ function simulateCount(
   groupId: string,
   optionValue: string,
 ): number {
-  const testFilters = { ...activeFilters };
-  testFilters[groupId] = optionValue;
-  return applyFilterMap(products, testFilters).length;
+  return countMatching(products, {
+    ...activeFilters,
+    [groupId]: optionValue,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -259,7 +180,34 @@ export default function FilterSortBar({
     handleUpdate({}, "");
   };
 
-  const filterGroups = deriveFiltersForCategory(activeCollectionHandle);
+  // Groups are derived from the products in this collection, so an option only
+  // exists when something here actually has it. Sorting and the category jump
+  // list stay static; everything else comes from the data.
+  const filterGroups = useMemo(() => {
+    const staticGroups = [SORT_GROUP, CATEGORY_GROUP];
+
+    // Subcategory options come from the parent's collections, so keep them in
+    // step with the collection list the parent passed down.
+    if (collections && collections.length > 1) {
+      const categoryIdx = staticGroups.findIndex((g) => g.id === "category");
+      const subcategoryGroup: FilterGroup = {
+        id: "subcategory",
+        label: "Subcategory",
+        type: "category",
+        options: collections.map((c) => ({
+          label: c.title,
+          value: c.handle,
+        })),
+      };
+      if (categoryIdx !== -1) {
+        staticGroups.splice(categoryIdx + 1, 0, subcategoryGroup);
+      } else {
+        staticGroups.push(subcategoryGroup);
+      }
+    }
+
+    return deriveFilterGroups(products, staticGroups);
+  }, [products, collections]);
   const activeFilterEntries = Object.entries(activeFilters).filter(
     ([, v]) => v,
   );
@@ -559,24 +507,7 @@ function FilterDrawer({
     };
   }, []);
 
-  const renderedGroups = [...filterGroups];
-  if (collections && collections.length > 1) {
-    const subcategoryGroup: FilterGroup = {
-      id: "subcategory",
-      label: "Subcategory",
-      type: "category",
-      options: collections.map((c) => ({
-        label: c.title,
-        value: c.handle,
-      })),
-    };
-    const categoryIdx = renderedGroups.findIndex((g) => g.id === "category");
-    if (categoryIdx !== -1) {
-      renderedGroups.splice(categoryIdx + 1, 0, subcategoryGroup);
-    } else {
-      renderedGroups.push(subcategoryGroup);
-    }
-  }
+  const renderedGroups = filterGroups;
 
   // ALL sections collapsed by default except category and subcategory (unless persisted)
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
@@ -641,7 +572,7 @@ function FilterDrawer({
   };
 
   // Preview count: how many products would result from active filters
-  const previewCount = applyFilterMap(products, activeFilters).length;
+  const previewCount = countMatching(products, activeFilters);
 
   // Derive active tags for the drawer list
   const activeDrawerFilters: {
@@ -1274,12 +1205,10 @@ function PriceSliderGroup({
       >
         <span>
           ₹{tempMin.toLocaleString()} - ₹{tempMax.toLocaleString()} (
-          {
-            applyFilterMap(products, {
-              ...activeFilters,
-              price: `${tempMin}-${tempMax}`,
-            }).length
-          }
+          {countMatching(products, {
+            ...activeFilters,
+            price: `${tempMin}-${tempMax}`,
+          })}
           )
         </span>
       </div>
