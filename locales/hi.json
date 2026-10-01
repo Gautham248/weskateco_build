@@ -5,6 +5,7 @@
   "nav.surfskates": "सर्फस्केट",
   "nav.apparel": "कपड़े",
   "nav.protective_gear": "सुरक्षा गियर",
+  "nav.configurator": "कॉन्फ़िगरेटर",
   "nav.academy": "अकादमी",
   "nav.skateparks": "स्केटपार्क",
   "nav.artists": "कलाकार",
@@ -13,7 +14,6 @@
   "nav.community": "समुदाय",
   "nav.buying_guide": "खरीदारी गाइड",
   "nav.search": "खोजें",
-
   "cart.title": "आपकी कार्ट",
   "cart.empty": "आपकी कार्ट खाली है",
   "cart.checkout": "चेकआउट",
