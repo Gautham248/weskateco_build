@@ -43,6 +43,20 @@
       "when": 1790238505378,
       "tag": "0005_careful_synch",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790790060531,
+      "tag": "0006_closed_daredevil",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790845255482,
+      "tag": "0007_soft_mercury",
+      "breakpoints": true
     }
   ]
 }

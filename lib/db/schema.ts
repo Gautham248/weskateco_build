@@ -186,6 +186,50 @@ export const heroSettings = pgTable("hero_settings", {
 export const HERO_SETTINGS_ID = "default";
 
 /**
+ * Ordered Instagram posts behind the storefront's community strip, managed from
+ * the admin panel.
+ *
+ * The strip used to render five PNG screenshots committed to the repository, so
+ * it could only ever show whatever was current at the last push. These rows hold
+ * the curated image and its permalink; nothing is written back to Instagram.
+ *
+ * Like `hero_items` this has no natural key, so the admin client generates `id`
+ * and saves with an upsert on it. The column is `text` rather than `uuid`
+ * because the id comes from our own helper (lib/catalog/social-posts.ts) instead
+ * of crypto.randomUUID(), which would require a secure context.
+ */
+export const socialPosts = pgTable(
+  "social_posts",
+  {
+    id: text("id").primaryKey(),
+    position: integer("position").notNull(),
+    /** The uploaded or site-relative image shown on the card. */
+    imageUrl: text("image_url").notNull(),
+    altText: text("alt_text"),
+    /** Where the card links to. Absolute https URL on the chosen platform. */
+    permalink: text("permalink"),
+    /**
+     * Which network the post lives on. Free text rather than a Postgres enum so
+     * adding a platform is a code change in lib/catalog/social-posts.ts, not a
+     * migration. Unknown values fall back to Instagram at render time.
+     */
+    platform: text("platform").notNull().default("instagram"),
+    /** Reels are a real format on Instagram and TikTok. Affects the button verb. */
+    isReel: boolean("is_reel").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedBy: uuid("updated_by").references(() => adminUsers.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => [index("social_posts_position_idx").on(table.position)],
+);
+
+/**
  * Enquiries submitted through the public /contact form.
  *
  * Append-only: a row is written once and never edited, so there is no
@@ -287,6 +331,13 @@ export const heroSettingsRelations = relations(heroSettings, ({ one }) => ({
   }),
 }));
 
+export const socialPostsRelations = relations(socialPosts, ({ one }) => ({
+  updatedByUser: one(adminUsers, {
+    fields: [socialPosts.updatedBy],
+    references: [adminUsers.id],
+  }),
+}));
+
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type NewAdminUser = typeof adminUsers.$inferInsert;
 export type ProductOverride = typeof productOverrides.$inferSelect;
@@ -301,6 +352,8 @@ export type HeroItem = typeof heroItems.$inferSelect;
 export type NewHeroItem = typeof heroItems.$inferInsert;
 export type HeroSettings = typeof heroSettings.$inferSelect;
 export type NewHeroSettings = typeof heroSettings.$inferInsert;
+export type SocialPost = typeof socialPosts.$inferSelect;
+export type NewSocialPost = typeof socialPosts.$inferInsert;
 export type ContactEnquiry = typeof contactEnquiries.$inferSelect;
 export type NewContactEnquiry = typeof contactEnquiries.$inferInsert;
 export type RateLimitCounter = typeof rateLimitCounters.$inferSelect;
