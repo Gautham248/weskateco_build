@@ -1,10 +1,6 @@
 import { defaultSort, sorting } from "lib/constants";
 import { createTranslator } from "lib/i18n";
-import {
-  getCollection,
-  getCollections,
-  getProducts,
-} from "lib/shopify";
+import { getCollection, getCollections, getProducts } from "lib/shopify";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import StoreCollectionClient from "./store-collection-client";
@@ -47,7 +43,12 @@ export default async function CategoryPage(props: {
   const initialFilters: Record<string, string> = {};
   if (searchParams) {
     Object.entries(searchParams).forEach(([key, value]) => {
-      if (key !== "sort" && key !== "page" && key !== "filter" && typeof value === "string") {
+      if (
+        key !== "sort" &&
+        key !== "page" &&
+        key !== "filter" &&
+        typeof value === "string"
+      ) {
         initialFilters[key] = value;
       }
     });

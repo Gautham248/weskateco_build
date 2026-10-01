@@ -53,7 +53,9 @@ export function QuickBuySidebar({
   const closePanel = useModalHistory(isOpen, onClose, "quick-buy-sidebar");
 
   // Initialize options. In edit mode, pre-fill with current line item options.
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
+  const [selectedOptions, setSelectedOptions] = useState<
+    Record<string, string>
+  >({});
 
   // Reset/sync options state when sidebar opens/changes
   useEffect(() => {
@@ -70,7 +72,8 @@ export function QuickBuySidebar({
 
   const activeVariant = variants.find((variant) =>
     variant.selectedOptions.every(
-      (option: any) => selectedOptions[option.name.toLowerCase()] === option.value,
+      (option: any) =>
+        selectedOptions[option.name.toLowerCase()] === option.value,
     ),
   );
   const selectedVariantId = activeVariant?.id;
@@ -196,9 +199,7 @@ export function QuickBuySidebar({
                 )}
 
                 <div className="flex flex-col justify-center pt-0.5">
-                  <h3
-                    className="text-sm font-semibold text-black dark:text-white uppercase line-clamp-2 leading-snug"
-                  >
+                  <h3 className="text-sm font-semibold text-black dark:text-white uppercase line-clamp-2 leading-snug">
                     {product.title}
                   </h3>
                   {product.vendor && (
@@ -209,7 +210,9 @@ export function QuickBuySidebar({
                   <div className="mt-2 flex items-baseline gap-1">
                     <Price
                       amount={product.priceRange.minVariantPrice.amount}
-                      currencyCode={product.priceRange.minVariantPrice.currencyCode}
+                      currencyCode={
+                        product.priceRange.minVariantPrice.currencyCode
+                      }
                       currencyCodeClassName="hidden"
                       className="text-lg font-bold text-black dark:text-white"
                       style={{ fontFamily: "'Clash Display', sans-serif" }}
@@ -227,6 +230,7 @@ export function QuickBuySidebar({
                   variants={variants}
                   selectedOptions={selectedOptions}
                   onSelectOption={handleSelectOption}
+                  locale={locale}
                 />
               )}
             </div>

@@ -15,7 +15,10 @@ interface SnapmintEmiBadgeProps {
  * Clicking "Buy on EMI>" triggers the GoKwik checkout modal.
  * Propagation is stopped so the parent card <Link> does not navigate.
  */
-export function SnapmintEmiBadge({ priceAmount, onClick }: SnapmintEmiBadgeProps) {
+export function SnapmintEmiBadge({
+  priceAmount,
+  onClick,
+}: SnapmintEmiBadgeProps) {
   const price = parseFloat(priceAmount);
   const monthlyEmi = Math.ceil(price / 3);
 
@@ -60,4 +63,3 @@ export function SnapmintEmiBadge({ priceAmount, onClick }: SnapmintEmiBadgeProps
     </div>
   );
 }
-

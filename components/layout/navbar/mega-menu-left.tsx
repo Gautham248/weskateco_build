@@ -21,14 +21,21 @@ export default function MegaMenuLeft({
 }) {
   const { t, locale } = useTranslation();
 
-  const links: LinkItem[] = 
-  [
-    { title: t("nav.skateboards"),     href: "/store/skateboards", id: "skateboards",          },
-    { title: t("nav.surfskates"),      href: "/store/surfskates", id: "surfskates"             },
-    { title: t("nav.apparel"),         href: "/store/apparel-1", id: "apparel"                 },
-    { title: t("nav.protective_gear"), href: "/store/protection-gears", id: "protective_gear", },
-    { title: t("nav.brands"),          href: "/store", id: "brands"                            },
-    { title: t("nav.configurator"),    href: "/configurator", id: "configurator"               },
+  const links: LinkItem[] = [
+    {
+      title: t("nav.skateboards"),
+      href: "/store/skateboards",
+      id: "skateboards",
+    },
+    { title: t("nav.surfskates"), href: "/store/surfskates", id: "surfskates" },
+    { title: t("nav.apparel"), href: "/store/apparel-1", id: "apparel" },
+    {
+      title: t("nav.protective_gear"),
+      href: "/store/protection-gears",
+      id: "protective_gear",
+    },
+    { title: t("nav.brands"), href: "/store", id: "brands" },
+    { title: t("nav.configurator"), href: "/configurator", id: "configurator" },
   ];
 
   return (

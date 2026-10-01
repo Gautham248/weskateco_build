@@ -1,7 +1,9 @@
 "use client";
 
 import clsx from "clsx";
+import { getLocalizedPath } from "lib/i18n";
 import { ProductOption, ProductVariant } from "lib/shopify/types";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
@@ -17,12 +19,15 @@ export function VariantSelector({
   selectedOptions,
   onSelectOption,
   isQuickBuy: isQuickBuyProp,
+  locale,
 }: {
   options: ProductOption[];
   variants: ProductVariant[];
   selectedOptions?: Record<string, string>;
   onSelectOption?: (name: string, value: string) => void;
   isQuickBuy?: boolean;
+  /** Needed to build locale-aware hrefs, e.g. the Size "Buying Guide" link. */
+  locale: string;
 }) {
   const isQuickBuy = isQuickBuyProp ?? Boolean(onSelectOption);
   const router = useRouter();
@@ -37,12 +42,12 @@ export function VariantSelector({
 
   const defaultSelectedOptions = defaultVariant
     ? defaultVariant.selectedOptions.reduce<Record<string, string>>(
-      (acc, opt) => {
-        acc[opt.name.toLowerCase()] = opt.value;
-        return acc;
-      },
-      {},
-    )
+        (acc, opt) => {
+          acc[opt.name.toLowerCase()] = opt.value;
+          return acc;
+        },
+        {},
+      )
     : {};
 
   // Build the active selection (merging defaults with props or URL query state)
@@ -119,7 +124,12 @@ export function VariantSelector({
   return options.map((option) => (
     <form key={option.id}>
       <dl className={isQuickBuy ? "mb-2" : "mb-6"}>
-        <div className={clsx("flex justify-between items-center", isQuickBuy ? "mb-4" : "mb-3")}>
+        <div
+          className={clsx(
+            "flex justify-between items-center",
+            isQuickBuy ? "mb-4" : "mb-3",
+          )}
+        >
           <dt
             className={clsx(
               isQuickBuy
@@ -131,8 +141,11 @@ export function VariantSelector({
             {option.name}
           </dt>
           {option.name.toLowerCase() === "size" && (
-            <a
-              href="#buying-guide"
+            // Was href="#buying-guide" — an anchor for a target that exists
+            // nowhere on the page, so the link did nothing at all. The buying
+            // guide is a real route, so point at it instead.
+            <Link
+              href={getLocalizedPath("/guides/skateboard-buying-guide", locale)}
               className={clsx(
                 isQuickBuy
                   ? "text-xs font-medium uppercase tracking-wider text-black hover:text-neutral-500 dark:text-white dark:hover:text-neutral-400 transition-colors underline"
@@ -141,7 +154,7 @@ export function VariantSelector({
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
               Buying Guide
-            </a>
+            </Link>
           )}
         </div>
         <dd

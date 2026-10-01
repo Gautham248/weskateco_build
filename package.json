@@ -17,6 +17,7 @@
     "test:drag-scroll": "NODE_ENV=development tsx scripts/test-drag-scroll.ts",
     "test:auth": "tsx scripts/test-admin-auth.ts",
     "test:newly-released": "tsx scripts/test-newly-released.ts",
+    "test:filters": "tsx scripts/test-filters.ts",
     "test:shop-now": "tsx scripts/test-shop-now.ts",
     "test:admin-filters": "tsx scripts/test-admin-product-filters.ts",
     "test:admin-pagination": "tsx scripts/test-admin-pagination.ts",
