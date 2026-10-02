@@ -1,170 +1,37 @@
 "use client";
 
+import anatomyImg from "components/icons/wheel_guide/wheel-anatomy.jpeg";
 import { PARTS_INTRO, WHEEL_PARTS } from "lib/wheel-guide/data";
-import { SectionHeader, Container, Section } from "components/guides/ui";
+import {
+  SectionHeader,
+  Container,
+  Section,
+  FigHint,
+} from "components/guides/ui";
+import Image from "next/image";
 import { useState } from "react";
 
-// Hotspot button positions, as % centres over the diagram.
+/**
+ * Hotspot positions, as % of the anatomy photograph's box.
+ *
+ * Read off the annotated reference image, so these follow the photo rather than
+ * a drawing: the photograph is 650×820 portrait, and the wheel is not centred in
+ * it, which is why the values are not symmetric.
+ *
+ * 5 and 6 are the closest pair on the wheel — the top of the core and the bore
+ * in its middle. 6 sits a little further right and lower than its true centre so
+ * the two buttons do not overlap at phone widths, where the whole figure is
+ * under 300px wide.
+ */
 const HOTSPOTS: Record<number, { left: string; top: string }> = {
-  1: { left: "30%", top: "6%" },
-  2: { left: "52%", top: "4%" },
-  3: { left: "80%", top: "10%" },
-  4: { left: "87%", top: "47%" },
-  5: { left: "50%", top: "58%" },
-  6: { left: "23%", top: "50%" },
-  7: { left: "72%", top: "78%" },
+  1: { left: "47%", top: "4%" }, // riding surface
+  2: { left: "47%", top: "96%" }, // contact patch
+  3: { left: "10%", top: "91%" }, // lips
+  4: { left: "90%", top: "58%" }, // sidewall
+  5: { left: "46%", top: "25%" }, // core
+  6: { left: "64%", top: "49%" }, // bearing seats — nudged clear of 5
+  7: { left: "74%", top: "76%" }, // the urethane
 };
-
-function WheelCrossSection({ selected }: { selected: number }) {
-  return (
-    <svg
-      viewBox="0 0 330 530"
-      className="w-full h-auto"
-      role="img"
-      aria-label="Cross-section of a skateboard wheel cut through the axle, with seven labelled parts"
-    >
-      {/* Body */}
-      <rect
-        x="15"
-        y="15"
-        width="300"
-        height="500"
-        rx="70"
-        fill="#FFFFFF"
-        stroke="#000000"
-        strokeWidth="5"
-      />
-
-      {/* 7 — urethane body fill */}
-      {selected === 7 && (
-        <rect
-          x="30"
-          y="30"
-          width="270"
-          height="470"
-          rx="58"
-          className="fill-black"
-          opacity="0.3"
-        />
-      )}
-
-      {/* Core block */}
-      <rect
-        x="110"
-        y="200"
-        width="110"
-        height="130"
-        rx="16"
-        fill="#EDEEF0"
-        stroke="#000000"
-        strokeWidth="4"
-      />
-      {/* Bearing seats */}
-      <rect
-        x="45"
-        y="245"
-        width="65"
-        height="40"
-        fill="#F7F7F9"
-        stroke="#000000"
-        strokeWidth="4"
-      />
-      <rect
-        x="220"
-        y="245"
-        width="65"
-        height="40"
-        fill="#F7F7F9"
-        stroke="#000000"
-        strokeWidth="4"
-      />
-      {/* Spacer / axle passage */}
-      <rect
-        x="110"
-        y="250"
-        width="110"
-        height="30"
-        fill="#FFFFFF"
-        stroke="#000000"
-        strokeWidth="4"
-      />
-      {/* Axle line through the middle */}
-      <line
-        x1="0"
-        y1="265"
-        x2="330"
-        y2="265"
-        stroke="#000000"
-        strokeWidth="3"
-        strokeDasharray="8 6"
-      />
-
-      {/* Selection highlights */}
-      {selected === 1 && (
-        <g opacity="0.85">
-          <path
-            d="M 35 95 Q 35 35 95 35 L 235 35 Q 295 35 295 95"
-            fill="none"
-            className="stroke-black"
-            strokeWidth="26"
-          />
-          <path
-            d="M 35 435 Q 35 495 95 495 L 235 495 Q 295 495 295 435"
-            fill="none"
-            className="stroke-black"
-            strokeWidth="26"
-          />
-        </g>
-      )}
-      {selected === 2 && (
-        <line
-          x1="140"
-          y1="33"
-          x2="190"
-          y2="33"
-          className="stroke-black"
-          strokeWidth="30"
-          strokeLinecap="round"
-          opacity="0.9"
-        />
-      )}
-      {selected === 3 && (
-        <g opacity="0.85" fill="none" className="stroke-black" strokeWidth="26">
-          <path d="M 35 95 Q 35 35 95 35" />
-          <path d="M 295 95 Q 295 35 235 35" />
-        </g>
-      )}
-      {selected === 4 && (
-        <g
-          opacity="0.85"
-          className="stroke-black"
-          strokeWidth="26"
-          strokeLinecap="round"
-        >
-          <line x1="22" y1="120" x2="22" y2="410" />
-          <line x1="308" y1="120" x2="308" y2="410" />
-        </g>
-      )}
-      {selected === 5 && (
-        <rect
-          x="110"
-          y="200"
-          width="110"
-          height="130"
-          rx="16"
-          className="fill-black"
-          opacity="0.75"
-        />
-      )}
-      {selected === 6 && (
-        <g opacity="0.8">
-          <rect x="45" y="245" width="65" height="40" className="fill-black" />
-          <rect x="220" y="245" width="65" height="40" className="fill-black" />
-        </g>
-      )}
-    </svg>
-  );
-}
 
 type WheelPartSpec = (typeof WHEEL_PARTS)[number]["spec"];
 
@@ -212,7 +79,16 @@ export default function PartsSection() {
           {/* Diagram with hotspots */}
           <div className="lg:col-span-5 w-full bg-[#F7F7F9] rounded-[16px] p-4 md:p-8 flex flex-col items-center">
             <div className="relative w-full max-w-[360px]">
-              <WheelCrossSection selected={selected} />
+              {/* Portrait photograph, so the box follows its own ratio rather
+                  than a fixed height — that is what keeps the hotspots, which
+                  are positioned as a % of this same box, on the right parts at
+                  every width. */}
+              <Image
+                src={anatomyImg}
+                alt="A skateboard wheel cut clean through the axle, showing the urethane body, the core and the bearing seat"
+                sizes="(min-width: 1024px) 360px, (min-width: 768px) 45vw, 60vw"
+                className="h-auto w-full rounded-[12px]"
+              />
               {WHEEL_PARTS.map((p) => {
                 const pos = HOTSPOTS[p.n]!;
                 const isActive = p.n === selected;
@@ -239,9 +115,9 @@ export default function PartsSection() {
                 );
               })}
             </div>
-            <p className="mt-4 text-xs md:text-sm text-neutral-500 leading-[150%] text-center">
+            <FigHint className="mt-4 text-center">
               Tap a number to inspect that part. Cut through the axle.
-            </p>
+            </FigHint>
           </div>
 
           {/* Detail panel. Below lg this wrapper is display:contents so its

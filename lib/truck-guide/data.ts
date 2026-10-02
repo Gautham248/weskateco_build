@@ -41,27 +41,10 @@ export const PARTS_SECTION = {
   intro:
     "A truck is a hinge with a rubber spring in it. Two views, because four of the nine parts are hidden inside an assembled one — and those four are the ones you are most likely to need.",
   hint: "Tap a numbered part.",
-  pendingNote:
-    "Photography pending. This is the reference drawing standing in for the assembled photograph. Parts 2, 4 and 6 — the pivot cup, the boardside bushing and the washers — sit inside the truck and will only be visible in the exploded view.",
   caption:
     "Everything above the hanger and below it is a stack of rubber and steel threaded onto one bolt. That is the whole mechanism: you lean, the bushings squash on one side and rebound on the other, and the hanger tilts. Two views because neither carries all nine parts on its own — assembled shows how they sit together, exploded shows the four that are hidden inside.",
   assembledAlt:
-    "A skateboard truck photographed square from behind, wheels removed, showing the hanger, axle, axle nuts, roadside bushing and baseplate",
-};
-
-export const EXPLODED_CARD = {
-  kicker: "Photo to come",
-  title: "Exploded view",
-  brief:
-    "One truck taken fully apart and laid out in stack order, shot straight down on a flat, evenly lit background — the view that shows the four parts you cannot see on an assembled truck.",
-  shots: [
-    "Baseplate with the pivot cup lifted out and sitting beside it",
-    "Kingpin, both bushings, all four washers, in stack order",
-    "Hanger, axle nuts and speed washers",
-    "Parts not touching — about one part-width of gap, so the numbered hotspots do not overlap",
-    "Same background and light as the assembled shot, so the toggle does not jump",
-    "Landscape, 4:3, 2400px wide or better",
-  ],
+    "A skateboard truck photographed square from behind, showing the baseplate bolted to the deck, the hanger, the axle and an axle nut",
 };
 
 export interface TruckPart {
@@ -414,8 +397,6 @@ export const TURN_SECTION = {
   intro:
     "A skateboard has no steering. It turns because leaning on it squashes a piece of rubber, and the geometry decides how much turn you get for how much lean.",
   hint: "Two views of the same truck — from behind, and from above.",
-  pendingNote:
-    "Photography pending. These are the reference drawings standing in for the photographs. Four shots are needed — the truck level and leaning, each seen from behind and from above — because the compression and the steering happen on different axes and neither view shows both.",
   caption:
     "Two views of the same moment, because neither one shows it on its own. From behind you can see the load going into the bushings. From above you can see what that produces: because the kingpin is angled along the length of the board, the hanger does not just tilt — it swings, and the axle stops being square to the direction of travel. That is the steering. Everything you can change about how a truck turns — bushings, washers, kingpin tension, baseplate angle — changes how far it swings for a given lean.",
 };
@@ -429,31 +410,6 @@ export const TURN_ALTS = {
     "A skateboard truck seen from behind with the deck leaned over, the boardside bushing compressed and the roadside one released",
   leanAbove:
     "A skateboard truck seen from directly above with the deck leaned over, the axle swung out of square with the board",
-};
-
-export const TURN_CARD = {
-  kicker: "Photos to come",
-  title: "Four shots, one truck",
-  brief:
-    "One truck bolted to a deck, photographed twice in each of two positions. Shoot all four in one sitting on the same background, in the same light, from the same distance — the figure toggles between them, so any change in framing reads as a jump rather than a change in the truck.",
-  shots: [
-    {
-      title: "Level, from behind",
-      text: "board flat on the bench, camera square to the axle at axle height. Both bushings at rest",
-    },
-    {
-      title: "Leaning, from behind",
-      text: "one rail wedged down about 10–15°, same camera position. The boardside bushing visibly squashed, the roadside one released",
-    },
-    {
-      title: "Level, from above",
-      text: "camera directly overhead, deck centreline vertical in frame, axle square across it",
-    },
-    {
-      title: "Leaning, from above",
-      text: "same overhead position, same wedge. The axle visibly off square to the deck — this is the shot that shows the steering, and the one the drawing exists to replace",
-    },
-  ],
 };
 
 export const TURN_PROSE: { title: string; text: string }[] = [
