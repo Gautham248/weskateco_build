@@ -15,13 +15,13 @@ that no longer matches, fix this file in the same change.
 The admin panel is a set of Next.js pages that live **outside the locale tree**, at
 `/admin`. It lets staff manage content that the storefront reads at runtime:
 
-| Tab | Route | What it does |
-|---|---|---|
-| Products | `/admin/products` | Search/filter the Shopify catalog; override titles, descriptions, photos and gallery order; upload product photos |
-| Newly Released | `/admin/newly-released` | Curate the homepage "NEWLY RELEASED" carousel |
-| Shop Now | `/admin/shop-now` | Curate the homepage "SHOP NOW" row |
-| Hero | `/admin/hero` | Curate the homepage hero media (images/videos, order, duration) |
-| Settings | `/admin/settings` | Change your password, add admin accounts, list accounts |
+| Tab            | Route                   | What it does                                                                                                      |
+| -------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Products       | `/admin/products`       | Search/filter the Shopify catalog; override titles, descriptions, photos and gallery order; upload product photos |
+| Newly Released | `/admin/newly-released` | Curate the homepage "NEWLY RELEASED" carousel                                                                     |
+| Shop Now       | `/admin/shop-now`       | Curate the homepage "SHOP NOW" row                                                                                |
+| Hero           | `/admin/hero`           | Curate the homepage hero media (images/videos, order, duration)                                                   |
+| Settings       | `/admin/settings`       | Change your password, add admin accounts, list accounts                                                           |
 
 The storefront never writes to Shopify. The admin panel only ever writes to the
 **app's own Postgres database** (curation + overrides), which the storefront reads
@@ -39,7 +39,7 @@ and combines with live Shopify data.
 - Access to the **shared secrets** (Shopify, ImageKit, database). These are
   write-only in Vercel and cannot be pulled back — get them from a teammate or the
   team password manager.
-- *(Optional)* the Vercel CLI, only if the team wants you to use `vercel env pull`.
+- _(Optional)_ the Vercel CLI, only if the team wants you to use `vercel env pull`.
 
 ---
 
@@ -80,19 +80,19 @@ secret can be committed.
 
 ### 4.1 The variables
 
-| Variable | Used for | Needed to work on the admin panel? |
-|---|---|---|
-| `DATABASE_URL` | Pooled Postgres connection, used by the app at runtime | **Yes** — everything persists through it |
-| `DATABASE_URL_UNPOOLED` | Direct connection, used only by `drizzle-kit` migrations | **Yes** — needed to run migrations |
-| `AUTH_SECRET` | Signs the admin session JWT (HS256) | **Yes** — the admin panel refuses to sign sessions without it |
-| `SHOPIFY_STORE_DOMAIN` | Shopify Storefront API host (e.g. `your-store.myshopify.com`) | **Yes** — the product pickers read the live catalog |
-| `SHOPIFY_STOREFRONT_ACCESS_TOKEN` | Storefront API token | **Yes** — same reason |
-| `IMAGEKIT_PRIVATE_KEY` | Server-side key for the admin image uploads | **Yes** — if you work on uploads/photos |
-| `SHOPIFY_REVALIDATION_SECRET` | Webhook revalidation secret | No (storefront only) |
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` / `NEXT_PUBLIC_SANITY_DATASET` | Sanity CMS | No (storefront only) |
-| `IMAGEKIT_PUBLIC_KEY`, `IMAGEKIT_URL_ENDPOINT` | ImageKit client SDK (if used) | No |
-| `COMPANY_NAME`, `SITE_NAME`, `TWITTER_CREATOR`, `TWITTER_SITE` | Site metadata | No |
-| `NEXT_PUBLIC_GOKWIK_*` | GoKwik checkout | No |
+| Variable                                                       | Used for                                                      | Needed to work on the admin panel?                            |
+| -------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------- |
+| `DATABASE_URL`                                                 | Pooled Postgres connection, used by the app at runtime        | **Yes** — everything persists through it                      |
+| `DATABASE_URL_UNPOOLED`                                        | Direct connection, used only by `drizzle-kit` migrations      | **Yes** — needed to run migrations                            |
+| `AUTH_SECRET`                                                  | Signs the admin session JWT (HS256)                           | **Yes** — the admin panel refuses to sign sessions without it |
+| `SHOPIFY_STORE_DOMAIN`                                         | Shopify Storefront API host (e.g. `your-store.myshopify.com`) | **Yes** — the product pickers read the live catalog           |
+| `SHOPIFY_STOREFRONT_ACCESS_TOKEN`                              | Storefront API token                                          | **Yes** — same reason                                         |
+| `IMAGEKIT_PRIVATE_KEY`                                         | Server-side key for the admin image uploads                   | **Yes** — if you work on uploads/photos                       |
+| `SHOPIFY_REVALIDATION_SECRET`                                  | Webhook revalidation secret                                   | No (storefront only)                                          |
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` / `NEXT_PUBLIC_SANITY_DATASET` | Sanity CMS                                                    | No (storefront only)                                          |
+| `IMAGEKIT_PUBLIC_KEY`, `IMAGEKIT_URL_ENDPOINT`                 | ImageKit client SDK (if used)                                 | No                                                            |
+| `COMPANY_NAME`, `SITE_NAME`, `TWITTER_CREATOR`, `TWITTER_SITE` | Site metadata                                                 | No                                                            |
+| `NEXT_PUBLIC_GOKWIK_*`                                         | GoKwik checkout                                               | No                                                            |
 
 ### 4.2 Generating `AUTH_SECRET`
 
@@ -220,9 +220,51 @@ All admin tabs share two conventions worth internalising before you look at code
 - The current hero asset (a 5MB GIF) was seeded as slide 1; the definitive fix is to
   replace it with a real encoded video, which is now just another slide.
 
+### Social Posts
+
+- Curates the social strip on the home page **and** every `/store` page.
+- One **mixed row**: cards from any platform sit side by side, each badged with
+  its own platform, in the order given by the arrows. Typical use is 4-5
+  Instagram posts plus a couple of LinkedIn or Twitter ones.
+- Each post is an uploaded image plus an optional `https://` link. The
+  **Platform** dropdown covers Instagram, YouTube, TikTok, Facebook, X, Threads,
+  Pinterest and LinkedIn; `twitter` is accepted as an alias for X.
+- Only Instagram and TikTok have a named reel format, so the reel toggle appears
+  on those two only. The button verb follows the platform — "Watch" on YouTube
+  and TikTok, "View Post" / "View Reel" elsewhere.
+- Adding a platform is a code change in `lib/catalog/social-posts.ts`
+  (`SOCIAL_PLATFORMS`), **not** a migration: `platform` is free text on purpose.
+  An unrecognised value falls back to Instagram rather than throwing, so a
+  half-finished change cannot take the homepage down.
+- **The image field needs an image, not a post's address.** Use the Upload
+  button (it puts the file on ImageKit); paste the post URL in the _link_ field.
+  A post's web address is not an image, and putting one there renders a broken
+  card. The admin warns when both fields hold the same value.
+- The strip renders images with a plain `<img>`, deliberately **not**
+  `next/image`: that field is free text, `next/image` throws on hosts missing
+  from `next.config.ts`, and one bad URL must not be able to 500 the homepage.
+  An image that fails to load shows an "Image unavailable" placeholder.
+- Only Instagram, Facebook and YouTube ship a brand icon
+  (`components/icons/{insta,fb,yt}.svg`). The rest render the platform name in
+  words rather than an approximated logo.
+- A post with no link is allowed (stage the image first) and its button renders
+  inert rather than linking nowhere. The save warns when that happens.
+- **An empty list hides the storefront section.** The five original screenshots
+  are an error fallback only — they are what made the section look permanently
+  stale before this tab existed.
+- Capped at 12 posts, because the strip ships into every store page.
+
 ### Settings
 
 - Change your own password, add another admin, and list existing accounts.
+
+### Footer social links
+
+- Not a tab — the footer's Instagram/Facebook/YouTube/X links are read from
+  Sanity's `siteSettings.socialLinks` by a server wrapper around the footer.
+  Edit them in the Sanity Studio, not in code.
+- They used to be hardcoded to bare platform roots (`https://instagram.com`),
+  which sent people to the platform homepage instead of the brand's profile.
 
 ---
 
@@ -297,6 +339,7 @@ pnpm test:shop-now            # Shop Now mapping
 pnpm test:admin-filters       # filter/facet logic
 pnpm test:admin-pagination    # pager windowing/clamping
 pnpm test:hero                # hero duration/url/rotation logic
+pnpm test:social-posts        # social post url/permalink validation
 npx tsx scripts/test-configurator.ts
 npx tsx scripts/test-filters.ts
 ```

@@ -11,6 +11,7 @@ const {
   productOverrideImages,
   productOverrides,
   shopNowItems,
+  socialPosts,
 } = schema;
 
 export type AdminUserRecord = schema.AdminUser;
@@ -76,6 +77,19 @@ export type HeroItemRow = {
   altText: string | null;
   posterUrl: string | null;
   seconds: number | null;
+};
+
+/**
+ * Same reasoning as HeroItemRow: no Date objects, so the storefront can cache
+ * this shape directly.
+ */
+export type SocialPostRow = {
+  id: string;
+  imageUrl: string;
+  altText: string | null;
+  permalink: string | null;
+  platform: string;
+  isReel: boolean;
 };
 
 export async function getAdminUserByUsername(
@@ -593,4 +607,82 @@ export async function saveHeroConfig(
         updatedAt: new Date(),
       },
     });
+}
+
+/**
+ * The curated social posts, in display order. No Date objects in the projection
+ * so the storefront can cache the result directly.
+ */
+export async function listSocialPosts(): Promise<SocialPostRow[]> {
+  const db = getDb();
+
+  return db
+    .select({
+      id: socialPosts.id,
+      imageUrl: socialPosts.imageUrl,
+      altText: socialPosts.altText,
+      permalink: socialPosts.permalink,
+      platform: socialPosts.platform,
+      isReel: socialPosts.isReel,
+    })
+    .from(socialPosts)
+    .orderBy(socialPosts.position);
+}
+
+/**
+ * Replaces the whole list: upsert by client-generated id, then prune the ids no
+ * longer present.
+ *
+ * Upsert-then-prune rather than delete-then-insert because the Neon HTTP driver
+ * has no interactive transactions — see ADMIN_PANEL_ONBOARDING.md §8. A partial
+ * failure leaves a superset of correct rows instead of an empty section.
+ *
+ * An empty list prunes everything, which is how an admin empties the strip.
+ */
+export async function saveSocialPosts(
+  posts: SocialPostRow[],
+  updatedBy?: string | null,
+): Promise<void> {
+  const db = getDb();
+
+  if (posts.length === 0) {
+    await db.delete(socialPosts);
+    return;
+  }
+
+  for (const [index, post] of posts.entries()) {
+    await db
+      .insert(socialPosts)
+      .values({
+        id: post.id,
+        position: index,
+        imageUrl: post.imageUrl,
+        altText: post.altText ?? null,
+        permalink: post.permalink ?? null,
+        platform: post.platform,
+        isReel: post.isReel,
+        updatedBy: updatedBy ?? null,
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: socialPosts.id,
+        set: {
+          position: index,
+          imageUrl: post.imageUrl,
+          altText: post.altText ?? null,
+          permalink: post.permalink ?? null,
+          platform: post.platform,
+          isReel: post.isReel,
+          updatedBy: updatedBy ?? null,
+          updatedAt: new Date(),
+        },
+      });
+  }
+
+  await db.delete(socialPosts).where(
+    notInArray(
+      socialPosts.id,
+      posts.map((post) => post.id),
+    ),
+  );
 }

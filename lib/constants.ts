@@ -47,6 +47,7 @@ export const TAGS = {
   newlyReleased: "newly-released",
   shopNow: "shop-now",
   hero: "hero",
+  socialPosts: "social-posts",
 };
 
 /**

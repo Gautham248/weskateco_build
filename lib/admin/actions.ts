@@ -16,10 +16,12 @@ import {
   deleteProductOverride,
   getAdminUserByUsername,
   listHeroItems,
+  listSocialPosts,
   saveHeroConfig,
   saveNewlyReleasedItems,
   saveProductOverride,
   saveShopNowItems,
+  saveSocialPosts,
   updateAdminUserPassword,
 } from "lib/admin/queries";
 import {
@@ -27,6 +29,13 @@ import {
   HERO_MIN_SECONDS,
   isAllowedHeroUrl,
 } from "lib/catalog/hero";
+import {
+  isAllowedPermalink,
+  isAllowedPostImageUrl,
+  MAX_SOCIAL_POSTS,
+  normalizePlatform,
+  SOCIAL_PLATFORMS,
+} from "lib/catalog/social-posts";
 import { TAGS } from "lib/constants";
 import { getProduct } from "lib/shopify";
 import { revalidateTag } from "next/cache";
@@ -34,6 +43,17 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export type ActionState = { error?: string; success?: string } | null;
+
+/**
+ * The social-post save reports warnings alongside the outcome, for the same
+ * reason saveHeroAction does: a permalink that could not be verified is worth
+ * surfacing without refusing the save.
+ */
+export type SocialPostsActionState = {
+  error?: string;
+  success?: string;
+  warnings?: string[];
+} | null;
 
 /**
  * The hero save reports probe warnings alongside the outcome, so unlike
@@ -127,6 +147,36 @@ const shopNowSchema = z.object({
       imageUrl3: optionalAbsoluteUrl,
     }),
   ),
+});
+
+/**
+ * The permalink is deliberately not `absoluteUrl`: it is checked against the
+ * Instagram allowlist further down, which gives a far more useful message than
+ * "must be an absolute URL" would.
+ */
+const socialPostsSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        id: z.string().trim().min(1),
+        imageUrl: z.string().trim().min(1, "Upload an image or enter a URL."),
+        altText: z.string().nullish(),
+        permalink: z.string().nullish(),
+        // Narrowed against the known set rather than passed through: the column
+        // is free text so platforms can be added without a migration, which
+        // means the write path is the only place a typo can be caught.
+        platform: z
+          .string()
+          .trim()
+          .transform(normalizePlatform)
+          .catch("instagram"),
+        isReel: z.boolean().default(false),
+      }),
+    )
+    .max(
+      MAX_SOCIAL_POSTS,
+      `The strip holds at most ${MAX_SOCIAL_POSTS} posts.`,
+    ),
 });
 
 export async function loginAction(
@@ -549,4 +599,81 @@ export async function saveHeroAction(input: unknown): Promise<HeroActionState> {
   revalidateTag(TAGS.hero, "seconds");
 
   return { success: "Hero saved.", warnings: [...new Set(warnings)] };
+}
+
+/**
+ * Saves the curated social posts behind the storefront's community strip.
+ *
+ * The image check is a shape check only (https or site-relative), matching
+ * isAllowedHeroUrl. The permalink is stricter — it must be an Instagram https
+ * URL — because it is rendered as an outbound anchor, so a wrong host would be a
+ * phishing-shaped link sitting in the brand's own footer. A post with no
+ * permalink at all is allowed, so an image can be staged before its link is
+ * known; that card then renders inert instead of linking nowhere.
+ */
+export async function saveSocialPostsAction(
+  input: unknown,
+): Promise<SocialPostsActionState> {
+  const session = await requireAdmin();
+
+  const parsed = socialPostsSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      error:
+        parsed.error.issues[0]?.message ?? "Check the posts and try again.",
+    };
+  }
+
+  const { items } = parsed.data;
+
+  const warnings: string[] = [];
+
+  for (const [index, item] of items.entries()) {
+    if (!isAllowedPostImageUrl(item.imageUrl)) {
+      return {
+        error: `Post ${index + 1}: the image must be an https:// URL or a path on this site.`,
+      };
+    }
+
+    if (item.permalink && !isAllowedPermalink(item.permalink)) {
+      return {
+        error: `Post ${index + 1}: the link must be an https:// Instagram URL, or left blank.`,
+      };
+    }
+  }
+
+  /**
+   * Warn rather than reject when a post has no link. This is a legitimate
+   * staging state, but a strip full of them means "View Post" buttons that go
+   * nowhere, so it is worth saying out loud.
+   */
+  const missingLinks = items.filter((item) => !item.permalink?.trim()).length;
+
+  if (missingLinks > 0) {
+    warnings.push(
+      `${missingLinks} of ${items.length} post${items.length === 1 ? " has" : "s have"} no Instagram link, so ${missingLinks === 1 ? "its" : "their"} button will not go anywhere.`,
+    );
+  }
+
+  try {
+    await saveSocialPosts(
+      items.map((item) => ({
+        id: item.id,
+        imageUrl: item.imageUrl,
+        altText: item.altText ?? null,
+        permalink: item.permalink?.trim() ? item.permalink.trim() : null,
+        platform: item.platform,
+        isReel: item.isReel,
+      })),
+      session.userId,
+    );
+  } catch (error) {
+    console.error("Failed to save the social posts:", error);
+    return { error: "Could not save the social posts." };
+  }
+
+  revalidateTag(TAGS.socialPosts, "seconds");
+
+  return { success: "Social posts saved.", warnings };
 }
