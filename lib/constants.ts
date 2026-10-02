@@ -48,6 +48,7 @@ export const TAGS = {
   shopNow: "shop-now",
   hero: "hero",
   socialPosts: "social-posts",
+  siteSettings: "site-settings",
 };
 
 /**
