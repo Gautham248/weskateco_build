@@ -24,7 +24,7 @@ import {
  * Exploded and assembled need their own maps because the parts sit in
  * completely different places in each: the exploded photo is a flat lay, the
  * assembled one a single object. `hidden` marks the parts you cannot see on an
- * assembled truck — the pivot cup, boardside bushing and washers are inside it —
+ * assembled truck — the pivot cup, kingpin and boardside bushing are inside it —
  * and those buttons render dashed, as the spec drawing did.
  */
 const EXPLODED_HOTSPOTS: Record<number, { left: string; top: string }> = {
