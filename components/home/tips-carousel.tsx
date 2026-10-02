@@ -5,7 +5,6 @@ import fbGlyph from "components/icons/fb.svg";
 import instaGlyph from "components/icons/insta.svg";
 import ytGlyph from "components/icons/yt.svg";
 import {
-  hasSocialPlatformIcon,
   socialPostActionLabel,
   SOCIAL_PLATFORM_LABELS,
   type SocialPostCard,
@@ -175,6 +174,7 @@ export default function TipsCarousel({
           )}
           <div className="flex gap-3 pb-2 hidden md:flex">
             <button
+              aria-label="Previous post"
               onClick={handlePrev}
               disabled={activeIndex === 0}
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
@@ -203,6 +203,7 @@ export default function TipsCarousel({
               </svg>
             </button>
             <button
+              aria-label="Next post"
               onClick={handleNext}
               disabled={activeIndex === posts.length - 1}
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
