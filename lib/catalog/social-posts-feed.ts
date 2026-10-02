@@ -1,3 +1,5 @@
+import "server-only";
+
 import { listSocialPosts, type SocialPostRow } from "lib/admin/queries";
 import {
   buildSocialPosts,

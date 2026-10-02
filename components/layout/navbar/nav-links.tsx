@@ -21,6 +21,9 @@ export default function NavLinks({
   const [isGuidesOpen, setIsGuidesOpen] = useState(false);
   const guidesRef = useRef<HTMLLIElement>(null);
 
+  const [isAcademyOpen, setIsAcademyOpen] = useState(false);
+  const academyRef = useRef<HTMLLIElement>(null);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -33,8 +36,14 @@ export default function NavLinks({
       ) {
         setIsGuidesOpen(false);
       }
+      if (
+        academyRef.current &&
+        !academyRef.current.contains(event.target as Node)
+      ) {
+        setIsAcademyOpen(false);
+      }
     }
-    if (isDropdownOpen || isGuidesOpen) {
+    if (isDropdownOpen || isGuidesOpen || isAcademyOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     if (isDropdownOpen) {
@@ -44,7 +53,7 @@ export default function NavLinks({
       document.removeEventListener("mousedown", handleClickOutside);
       document.body.style.overflow = "";
     };
-  }, [isDropdownOpen, isGuidesOpen]);
+  }, [isDropdownOpen, isGuidesOpen, isAcademyOpen]);
 
   useEffect(() => {
     onDropdownChange?.(isDropdownOpen);
@@ -70,6 +79,7 @@ export default function NavLinks({
             onMouseEnter={() => {
               setIsDropdownOpen(true);
               setIsGuidesOpen(false);
+              setIsAcademyOpen(false);
             }}
           >
             STORE
@@ -122,6 +132,7 @@ export default function NavLinks({
           onMouseEnter={() => {
             setIsGuidesOpen(true);
             setIsDropdownOpen(false);
+            setIsAcademyOpen(false);
             setActiveCategory(null);
           }}
           onMouseLeave={() => setIsGuidesOpen(false)}
@@ -195,33 +206,75 @@ export default function NavLinks({
               >
                 Griptape Guide
               </Link>
+              <Link
+                href={getLocalizedPath("/guides/surfskate-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Surfskate Guide
+              </Link>
             </div>
           </div>
         </li>
 
-        {/* WESKATE ACADEMY */}
+        {/* ACADEMY DROPDOWN */}
         <li
-          className={isDropdownOpen ? "opacity-50" : ""}
+          ref={academyRef}
+          className="relative py-2"
           onMouseEnter={() => {
+            setIsAcademyOpen(true);
             setIsDropdownOpen(false);
             setIsGuidesOpen(false);
             setActiveCategory(null);
           }}
+          onMouseLeave={() => setIsAcademyOpen(false)}
         >
-          <Link href={getLocalizedPath("/academy", locale)}>
-            WESKATE ACADEMY
-          </Link>
-        </li>
-        {/* WESKATE SCHOOL */}
-        <li
-          className={isDropdownOpen ? "opacity-50" : ""}
-          onMouseEnter={() => {
-            setIsDropdownOpen(false);
-            setIsGuidesOpen(false);
-            setActiveCategory(null);
-          }}
-        >
-          <Link href={getLocalizedPath("/school", locale)}>WESKATE SCHOOL</Link>
+          <button
+            onClick={() => {
+              setIsAcademyOpen(!isAcademyOpen);
+              if (!isAcademyOpen) {
+                setIsDropdownOpen(false);
+                setIsGuidesOpen(false);
+              }
+            }}
+            aria-expanded={isAcademyOpen}
+            className="flex items-center gap-1 uppercase cursor-pointer"
+          >
+            ACADEMY
+            <ChevronDownIcon
+              className={`h-2.5 w-2.5 md:h-2.5 md:w-2.5 xl:h-3 xl:w-3 transition-transform duration-200 ${
+                isAcademyOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          <div
+            className={`absolute left-0 top-full pt-1.5 w-64 z-50 transition-all duration-200 ${
+              isAcademyOpen
+                ? "opacity-100 scale-100 pointer-events-auto"
+                : "opacity-0 scale-95 pointer-events-none"
+            }`}
+          >
+            <div className="rounded-md bg-white text-black shadow-xl border border-neutral-100 py-2">
+              <Link
+                href={getLocalizedPath("/academy", locale)}
+                onClick={() => setIsAcademyOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                WeSkate Academy
+              </Link>
+              <Link
+                href={getLocalizedPath("/school", locale)}
+                onClick={() => setIsAcademyOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                WeSkate School
+              </Link>
+            </div>
+          </div>
         </li>
         {/* SKATEPARKS */}
         <li

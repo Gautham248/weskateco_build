@@ -294,6 +294,10 @@ function cellSpan(cell: TableCell): number | undefined {
   return typeof cell === "string" ? undefined : cell.span;
 }
 
+function cellMuted(cell: TableCell): boolean {
+  return typeof cell === "string" ? false : Boolean(cell.muted);
+}
+
 /** Comparison table — the shared griptape-table pattern, with `span`
  * support for merged cells, `warn` cells and optional `warnRow` tint. */
 export function GuideTable({
@@ -301,16 +305,24 @@ export function GuideTable({
   cols,
   rows,
   minW = "min-w-[720px]",
+  cue = false,
+  fade = "white",
 }: {
   srLabel: string;
   cols: TableCol[];
   rows: TableRow[];
   minW?: string;
+  /** Show the horizontal-overflow fade + hint only when the table overflows. */
+  cue?: boolean;
+  /** Background the table sits on, so the overflow fade matches. */
+  fade?: "white" | "muted";
 }) {
   return (
     <DragScrollArea
       className="-mx-4 px-4 lg:mx-0 lg:px-0"
       ariaLabel={`${srLabel}, scrollable`}
+      cue={cue}
+      fade={fade}
     >
       <table className={`w-full ${minW} border-collapse text-left`}>
         <thead>
@@ -352,7 +364,9 @@ export function GuideTable({
                 <td
                   key={i}
                   colSpan={cellSpan(cell)}
-                  className="py-4 pr-6 text-sm md:text-base leading-[150%] font-[400] text-black align-top"
+                  className={`py-4 pr-6 text-sm md:text-base leading-[150%] font-[400] align-top ${
+                    cellMuted(cell) ? "text-neutral-500" : "text-black"
+                  }`}
                 >
                   {renderCell(cell)}
                 </td>

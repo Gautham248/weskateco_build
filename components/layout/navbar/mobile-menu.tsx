@@ -53,6 +53,7 @@ export default function MobileMenu() {
   // Accordion states
   const [isStoreExpanded, setIsStoreExpanded] = useState(true);
   const [isGuidesExpanded, setIsGuidesExpanded] = useState(false);
+  const [isAcademyExpanded, setIsAcademyExpanded] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const openMobileMenu = () => setIsOpen(true);
@@ -308,32 +309,58 @@ export default function MobileMenu() {
                       >
                         Griptape Guide
                       </Link>
+                      <Link
+                        href={getLocalizedPath(
+                          "/guides/surfskate-guide",
+                          locale,
+                        )}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Surfskate Guide
+                      </Link>
                     </div>
                   )}
                 </div>
 
-                {/* ACADEMY Link */}
+                {/* ACADEMY Accordion */}
                 <div className="border-b border-neutral-100 dark:border-neutral-900 py-4">
-                  <Link
-                    href={getLocalizedPath("/academy", locale)}
-                    onClick={closeMobileMenu}
-                    className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
-                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  <button
+                    onClick={() => setIsAcademyExpanded(!isAcademyExpanded)}
+                    aria-expanded={isAcademyExpanded}
+                    className="flex w-full items-center justify-between font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                   >
-                    WESKATE ACADEMY
-                  </Link>
-                </div>
+                    <span style={{ fontFamily: "'Clash Display', sans-serif" }}>
+                      ACADEMY
+                    </span>
+                    {isAcademyExpanded ? (
+                      <ChevronUpIcon className="h-4 w-4 stroke-[2.5]" />
+                    ) : (
+                      <ChevronDownIcon className="h-4 w-4 stroke-[2.5]" />
+                    )}
+                  </button>
 
-                {/* WESKATE SCHOOL Link */}
-                <div className="border-b border-neutral-100 dark:border-neutral-900 py-4">
-                  <Link
-                    href={getLocalizedPath("/school", locale)}
-                    onClick={closeMobileMenu}
-                    className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
-                    style={{ fontFamily: "'Clash Display', sans-serif" }}
-                  >
-                    WESKATE SCHOOL
-                  </Link>
+                  {isAcademyExpanded && (
+                    <div
+                      className="mt-3 flex flex-col gap-2 pl-1"
+                      style={{ fontFamily: "Archivo, sans-serif" }}
+                    >
+                      <Link
+                        href={getLocalizedPath("/academy", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        WeSkate Academy
+                      </Link>
+                      <Link
+                        href={getLocalizedPath("/school", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        WeSkate School
+                      </Link>
+                    </div>
+                  )}
                 </div>
 
                 {/* SKATEPARKS Link */}

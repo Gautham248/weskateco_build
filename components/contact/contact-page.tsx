@@ -1,8 +1,8 @@
 "use client";
 
 import ContactDetails from "components/contact/contact-details";
-import EnquiryForm from "components/contact/enquiry-form";
 import Footer from "components/layout/footer";
+import EnquiryForm from "components/contact/enquiry-form";
 import { getDeflection } from "lib/contact/routes";
 import Link from "next/link";
 import { useCallback, useState } from "react";
@@ -77,45 +77,6 @@ export default function ContactPage({ locale }: { locale: string }) {
         selectedReason={selectedReason}
         onReasonChange={handleReasonChange}
       />
-
-      {/* ── Section 3b: A faster route than the form ────────────────── */}
-      <section className="w-full bg-white pb-12 md:pb-20 px-4 lg:px-15">
-        <div className="mx-auto max-w-(--breakpoint-2xl)">
-          <div className="max-w-3xl">
-            <h2
-              className="fluid-text-2xl font-bold tracking-tight mb-3"
-              style={{ fontFamily: "'Clash Display', sans-serif" }}
-            >
-              A faster route than the form
-            </h2>
-            <p className="text-sm leading-relaxed">
-              <strong>{deflection.lead}</strong> {deflection.body}
-            </p>
-            <a
-              href={deflection.href}
-              target="_blank"
-              rel="noopener"
-              className="mt-4 inline-flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white hover:bg-neutral-800 transition-colors"
-            >
-              {deflection.linkLabel}
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="animate-nudge-x shrink-0"
-              >
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </section>
 
       {/* ── Section 4: Footer ───────────────────────────────────────── */}
       <Footer />
