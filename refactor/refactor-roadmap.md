@@ -48,7 +48,7 @@ Everything marked "verified" was checked against the real branch in a sandbox. E
 
 1. Create the phase branch (`refactor/pN-<slug>`) from the integration branch `refactor/architecture`.
 2. Work through the phase steps in order. Each step has: objective, checks before you start, actions, a prompt for Claude Code, tests, verification, done-when, rollback.
-3. Run `bash refactor/scripts/verify-phase.sh N origin/testing/commerce-deployment`. It must end with `PHASE N: ALL CHECKS PASSED`.
+3. Run `bash refactor/scripts/verify-phase.sh N old-origin/testing/commerce-deployment`. It must end with `PHASE N: ALL CHECKS PASSED`.
 4. Run the checks Claude cannot run (section 1.3) and fill in the handoff report (Appendix G).
 5. Push the branch and send Claude the report. Claude verifies and answers PASS, FAIL or RISK per criterion.
 6. Only after PASS: merge into `refactor/architecture`.
@@ -340,7 +340,7 @@ Tick a row only when its evidence has passed **after the last phase that touches
 
 **Before you start**
 - `git status` is clean on `testing/commerce-deployment`, and you have pulled.
-- Record the base SHA: `git rev-parse origin/testing/commerce-deployment > /tmp/base_sha`.
+- Record the base SHA: `git rev-parse old-origin/testing/commerce-deployment > /tmp/base_sha`.
 
 **Actions**
 1. `git checkout -b refactor/architecture && git checkout -b refactor/p0-safety-net`
@@ -440,10 +440,10 @@ Do not modify any source file.
    npx prettier --check --ignore-unknown . 2>&1 | grep '^\[warn\]' | sed 's/\[warn\] //' | grep -v 'Code style' | grep -v '^refactor/' | sort > refactor/prettier-baseline.txt
    ```
    Expect 64 lines on the studied commit.
-3. Ledger coverage against your base: `node refactor/scripts/verify-ledger.mjs --phase 0 --base origin/testing/commerce-deployment`. If it prints `UNCOVERED at base: <file>`, someone added a source file since the ledger was written. **Add a ledger entry** (kind `move`, `extract`, or `stay`) and re-run until clean.
+3. Ledger coverage against your base: `node refactor/scripts/verify-ledger.mjs --phase 0 --base old-origin/testing/commerce-deployment`. If it prints `UNCOVERED at base: <file>`, someone added a source file since the ledger was written. **Add a ledger entry** (kind `move`, `extract`, or `stay`) and re-run until clean.
 4. Write `refactor/baseline-results.md` recording: base SHA, date, `tsc` result, the 16 test scripts with assertion counts, `next build` result (you), and Node/pnpm versions.
 
-**Verify:** `bash refactor/scripts/verify-phase.sh 0 origin/testing/commerce-deployment` prints `PHASE 0: ALL CHECKS PASSED`.
+**Verify:** `bash refactor/scripts/verify-phase.sh 0 old-origin/testing/commerce-deployment` prints `PHASE 0: ALL CHECKS PASSED`.
 
 **Done when:** all four baseline artifacts are committed. **Rollback:** revert.
 
@@ -540,7 +540,7 @@ Stage the draft under .dev-agent/draft-tests/ and stop for approval.
 ### Phase 0 gate and handoff
 
 **Definition of done**
-- [ ] DoD-0.1 `bash refactor/scripts/verify-phase.sh 0 origin/testing/commerce-deployment` passes.
+- [ ] DoD-0.1 `bash refactor/scripts/verify-phase.sh 0 old-origin/testing/commerce-deployment` passes.
 - [ ] DoD-0.2 `pnpm install --frozen-lockfile` and `pnpm build` pass (you).
 - [ ] DoD-0.3 `refactor/snapshots/before` and `before2` compare identical (you).
 - [ ] DoD-0.4 Seven new tests committed, each with a recorded mutation score and no unexplained survivors.
@@ -658,7 +658,7 @@ Add `.github/pull_request_template.md` containing the checklist: phase number, `
 - [ ] DoD-1.2 `pnpm arch` shows only the 6 known violations.
 - [ ] DoD-1.3 CI green on a draft PR (you).
 - [ ] DoD-1.4 `pnpm build` passes (you).
-- [ ] DoD-1.5 Only `package.json`, `pnpm-lock.yaml`, `.github/**`, `refactor/**` changed. `git diff --stat origin/testing/commerce-deployment... -- app components lib` is empty.
+- [ ] DoD-1.5 Only `package.json`, `pnpm-lock.yaml`, `.github/**`, `refactor/**` changed. `git diff --stat old-origin/testing/commerce-deployment... -- app components lib` is empty.
 
 **Claude verifies:** runs `verify-phase.sh 1`; reads `.dependency-cruiser.cjs` for rule drift against this document; confirms no source file changed.
 
@@ -1017,7 +1017,7 @@ delegating functions. Convert one function per commit; after each run
 Step 3.5. git mv the three *-feed.ts files to modules/catalog/*.service.ts (pure move
 commit), then update every importer listed in refactor/importers/*.txt. In components/
 and app/ UI files change IMPORT LINES ONLY. Run
-`node refactor/scripts/ui-guard.mjs origin/testing/commerce-deployment` after every batch
+`node refactor/scripts/ui-guard.mjs old-origin/testing/commerce-deployment` after every batch
 of ten files and fix violations by reverting non-import edits. Split imports by module
 where one old import now maps to two.
 ```
@@ -1649,8 +1649,8 @@ These are heuristics; label them so.
 
 ### Step 9.7 Final verification
 
-1. `verify-phase.sh 9 origin/testing/commerce-deployment` passes.
-2. `node refactor/scripts/verify-ledger.mjs --phase 9 --base origin/testing/commerce-deployment` passes (every base file accounted for; nothing unaccounted at HEAD).
+1. `verify-phase.sh 9 old-origin/testing/commerce-deployment` passes.
+2. `node refactor/scripts/verify-ledger.mjs --phase 9 --base old-origin/testing/commerce-deployment` passes (every base file accounted for; nothing unaccounted at HEAD).
 3. Full snapshot compare `before` vs `after` identical (you).
 4. Full manual smoke M-01..M-30 (you); results equal or better than `refactor/baseline-results.md`.
 5. Every row in section 6 ticked.
@@ -1716,7 +1716,7 @@ and stop.
 HARD RULES
 1. UI freeze: do not change markup, className, CSS, locales/*.json or public/. In
    components/ and app/ page/layout files ONLY import declarations may change. Run
-   `node refactor/scripts/ui-guard.mjs origin/testing/commerce-deployment` after edits.
+   `node refactor/scripts/ui-guard.mjs old-origin/testing/commerce-deployment` after edits.
 2. Moves are `git mv` commits with no content edits; edits go in a separate commit.
 3. Do not add or remove any "use cache" directive, cacheTag, cacheLife, revalidateTag or
    updateTag. Run `node refactor/scripts/cache-parity.mjs check` after touching them.
@@ -1739,7 +1739,7 @@ defect: report it in refactor/FINDINGS.md, never loosen the assertion, never cha
 target. Stage drafts in .dev-agent/draft-tests/ and stop for my approval.
 
 FINISH
-Run `bash refactor/scripts/verify-phase.sh <phase> origin/testing/commerce-deployment`
+Run `bash refactor/scripts/verify-phase.sh <phase> old-origin/testing/commerce-deployment`
 (or the sub-checks the step names) and paste the tail. Commit with a conventional
 message. No em dashes in any prose you write.
 ```
@@ -1748,7 +1748,7 @@ message. No em dashes in any prose you write.
 
 ## Appendix C: Test catalogue
 
-Existing 16 scripts stay and are edited only on import lines. New scripts follow the repo convention (`scripts/test-<name>.ts`, `tsx`, non-zero exit on failure).
+Existing 17 scripts stay and are edited only on import lines. New scripts follow the repo convention (`scripts/test-<name>.ts`, `tsx`, non-zero exit on failure).
 
 **Invocation template** (fill the row):
 
@@ -1993,7 +1993,7 @@ Run against the **base preview first** (baseline), then after every phase you to
 Copy into the message you send Claude after pushing a phase branch.
 
 ```
-PHASE: N   BRANCH: refactor/pN-...   BASE: origin/testing/commerce-deployment   HEAD SHA: ...
+PHASE: N   BRANCH: refactor/pN-...   BASE: old-origin/testing/commerce-deployment   HEAD SHA: ...
 
 1. verify-phase.sh N output (paste the tail, must end with ALL CHECKS PASSED):
    ...
