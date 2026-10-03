@@ -157,7 +157,6 @@ function CartPageContent() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
               {/* Left side: Cart items list */}
               <div className="lg:col-span-2 space-y-6">
-
                 {/* Items Card List */}
                 <div className="space-y-4">
                   {cart.lines.map((item) => {
@@ -217,7 +216,9 @@ function CartPageContent() {
                             <div className="mt-2">
                               <Price
                                 amount={item.cost.totalAmount.amount}
-                                currencyCode={item.cost.totalAmount.currencyCode}
+                                currencyCode={
+                                  item.cost.totalAmount.currencyCode
+                                }
                                 currencyCodeClassName="hidden"
                                 className="text-[20px] font-extrabold text-neutral-900 dark:text-neutral-50"
                               />
@@ -362,7 +363,9 @@ function CartPageContent() {
 
                               <Price
                                 amount={item.cost.totalAmount.amount}
-                                currencyCode={item.cost.totalAmount.currencyCode}
+                                currencyCode={
+                                  item.cost.totalAmount.currencyCode
+                                }
                                 currencyCodeClassName="hidden"
                                 className="text-[20px] font-semibold text-black dark:text-white"
                               />
@@ -404,8 +407,10 @@ function CartPageContent() {
                   </h2>
 
                   {/* Price Details breakdown */}
-                  <div className="space-y-4" style={{ fontFamily: "Archivo, sans-serif" }}>
-
+                  <div
+                    className="space-y-4"
+                    style={{ fontFamily: "Archivo, sans-serif" }}
+                  >
                     <div className="border-t border-neutral-200 dark:border-neutral-800 py-4 mt-2 flex justify-between items-baseline">
                       <span
                         className="text-[14px] font-bold uppercase text-neutral-900 dark:text-white"
@@ -463,7 +468,6 @@ function CartPageContent() {
                     </span>
                   </div>
                 </div>
-
               </div>
             </div>
           </>
@@ -477,10 +481,13 @@ function CartPageContent() {
           locale={locale}
           isEdit={true}
           lineId={editingItem.id}
-          initialOptions={editingItem.merchandise.selectedOptions.reduce((acc: any, option: any) => {
-            acc[option.name.toLowerCase()] = option.value;
-            return acc;
-          }, {})}
+          initialOptions={editingItem.merchandise.selectedOptions.reduce(
+            (acc: any, option: any) => {
+              acc[option.name.toLowerCase()] = option.value;
+              return acc;
+            },
+            {},
+          )}
           quantity={editingItem.quantity}
         />
       )}
