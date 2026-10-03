@@ -2,138 +2,78 @@
   "cached": {
     "getAdminProductCatalog": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.products"
-      ],
-      "life": [
-        "\"days\""
-      ]
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
     },
     "getCart": {
       "directive": "use cache: private",
-      "tags": [
-        "TAGS.cart"
-      ],
-      "life": [
-        "\"seconds\""
-      ]
+      "tags": ["TAGS.cart"],
+      "life": ["\"seconds\""]
     },
     "getCollection": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.collections"
-      ],
-      "life": [
-        "\"days\""
-      ]
+      "tags": ["TAGS.collections"],
+      "life": ["\"days\""]
     },
     "getCollectionProducts": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.collections, TAGS.products"
-      ],
-      "life": [
-        "\"days\""
-      ]
+      "tags": ["TAGS.collections, TAGS.products"],
+      "life": ["\"days\""]
     },
     "getCollections": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.collections"
-      ],
-      "life": [
-        "\"days\""
-      ]
+      "tags": ["TAGS.collections"],
+      "life": ["\"days\""]
     },
     "getConfiguratorProducts": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.products"
-      ],
-      "life": [
-        "\"days\""
-      ]
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
     },
     "getMenu": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.collections"
-      ],
-      "life": [
-        "\"days\""
-      ]
+      "tags": ["TAGS.collections"],
+      "life": ["\"days\""]
     },
     "getProduct": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.products"
-      ],
-      "life": [
-        "\"days\""
-      ]
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
     },
     "getProductRecommendations": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.products"
-      ],
-      "life": [
-        "\"days\""
-      ]
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
     },
     "getProducts": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.products"
-      ],
-      "life": [
-        "\"days\""
-      ]
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
     },
     "getRawProduct": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.products"
-      ],
-      "life": [
-        "\"days\""
-      ]
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
     },
     "loadHeroRows": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.hero"
-      ],
-      "life": [
-        "\"minutes\""
-      ]
+      "tags": ["TAGS.hero"],
+      "life": ["\"minutes\""]
     },
     "loadNewlyReleasedItems": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.newlyReleased"
-      ],
-      "life": [
-        "\"minutes\""
-      ]
+      "tags": ["TAGS.newlyReleased"],
+      "life": ["\"minutes\""]
     },
     "loadShopNowItems": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.shopNow"
-      ],
-      "life": [
-        "\"minutes\""
-      ]
+      "tags": ["TAGS.shopNow"],
+      "life": ["\"minutes\""]
     },
     "loadSocialPostRows": {
       "directive": "use cache",
-      "tags": [
-        "TAGS.socialPosts"
-      ],
-      "life": [
-        "\"minutes\""
-      ]
+      "tags": ["TAGS.socialPosts"],
+      "life": ["\"minutes\""]
     }
   },
   "invalidations": [

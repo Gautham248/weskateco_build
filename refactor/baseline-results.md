@@ -17,25 +17,25 @@
 
 `pnpm test:all` (`node refactor/scripts/run-tests.mjs`) with `NODE_ENV=development`: **17 of 17 passed**, exit 0.
 
-| Script | Result | Assertions |
-|---|---|---|
-| test-admin-auth.ts | PASS | 17 |
-| test-admin-editor-tables.ts | PASS | 27 |
-| test-admin-pagination.ts | PASS | 16 |
-| test-admin-product-filters.ts | PASS | 52 |
-| test-configurator.ts | PASS | all checks passed |
-| test-contact-enquiries.ts | PASS | 60 |
-| test-contact-submit.ts | PASS | 36 |
-| test-drag-scroll.ts | PASS | 21 |
-| test-filters.ts | PASS | 28 |
-| test-hero.ts | PASS | 46 |
-| test-image-url.ts | PASS | 15 |
-| test-newly-released.ts | PASS | 34 |
-| test-overrides.ts | PASS | 26 |
-| test-product-description-html.ts | PASS | 13 |
-| test-product-page.ts | PASS | 8 |
-| test-shop-now.ts | PASS | 33 |
-| test-social-posts.ts | PASS | 46 |
+| Script                           | Result | Assertions        |
+| -------------------------------- | ------ | ----------------- |
+| test-admin-auth.ts               | PASS   | 17                |
+| test-admin-editor-tables.ts      | PASS   | 27                |
+| test-admin-pagination.ts         | PASS   | 16                |
+| test-admin-product-filters.ts    | PASS   | 52                |
+| test-configurator.ts             | PASS   | all checks passed |
+| test-contact-enquiries.ts        | PASS   | 60                |
+| test-contact-submit.ts           | PASS   | 36                |
+| test-drag-scroll.ts              | PASS   | 21                |
+| test-filters.ts                  | PASS   | 28                |
+| test-hero.ts                     | PASS   | 46                |
+| test-image-url.ts                | PASS   | 15                |
+| test-newly-released.ts           | PASS   | 34                |
+| test-overrides.ts                | PASS   | 26                |
+| test-product-description-html.ts | PASS   | 13                |
+| test-product-page.ts             | PASS   | 8                 |
+| test-shop-now.ts                 | PASS   | 33                |
+| test-social-posts.ts             | PASS   | 46                |
 
 These are the current counts on this base. The roadmap's per-script figures were set on an older commit and are not used as pass criteria; `run-tests.mjs` decides on exit codes.
 

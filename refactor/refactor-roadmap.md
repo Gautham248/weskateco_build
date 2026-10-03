@@ -1,13 +1,13 @@
 # WeSkate Co: Architecture Refactor Roadmap
 
-| | |
-|---|---|
-| Repository | `Gautham248/weskateco_build` |
-| Base branch | `testing/commerce-deployment` |
-| Goal | Change the architecture only. Every pixel, string, route and behaviour stays as it is. |
-| Target pattern | Modular monolith with hexagonal module internals. In-process domain events and CQRS-style read models arrive with the Phase 2 platform work, not in this refactor. |
-| Prepared | 2026-09-27 |
-| Verification model | You push one branch per phase. Claude clones it and runs the phase gate. |
+|                    |                                                                                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Repository         | `Gautham248/weskateco_build`                                                                                                                                       |
+| Base branch        | `testing/commerce-deployment`                                                                                                                                      |
+| Goal               | Change the architecture only. Every pixel, string, route and behaviour stays as it is.                                                                             |
+| Target pattern     | Modular monolith with hexagonal module internals. In-process domain events and CQRS-style read models arrive with the Phase 2 platform work, not in this refactor. |
+| Prepared           | 2026-09-27                                                                                                                                                         |
+| Verification model | You push one branch per phase. Claude clones it and runs the phase gate.                                                                                           |
 
 Everything marked "verified" was checked against the real branch in a sandbox. Everything marked "unverified" could not be checked there and says why.
 
@@ -68,20 +68,20 @@ Every step uses the same headings so nothing is skipped:
 
 ### 1.3 What Claude can run and what you must run
 
-| Check | Claude (from your pushed branch) | You |
-|---|---|---|
-| `tsc --noEmit` | yes | yes |
-| All `scripts/test-*.ts` | yes | yes |
-| UI guard (import-only changes in UI files) | yes | yes |
-| Move ledger (nothing missed) | yes | yes |
-| Cache-parity check | yes | yes |
-| `drizzle-kit generate` reports no drift | yes | yes |
-| dependency-cruiser rules | yes | yes |
-| Mutation gate results | re-runs if asked | yes (you run `generate-tests`) |
-| `next build` | **no** (needs live Shopify to prerender; unverified offline) | **yes** |
-| HTML snapshot capture and compare | **no** (needs live store data) | **yes** |
-| Manual smoke (Appendix E) | no | yes |
-| GitHub PR review posting (`review-pr`) | no | yes (optional) |
+| Check                                      | Claude (from your pushed branch)                             | You                            |
+| ------------------------------------------ | ------------------------------------------------------------ | ------------------------------ |
+| `tsc --noEmit`                             | yes                                                          | yes                            |
+| All `scripts/test-*.ts`                    | yes                                                          | yes                            |
+| UI guard (import-only changes in UI files) | yes                                                          | yes                            |
+| Move ledger (nothing missed)               | yes                                                          | yes                            |
+| Cache-parity check                         | yes                                                          | yes                            |
+| `drizzle-kit generate` reports no drift    | yes                                                          | yes                            |
+| dependency-cruiser rules                   | yes                                                          | yes                            |
+| Mutation gate results                      | re-runs if asked                                             | yes (you run `generate-tests`) |
+| `next build`                               | **no** (needs live Shopify to prerender; unverified offline) | **yes**                        |
+| HTML snapshot capture and compare          | **no** (needs live store data)                               | **yes**                        |
+| Manual smoke (Appendix E)                  | no                                                           | yes                            |
+| GitHub PR review posting (`review-pr`)     | no                                                           | yes (optional)                 |
 
 ### 1.4 Branch model
 
@@ -110,20 +110,20 @@ Conventional commits with scope, matching the repo: `refactor(shopify): extract 
 
 ## 2. Rules that never bend (invariants)
 
-| ID | Rule | Enforced by |
-|---|---|---|
-| I-1 | **UI freeze.** No change to markup, `className`, CSS, `locales/*.json`, `public/`. In UI files only `import` declarations may change. | `ui-guard.mjs` |
-| I-2 | One named exception: the bundle grouping block in `components/cart/modal.tsx` (Phase 4), allowlisted with a reason, proven equal by a differential test. | allowlist + T-13 |
-| I-3 | Imports stay bare (`modules/...`, `integrations/...`, `platform/...`). `baseUrl: "."` already resolves them. No `src/` move, no path aliases. | `tsc` |
-| I-4 | Cache tags, `cacheLife` profiles, cache kind and every `revalidateTag`/`updateTag` call stay identical. Functions are identified by name, so moving them is fine. | `cache-parity.mjs` |
-| I-5 | **Overrides are applied inside the cache scope**, as today. Cached composition functions in `modules/catalog` include the override merge. Raw integration functions are uncached. | review + T-11 + cache parity |
-| I-6 | No schema change and no migration until Phase 7, and Phase 7 must produce zero drift. | `drizzle-kit generate` |
-| I-7 | Public routes and URLs never change. Both webhook URLs stay live. | snapshot + ledger |
-| I-8 | No new behaviour. Anything that would change behaviour is listed in Appendix H and deferred. | review |
-| I-9 | Every phase is independently deployable and revertible. | branch model |
-| I-10 | Moves are `git mv` commits with no content edits. Edits happen in a separate commit. | review + `review-pr` rename sweep |
-| I-11 | Failing generated tests are defects to report, never assertions to loosen. | `generate-tests` Step 6 |
-| I-12 | Database writes (migrations, seeds) are never run by the refactor. `db:migrate` and `scripts/seed-*.ts` are out of scope. | AGENTS Rule 3b |
+| ID   | Rule                                                                                                                                                                              | Enforced by                       |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| I-1  | **UI freeze.** No change to markup, `className`, CSS, `locales/*.json`, `public/`. In UI files only `import` declarations may change.                                             | `ui-guard.mjs`                    |
+| I-2  | One named exception: the bundle grouping block in `components/cart/modal.tsx` (Phase 4), allowlisted with a reason, proven equal by a differential test.                          | allowlist + T-13                  |
+| I-3  | Imports stay bare (`modules/...`, `integrations/...`, `platform/...`). `baseUrl: "."` already resolves them. No `src/` move, no path aliases.                                     | `tsc`                             |
+| I-4  | Cache tags, `cacheLife` profiles, cache kind and every `revalidateTag`/`updateTag` call stay identical. Functions are identified by name, so moving them is fine.                 | `cache-parity.mjs`                |
+| I-5  | **Overrides are applied inside the cache scope**, as today. Cached composition functions in `modules/catalog` include the override merge. Raw integration functions are uncached. | review + T-11 + cache parity      |
+| I-6  | No schema change and no migration until Phase 7, and Phase 7 must produce zero drift.                                                                                             | `drizzle-kit generate`            |
+| I-7  | Public routes and URLs never change. Both webhook URLs stay live.                                                                                                                 | snapshot + ledger                 |
+| I-8  | No new behaviour. Anything that would change behaviour is listed in Appendix H and deferred.                                                                                      | review                            |
+| I-9  | Every phase is independently deployable and revertible.                                                                                                                           | branch model                      |
+| I-10 | Moves are `git mv` commits with no content edits. Edits happen in a separate commit.                                                                                              | review + `review-pr` rename sweep |
+| I-11 | Failing generated tests are defects to report, never assertions to loosen.                                                                                                        | `generate-tests` Step 6           |
+| I-12 | Database writes (migrations, seeds) are never run by the refactor. `db:migrate` and `scripts/seed-*.ts` are out of scope.                                                         | AGENTS Rule 3b                    |
 
 ---
 
@@ -131,18 +131,18 @@ Conventional commits with scope, matching the repo: `refactor(shopify): extract 
 
 Change any of these before Phase 0 and the rest of the document still holds.
 
-| ID | Decision | Why |
-|---|---|---|
-| D-01 | Modular monolith, hexagonal internals; events and read models come with Phase 2 platform work. | One small team, one DB, Vercel serverless. Phase 2 domains (ledger, tiers, clans) are transactional and tightly coupled. |
-| D-02 | Module public surface is role-suffixed files: `domain/**`, `*.service.ts`, `*.actions.ts`, `*.types.ts`, `*.events.ts`. No hand-written barrel `index.ts`. | Company coding standard bans barrels. Enforced by dependency-cruiser. This replaces the `index.ts` idea from the earlier chat roadmap. |
-| D-03 | Sanity stays for editorial content only. `lib/sanity` moves to `integrations/sanity` in Phase 9. | Storefront reads nothing from Sanity today; contract still promises it. Decide before Phase 9. |
-| D-04 | Company style rules (arrow consts, no `!`, no `interface`) apply to **new** files only. Moved files keep their style. | Restyling would bury the behaviour-preserving diff. Style debt is listed in Phase 9. |
+| ID   | Decision                                                                                                                                                                                                                                                                  | Why                                                                                                                                              |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| D-01 | Modular monolith, hexagonal internals; events and read models come with Phase 2 platform work.                                                                                                                                                                            | One small team, one DB, Vercel serverless. Phase 2 domains (ledger, tiers, clans) are transactional and tightly coupled.                         |
+| D-02 | Module public surface is role-suffixed files: `domain/**`, `*.service.ts`, `*.actions.ts`, `*.types.ts`, `*.events.ts`. No hand-written barrel `index.ts`.                                                                                                                | Company coding standard bans barrels. Enforced by dependency-cruiser. This replaces the `index.ts` idea from the earlier chat roadmap.           |
+| D-03 | Sanity stays for editorial content only. `lib/sanity` moves to `integrations/sanity` in Phase 9.                                                                                                                                                                          | Storefront reads nothing from Sanity today; contract still promises it. Decide before Phase 9.                                                   |
+| D-04 | Company style rules (arrow consts, no `!`, no `interface`) apply to **new** files only. Moved files keep their style.                                                                                                                                                     | Restyling would bury the behaviour-preserving diff. Style debt is listed in Phase 9.                                                             |
 | D-05 | Shared kernel stays in `lib/`: `shopify/{types,image-url,description-html}.ts`, `gokwik/`, `i18n/`, `hooks/`, `utils.ts`, `constants.ts`, `type-guards.ts`, `fonts.ts`, `filters/`, guide data folders, `admin/{pagination,product-filters,editor-extensions}.ts`, `db/`. | These are pure or UI-facing; moving them touches 100+ import lines for no gain. **Revised from the chat roadmap:** `lib/gokwik` no longer moves. |
-| D-06 | Tests follow the repo convention: `scripts/test-*.ts` assertion scripts run with `tsx`. No new test framework. | `generate-tests` Step 7 says match what exists. Existing scripts prove this works with `mutate-cli.mjs`. |
-| D-07 | One lockfile: pnpm. `package-lock.json` is deleted. | `npm ci` fails today (react peer conflict); `pnpm install --frozen-lockfile` works. |
-| D-08 | Architecture docs live in `architecture/` and `refactor/`, never `docs/`. | `docs/` is gitignored. |
-| D-09 | Neon HTTP driver stays during the refactor. The transaction-capable driver is a Phase 2 entry task. | Driver change alters runtime behaviour. |
-| D-10 | Configurator keeps running on mock metafield data through a `sources/` adapter. | It is production behaviour today, and real metafields are still pending. |
+| D-06 | Tests follow the repo convention: `scripts/test-*.ts` assertion scripts run with `tsx`. No new test framework.                                                                                                                                                            | `generate-tests` Step 7 says match what exists. Existing scripts prove this works with `mutate-cli.mjs`.                                         |
+| D-07 | One lockfile: pnpm. `package-lock.json` is deleted.                                                                                                                                                                                                                       | `npm ci` fails today (react peer conflict); `pnpm install --frozen-lockfile` works.                                                              |
+| D-08 | Architecture docs live in `architecture/` and `refactor/`, never `docs/`.                                                                                                                                                                                                 | `docs/` is gitignored.                                                                                                                           |
+| D-09 | Neon HTTP driver stays during the refactor. The transaction-capable driver is a Phase 2 entry task.                                                                                                                                                                       | Driver change alters runtime behaviour.                                                                                                          |
+| D-10 | Configurator keeps running on mock metafield data through a `sources/` adapter.                                                                                                                                                                                           | It is production behaviour today, and real metafields are still pending.                                                                         |
 
 ---
 
@@ -162,21 +162,21 @@ In the WeSkate repo, `.gitignore` already covers `graphify-out/` and `.dev-agent
 
 ### 4.2 Where each skill is used
 
-| Skill | Phase / step | Use |
-|---|---|---|
-| `graphify` | 0.3, and before every move | Build the graph once. `graphify affected --files <file>` lists importers before a move. `graphify update .` after each phase. |
-| `architecture-context` | 0.3 and 9.5 | Named subsystems before and after, for a before/after comparison. Consumer of the graph; run `graphify` first. |
-| `plan-feature` | 8.2 and Phase 2 build | Per-module plans. `verify_plan_paths.py` checks that a plan only names real files. `deviation-log-cli.mjs record` logs where reality differed from this roadmap. |
-| `generate-tests` | every step with a T-ID | Contract-derived cases plus mutation gate. |
-| `coding-standards` (dispatch: backend, database, project-organization) | new files only | Handler shape (validate, authorize, service, respond), thin actions, transaction rules, naming. |
-| `typescript-conventions` | new files | Types over casts, validate at boundaries. |
-| `review-pr` | every phase PR | Renamed-file sweep suits `git mv` PRs. Completeness gate traces state writes, resource cleanup and find-then-create races (relevant to rate limiting and upsert-then-prune saves). |
-| `first-principles-review` | every phase PR | Challenges assumptions, blast radius, rollback. Runs first in `review-pr`'s lens registry. |
-| `fix-bug` | any failed gate | Minimal fix plus fix-attempt ledger. `generate-tests` then offers a permanent regression test. |
-| `sync-prs` | continuous | Merges the base into refactor PRs, triages CI. |
-| `investigate-issue` | Appendix H | Turns each deferred behaviour change into a tracked issue. |
-| `skill-factory` | 9.6 (optional) | Codifies `verify-phase.sh` as a reusable skill for Phase 2 modules. |
-| `eslint-rule-author` | 9.6 (optional) | Encode module boundaries and the `"use server"` placement rule as lint rules. |
+| Skill                                                                  | Phase / step               | Use                                                                                                                                                                                |
+| ---------------------------------------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `graphify`                                                             | 0.3, and before every move | Build the graph once. `graphify affected --files <file>` lists importers before a move. `graphify update .` after each phase.                                                      |
+| `architecture-context`                                                 | 0.3 and 9.5                | Named subsystems before and after, for a before/after comparison. Consumer of the graph; run `graphify` first.                                                                     |
+| `plan-feature`                                                         | 8.2 and Phase 2 build      | Per-module plans. `verify_plan_paths.py` checks that a plan only names real files. `deviation-log-cli.mjs record` logs where reality differed from this roadmap.                   |
+| `generate-tests`                                                       | every step with a T-ID     | Contract-derived cases plus mutation gate.                                                                                                                                         |
+| `coding-standards` (dispatch: backend, database, project-organization) | new files only             | Handler shape (validate, authorize, service, respond), thin actions, transaction rules, naming.                                                                                    |
+| `typescript-conventions`                                               | new files                  | Types over casts, validate at boundaries.                                                                                                                                          |
+| `review-pr`                                                            | every phase PR             | Renamed-file sweep suits `git mv` PRs. Completeness gate traces state writes, resource cleanup and find-then-create races (relevant to rate limiting and upsert-then-prune saves). |
+| `first-principles-review`                                              | every phase PR             | Challenges assumptions, blast radius, rollback. Runs first in `review-pr`'s lens registry.                                                                                         |
+| `fix-bug`                                                              | any failed gate            | Minimal fix plus fix-attempt ledger. `generate-tests` then offers a permanent regression test.                                                                                     |
+| `sync-prs`                                                             | continuous                 | Merges the base into refactor PRs, triages CI.                                                                                                                                     |
+| `investigate-issue`                                                    | Appendix H                 | Turns each deferred behaviour change into a tracked issue.                                                                                                                         |
+| `skill-factory`                                                        | 9.6 (optional)             | Codifies `verify-phase.sh` as a reusable skill for Phase 2 modules.                                                                                                                |
+| `eslint-rule-author`                                                   | 9.6 (optional)             | Encode module boundaries and the `"use server"` placement rule as lint rules.                                                                                                      |
 
 ### 4.3 Skills deliberately not used
 
@@ -207,30 +207,30 @@ The existing hero tests import the constants instead of pinning their values, so
 
 All verified in a sandbox against `testing/commerce-deployment` unless marked otherwise.
 
-| ID | Finding | Consequence |
-|---|---|---|
-| F-01 | `tsc --noEmit` is clean, but only with `next-env.d.ts` present. That file is gitignored and generated by `next dev/build`. Without it, every `.png/.svg` import errors. | Gate scripts create a stub if missing. |
-| F-02 | All 16 `scripts/test-*.ts` pass. Assertion counts: admin-auth 17, admin-editor-tables 27, admin-pagination 16, admin-product-filters 52, configurator "all checks", contact-enquiries 60, contact-submit 36, drag-scroll 21, filters 12, hero 46, image-url 15, newly-released 34, overrides 26, product-description 13, product-page 8, shop-now 33. | Baseline to preserve. `test-drag-scroll` needs `NODE_ENV=development`. |
-| F-03 | `npm ci` fails (`@sanity/vision` wants react `^19.2.2`, repo pins `19.0.0`). `pnpm install --frozen-lockfile` succeeds. | Delete `package-lock.json` (D-07). |
-| F-04 | `prettier --check` fails on 64 pre-existing files (44 `components`, 7 `lib`, 6 `app`, 4 `scripts`, `tsconfig.json`, `pnpm-lock.yaml`, `ADMIN_PANEL_ONBOARDING.md`). So `pnpm test` is red today. | Record a baseline; check only files you touch. No mass reformat (it would violate I-1 diff purity). |
-| F-05 | No CI configuration (`.github/` absent). | Phase 1 adds it. |
-| F-06 | `docs/` is gitignored. `app/api/contact/submit/route.ts` cites `docs/contact-enquiry-flow-decisions.md`, which is not in the repo. | D-08. |
-| F-07 | `next build` compiles and reaches prerender, then fails without live Shopify (`/en/products`). **Unverified offline beyond that point.** | You run the build. |
-| F-08 | No **file-level** import cycle between `lib/shopify`, `lib/catalog`, `lib/admin`. It is a folder-level layering inversion: `lib/shopify/index.ts` -> `lib/catalog/overrides` -> `lib/admin/queries`, and storefront reads flow through a module called "admin". The only file-level cycles are six inside `components/` (`layout/search/filter/*`, `layout/navbar/*`, `board-finder/*`). | The six UI cycles are recorded as known violations and left alone (UI freeze). |
-| F-09 | `scripts/test-configurator.ts` never imports the engine. It re-implements logic inline. `lib/configurator/engine.ts` (507 lines, pure) has no real test. | T-01 is the highest-value test in the refactor. |
-| F-10 | `test-contact-submit.ts` covers `enquiry-reference` and `rate-limit` helpers only. The route's validation and response contract are untested. | T-16, T-17, T-18. |
-| F-11 | Mutation baseline on `lib/catalog/hero.ts`: 1 of 8 killed. | T-03. |
-| F-12 | The live configurator runs on `config/mock-configurator-data.json` via `buildConfiguratorItems` (`components/configurator/wizard.tsx`). | It is production behaviour (D-10). Never delete it as "unused". |
-| F-13 | Two Shopify webhook endpoints exist with **different mappings**. `/api/webhooks/shopify` (HMAC) revalidates `products` **and** `collections` on product topics. `/[locale]/api/revalidate` (`revalidate()`, secret in query string) revalidates only `products` on product topics. | Preserve both. Alignment is Appendix H item H-3. |
-| F-14 | `/cart` (`app/[locale]/cart/page.tsx`, 604 lines) has no bundle grouping. Only the drawer (`modal.tsx`) groups by `_bundle_id`. | Not fixed here (I-1, H-1). |
-| F-15 | Sanity is mounted (`/studio`, 13 schemas) but no page imports `lib/sanity`. | D-03. |
-| F-16 | `getMenu` has no consumer outside `lib/shopify`. | Kept as-is; flagged in 9.4. |
-| F-17 | `/store` and `/store/[collection]` fetch all products (`getProducts({})`) and filter client-side. | Preserve exactly. |
-| F-18 | `getCollections` fabricates an "All" collection (`path: "/search"`, `updatedAt: new Date().toISOString()`) and drops handles starting with `hidden`. `getCollection` maps `path` to `/store/<handle>`. | Tests must tolerate the time field. |
-| F-19 | `isTransientConnectError` is duplicated in `lib/shopify/index.ts` and `lib/db/index.ts`. | Left duplicated (9.4). |
-| F-20 | The cart cookie is set as `cookies().set("cartId", id)` with no options. | Preserve exactly; do not "harden" it (H-5). |
-| F-21 | `AGENTS.md` contains absolute paths from one developer's Mac; `claude-init.md` and `README.md` are stale or stock. | Phase 9 docs. |
-| F-22 | Two test scripts (`admin-editor-tables`, `drag-scroll`) print node:test style output; the rest print custom `ok/FAIL` lines. | `run-tests.mjs` relies on exit codes only. |
+| ID   | Finding                                                                                                                                                                                                                                                                                                                                                                                  | Consequence                                                                                         |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| F-01 | `tsc --noEmit` is clean, but only with `next-env.d.ts` present. That file is gitignored and generated by `next dev/build`. Without it, every `.png/.svg` import errors.                                                                                                                                                                                                                  | Gate scripts create a stub if missing.                                                              |
+| F-02 | All 16 `scripts/test-*.ts` pass. Assertion counts: admin-auth 17, admin-editor-tables 27, admin-pagination 16, admin-product-filters 52, configurator "all checks", contact-enquiries 60, contact-submit 36, drag-scroll 21, filters 12, hero 46, image-url 15, newly-released 34, overrides 26, product-description 13, product-page 8, shop-now 33.                                    | Baseline to preserve. `test-drag-scroll` needs `NODE_ENV=development`.                              |
+| F-03 | `npm ci` fails (`@sanity/vision` wants react `^19.2.2`, repo pins `19.0.0`). `pnpm install --frozen-lockfile` succeeds.                                                                                                                                                                                                                                                                  | Delete `package-lock.json` (D-07).                                                                  |
+| F-04 | `prettier --check` fails on 64 pre-existing files (44 `components`, 7 `lib`, 6 `app`, 4 `scripts`, `tsconfig.json`, `pnpm-lock.yaml`, `ADMIN_PANEL_ONBOARDING.md`). So `pnpm test` is red today.                                                                                                                                                                                         | Record a baseline; check only files you touch. No mass reformat (it would violate I-1 diff purity). |
+| F-05 | No CI configuration (`.github/` absent).                                                                                                                                                                                                                                                                                                                                                 | Phase 1 adds it.                                                                                    |
+| F-06 | `docs/` is gitignored. `app/api/contact/submit/route.ts` cites `docs/contact-enquiry-flow-decisions.md`, which is not in the repo.                                                                                                                                                                                                                                                       | D-08.                                                                                               |
+| F-07 | `next build` compiles and reaches prerender, then fails without live Shopify (`/en/products`). **Unverified offline beyond that point.**                                                                                                                                                                                                                                                 | You run the build.                                                                                  |
+| F-08 | No **file-level** import cycle between `lib/shopify`, `lib/catalog`, `lib/admin`. It is a folder-level layering inversion: `lib/shopify/index.ts` -> `lib/catalog/overrides` -> `lib/admin/queries`, and storefront reads flow through a module called "admin". The only file-level cycles are six inside `components/` (`layout/search/filter/*`, `layout/navbar/*`, `board-finder/*`). | The six UI cycles are recorded as known violations and left alone (UI freeze).                      |
+| F-09 | `scripts/test-configurator.ts` never imports the engine. It re-implements logic inline. `lib/configurator/engine.ts` (507 lines, pure) has no real test.                                                                                                                                                                                                                                 | T-01 is the highest-value test in the refactor.                                                     |
+| F-10 | `test-contact-submit.ts` covers `enquiry-reference` and `rate-limit` helpers only. The route's validation and response contract are untested.                                                                                                                                                                                                                                            | T-16, T-17, T-18.                                                                                   |
+| F-11 | Mutation baseline on `lib/catalog/hero.ts`: 1 of 8 killed.                                                                                                                                                                                                                                                                                                                               | T-03.                                                                                               |
+| F-12 | The live configurator runs on `config/mock-configurator-data.json` via `buildConfiguratorItems` (`components/configurator/wizard.tsx`).                                                                                                                                                                                                                                                  | It is production behaviour (D-10). Never delete it as "unused".                                     |
+| F-13 | Two Shopify webhook endpoints exist with **different mappings**. `/api/webhooks/shopify` (HMAC) revalidates `products` **and** `collections` on product topics. `/[locale]/api/revalidate` (`revalidate()`, secret in query string) revalidates only `products` on product topics.                                                                                                       | Preserve both. Alignment is Appendix H item H-3.                                                    |
+| F-14 | `/cart` (`app/[locale]/cart/page.tsx`, 604 lines) has no bundle grouping. Only the drawer (`modal.tsx`) groups by `_bundle_id`.                                                                                                                                                                                                                                                          | Not fixed here (I-1, H-1).                                                                          |
+| F-15 | Sanity is mounted (`/studio`, 13 schemas) but no page imports `lib/sanity`.                                                                                                                                                                                                                                                                                                              | D-03.                                                                                               |
+| F-16 | `getMenu` has no consumer outside `lib/shopify`.                                                                                                                                                                                                                                                                                                                                         | Kept as-is; flagged in 9.4.                                                                         |
+| F-17 | `/store` and `/store/[collection]` fetch all products (`getProducts({})`) and filter client-side.                                                                                                                                                                                                                                                                                        | Preserve exactly.                                                                                   |
+| F-18 | `getCollections` fabricates an "All" collection (`path: "/search"`, `updatedAt: new Date().toISOString()`) and drops handles starting with `hidden`. `getCollection` maps `path` to `/store/<handle>`.                                                                                                                                                                                   | Tests must tolerate the time field.                                                                 |
+| F-19 | `isTransientConnectError` is duplicated in `lib/shopify/index.ts` and `lib/db/index.ts`.                                                                                                                                                                                                                                                                                                 | Left duplicated (9.4).                                                                              |
+| F-20 | The cart cookie is set as `cookies().set("cartId", id)` with no options.                                                                                                                                                                                                                                                                                                                 | Preserve exactly; do not "harden" it (H-5).                                                         |
+| F-21 | `AGENTS.md` contains absolute paths from one developer's Mac; `claude-init.md` and `README.md` are stale or stock.                                                                                                                                                                                                                                                                       | Phase 9 docs.                                                                                       |
+| F-22 | Two test scripts (`admin-editor-tables`, `drag-scroll`) print node:test style output; the rest print custom `ok/FAIL` lines.                                                                                                                                                                                                                                                             | `run-tests.mjs` relies on exit codes only.                                                          |
 
 The six known UI cycles (baseline in `refactor/depcruise-known-violations.json`):
 
@@ -251,80 +251,80 @@ Tick a row only when its evidence has passed **after the last phase that touches
 
 ### A. Storefront pages, routing, SEO
 
-| ID | Must still work | Lives in today | Touched in | Evidence | Done |
-|---|---|---|---|---|---|
-| FI-A01 | Locale routing: unprefixed paths rewrite to `/en`; `/en` and `/hi` prefixes; `x-locale` header; skip list (`/api`, `/_next`, assets, `/studio`); `/admin` handled before locale logic | `proxy.ts` | none (pinned) | T-04, S `/`, `/hi`, M-02 | [ ] |
-| FI-A02 | Home composition: hero, newly released, category grid, product grid, shop now, about, academy, tips, configurator CTA, brands, footer | `app/[locale]/page.tsx`, `components/home/*` | P3 (imports) | S `/`, M-01 | [ ] |
-| FI-A03 | Hero media from admin, with fallback slide when none | `lib/catalog/hero*`, `components/home/hero-*` | P3 | T-03, existing hero tests, M-20 | [ ] |
-| FI-A04 | Newly Released carousel; drops deleted products; hides on Shopify failure | `lib/catalog/newly-released*` | P3 | existing tests, M-18, M-28 | [ ] |
-| FI-A05 | Shop Now row, 3 image slots, discount percent | `lib/catalog/shop-now*` | P3 | existing tests, M-19 | [ ] |
-| FI-A06 | `/store`: all products and collections; client-side filter, sort, `page`; query params | `app/[locale]/store/*`, `lib/filters` | P3 (imports) | S `/store`, existing `test-filters`, M-04 | [ ] |
-| FI-A07 | `/store/[collection]`: 404 when missing; metadata from collection SEO | `app/[locale]/store/[collection]/page.tsx` | P3 | S two collections | [ ] |
-| FI-A08 | `/products` collections index | `app/[locale]/products/page.tsx` | P3 | S `/products` | [ ] |
-| FI-A09 | Product page: three states (ok, missing -> 404, failed -> unavailable), metadata, JSON-LD, noindex when hidden tag, recommendations, gallery, description, tabs | `app/[locale]/products/[handle]/page.tsx`, `lib/catalog/product-page.ts` | P3 | `test-product-page`, S ok/missing, M-05, M-28 | [ ] |
-| FI-A10 | Redirects: `/terms`, `/product/:handle`, `/:locale/product/:handle` (permanent) | `next.config.ts` | none | S `/terms`, `/product/__missing__`, M-24 | [ ] |
-| FI-A11 | Shopify pages catch-all `/[page]` and its OG image | `app/[locale]/[page]/*` | P3 | M-25 | [ ] |
-| FI-A12 | Static pages: about-us, academy, school, skateparks, privacy, terms, refund, shipping | `app/[locale]/*/page.tsx` | none | S each | [ ] |
-| FI-A13 | Guides hub plus five guides plus board-finder tools (quiz, size tool, decision helper) | `app/[locale]/guides/*`, `lib/*-guide`, `lib/board-finder` | none | S 6 routes, M-27 | [ ] |
-| FI-A14 | Contact page | `app/[locale]/contact/page.tsx`, `components/contact/*` | P5 (imports) | S `/contact`, M-14 | [ ] |
-| FI-A15 | Navbar: mega menu, mobile menu, search box (`q`), language switcher, cart button, scroll wrapper | `components/layout/navbar/*` | P3/P4 (imports) | S any page, M-02, M-03 | [ ] |
-| FI-A16 | Footer | `components/layout/footer*` | none | S any page | [ ] |
-| FI-A17 | SEO: `sitemap.xml` (home, products, collections, products, Shopify pages), `robots.txt`, OG images, `metadataBase`, title template | `app/[locale]/sitemap.ts`, `robots.ts`, `opengraph-image.tsx` | P3 (imports) | S `/robots.txt`, M-26 | [ ] |
-| FI-A18 | i18n: en/hi dictionaries; fallback locale -> en -> key; `getLocalizedPath`, `getLocalizedField`; provider | `lib/i18n/*`, `locales/*` | none (pinned) | T-05, S `/hi` | [ ] |
-| FI-A19 | Error boundary, loading state, welcome toast, toaster | `app/[locale]/error.tsx`, `store/loading.tsx`, `components/welcome-toast.tsx` | none | M-01 | [ ] |
-| FI-A20 | Image handling: Shopify sized variants, `next/image` allowlist (Shopify CDN, ImageKit), avif/webp; PPR and `useCache` flags | `lib/shopify/image-url.ts`, `next.config.ts` | none | `test-image-url`, S | [ ] |
+| ID     | Must still work                                                                                                                                                                       | Lives in today                                                                | Touched in      | Evidence                                      | Done |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------------- | --------------------------------------------- | ---- |
+| FI-A01 | Locale routing: unprefixed paths rewrite to `/en`; `/en` and `/hi` prefixes; `x-locale` header; skip list (`/api`, `/_next`, assets, `/studio`); `/admin` handled before locale logic | `proxy.ts`                                                                    | none (pinned)   | T-04, S `/`, `/hi`, M-02                      | [ ]  |
+| FI-A02 | Home composition: hero, newly released, category grid, product grid, shop now, about, academy, tips, configurator CTA, brands, footer                                                 | `app/[locale]/page.tsx`, `components/home/*`                                  | P3 (imports)    | S `/`, M-01                                   | [ ]  |
+| FI-A03 | Hero media from admin, with fallback slide when none                                                                                                                                  | `lib/catalog/hero*`, `components/home/hero-*`                                 | P3              | T-03, existing hero tests, M-20               | [ ]  |
+| FI-A04 | Newly Released carousel; drops deleted products; hides on Shopify failure                                                                                                             | `lib/catalog/newly-released*`                                                 | P3              | existing tests, M-18, M-28                    | [ ]  |
+| FI-A05 | Shop Now row, 3 image slots, discount percent                                                                                                                                         | `lib/catalog/shop-now*`                                                       | P3              | existing tests, M-19                          | [ ]  |
+| FI-A06 | `/store`: all products and collections; client-side filter, sort, `page`; query params                                                                                                | `app/[locale]/store/*`, `lib/filters`                                         | P3 (imports)    | S `/store`, existing `test-filters`, M-04     | [ ]  |
+| FI-A07 | `/store/[collection]`: 404 when missing; metadata from collection SEO                                                                                                                 | `app/[locale]/store/[collection]/page.tsx`                                    | P3              | S two collections                             | [ ]  |
+| FI-A08 | `/products` collections index                                                                                                                                                         | `app/[locale]/products/page.tsx`                                              | P3              | S `/products`                                 | [ ]  |
+| FI-A09 | Product page: three states (ok, missing -> 404, failed -> unavailable), metadata, JSON-LD, noindex when hidden tag, recommendations, gallery, description, tabs                       | `app/[locale]/products/[handle]/page.tsx`, `lib/catalog/product-page.ts`      | P3              | `test-product-page`, S ok/missing, M-05, M-28 | [ ]  |
+| FI-A10 | Redirects: `/terms`, `/product/:handle`, `/:locale/product/:handle` (permanent)                                                                                                       | `next.config.ts`                                                              | none            | S `/terms`, `/product/__missing__`, M-24      | [ ]  |
+| FI-A11 | Shopify pages catch-all `/[page]` and its OG image                                                                                                                                    | `app/[locale]/[page]/*`                                                       | P3              | M-25                                          | [ ]  |
+| FI-A12 | Static pages: about-us, academy, school, skateparks, privacy, terms, refund, shipping                                                                                                 | `app/[locale]/*/page.tsx`                                                     | none            | S each                                        | [ ]  |
+| FI-A13 | Guides hub plus five guides plus board-finder tools (quiz, size tool, decision helper)                                                                                                | `app/[locale]/guides/*`, `lib/*-guide`, `lib/board-finder`                    | none            | S 6 routes, M-27                              | [ ]  |
+| FI-A14 | Contact page                                                                                                                                                                          | `app/[locale]/contact/page.tsx`, `components/contact/*`                       | P5 (imports)    | S `/contact`, M-14                            | [ ]  |
+| FI-A15 | Navbar: mega menu, mobile menu, search box (`q`), language switcher, cart button, scroll wrapper                                                                                      | `components/layout/navbar/*`                                                  | P3/P4 (imports) | S any page, M-02, M-03                        | [ ]  |
+| FI-A16 | Footer                                                                                                                                                                                | `components/layout/footer*`                                                   | none            | S any page                                    | [ ]  |
+| FI-A17 | SEO: `sitemap.xml` (home, products, collections, products, Shopify pages), `robots.txt`, OG images, `metadataBase`, title template                                                    | `app/[locale]/sitemap.ts`, `robots.ts`, `opengraph-image.tsx`                 | P3 (imports)    | S `/robots.txt`, M-26                         | [ ]  |
+| FI-A18 | i18n: en/hi dictionaries; fallback locale -> en -> key; `getLocalizedPath`, `getLocalizedField`; provider                                                                             | `lib/i18n/*`, `locales/*`                                                     | none (pinned)   | T-05, S `/hi`                                 | [ ]  |
+| FI-A19 | Error boundary, loading state, welcome toast, toaster                                                                                                                                 | `app/[locale]/error.tsx`, `store/loading.tsx`, `components/welcome-toast.tsx` | none            | M-01                                          | [ ]  |
+| FI-A20 | Image handling: Shopify sized variants, `next/image` allowlist (Shopify CDN, ImageKit), avif/webp; PPR and `useCache` flags                                                           | `lib/shopify/image-url.ts`, `next.config.ts`                                  | none            | `test-image-url`, S                           | [ ]  |
 
 ### B. Commerce
 
-| ID | Must still work | Lives in today | Touched in | Evidence | Done |
-|---|---|---|---|---|---|
-| FI-B01 | Reads hide products tagged `nextjs-frontend-hidden`; collections starting `hidden` dropped; synthetic "All" collection (`/search`); `CREATED_AT` sort maps to `CREATED` | `lib/shopify/index.ts` | P2, P3 | T-07, T-11, S `/store` | [ ] |
-| FI-B02 | Override layer on product reads: title, description, gallery `append`/`replace`, cover, removed images, SEO title sync | `lib/catalog/overrides.ts` | P3 | `test-overrides`, T-11, M-16 | [ ] |
-| FI-B03 | Cart: create/add/update/remove; `cartId` cookie; optimistic UI; drawer; `/cart`; quantity; variant edit; delete | `components/cart/*`, `lib/shopify/index.ts` | P4 | T-14, M-07..M-09 | [ ] |
-| FI-B04 | Drawer groups configurator lines by `_bundle_id` as "Custom Setups" (with totals) | `components/cart/modal.tsx` | P4 (allowlisted) | T-13 (oracle), M-12, M-13 | [ ] |
-| FI-B05 | Add to cart, buy-now (single-item cart + GoKwik), quick-buy sidebar | `components/product/*`, `components/cart/actions.ts` | P4 | M-05..M-10 | [ ] |
-| FI-B06 | GoKwik: script loader, checkout hook, fallback to Shopify `checkoutUrl`; Snapmint EMI banners | `lib/gokwik/*`, `components/cart/snapmint-*`, `components/product/snapmint-*` | none (stays in `lib`) | M-10, M-11 | [ ] |
-| FI-B07 | Configurator: board type -> product selection -> review; compatibility engine; filters sidebar; build summary; progress; out-of-stock toggle; mock metafield data source | `components/configurator/*`, `lib/configurator/*`, `config/*.json` | P4 | T-01, T-02, `test-configurator`, M-12 | [ ] |
-| FI-B08 | Webhooks revalidate tags: HMAC endpoint (products and collections) and query-secret endpoint (different mapping, F-13) | `app/api/webhooks/shopify/route.ts`, `lib/shopify/index.ts` `revalidate` | P2, P3 | T-09, C, M-23 | [ ] |
-| FI-B09 | Cache tags and lifetimes for the 15 cached functions and 19 invalidation sites | see Appendix D | P2, P3, P4, P6 | C | [ ] |
-| FI-B10 | Shopify fetch: 2 retries with 500ms/1000ms backoff on connect errors only; first GraphQL error thrown; error shaping `{cause,status,message,query}` | `shopifyFetch` | P2 | T-08 | [ ] |
-| FI-B11 | Admin catalog: up to 4 pages of 250, `truncated`/`failed` flags, never throws | `getAdminProductCatalog` | P2, P3 | M-16, M-28 | [ ] |
+| ID     | Must still work                                                                                                                                                          | Lives in today                                                                | Touched in            | Evidence                              | Done |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- | --------------------- | ------------------------------------- | ---- |
+| FI-B01 | Reads hide products tagged `nextjs-frontend-hidden`; collections starting `hidden` dropped; synthetic "All" collection (`/search`); `CREATED_AT` sort maps to `CREATED`  | `lib/shopify/index.ts`                                                        | P2, P3                | T-07, T-11, S `/store`                | [ ]  |
+| FI-B02 | Override layer on product reads: title, description, gallery `append`/`replace`, cover, removed images, SEO title sync                                                   | `lib/catalog/overrides.ts`                                                    | P3                    | `test-overrides`, T-11, M-16          | [ ]  |
+| FI-B03 | Cart: create/add/update/remove; `cartId` cookie; optimistic UI; drawer; `/cart`; quantity; variant edit; delete                                                          | `components/cart/*`, `lib/shopify/index.ts`                                   | P4                    | T-14, M-07..M-09                      | [ ]  |
+| FI-B04 | Drawer groups configurator lines by `_bundle_id` as "Custom Setups" (with totals)                                                                                        | `components/cart/modal.tsx`                                                   | P4 (allowlisted)      | T-13 (oracle), M-12, M-13             | [ ]  |
+| FI-B05 | Add to cart, buy-now (single-item cart + GoKwik), quick-buy sidebar                                                                                                      | `components/product/*`, `components/cart/actions.ts`                          | P4                    | M-05..M-10                            | [ ]  |
+| FI-B06 | GoKwik: script loader, checkout hook, fallback to Shopify `checkoutUrl`; Snapmint EMI banners                                                                            | `lib/gokwik/*`, `components/cart/snapmint-*`, `components/product/snapmint-*` | none (stays in `lib`) | M-10, M-11                            | [ ]  |
+| FI-B07 | Configurator: board type -> product selection -> review; compatibility engine; filters sidebar; build summary; progress; out-of-stock toggle; mock metafield data source | `components/configurator/*`, `lib/configurator/*`, `config/*.json`            | P4                    | T-01, T-02, `test-configurator`, M-12 | [ ]  |
+| FI-B08 | Webhooks revalidate tags: HMAC endpoint (products and collections) and query-secret endpoint (different mapping, F-13)                                                   | `app/api/webhooks/shopify/route.ts`, `lib/shopify/index.ts` `revalidate`      | P2, P3                | T-09, C, M-23                         | [ ]  |
+| FI-B09 | Cache tags and lifetimes for the 15 cached functions and 19 invalidation sites                                                                                           | see Appendix D                                                                | P2, P3, P4, P6        | C                                     | [ ]  |
+| FI-B10 | Shopify fetch: 2 retries with 500ms/1000ms backoff on connect errors only; first GraphQL error thrown; error shaping `{cause,status,message,query}`                      | `shopifyFetch`                                                                | P2                    | T-08                                  | [ ]  |
+| FI-B11 | Admin catalog: up to 4 pages of 250, `truncated`/`failed` flags, never throws                                                                                            | `getAdminProductCatalog`                                                      | P2, P3                | M-16, M-28                            | [ ]  |
 
 ### C. Admin panel
 
-| ID | Must still work | Lives in today | Touched in | Evidence | Done |
-|---|---|---|---|---|---|
-| FI-C01 | Login (bcrypt 12 rounds), 7-day HS256 JWT cookie (`httpOnly`, `sameSite=lax`, `secure` in prod, path `/admin`), `sessionVersion` revocation, proxy cookie-presence gate, `requireAdmin` in actions and routes, logout; password 8..72 chars; `AUTH_SECRET` >= 32 chars | `lib/admin/{auth,session,password}.ts`, `proxy.ts` | P6 | `test-admin-auth`, M-15 | [ ] |
-| FI-C02 | Products tab: search, facets (type, vendor, tags, availability, override status), pagination, override editor (rich text with tables, photos hide/reorder/cover, gallery mode), degraded banner when Shopify down; save revalidates products and collections | `app/admin/(dashboard)/products/*`, `components/admin/*`, `lib/admin/*` | P3, P6 | `test-admin-product-filters`, `test-admin-pagination`, `test-admin-editor-tables`, M-16, M-28 | [ ] |
-| FI-C03 | Upload route: ImageKit, mime allowlist, 10 MB, folder `/weskateco/products`, 401 JSON when unauthenticated | `app/admin/api/upload/route.ts`, `lib/admin/imagekit.ts` | P2, P6 | T-10, M-17 | [ ] |
-| FI-C04 | Newly Released tab: autosave, upsert-then-prune, max 200, revalidates tag | `saveNewlyReleasedItems` | P3, P6 | existing tests, M-18 | [ ] |
-| FI-C05 | Shop Now tab | `saveShopNowItems` | P3, P6 | existing tests, M-19 | [ ] |
-| FI-C06 | Hero tab: media items, default seconds, bounds 2..60, URL allowlist, probe warnings (video 25 MB, image 5 MB) | `saveHeroConfig`, `media-probe.ts` | P3, P6 | T-03, T-23, M-20 | [ ] |
-| FI-C07 | Enquiries tab: read-only list, filter by reason, counts, pagination | `listContactEnquiries` | P5, P6 | `test-contact-enquiries`, M-21 | [ ] |
-| FI-C08 | Settings tab: change own password, add admin, list admins; password change signs out other sessions | `lib/admin/actions.ts` | P6 | T-19, `test-admin-auth`, M-22 | [ ] |
-| FI-C09 | Zod action schemas: override, newly released, shop now, login, password; `ActionState` shapes | `lib/admin/actions.ts` | P6 | T-19 | [ ] |
+| ID     | Must still work                                                                                                                                                                                                                                                        | Lives in today                                                          | Touched in | Evidence                                                                                      | Done |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------- | ---- |
+| FI-C01 | Login (bcrypt 12 rounds), 7-day HS256 JWT cookie (`httpOnly`, `sameSite=lax`, `secure` in prod, path `/admin`), `sessionVersion` revocation, proxy cookie-presence gate, `requireAdmin` in actions and routes, logout; password 8..72 chars; `AUTH_SECRET` >= 32 chars | `lib/admin/{auth,session,password}.ts`, `proxy.ts`                      | P6         | `test-admin-auth`, M-15                                                                       | [ ]  |
+| FI-C02 | Products tab: search, facets (type, vendor, tags, availability, override status), pagination, override editor (rich text with tables, photos hide/reorder/cover, gallery mode), degraded banner when Shopify down; save revalidates products and collections           | `app/admin/(dashboard)/products/*`, `components/admin/*`, `lib/admin/*` | P3, P6     | `test-admin-product-filters`, `test-admin-pagination`, `test-admin-editor-tables`, M-16, M-28 | [ ]  |
+| FI-C03 | Upload route: ImageKit, mime allowlist, 10 MB, folder `/weskateco/products`, 401 JSON when unauthenticated                                                                                                                                                             | `app/admin/api/upload/route.ts`, `lib/admin/imagekit.ts`                | P2, P6     | T-10, M-17                                                                                    | [ ]  |
+| FI-C04 | Newly Released tab: autosave, upsert-then-prune, max 200, revalidates tag                                                                                                                                                                                              | `saveNewlyReleasedItems`                                                | P3, P6     | existing tests, M-18                                                                          | [ ]  |
+| FI-C05 | Shop Now tab                                                                                                                                                                                                                                                           | `saveShopNowItems`                                                      | P3, P6     | existing tests, M-19                                                                          | [ ]  |
+| FI-C06 | Hero tab: media items, default seconds, bounds 2..60, URL allowlist, probe warnings (video 25 MB, image 5 MB)                                                                                                                                                          | `saveHeroConfig`, `media-probe.ts`                                      | P3, P6     | T-03, T-23, M-20                                                                              | [ ]  |
+| FI-C07 | Enquiries tab: read-only list, filter by reason, counts, pagination                                                                                                                                                                                                    | `listContactEnquiries`                                                  | P5, P6     | `test-contact-enquiries`, M-21                                                                | [ ]  |
+| FI-C08 | Settings tab: change own password, add admin, list admins; password change signs out other sessions                                                                                                                                                                    | `lib/admin/actions.ts`                                                  | P6         | T-19, `test-admin-auth`, M-22                                                                 | [ ]  |
+| FI-C09 | Zod action schemas: override, newly released, shop now, login, password; `ActionState` shapes                                                                                                                                                                          | `lib/admin/actions.ts`                                                  | P6         | T-19                                                                                          | [ ]  |
 
 ### D. Enquiries
 
-| ID | Must still work | Lives in today | Touched in | Evidence | Done |
-|---|---|---|---|---|---|
-| FI-D01 | Reason routing table (`ROUTES`, `REASON_LABELS`, groups, fields, SLA, prefixes) | `lib/contact/routes.ts` | P5 | `test-contact-enquiries`, M-14 | [ ] |
-| FI-D02 | Submit contract: validation messages, honeypot fake success, `secondsOnPage < 3` rule, consent, 400/429/500 shapes, fail-open limiter, stored row shape, `meta` fields | `app/api/contact/submit/route.ts` | P5 | T-16, T-17, M-14 | [ ] |
-| FI-D03 | Enquiry reference: alphabet `23456789ABCDEFGHJKMNPQRSTUVWXYZ`, length 6, prefix format | `enquiry-reference.ts` | P5 | `test-contact-submit` | [ ] |
-| FI-D04 | Rate limit: 5 hits per 10 minutes per hashed key; window rollover; prune on first hit; header-based client id (`x-vercel-forwarded-for` preferred) | `lib/contact/rate-limit.ts` | P5 | `test-contact-submit`, T-18, M-14 | [ ] |
-| FI-D05 | Admin enquiry display formatting | `enquiry-display.ts` | P5 | `test-contact-enquiries` | [ ] |
+| ID     | Must still work                                                                                                                                                        | Lives in today                    | Touched in | Evidence                          | Done |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ---------- | --------------------------------- | ---- |
+| FI-D01 | Reason routing table (`ROUTES`, `REASON_LABELS`, groups, fields, SLA, prefixes)                                                                                        | `lib/contact/routes.ts`           | P5         | `test-contact-enquiries`, M-14    | [ ]  |
+| FI-D02 | Submit contract: validation messages, honeypot fake success, `secondsOnPage < 3` rule, consent, 400/429/500 shapes, fail-open limiter, stored row shape, `meta` fields | `app/api/contact/submit/route.ts` | P5         | T-16, T-17, M-14                  | [ ]  |
+| FI-D03 | Enquiry reference: alphabet `23456789ABCDEFGHJKMNPQRSTUVWXYZ`, length 6, prefix format                                                                                 | `enquiry-reference.ts`            | P5         | `test-contact-submit`             | [ ]  |
+| FI-D04 | Rate limit: 5 hits per 10 minutes per hashed key; window rollover; prune on first hit; header-based client id (`x-vercel-forwarded-for` preferred)                     | `lib/contact/rate-limit.ts`       | P5         | `test-contact-submit`, T-18, M-14 | [ ]  |
+| FI-D05 | Admin enquiry display formatting                                                                                                                                       | `enquiry-display.ts`              | P5         | `test-contact-enquiries`          | [ ]  |
 
 ### E. Data and infrastructure
 
-| ID | Must still work | Lives in today | Touched in | Evidence | Done |
-|---|---|---|---|---|---|
-| FI-E01 | Ten tables, migrations `0000` to `0007`, unchanged | `lib/db/schema.ts`, `lib/db/migrations/*` | P7 | drizzle no-drift, T-21 | [ ] |
-| FI-E02 | Neon HTTP driver with retrying fetch; lazy client (importing never requires `DATABASE_URL`) | `lib/db/index.ts` | none | M-29 | [ ] |
-| FI-E03 | Sanity Studio at `/studio` and 13 schemas | `app/studio/*`, `sanity/*` | P9 | M-30 | [ ] |
-| FI-E04 | Environment variable contract (`.env.example`) unchanged | `.env.example` | none | review | [ ] |
-| FI-E05 | Operational scripts: `create-admin`, `seed-hero`, `seed-newly-released`, `seed-shop-now`, `dump-products`, `deploy.js` still run with updated imports | `scripts/*` | P3..P6 | `tsc` + dry read (no DB writes, I-12) | [ ] |
-| FI-E06 | Deploy flow (`pnpm deploy`, `pnpm vercel`) | `scripts/deploy.js` | none | review | [ ] |
-| FI-E07 | All 17 existing test scripts stay green, with import-path edits only | `scripts/test-*.ts` | every phase | `run-tests.mjs` | [ ] |
+| ID     | Must still work                                                                                                                                       | Lives in today                            | Touched in  | Evidence                              | Done |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ----------- | ------------------------------------- | ---- |
+| FI-E01 | Ten tables, migrations `0000` to `0007`, unchanged                                                                                                    | `lib/db/schema.ts`, `lib/db/migrations/*` | P7          | drizzle no-drift, T-21                | [ ]  |
+| FI-E02 | Neon HTTP driver with retrying fetch; lazy client (importing never requires `DATABASE_URL`)                                                           | `lib/db/index.ts`                         | none        | M-29                                  | [ ]  |
+| FI-E03 | Sanity Studio at `/studio` and 13 schemas                                                                                                             | `app/studio/*`, `sanity/*`                | P9          | M-30                                  | [ ]  |
+| FI-E04 | Environment variable contract (`.env.example`) unchanged                                                                                              | `.env.example`                            | none        | review                                | [ ]  |
+| FI-E05 | Operational scripts: `create-admin`, `seed-hero`, `seed-newly-released`, `seed-shop-now`, `dump-products`, `deploy.js` still run with updated imports | `scripts/*`                               | P3..P6      | `tsc` + dry read (no DB writes, I-12) | [ ]  |
+| FI-E06 | Deploy flow (`pnpm deploy`, `pnpm vercel`)                                                                                                            | `scripts/deploy.js`                       | none        | review                                | [ ]  |
+| FI-E07 | All 17 existing test scripts stay green, with import-path edits only                                                                                  | `scripts/test-*.ts`                       | every phase | `run-tests.mjs`                       | [ ]  |
 
 ---
 
@@ -339,10 +339,12 @@ Tick a row only when its evidence has passed **after the last phase that touches
 **Objective:** the refactor has a home and the tooling from Appendix A is in the repo.
 
 **Before you start**
+
 - `git status` is clean on `testing/commerce-deployment`, and you have pulled.
 - Record the base SHA: `git rev-parse old-origin/testing/commerce-deployment > /tmp/base_sha`.
 
 **Actions**
+
 1. `git checkout -b refactor/architecture && git checkout -b refactor/p0-safety-net`
 2. Unzip `refactor-kit.zip` at the repo root so you get `refactor/` (scripts, ledger, rules, route list).
 3. `cp /tmp/base_sha refactor/BASE_SHA.txt`
@@ -351,6 +353,7 @@ Tick a row only when its evidence has passed **after the last phase that touches
 6. Commit: `chore(refactor): add verification kit`.
 
 **Verify**
+
 - `ls refactor refactor/scripts` shows: `.dependency-cruiser.cjs`, `move-ledger.json`, `snapshot-routes.json`, `cache-parity.baseline.json`, `prettier-baseline.txt`, `depcruise-known-violations.json`, and six scripts.
 - The baselines in the kit were generated on commit `0889a2d`. **Regenerate them in 0.4 for your real base.**
 
@@ -361,10 +364,12 @@ Tick a row only when its evidence has passed **after the last phase that touches
 **Objective:** one lockfile, wired test runner, reproducible install.
 
 **Before you start**
+
 - `pnpm install --frozen-lockfile` succeeds on the base. If it does not, stop and fix the lockfile first.
 - Confirm the Vercel project's Install Command is empty or `pnpm install` (Vercel Project Settings). Deleting `package-lock.json` must not change which package manager Vercel uses.
 
 **Actions**
+
 1. `git rm package-lock.json`.
 2. In `package.json` scripts add exactly:
    ```json
@@ -377,6 +382,7 @@ Tick a row only when its evidence has passed **after the last phase that touches
 4. Commit: `chore(repo): single lockfile and test:all runner`.
 
 **Prompt**
+
 ```
 [PREAMBLE from Appendix B]
 Step 0.2. Delete package-lock.json, add the four scripts to package.json exactly as
@@ -393,10 +399,12 @@ dependencies. Report the pnpm output tail and the test:all summary line.
 **Objective:** a graph for impact analysis, and a written "before" picture of the architecture.
 
 **Before you start**
+
 - dev-agent-skills installed (section 4.1).
 - `graphify-out/` and `.dev-agent/` are gitignored (they are).
 
 **Actions**
+
 1. `/graphify .` from the repo root, then `graphify hook install`.
 2. `/architecture-context` and copy the resulting subsystem summary into `architecture/BEFORE.md` (committed; not under `docs/`).
 3. Record importer lists with deterministic greps (used by later phases to prove every importer moved):
@@ -413,6 +421,7 @@ dependencies. Report the pnpm output tail and the test:all summary line.
    Expected counts today: `lib-shopify-index` 23 (plus `image-url`/`types` importers, which do not move), `lib-catalog` about 22, `cart-actions` 11. Treat any large deviation as a sign the base changed.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 0.3. Run /graphify on this repo, install the hook, then run /architecture-context
@@ -432,6 +441,7 @@ Do not modify any source file.
 **Before you start:** step 0.2 done; sandbox `node_modules` present.
 
 **Actions**
+
 1. Cache parity:
    `node refactor/scripts/cache-parity.mjs snapshot > refactor/cache-parity.baseline.json`
    Expect 15 cached functions and 19 invalidation sites (Appendix D). Investigate any other number before proceeding.
@@ -452,11 +462,13 @@ Do not modify any source file.
 **Objective:** a stored copy of what every public and admin route renders today.
 
 **Before you start**
+
 - A running instance of the **base** branch with the real store and database: a Vercel preview of the base branch is best (`next build` cannot run offline).
 - Edit `refactor/snapshot-routes.json`: replace the placeholder collection handles with handles that exist, and add `/products/<real available handle>` and `/products/<real sold-out handle>`.
 - For admin routes: log in once and copy the `admin_session` cookie value.
 
 **Actions**
+
 1. Capture:
    ```bash
    node refactor/scripts/snapshot.mjs capture \
@@ -480,24 +492,26 @@ Do not modify any source file.
 **Objective:** pin the behaviour of code that has no real test today and that later phases will move. Tests are written against the current paths and must pass now.
 
 **Before you start**
+
 - Steps 0.2 to 0.4 done; `node_modules` present.
 - Read Appendix C for each T-ID's contract sources and case list.
 
 **Actions** (one commit per test)
 
-| Test | File | Target (pre-move path) | Mutation run |
-|---|---|---|---|
-| T-01 | `scripts/test-configurator-engine.ts` | `lib/configurator/engine.ts` | `--max-mutants 60` |
-| T-02 | `scripts/test-configurator-catalog.ts` | `lib/configurator/mock-data.ts` | `--max-mutants 30` |
-| T-03 | `scripts/test-hero-pins.ts` | `lib/catalog/hero.ts` | `--max-mutants 40` (must beat 1/8) |
-| T-04 | `scripts/test-proxy.ts` | `proxy.ts` | `--max-mutants 30` |
-| T-05 | `scripts/test-i18n.ts` | `lib/i18n/index.ts` | `--max-mutants 30` |
-| T-06 | `scripts/test-utils.ts` | `lib/utils.ts` | `--max-mutants 30` |
-| T-07 | `scripts/test-shopify-mappers.ts` | mappers in `lib/shopify/index.ts` | `--max-mutants 30` |
+| Test | File                                   | Target (pre-move path)            | Mutation run                       |
+| ---- | -------------------------------------- | --------------------------------- | ---------------------------------- |
+| T-01 | `scripts/test-configurator-engine.ts`  | `lib/configurator/engine.ts`      | `--max-mutants 60`                 |
+| T-02 | `scripts/test-configurator-catalog.ts` | `lib/configurator/mock-data.ts`   | `--max-mutants 30`                 |
+| T-03 | `scripts/test-hero-pins.ts`            | `lib/catalog/hero.ts`             | `--max-mutants 40` (must beat 1/8) |
+| T-04 | `scripts/test-proxy.ts`                | `proxy.ts`                        | `--max-mutants 30`                 |
+| T-05 | `scripts/test-i18n.ts`                 | `lib/i18n/index.ts`               | `--max-mutants 30`                 |
+| T-06 | `scripts/test-utils.ts`                | `lib/utils.ts`                    | `--max-mutants 30`                 |
+| T-07 | `scripts/test-shopify-mappers.ts`      | mappers in `lib/shopify/index.ts` | `--max-mutants 30`                 |
 
 For T-07 make one export-only edit first (its own commit, `refactor(shopify): export mappers for characterization`): add the `export` keyword to `removeEdgesAndNodes`, `reshapeCart`, `reshapeCollection`, `reshapeCollections`, `reshapeImages`, `reshapeProduct`, `reshapeProducts` in `lib/shopify/index.ts`. Nothing else changes. Verified: `lib/shopify` and `proxy.ts` both import cleanly under `tsx`.
 
 **Prompt (repeat per test; fill the row)**
+
 ```
 [PREAMBLE]
 /generate-tests
@@ -521,6 +535,7 @@ Stage the draft under .dev-agent/draft-tests/ and stop for approval.
 **Human gate:** review the staged draft (cases grouped by technique, mutation score, findings). Approve, then copy to `scripts/`, add a `test:<name>` script to `package.json`, and commit.
 
 **Verify**
+
 - Each new script exits 0 against the unmodified target.
 - Mutation output for each recorded in `refactor/baseline-results.md` (killed/total and accepted survivors).
 - `pnpm test:all` shows the new total (16 + 7 = 23 scripts).
@@ -532,6 +547,7 @@ Stage the draft under .dev-agent/draft-tests/ and stop for approval.
 **Objective:** every row in section 6 has evidence that it works **today**.
 
 **Actions**
+
 1. Run the manual smoke script (Appendix E) against the base preview. Record pass/fail per M-item in `refactor/baseline-results.md`. Anything that fails today is a **pre-existing defect**: log it in `refactor/FINDINGS.md` and mark that row "baseline: fails" so it is not mistaken for a regression later.
 2. For each inventory row, confirm that the listed evidence exists (a test file, a route in `snapshot-routes.json`, an M-item). Add missing evidence now.
 
@@ -540,6 +556,7 @@ Stage the draft under .dev-agent/draft-tests/ and stop for approval.
 ### Phase 0 gate and handoff
 
 **Definition of done**
+
 - [ ] DoD-0.1 `bash refactor/scripts/verify-phase.sh 0 old-origin/testing/commerce-deployment` passes.
 - [ ] DoD-0.2 `pnpm install --frozen-lockfile` and `pnpm build` pass (you).
 - [ ] DoD-0.3 `refactor/snapshots/before` and `before2` compare identical (you).
@@ -565,6 +582,7 @@ Stage the draft under .dev-agent/draft-tests/ and stop for approval.
 **Before you start:** Phase 0 merged into `refactor/architecture`; branch from it.
 
 **Actions**
+
 1. `pnpm add -D dependency-cruiser@16` (dev-only; no runtime impact).
 2. Confirm `refactor/.dependency-cruiser.cjs` is present (from the kit). The rules, in plain words:
    - **no-circular**
@@ -587,6 +605,7 @@ Stage the draft under .dev-agent/draft-tests/ and stop for approval.
 4. Add script: `"arch": "depcruise app components lib modules integrations platform --config refactor/.dependency-cruiser.cjs --ignore-known refactor/depcruise-known-violations.json"` (only include directories that exist; `verify-phase.sh` does this automatically).
 
 **Tests:** the rules themselves are tested with synthetic files (already done for the kit): a `modules/a -> modules/b/internal.ts` import, an `integrations -> modules` import, a `components -> integrations` import and a `domain -> service` import each fail; a `modules/a -> modules/b/b.service.ts` import passes. Re-run this check yourself once:
+
 ```bash
 mkdir -p modules/a modules/b integrations/x
 echo 'export const b=1;' > modules/b/internal.ts
@@ -598,6 +617,7 @@ rm -rf modules integrations
 **Verify:** `verify-phase.sh 1 <base>` passes, including the dependency-cruiser check.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 1.1. Add dependency-cruiser@16 as a devDependency, generate
@@ -635,7 +655,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
         with:
-          version: 11   # set to the major from `pnpm --version` on your machine
+          version: 11 # set to the major from `pnpm --version` on your machine
       - uses: actions/setup-node@v4
         with: { node-version: 24, cache: pnpm }
       - run: pnpm install --frozen-lockfile
@@ -672,17 +692,17 @@ Add `.github/pull_request_template.md` containing the checklist: phase number, `
 
 **Target files (all under `integrations/shopify/storefront/` unless noted)**
 
-| New file | Holds (verbatim from `lib/shopify/index.ts`) |
-|---|---|
-| `storefront.client.ts` | `domain`, `endpoint`, `key`, `ExtractVariables`, `isTransientConnectError`, `shopifyFetch`, an exported `shopifyEndpoint` |
-| `storefront.mapper.ts` | `removeEdgesAndNodes`, `reshapeCart`, `reshapeCollection(s)`, `reshapeImages`, `reshapeProduct(s)` |
-| `products.api.ts` | uncached `fetchProduct`, `fetchProducts`, `fetchProductRecommendations`, `fetchConfiguratorProducts`, `fetchCollectionProducts`, `fetchAdminProductPages` |
-| `collections.api.ts` | uncached `fetchCollection`, `fetchCollections` (incl. the synthetic "All" and `hidden*` filter) |
-| `content.api.ts` | uncached `fetchMenu`, `fetchPage`, `fetchPages` |
-| `cart.api.ts` | uncached, cookie-free `createCart`, `addToCart`, `removeFromCart`, `updateCart`, `fetchCart` (each takes `cartId` explicitly) |
-| `queries/`, `mutations/`, `fragments/` | moved with `git mv`, no edits |
-| `integrations/shopify/webhooks.ts` | `computeShopifyHmac`, `isValidShopifyHmac` |
-| `integrations/imagekit/imagekit.client.ts` | moved from `lib/admin/imagekit.ts` |
+| New file                                   | Holds (verbatim from `lib/shopify/index.ts`)                                                                                                              |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `storefront.client.ts`                     | `domain`, `endpoint`, `key`, `ExtractVariables`, `isTransientConnectError`, `shopifyFetch`, an exported `shopifyEndpoint`                                 |
+| `storefront.mapper.ts`                     | `removeEdgesAndNodes`, `reshapeCart`, `reshapeCollection(s)`, `reshapeImages`, `reshapeProduct(s)`                                                        |
+| `products.api.ts`                          | uncached `fetchProduct`, `fetchProducts`, `fetchProductRecommendations`, `fetchConfiguratorProducts`, `fetchCollectionProducts`, `fetchAdminProductPages` |
+| `collections.api.ts`                       | uncached `fetchCollection`, `fetchCollections` (incl. the synthetic "All" and `hidden*` filter)                                                           |
+| `content.api.ts`                           | uncached `fetchMenu`, `fetchPage`, `fetchPages`                                                                                                           |
+| `cart.api.ts`                              | uncached, cookie-free `createCart`, `addToCart`, `removeFromCart`, `updateCart`, `fetchCart` (each takes `cartId` explicitly)                             |
+| `queries/`, `mutations/`, `fragments/`     | moved with `git mv`, no edits                                                                                                                             |
+| `integrations/shopify/webhooks.ts`         | `computeShopifyHmac`, `isValidShopifyHmac`                                                                                                                |
+| `integrations/imagekit/imagekit.client.ts` | moved from `lib/admin/imagekit.ts`                                                                                                                        |
 
 Stays in `lib/shopify/` (D-05): `types.ts`, `image-url.ts`, `description-html.ts`.
 
@@ -691,6 +711,7 @@ Stays in `lib/shopify/` (D-05): `types.ts`, `image-url.ts`, `description-html.ts
 **Before you start:** Phases 0 and 1 merged into `refactor/architecture`; new branch cut from it; `refactor/importers/*.txt` exist.
 
 **Actions**
+
 1. `graphify update .`, then `graphify affected --files lib/shopify/index.ts` and compare with `refactor/importers/lib-shopify-index.txt`. They must agree (23 importers). If not, reconcile before proceeding.
 2. Record the facade's public surface, to prove it is unchanged at the end of this phase:
    `grep -E '^export' lib/shopify/index.ts | sed -E 's/\(.*//' | sort > refactor/api/lib-shopify-index.exports.txt`
@@ -704,15 +725,18 @@ Stays in `lib/shopify/` (D-05): `types.ts`, `image-url.ts`, `description-html.ts
 **Objective:** `shopifyFetch` and its retry logic live in `storefront.client.ts`; behaviour identical.
 
 **Before you start**
+
 - Read `shopifyFetch` and `isTransientConnectError` in full. Contract facts: up to 2 retries with 500 ms then 1000 ms backoff, **only** when `error.cause.code` is one of `ECONNREFUSED`, `ENETUNREACH`, `EHOSTUNREACH`, `ENOTFOUND`, `EAI_AGAIN`, or `cause.name === "ConnectTimeoutError"`; the first GraphQL error (`body.errors[0]`) is thrown; Shopify-shaped errors are re-thrown as `{cause, status, message, query}` with defaults `"unknown"` and `500`; other errors as `{error, query}`; an empty endpoint throws `SHOPIFY_STORE_DOMAIN environment variable is not set`.
 
 **Actions**
+
 1. **Test first (T-08)** against the current export `shopifyFetch` from `lib/shopify`. `endpoint` is computed at import time, so set `SHOPIFY_STORE_DOMAIN` before a dynamic `import()` and stub `globalThis.fetch` and `setTimeout`.
 2. Commit 1 (create): copy the code verbatim into `storefront.client.ts`, exporting `shopifyFetch` and `shopifyEndpoint`.
 3. Commit 2 (switch): in `lib/shopify/index.ts` import from the new file and delete the originals. Nothing else changes.
 4. Re-point T-08's import to the new file (import line only) and re-run.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 2.2. First run /generate-tests for T-08 (Appendix C) against shopifyFetch in
@@ -736,6 +760,7 @@ create, then switch. Run `pnpm test:all` and `npx tsc --noEmit`.
 **Before you start:** T-07 exists and passes (step 0.6).
 
 **Actions**
+
 1. Commit 1: copy the seven functions verbatim into `storefront.mapper.ts` (already exported).
 2. Commit 2: import them in `lib/shopify/index.ts`, delete originals.
 3. Re-point T-07's import; re-run.
@@ -743,6 +768,7 @@ create, then switch. Run `pnpm test:all` and `npx tsc --noEmit`.
 **Contract reminders (pinned by T-07):** `reshapeCart` fills a missing `totalTaxAmount` with `"0.0"` and the total's currency; `reshapeCollection` sets `path` to `/store/<handle>` and defaults image alt text to `"<title> collection"`; `reshapeImages` defaults alt text to `"<product title> - <filename without extension>"`; `reshapeProduct` returns `undefined` for a falsy product or when `filterHiddenProducts` (default true) and `tags` includes `nextjs-frontend-hidden`, and defaults `metafields` to `[]`; `reshapeProducts` drops undefined results.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 2.3. Move removeEdgesAndNodes, reshapeCart, reshapeCollection, reshapeCollections,
@@ -761,6 +787,7 @@ integrations/shopify/storefront/storefront.mapper.ts (already exported). Two com
 **Before you start:** they are imported only by `lib/shopify/index.ts` (verified).
 
 **Actions**
+
 1. One commit, `git mv` only:
    ```bash
    mkdir -p integrations/shopify/storefront
@@ -779,28 +806,31 @@ integrations/shopify/storefront/storefront.mapper.ts (already exported). Two com
 **Objective:** raw, uncached, override-free, cookie-free reads exist under `integrations/`; the facade composes them and keeps every cache directive.
 
 **Before you start**
+
 - Invariant I-5: overrides are applied **inside** the cache scope. The facade's cached `getProduct` must keep calling the override merge inside its `"use cache"` body.
 - Invariant from the repo's own notes: errors must be caught **inside** a `"use cache"` function, not around its call site. `getAdminProductCatalog` catches inside; its try/catch stays in the cached facade function and only the page loop moves.
 
 **Actions**
+
 1. Create the raw functions. Each is the body of the current function minus `"use cache"`, `cacheTag`, `cacheLife`, `withOverrides` and `cookies()`:
 
-| Raw function (new) | Replaces body of | Notes |
-|---|---|---|
-| `fetchProduct(handle)` | `getProduct`, `getRawProduct` | returns `reshapeProduct(res.body.data.product, false)` (note `false`: hidden products are **not** filtered here, the page checks the tag) |
-| `fetchProducts({query, reverse, sortKey})` | `getProducts` | |
-| `fetchProductRecommendations(productId)` | `getProductRecommendations` | |
-| `fetchConfiguratorProducts()` | `getConfiguratorProducts` | |
-| `fetchCollectionProducts({collection, reverse, sortKey})` | `getCollectionProducts` | keeps the `CREATED_AT` -> `CREATED` mapping, the missing-collection `[]`, and the not-configured `[]` |
-| `fetchAdminProductPages()` | page loop in `getAdminProductCatalog` | returns `{items, truncated}`; throws on error |
-| `fetchCollection(handle)`, `fetchCollections()` | `getCollection`, `getCollections` | `fetchCollections` keeps the synthetic "All" and `hidden*` filter and the not-configured branch |
-| `fetchMenu`, `fetchPage`, `fetchPages` | `getMenu`, `getPage`, `getPages` | |
-| cart API | `createCart`, `addToCart`, `removeFromCart`, `updateCart`, `getCart` | take `cartId`; `getCart` returns `undefined` when no cart |
+| Raw function (new)                                        | Replaces body of                                                     | Notes                                                                                                                                     |
+| --------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `fetchProduct(handle)`                                    | `getProduct`, `getRawProduct`                                        | returns `reshapeProduct(res.body.data.product, false)` (note `false`: hidden products are **not** filtered here, the page checks the tag) |
+| `fetchProducts({query, reverse, sortKey})`                | `getProducts`                                                        |                                                                                                                                           |
+| `fetchProductRecommendations(productId)`                  | `getProductRecommendations`                                          |                                                                                                                                           |
+| `fetchConfiguratorProducts()`                             | `getConfiguratorProducts`                                            |                                                                                                                                           |
+| `fetchCollectionProducts({collection, reverse, sortKey})` | `getCollectionProducts`                                              | keeps the `CREATED_AT` -> `CREATED` mapping, the missing-collection `[]`, and the not-configured `[]`                                     |
+| `fetchAdminProductPages()`                                | page loop in `getAdminProductCatalog`                                | returns `{items, truncated}`; throws on error                                                                                             |
+| `fetchCollection(handle)`, `fetchCollections()`           | `getCollection`, `getCollections`                                    | `fetchCollections` keeps the synthetic "All" and `hidden*` filter and the not-configured branch                                           |
+| `fetchMenu`, `fetchPage`, `fetchPages`                    | `getMenu`, `getPage`, `getPages`                                     |                                                                                                                                           |
+| cart API                                                  | `createCart`, `addToCart`, `removeFromCart`, `updateCart`, `getCart` | take `cartId`; `getCart` returns `undefined` when no cart                                                                                 |
 
 2. Rewrite the facade functions in `lib/shopify/index.ts` so each keeps its exact signature, `"use cache"` directive, `cacheTag(...)`, `cacheLife(...)` and, where present, `withOverrides(...)`, but delegates to the raw function. Cookie access (`cookies()`) stays in the facade for the cart functions (removed in Phase 4).
 3. Run `node refactor/scripts/cache-parity.mjs check` after **every** function you convert.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 2.5. Create products.api.ts, collections.api.ts, content.api.ts and cart.api.ts under
@@ -815,6 +845,7 @@ after each. Report any function whose behaviour you had to think about.
 **Tests:** none new (behaviour is covered by T-07, T-08 and the cache-parity check); the thin delegations contain no logic. If a delegation needs a branch, stop and log a deviation with `plan-feature`'s `deviation-log-cli.mjs record`.
 
 **Verify**
+
 - `diff <(grep -E '^export' lib/shopify/index.ts | sed -E 's/\(.*//' | sort) refactor/api/lib-shopify-index.exports.txt` prints nothing (public surface unchanged).
 - `cache-parity check` passes.
 
@@ -827,10 +858,12 @@ after each. Report any function whose behaviour you had to think about.
 **Before you start:** read both handlers. Facts to pin: the HMAC key is the value of `SHOPIFY_REVALIDATION_SECRET`; the computed value is Base64 of HMAC-SHA256 over the raw body; the comparison is a plain `!==` (preserve; H-6 records the timing-safe alternative); missing secret -> HTTP 500 `{message:"Not configured"}`; mismatch -> 401 `{message:"Unauthorized"}`; unhandled topic -> 200 `{message:"Unhandled topic"}`. The query-secret endpoint answers `{status: 401}` **with HTTP 200** on a bad secret (the number is in the body only); preserve.
 
 **Actions**
+
 1. **Test first (T-09)**: extract `computeShopifyHmac(body, secret)` verbatim into `integrations/shopify/webhooks.ts`, test it, then call it from `app/api/webhooks/shopify/route.ts`. Topic switch and `revalidateTag` calls remain in the route.
 2. Do not touch `revalidate()` in the facade or `app/[locale]/api/revalidate/route.ts`.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 2.6. Run /generate-tests for T-09 on computeShopifyHmac. Extract it VERBATIM from
@@ -848,6 +881,7 @@ touch revalidate() in lib/shopify/index.ts.
 **Objective:** the ImageKit client is an integration.
 
 **Actions**
+
 1. **Test first (T-10)** on `isAllowedImageType`.
 2. `git mv lib/admin/imagekit.ts integrations/imagekit/imagekit.client.ts` (own commit).
 3. Update the two importers: `app/admin/api/upload/route.ts` and `scripts/seed-hero.ts` (import lines only).
@@ -895,10 +929,12 @@ modules/content/content.service.ts   getMenu, getPage, getPages
 ### Step 3.1 Pre-checks and split plan
 
 **Before you start**
+
 - Phase 2 merged. `refactor/importers/lib-catalog.txt` and `lib-admin-queries-actions.txt` exist.
 - `graphify affected --files lib/catalog/overrides.ts lib/admin/queries.ts` matches the importer lists.
 
 **Facts that drive the design (verified)**
+
 - Storefront pages and feeds import `lib/admin/queries` for data (`lib/catalog/*` x6). The admin **pages** import query functions by name (`listHeroItems`, `getHeroSettings`, `listNewlyReleasedItems`, `listShopNowItems`, `listOverridesForHandles`, `getOverrideByHandle`, `listAdminUsers`, `countContactEnquiries`, `listContactEnquiries`). Because admin pages are UI files (import-only edits, I-1), these names **must remain importable under the same names** from a public surface. That is the job of `catalog-admin.service.ts` (and later `admin-users.service.ts`, `enquiries.service.ts`).
 - `lib/catalog/newly-released.ts` and `shop-now.ts` mix pure logic with a DB read (`readNewlyReleasedItems`, `readShopNowItems`). `overrides.ts` mixes pure `applyOverride` with `toOverride`, `getOverridesForHandles`, `withOverrides`. The pure part goes to `domain/`; the rest to `data/` or `overrides.service.ts`.
 - `getOverridesForHandles` is deliberately **not** cached (a DB blip must not pin a Shopify-only catalog for days). Keep it uncached.
@@ -910,6 +946,7 @@ modules/content/content.service.ts   getMenu, getPage, getPages
 **Objective:** catalog persistence has an owner; `queries.ts` shrinks.
 
 **Actions** (one commit per file; verbatim)
+
 1. Create `data/overrides.data.ts` with `getOverrideByHandle`, `listOverridesForHandles`, `saveProductOverride`, `deleteProductOverride` and the override record/input types.
 2. `data/newly-released.data.ts`: `listNewlyReleasedItems`, `saveNewlyReleasedItems`. `data/shop-now.data.ts`: `listShopNowItems`, `saveShopNowItems`. `data/hero.data.ts`: `listHeroItems`, `getHeroSettings`, `saveHeroConfig`.
 3. Move the three row types to `catalog.types.ts`.
@@ -919,6 +956,7 @@ modules/content/content.service.ts   getMenu, getPage, getPages
 **Tests:** existing `test-newly-released`, `test-shop-now`, `test-hero`, `test-overrides` must pass with **import-line edits only**. The data files hit the database, so they have no unit test; their contracts are covered by manual M-16, M-18..M-20.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 3.2. Extract the catalog functions from lib/admin/queries.ts into
@@ -934,6 +972,7 @@ any migration or any script that writes to a database.
 ### Step 3.3 Split pure domain from DB reads (`git mv`, then extract)
 
 **Actions**
+
 1. Pure moves (one commit): `git mv lib/catalog/hero.ts modules/catalog/domain/hero.ts`; same for `newly-released.ts`, `shop-now.ts`, `product-page.ts`, `overrides.ts`.
 2. Extract from the moved files (second commit):
    - `readNewlyReleasedItems` -> `newly-released.service.ts`; `readShopNowItems` -> `shop-now.service.ts` (they call the data files; they stay uncached wrappers with their try/catch).
@@ -943,6 +982,7 @@ any migration or any script that writes to a database.
 **Tests:** T-11 (Appendix C) for `withOverrides` composition, written **before** the extraction against the current `lib/catalog/overrides.ts`. Existing `test-overrides` (26 assertions) keeps covering `applyOverride`.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 3.3. (a) Run /generate-tests for T-11 against lib/catalog/overrides.ts (withOverrides
@@ -963,6 +1003,7 @@ getOverridesForHandles UNCACHED. Update existing test import lines only.
 **Before you start:** this is the riskiest step of the phase (I-4, I-5). Have the Appendix D table open.
 
 **Actions**
+
 1. For each function in Appendix D that belongs to the catalog, create the same-named function in `products.service.ts` / `collections.service.ts` with **identical** directive, `cacheTag(...)`, `cacheLife(...)` and body, calling the raw integration function and, where the facade did, `withOverrides` **inside** the cached body.
    - `getProduct`: cached (products, days); raw `fetchProduct(handle)` -> `reshape` result -> if undefined return undefined -> `withOverrides([product])` -> first element.
    - `getRawProduct`: cached (products, days), no overrides.
@@ -975,6 +1016,7 @@ getOverridesForHandles UNCACHED. Update existing test import lines only.
 4. Add `catalog-admin.service.ts`: identically-named functions delegating to the data files: `listHeroItems`, `getHeroSettings`, `listNewlyReleasedItems`, `listShopNowItems`, `listOverridesForHandles`, `getOverrideByHandle`, `saveProductOverride`, `deleteProductOverride`, `saveNewlyReleasedItems`, `saveShopNowItems`, `saveHeroConfig` plus the input/record types.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 3.4. Create modules/catalog/{products,collections}.service.ts and
@@ -994,24 +1036,26 @@ delegating functions. Convert one function per commit; after each run
 ### Step 3.5 Move feeds and update every importer
 
 **Actions**
+
 1. `git mv lib/catalog/hero-feed.ts modules/catalog/hero.service.ts`; likewise `newly-released-feed.ts` -> `newly-released.service.ts`, `shop-now-feed.ts` -> `shop-now.service.ts` (pure move commit; then merge the extracted `read...Items` functions from 3.3).
 2. Update importers using the lists from step 0.3. **UI files: import lines only** (`ui-guard` enforces it):
 
-| Importer | Old import | New import |
-|---|---|---|
-| `components/home/hero-media.tsx`, `hero-banner.tsx`, `components/admin/hero-manager.tsx`, `app/admin/(dashboard)/hero/page.tsx` | `lib/catalog/hero` | `modules/catalog/domain/hero` |
-| `components/home/hero-banner.tsx` | `lib/catalog/hero-feed` | `modules/catalog/hero.service` |
-| `components/home/newly-release.tsx` / `-content.tsx` | `lib/catalog/newly-released-feed`, `.../newly-released` | `modules/catalog/newly-released.service`, `modules/catalog/domain/newly-released` |
-| `components/home/shop-now.tsx` / `-content.tsx` | `lib/catalog/shop-now-feed`, `.../shop-now` | `modules/catalog/shop-now.service`, `modules/catalog/domain/shop-now` |
-| `app/[locale]/products/[handle]/page.tsx` | `lib/catalog/product-page`, `lib/shopify` | `modules/catalog/domain/product-page`, `modules/catalog/products.service` |
-| `app/admin/(dashboard)/*/page.tsx` | `lib/admin/queries` (catalog functions) | `modules/catalog/catalog-admin.service` |
-| every other importer of `getProduct`, `getProducts`, `getCollection(s)`, `getCollectionProducts`, `getConfiguratorProducts`, `getProductRecommendations`, `readProductForPage`, `getAdminProductCatalog`, `getPage(s)`, `getMenu` | `lib/shopify` | the service that now owns it |
+| Importer                                                                                                                                                                                                                          | Old import                                              | New import                                                                        |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `components/home/hero-media.tsx`, `hero-banner.tsx`, `components/admin/hero-manager.tsx`, `app/admin/(dashboard)/hero/page.tsx`                                                                                                   | `lib/catalog/hero`                                      | `modules/catalog/domain/hero`                                                     |
+| `components/home/hero-banner.tsx`                                                                                                                                                                                                 | `lib/catalog/hero-feed`                                 | `modules/catalog/hero.service`                                                    |
+| `components/home/newly-release.tsx` / `-content.tsx`                                                                                                                                                                              | `lib/catalog/newly-released-feed`, `.../newly-released` | `modules/catalog/newly-released.service`, `modules/catalog/domain/newly-released` |
+| `components/home/shop-now.tsx` / `-content.tsx`                                                                                                                                                                                   | `lib/catalog/shop-now-feed`, `.../shop-now`             | `modules/catalog/shop-now.service`, `modules/catalog/domain/shop-now`             |
+| `app/[locale]/products/[handle]/page.tsx`                                                                                                                                                                                         | `lib/catalog/product-page`, `lib/shopify`               | `modules/catalog/domain/product-page`, `modules/catalog/products.service`         |
+| `app/admin/(dashboard)/*/page.tsx`                                                                                                                                                                                                | `lib/admin/queries` (catalog functions)                 | `modules/catalog/catalog-admin.service`                                           |
+| every other importer of `getProduct`, `getProducts`, `getCollection(s)`, `getCollectionProducts`, `getConfiguratorProducts`, `getProductRecommendations`, `readProductForPage`, `getAdminProductCatalog`, `getPage(s)`, `getMenu` | `lib/shopify`                                           | the service that now owns it                                                      |
 
 3. The importers of `lib/shopify` that only take **types, `image-url` or `description-html`** do not change (D-05).
 4. Scripts and tests: update import lines in `scripts/seed-*.ts`, `scripts/test-*.ts` that reference moved files.
 5. Delete the temporary re-exports for catalog symbols from `lib/admin/queries.ts` only when no importer remains (`git grep` proves it).
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 3.5. git mv the three *-feed.ts files to modules/catalog/*.service.ts (pure move
@@ -1062,10 +1106,12 @@ modules/cart/
 ### Step 4.1 Pre-checks and contract capture
 
 **Before you start**
+
 - Phase 3 merged. Base preview available for manual comparison.
 - Run manual M-07..M-13 on the **base** and keep the results. For M-13, open the browser network tab on a configurator "add to cart" and save the `cartLinesAdd` request payload (attributes per line). It is the ground truth for the attribute contract.
 
 **Contract facts (from `components/cart/actions.ts`, verified)**
+
 - `addConfiguratorBundle(prevState, items)`: empty or missing `items` -> returns `"No items to add"`. Otherwise generates `bundle_${Date.now()}_${Math.random().toString(36).substring(2, 9)}` and maps each item to `{...item, attributes: [...(item.attributes || []), {key:"_configurator_bundle", value:"true"}, {key:"_bundle_id", value: bundleId}]}` (existing attributes first, then the two). Calls `addToCart(lines)`, then `updateTag(TAGS.cart)`. Any failure logs and returns `"Error adding configurator bundle to cart"`.
 - `addItem(prevState, variantId)`: falsy id -> `"Error adding item to cart"`. If a `cartId` cookie exists it calls `getCart()`; if there is no cookie or no cart it creates one and sets the cookie (`cookies().set("cartId", id)`, no options; F-20) or returns `"Error creating cart"`. Then `addToCart([{merchandiseId, quantity:1}])` + `updateTag`, or `"Error adding item to cart"`.
 - `removeItem`, `updateItemQuantity` (quantity 0 removes; missing line with quantity > 0 adds), `redirectToCheckout` (redirects to `checkoutUrl`), `createCartAndSetCookie`, `createSingleItemCartAction` (returns cart id or `null`), `buyNowAction`, `editCartItemVariantAction`: exact strings and branches as in the source; T-14 pins them.
@@ -1079,6 +1125,7 @@ modules/cart/
 **Objective:** one definition of the attribute keys, id generation, stamping and grouping.
 
 **Actions**
+
 1. **Test first (T-13).** The test copies the current inline grouping loop from `modal.tsx` verbatim as an **oracle** and compares `groupBundleLines` against it over generated fixtures (empty cart, only regular, only bundle, mixed, two bundles, a bundle line with the flag but no id, an id but flag `"false"`, an integer-like id such as `"12"`, duplicate merchandise across bundles, 1 000 randomised carts with a seeded generator).
 2. Create `modules/bundles/domain/bundle-contract.ts`:
    - `BUNDLE_FLAG_KEY = "_configurator_bundle"`, `BUNDLE_ID_KEY = "_bundle_id"` (the only occurrences of these literals in the repo after this phase; the gate checks it).
@@ -1088,6 +1135,7 @@ modules/cart/
 3. Do not touch `modal.tsx` yet.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 4.2. Run /generate-tests for T-13 (Appendix C): the oracle is the inline grouping
@@ -1108,6 +1156,7 @@ Do not modify modal.tsx or actions.ts in this step.
 **Objective:** `modal.tsx` calls the shared function; rendered output is identical.
 
 **Before you start:** T-13 approved and committed. Create `refactor/ui-guard.allowlist.json`:
+
 ```json
 [
   {
@@ -1119,10 +1168,12 @@ Do not modify modal.tsx or actions.ts in this step.
 ```
 
 **Actions**
+
 1. In `modal.tsx` replace the grouping block with `const { bundles, regularItems } = groupBundleLines(cart.lines);`, keeping the variable names `bundles` and `regularItems` used by the JSX below. Add the import.
 2. The remainder of the file (all JSX) is byte-identical. `git diff -U0 components/cart/modal.tsx` must show only the import and that one block.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 4.3. In components/cart/modal.tsx replace ONLY the grouping block (from the comment
@@ -1141,6 +1192,7 @@ Add the import. Change nothing else. Show me `git diff -U0` for this file.
 **Objective:** use-cases have no cookies, no `next/cache`, no `redirect` in their logic; they take injectable dependencies with real defaults.
 
 **Actions**
+
 1. **Test first (T-14)** against a fake port. To make the current code testable without behaviour change, write the tests against the **service you are about to create**, with the branch logic copied verbatim from `actions.ts`, then diff the function bodies (`diff` of bodies must show only the dependency-injection edits).
 2. Create `cart-session.ts`:
    `getCartId(): Promise<string | undefined>` (reads `cartId`), `setCartId(id): Promise<void>` calling `cookies().set("cartId", id)` **with no options**.
@@ -1151,6 +1203,7 @@ Add the import. Change nothing else. Show me `git diff -U0` for this file.
 4. Integration `cart.api.ts` functions already take `cartId` (Phase 2).
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 4.4. Run /generate-tests for T-14 (Appendix C) against the new cart service design:
@@ -1173,6 +1226,7 @@ handler, logic in service) for these NEW files. Do not delete anything yet.
 **Objective:** `"use server"` wrappers live in the module; all 12 importers point at them.
 
 **Actions**
+
 1. Pure move commit: `git mv components/cart/actions.ts modules/cart/cart.actions.ts`.
 2. Second commit: rewrite each exported function to call the service; keep **names, parameters (including the unused `prevState` first arguments) and return values identical**. The file may contain only `"use server"` and `export async function` declarations.
 3. Update importers (import lines only): `app/[locale]/cart/page.tsx`, `components/configurator/wizard.tsx`, `components/configurator/steps/review-step.tsx`, `components/cart/delete-item-button.tsx`, `components/cart/edit-item-quantity-button.tsx`, `components/cart/modal.tsx` (`./actions`), `components/home/newly-release-content.tsx`, `components/home/shop-now-content.tsx`, `components/product/quick-buy-sidebar.tsx`, `components/product/product-card.tsx`, `components/product/product-description.tsx`, `components/product/product-actions.tsx`.
@@ -1181,6 +1235,7 @@ handler, logic in service) for these NEW files. Do not delete anything yet.
 **Deployment note:** server-action IDs are derived from the file location, so a browser tab open across the deploy can hit "Failed to find Server Action" once. Enable Vercel skew protection or deploy off-peak. This is expected, not a regression.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 4.5. `git mv` components/cart/actions.ts to modules/cart/cart.actions.ts (pure move
@@ -1202,6 +1257,7 @@ ui-guard after the importer commit.
 **Before you start:** T-01 and T-02 (Phase 0) pass. Remember F-12: the mock data is production behaviour.
 
 **Actions**
+
 1. Pure moves (one commit): `lib/configurator/engine.ts` -> `modules/bundles/domain/compat/engine.ts`; `types.ts` -> `domain/compat/types.ts`; `config/compatibility-rules.json` -> `domain/compat/compatibility-rules.json`; `lib/configurator/mock-data.ts` -> `sources/mock-metafields.source.ts`; `config/mock-configurator-data.json` -> `sources/mock-configurator-data.json`.
 2. Fix internal imports (engine's `config/compatibility-rules.json`, mock-data's `config/mock-configurator-data.json`, relative `../config/...` requires in `scripts/test-configurator.ts`).
 3. Create `bundles.service.ts` exporting `buildConfiguratorItems` (delegating to the source). Delete `lib/configurator/index.ts` (a 3-line barrel).
@@ -1211,6 +1267,7 @@ ui-guard after the importer commit.
 **Verify:** `sha256sum` of both JSON files equals the base's; T-01, T-02 and `test-configurator` pass with import edits only.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 4.6. Pure `git mv` commit for the five files listed in the roadmap (engine, types,
@@ -1239,6 +1296,7 @@ Skip this step if you want zero new code paths in the refactor. It only adds cap
 **Before you start:** `git grep -nE 'from "lib/shopify"' -- app components lib modules scripts` shows only importers whose symbols now live elsewhere.
 
 **Actions**
+
 1. Move any remaining facade symbol to its owner (cart functions are in `cart.service.ts`; catalog and content in Phase 3; `revalidate` in `catalog-cache.service.ts` since Phase 3).
 2. Update remaining importers; `git rm lib/shopify/index.ts`.
 3. Remove the facade from the `lib-is-a-kernel` legacy list later (Phase 6 does the final tidy).
@@ -1294,6 +1352,7 @@ platform/rate-limit/rate-limit.ts   (git mv lib/contact/rate-limit.ts; name chec
 ### Step 5.2 Extract validation verbatim, then characterize (T-16)
 
 **Actions**
+
 1. Commit 1: create `modules/enquiries/domain/enquiry-validation.ts` as an exact copy of `validatePayload`, `stripEmpty`, `SubmitPayload`, `EMAIL_RE`, `PHONE_DIGITS_RE`, `URL_RE` (import `ROUTES` from the still-old `lib/contact/routes` for now).
 2. **Test (T-16)** against the copy; verify byte equality of the function bodies with the route:
    ```bash
@@ -1304,6 +1363,7 @@ platform/rate-limit/rate-limit.ts   (git mv lib/contact/rate-limit.ts; name chec
 3. Commit 2: the route imports the copy and deletes its own.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 5.2. Create modules/enquiries/domain/enquiry-validation.ts as a VERBATIM copy of
@@ -1319,11 +1379,13 @@ function bodies proving they are identical.
 ### Step 5.3 Service and thin route (T-17, T-18)
 
 **Actions**
+
 1. **Tests first.** T-18 for `checkContactRateLimit` needs a database; add an optional trailing `db = getDb()` parameter (default keeps behaviour) so a fake can be injected. T-17 tests `submitEnquiry` with injected `{ checkRateLimit, insertEnquiry, now, generateId }`.
 2. `submitEnquiry(payload, request, deps)` returns `{ status: number; body: unknown }` covering all branches above. The route becomes: parse JSON (inside the same try/catch) -> `submitEnquiry` -> `NextResponse.json(body, {status})`. **Status codes, bodies and log lines identical.**
 3. Add `countContactEnquiries` and `listContactEnquiries` to `enquiries.service.ts` with identical names and signatures (the admin enquiries page imports them by name).
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 5.3. Run /generate-tests for T-17 (submitEnquiry with injected deps) and T-18
@@ -1340,6 +1402,7 @@ coding-standards backend (validate, authorize, service, respond) for the NEW ser
 ### Step 5.4 Pure moves and data extraction
 
 **Actions**
+
 1. Pure moves: `lib/contact/routes.ts`, `enquiry-display.ts`, `enquiry-reference.ts` -> `modules/enquiries/domain/`; `rate-limit.ts` -> `platform/rate-limit/rate-limit.ts`.
 2. Extract the enquiry queries from `lib/admin/queries.ts` (`countContactEnquiries`, `listContactEnquiries`, insert) into `enquiries.data.ts` (verbatim) and expose the two read functions through `enquiries.service.ts`.
 3. Update importers (import lines only): `components/contact/{contact-page,enquiry-form,reason-picker}.tsx` (`lib/contact/routes` -> `modules/enquiries/domain/routes`), `components/admin/enquiries-browser.tsx` and `app/admin/(dashboard)/enquiries/page.tsx` (`lib/contact/enquiry-display` -> `modules/enquiries/domain/enquiry-display`, queries -> `modules/enquiries/enquiries.service`), tests `test-contact-enquiries`, `test-contact-submit`.
@@ -1389,15 +1452,18 @@ Stays in `lib/admin/` (D-05): `pagination.ts`, `product-filters.ts`, `editor-ext
 ### Step 6.1 Pre-checks and tests first (T-19, T-23)
 
 **Before you start**
+
 - Phase 5 merged. Record the action surface: `grep -E '^export (async function|type)' lib/admin/actions.ts | sed -E 's/\(.*//' | sort > refactor/api/admin-actions.exports.txt` (expect 13 lines: 3 types + 10 functions).
 - Verified facts: `lib/admin/auth.ts` re-exports `hashPassword`, `verifyPassword`, `MAX_PASSWORD_LENGTH`, `createSessionToken`, `verifySessionToken`, session types; the only consumer of those re-exports is `lib/admin/actions.ts`. `requireAdmin` redirects to `/admin/login`; `getAdminSession` **fails closed** (returns `null`) when the database cannot re-validate the session and when `sessionVersion` differs. Cookie: `httpOnly`, `sameSite: "lax"`, `secure` in production, path `/admin`, max age 7 days.
 - Verified importers: `app/admin/api/upload/route.ts` (`getAdminSession`), `app/admin/(dashboard)/layout.tsx` (`requireAdmin`), `components/admin/admin-shell.tsx` (type `AdminSession`), `scripts/create-admin.ts`, `scripts/test-admin-auth.ts`, and 7 components importing `lib/admin/actions`.
 
 **Actions**
+
 1. **T-19**: export the zod schemas from a scratch copy first (they are not exported today), test them, then move. Create `admin-action.shared.ts` by moving `absoluteUrl`, `optionalAbsoluteUrl`, `loginSchema`, `passwordSchema`, `overrideSchema`, `newlyReleasedSchema`, `shopNowSchema` verbatim and exporting them.
 2. **T-23**: `probeMediaUrl` with a stubbed `fetch`.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 6.1. Run /generate-tests for T-19 (the zod schemas, moved verbatim into
@@ -1409,6 +1475,7 @@ refactor/api/admin-actions.exports.txt with the grep in the roadmap.
 ### Step 6.2 Pure moves and auth service
 
 **Actions**
+
 1. Pure move commit: `lib/admin/session.ts` -> `modules/admin/domain/session.ts`; `password.ts` -> `domain/password.ts`; `media-probe.ts` -> `modules/admin/media-probe.ts`; `lib/admin/auth.ts` -> `modules/admin/auth.service.ts`.
 2. Edit commit: remove the re-exports from `auth.service.ts` (keep `setSessionCookie`, `clearSessionCookie`, `getAdminSession`, `requireAdmin`); the `COOKIE_OPTIONS` object stays identical.
 3. Update importers: `scripts/create-admin.ts`, `scripts/test-admin-auth.ts` (import lines), `app/admin/api/upload/route.ts`, `app/admin/(dashboard)/layout.tsx`, `components/admin/admin-shell.tsx` (`AdminSession` type from `modules/admin/domain/session`; import-only).
@@ -1425,22 +1492,24 @@ refactor/api/admin-actions.exports.txt with the grep in the roadmap.
 **Objective:** six action files with `"use server"`, identical behaviour.
 
 **Actions**
+
 1. Create `admin-action.types.ts` with the three types verbatim.
 2. For each action file: start with `"use server"`, import what the moved bodies need, paste the function bodies **verbatim**. Cross-module calls go through public surfaces: `catalog-admin.service` (`saveProductOverride`, `deleteProductOverride`, `saveNewlyReleasedItems`, `saveShopNowItems`, `saveHeroConfig`, `listHeroItems`), `products.service` (`getProduct`), `domain/hero` (`HERO_MIN_SECONDS`, `HERO_MAX_SECONDS`, `isAllowedHeroUrl`), `media-probe`.
 3. `revalidateTag` / `updateTag` calls stay in the action bodies unmoved (18-site parity, I-4). Do not centralise them yet.
 4. Update the 7 component importers (import lines only; where one old import maps to two files, split the import):
 
-| Component | Symbols |
-|---|---|
-| `login-form.tsx` | `loginAction`, `type ActionState` |
-| `admin-shell.tsx` | `logoutAction` |
-| `settings-form.tsx` | `changePasswordAction`, `createAdminUserAction`, types |
-| `product-override-form.tsx` | `saveProductOverrideAction`, `deleteProductOverrideAction`, `getProductPhotoOptionsAction`, types |
-| `newly-released-manager.tsx` | `saveNewlyReleasedAction`, types |
-| `shop-now-manager.tsx` | `saveShopNowAction`, types |
-| `hero-manager.tsx` | `saveHeroAction` |
+| Component                    | Symbols                                                                                           |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- |
+| `login-form.tsx`             | `loginAction`, `type ActionState`                                                                 |
+| `admin-shell.tsx`            | `logoutAction`                                                                                    |
+| `settings-form.tsx`          | `changePasswordAction`, `createAdminUserAction`, types                                            |
+| `product-override-form.tsx`  | `saveProductOverrideAction`, `deleteProductOverrideAction`, `getProductPhotoOptionsAction`, types |
+| `newly-released-manager.tsx` | `saveNewlyReleasedAction`, types                                                                  |
+| `shop-now-manager.tsx`       | `saveShopNowAction`, types                                                                        |
+| `hero-manager.tsx`           | `saveHeroAction`                                                                                  |
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 6.4. Split lib/admin/actions.ts into the six *.actions.ts files, admin-action.shared.ts
@@ -1452,9 +1521,11 @@ importers (import lines only) and run ui-guard. Do not delete actions.ts yet.
 ```
 
 **Verify:** the union of exports across the six files plus types file equals `refactor/api/admin-actions.exports.txt`:
+
 ```bash
 grep -rhE '^export (async function|type)' modules/admin/actions | sed -E 's/\(.*//' | sort | diff - refactor/api/admin-actions.exports.txt
 ```
+
 prints nothing.
 
 **Rollback:** revert per file.
@@ -1462,6 +1533,7 @@ prints nothing.
 ### Step 6.5 Delete the shims and tighten the rules
 
 **Actions**
+
 1. `git rm lib/admin/actions.ts lib/admin/queries.ts` (only after `git grep` shows no importer; the ledger requires both deleted at phase 6).
 2. Edit `refactor/.dependency-cruiser.cjs`: remove the `pathNot` legacy list from **lib-is-a-kernel**. Run `pnpm arch`: must pass with only the 6 known UI cycles.
 3. `lib/admin/` now contains exactly `pagination.ts`, `product-filters.ts`, `editor-extensions.ts`.
@@ -1491,13 +1563,13 @@ prints nothing.
 
 **Target**
 
-| File | Owns |
-|---|---|
-| `modules/admin/admin.schema.ts` | `admin_users` |
-| `modules/catalog/catalog.schema.ts` | `product_overrides`, `product_override_images`, `newly_released_items`, `shop_now_items`, `hero_items`, `hero_settings`, `HERO_SETTINGS_ID`, their relations and types |
-| `modules/enquiries/enquiries.schema.ts` | `contact_enquiries` |
-| `platform/rate-limit/rate-limit.schema.ts` | `rate_limit_counters` |
-| `lib/db/schema.ts` | aggregator |
+| File                                       | Owns                                                                                                                                                                   |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `modules/admin/admin.schema.ts`            | `admin_users`                                                                                                                                                          |
+| `modules/catalog/catalog.schema.ts`        | `product_overrides`, `product_override_images`, `newly_released_items`, `shop_now_items`, `hero_items`, `hero_settings`, `HERO_SETTINGS_ID`, their relations and types |
+| `modules/enquiries/enquiries.schema.ts`    | `contact_enquiries`                                                                                                                                                    |
+| `platform/rate-limit/rate-limit.schema.ts` | `rate_limit_counters`                                                                                                                                                  |
+| `lib/db/schema.ts`                         | aggregator                                                                                                                                                             |
 
 ### Step 7.1 Baselines (before any edit)
 
@@ -1520,12 +1592,14 @@ prints nothing.
 ### Step 7.2 Split (T-21 first)
 
 **Actions**
+
 1. **T-21**: a test that imports `lib/db/schema` and compares `Object.keys` and the table shapes with `refactor/schema-parity.baseline.json`.
 2. Move each table, its relations, its `$inferSelect`/`$inferInsert` types and constants **verbatim** into its owning file. `catalog.schema.ts` imports `adminUsers` from `admin.schema.ts` for the `updated_by` foreign keys (allowed: schema files may import each other). Keep foreign keys and `onDelete: "set null"` as they are.
 3. Rewrite `lib/db/schema.ts` as four `export * from` lines.
 4. `lib/db/index.ts`, `drizzle.config.ts` and `lib/db/migrations/**` are **not touched**.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 7.2. Run /generate-tests for T-21 (schema parity against
@@ -1538,6 +1612,7 @@ database URL and never run db:migrate.
 ```
 
 **Verify**
+
 - `sha256sum -c refactor/migrations.sha256` all OK.
 - `DATABASE_URL=postgres://u:p@localhost/db npx drizzle-kit generate` still says `No schema changes` (this is the phase's key check and is part of `verify-phase.sh`).
 - `pnpm arch`: `schema-files-are-pure` passes (only drizzle imports and other schema files).
@@ -1569,14 +1644,14 @@ Only the owning module writes its tables: `admin` -> `admin_users`; `catalog` ->
 
 Create `architecture/` (not `docs/`, F-06). Each ADR: Context, Decision, Consequences, Open questions. Seed content:
 
-| ADR | Decision | Facts to include |
-|---|---|---|
-| 0001 Modular monolith | Modules with hexagonal internals; public surface by role suffix; table ownership table from step 7.3. | D-01, D-02, dependency rules, why not microservices (one team, one DB, Vercel serverless, transactional domain). |
-| 0002 Domain events and outbox | Phase 2 modules publish events through a transactional outbox drained by a durable job; consumers are idempotent. | Candidate events: `OrderPaid`, `CheckInRecorded`, `ReviewApproved`, `BuildSaved`, `ClapGiven`. Fan-out targets: points, quests, badges, clan contribution, leaderboard read model. |
-| 0003 Database driver and transactions | The ledger needs real transactions and idempotency keys. `neon-http` has no interactive transactions (known limit); move ledger-touching modules to the Neon WebSocket pool or node-postgres. | D-09; refactor deliberately keeps `neon-http`. `drizzle` `batch` is atomic but cannot do read-then-write. **Unverified here:** batch semantics on your exact driver version; test before relying on it. |
-| 0004 Shopify Admin API adapter | New `integrations/shopify/admin/` (webhooks subscription, customer metafields for tier, inventory). Storefront API adapter stays as is. | Today only the Storefront API is used. |
-| 0005 Bundle pricing strategy | Keep bundle attribute grouping (done). For pricing choose among: Shopify native automatic discounts (no app), Shopify's first-party Bundles for fixed Completes, or an app with Shopify Functions. | From Shopify's docs and community threads (external sources, not re-verified in your store): custom apps using Functions have been Plus-only, public apps work on all plans, and Cart Transform `lineUpdate` is Plus-only. **Unknown:** whether GoKwik's checkout honours Shopify Functions or automatic discounts; ask GoKwik before committing. |
-| 0006 Identity | `members` keyed to the Shopify customer id via the Customer Account API with a phone-OTP bridge. | Also note multi-currency (Shopify Markets) versus GoKwik: put checkout behind an interface when Phase 2 reaches it. |
+| ADR                                   | Decision                                                                                                                                                                                           | Facts to include                                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0001 Modular monolith                 | Modules with hexagonal internals; public surface by role suffix; table ownership table from step 7.3.                                                                                              | D-01, D-02, dependency rules, why not microservices (one team, one DB, Vercel serverless, transactional domain).                                                                                                                                                                                                                                  |
+| 0002 Domain events and outbox         | Phase 2 modules publish events through a transactional outbox drained by a durable job; consumers are idempotent.                                                                                  | Candidate events: `OrderPaid`, `CheckInRecorded`, `ReviewApproved`, `BuildSaved`, `ClapGiven`. Fan-out targets: points, quests, badges, clan contribution, leaderboard read model.                                                                                                                                                                |
+| 0003 Database driver and transactions | The ledger needs real transactions and idempotency keys. `neon-http` has no interactive transactions (known limit); move ledger-touching modules to the Neon WebSocket pool or node-postgres.      | D-09; refactor deliberately keeps `neon-http`. `drizzle` `batch` is atomic but cannot do read-then-write. **Unverified here:** batch semantics on your exact driver version; test before relying on it.                                                                                                                                           |
+| 0004 Shopify Admin API adapter        | New `integrations/shopify/admin/` (webhooks subscription, customer metafields for tier, inventory). Storefront API adapter stays as is.                                                            | Today only the Storefront API is used.                                                                                                                                                                                                                                                                                                            |
+| 0005 Bundle pricing strategy          | Keep bundle attribute grouping (done). For pricing choose among: Shopify native automatic discounts (no app), Shopify's first-party Bundles for fixed Completes, or an app with Shopify Functions. | From Shopify's docs and community threads (external sources, not re-verified in your store): custom apps using Functions have been Plus-only, public apps work on all plans, and Cart Transform `lineUpdate` is Plus-only. **Unknown:** whether GoKwik's checkout honours Shopify Functions or automatic discounts; ask GoKwik before committing. |
+| 0006 Identity                         | `members` keyed to the Shopify customer id via the Customer Account API with a phone-OTP bridge.                                                                                                   | Also note multi-currency (Shopify Markets) versus GoKwik: put checkout behind an interface when Phase 2 reaches it.                                                                                                                                                                                                                               |
 
 ### Step 8.2 Module conventions and skeletons
 
@@ -1588,6 +1663,7 @@ Create `architecture/` (not `docs/`, F-06). Each ADR: Context, Decision, Consequ
 A list in `architecture/PHASE2-ENTRY.md`: driver switch, outbox table and job, webhook inbox table with idempotency keys, Admin API adapter, members table, admin RBAC (contract excludes it today), `events.ts` per module.
 
 **Prompt**
+
 ```
 [PREAMBLE]
 Step 8.1-8.3. Write architecture/ADR-0001..0006, modules/README.md and
@@ -1621,12 +1697,14 @@ Write `refactor/DEAD-CODE.md`; **delete nothing without your approval**. Known c
 ### Step 9.3 Style-debt log
 
 `architecture/STYLE-DEBT.md` with counts, so the debt is visible instead of silently accumulating:
+
 ```bash
 echo "non-null assertions: $(git grep -nE '[A-Za-z0-9_\)\]]!(\.|\)|;|,|\[)' -- 'lib' 'modules' 'integrations' 'platform' 'app' | wc -l)"
 echo "interfaces: $(git grep -nE '^\s*(export )?interface ' -- lib modules integrations platform app | wc -l)"
 echo "function declarations: $(git grep -nE '^\s*(export )?(async )?function ' -- lib modules integrations platform | wc -l)"
 echo ".then chains: $(git grep -nE '\.then\(' -- lib modules integrations platform app | wc -l)"
 ```
+
 These are heuristics; label them so.
 
 ### Step 9.4 Tighten and finish the rules
@@ -1676,19 +1754,19 @@ The refactor is complete when: the ledger passes at phase 9; `pnpm arch` passes 
 
 Delivered as `refactor-kit.zip`; unzip at the repo root to get `refactor/`. Every script was run against the studied commit (`0889a2d`).
 
-| File | Purpose | Notes |
-|---|---|---|
-| `scripts/verify-phase.sh N <base>` | The single gate. Runs everything below in order and prints `PHASE N: ALL CHECKS PASSED` or the failing checks. | Phase 0 and 1 verified passing in about 40 s. Creates a stub `next-env.d.ts` if missing. |
-| `scripts/run-tests.mjs` | Runs every `scripts/test-*.ts` with `tsx` and `NODE_ENV=development`; exit 1 if any fails. | Wired as `pnpm test:all`. Optional substring filter. |
-| `scripts/ui-guard.mjs <base>` | Enforces I-1. For every UI file changed since `<base>`, compares the TypeScript AST **with import declarations removed**. Non-TS files (CSS, JSON, SVG, locales) must be byte-identical. Allowlist: `refactor/ui-guard.allowlist.json`. | Verified: import-path change passes, `className` change fails. Asset imports (`.png`, `.svg`, `.css`, `.json`) are compared, not stripped. `components/cart/actions.ts` is excluded because it moves. |
-| `scripts/verify-ledger.mjs --phase N --base <base>` | Proves nothing is missed. (1) Every base source file under `lib/`, `config/`, route handlers, `proxy.ts`, `drizzle.config.ts` and `components/cart/actions.ts` has a ledger entry. (2) Each entry is in the right state for phase N. (3) No unaccounted file under `lib/` or `config/`. | Ledger is `move-ledger.json` (80 entries covering 88 files). Kinds: `move`, `extract`, `new`, `delete`, `stay`. Add entries when the base gains files. |
-| `scripts/cache-parity.mjs snapshot\|check` | Extracts every function whose first statement is a `"use cache"` directive with its `cacheTag`/`cacheLife`, plus every `revalidateTag`/`updateTag`. Compares by function name to `cache-parity.baseline.json`. | Baseline: 15 cached functions, 19 invalidation sites. |
-| `scripts/snapshot.mjs capture\|compare` | HTML regression without a browser (see step 0.5). | Verified offline on three routes; **unverified against live Shopify data**. |
-| `.dependency-cruiser.cjs` | Eleven architecture rules (step 1.1). | Verified with synthetic violations. |
-| `depcruise-known-violations.json` | The six UI cycles. | Baseline for `--ignore-known`. |
-| `prettier-baseline.txt` | 64 files that fail Prettier today. | `verify-phase.sh` prettier-checks only touched files not listed here. |
-| `snapshot-routes.json` | Routes to capture. | Replace placeholder handles with real ones. |
-| `move-ledger.json`, `cache-parity.baseline.json` | Data for the two checks above. | Regenerate baselines in step 0.4 for your real base. |
+| File                                                | Purpose                                                                                                                                                                                                                                                                                 | Notes                                                                                                                                                                                                 |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scripts/verify-phase.sh N <base>`                  | The single gate. Runs everything below in order and prints `PHASE N: ALL CHECKS PASSED` or the failing checks.                                                                                                                                                                          | Phase 0 and 1 verified passing in about 40 s. Creates a stub `next-env.d.ts` if missing.                                                                                                              |
+| `scripts/run-tests.mjs`                             | Runs every `scripts/test-*.ts` with `tsx` and `NODE_ENV=development`; exit 1 if any fails.                                                                                                                                                                                              | Wired as `pnpm test:all`. Optional substring filter.                                                                                                                                                  |
+| `scripts/ui-guard.mjs <base>`                       | Enforces I-1. For every UI file changed since `<base>`, compares the TypeScript AST **with import declarations removed**. Non-TS files (CSS, JSON, SVG, locales) must be byte-identical. Allowlist: `refactor/ui-guard.allowlist.json`.                                                 | Verified: import-path change passes, `className` change fails. Asset imports (`.png`, `.svg`, `.css`, `.json`) are compared, not stripped. `components/cart/actions.ts` is excluded because it moves. |
+| `scripts/verify-ledger.mjs --phase N --base <base>` | Proves nothing is missed. (1) Every base source file under `lib/`, `config/`, route handlers, `proxy.ts`, `drizzle.config.ts` and `components/cart/actions.ts` has a ledger entry. (2) Each entry is in the right state for phase N. (3) No unaccounted file under `lib/` or `config/`. | Ledger is `move-ledger.json` (80 entries covering 88 files). Kinds: `move`, `extract`, `new`, `delete`, `stay`. Add entries when the base gains files.                                                |
+| `scripts/cache-parity.mjs snapshot\|check`          | Extracts every function whose first statement is a `"use cache"` directive with its `cacheTag`/`cacheLife`, plus every `revalidateTag`/`updateTag`. Compares by function name to `cache-parity.baseline.json`.                                                                          | Baseline: 15 cached functions, 19 invalidation sites.                                                                                                                                                 |
+| `scripts/snapshot.mjs capture\|compare`             | HTML regression without a browser (see step 0.5).                                                                                                                                                                                                                                       | Verified offline on three routes; **unverified against live Shopify data**.                                                                                                                           |
+| `.dependency-cruiser.cjs`                           | Eleven architecture rules (step 1.1).                                                                                                                                                                                                                                                   | Verified with synthetic violations.                                                                                                                                                                   |
+| `depcruise-known-violations.json`                   | The six UI cycles.                                                                                                                                                                                                                                                                      | Baseline for `--ignore-known`.                                                                                                                                                                        |
+| `prettier-baseline.txt`                             | 64 files that fail Prettier today.                                                                                                                                                                                                                                                      | `verify-phase.sh` prettier-checks only touched files not listed here.                                                                                                                                 |
+| `snapshot-routes.json`                              | Routes to capture.                                                                                                                                                                                                                                                                      | Replace placeholder handles with real ones.                                                                                                                                                           |
+| `move-ledger.json`, `cache-parity.baseline.json`    | Data for the two checks above.                                                                                                                                                                                                                                                          | Regenerate baselines in step 0.4 for your real base.                                                                                                                                                  |
 
 **What `verify-phase.sh` runs, in order:** `tsc --noEmit`; all test scripts; Prettier on touched files; UI guard; move ledger for phase N; cache parity; `drizzle-kit generate` with a dummy URL must say "No schema changes"; dependency-cruiser (phase 1 and later, only over directories that exist); from phase 4, `"use server"` only in `modules/**/*.actions.ts`; legacy import paths gone once their phase is done (`lib/catalog` from 3, `lib/shopify` facade, `lib/configurator` and `config/` from 4, `lib/contact` from 5, legacy `lib/admin` files from 6); from phase 4, the bundle attribute literal appears at most twice.
 
@@ -1765,31 +1843,31 @@ Stage in .dev-agent/draft-tests/, then stop for approval.
 
 Legend: **EP** equivalence partitioning, **BVA** boundary values, **NEG** negative, **EG** error guessing, **DT** decision table, **ST** state transition, **KB** "known behaviour" (pin what the code does today, even if it looks wrong, and log it in `refactor/FINDINGS.md`).
 
-| ID | Phase | Script | Target | Mutation |
-|---|---|---|---|---|
-| T-01 | 0 | `test-configurator-engine.ts` | `lib/configurator/engine.ts` | 60 |
-| T-02 | 0 | `test-configurator-catalog.ts` | `lib/configurator/mock-data.ts` | 30 |
-| T-03 | 0 | `test-hero-pins.ts` | `lib/catalog/hero.ts` | 40 |
-| T-04 | 0 | `test-proxy.ts` | `proxy.ts` | 30 |
-| T-05 | 0 | `test-i18n.ts` | `lib/i18n/index.ts` | 30 |
-| T-06 | 0 | `test-utils.ts` | `lib/utils.ts` | 30 |
-| T-07 | 0 | `test-shopify-mappers.ts` | mappers (`lib/shopify/index.ts`, later `storefront.mapper.ts`) | 30 |
-| T-08 | 2 | `test-shopify-fetch.ts` | `shopifyFetch` | 40 |
-| T-09 | 2 | `test-shopify-webhooks.ts` | `computeShopifyHmac` | 20 |
-| T-10 | 2 | `test-imagekit.ts` | `isAllowedImageType` and constants | 15 |
-| T-11 | 3 | `test-catalog-overrides-service.ts` | `withOverrides`, `getOverridesForHandles`, `toOverride` | 40 |
-| T-12 | | reserved, unused | existing `test-newly-released` and `test-shop-now` already pin the read-failure resilience | |
-| T-13 | 4 | `test-bundle-contract.ts` | `bundle-contract.ts` (with oracle) | 40 |
-| T-14 | 4 | `test-cart-service.ts` | `cart.service.ts` | 50 |
-| T-15 | 4 (optional) | `test-bundle-validation.ts` | `bundle-validation.ts` | 40 |
-| T-16 | 5 | `test-enquiry-validation.ts` | `enquiry-validation.ts` | 60 |
-| T-17 | 5 | `test-submit-enquiry.ts` | `enquiries.service.ts` | 50 |
-| T-18 | 5 | `test-rate-limit-decision.ts` | `checkContactRateLimit` (injected db) | 50 |
-| T-19 | 6 | `test-admin-schemas.ts` | `admin-action.shared.ts` | 40 |
-| T-20 | | reserved, unused | `test-admin-auth` (17) already pins session tokens, revocation and password limits | |
-| T-21 | 7 | `test-schema-parity.ts` | `lib/db/schema.ts` shape vs baseline | n/a (data test) |
-| T-22 | | reserved, unused | architecture rules are covered by dependency-cruiser | |
-| T-23 | 6 | `test-media-probe.ts` | `probeMediaUrl` | 30 |
+| ID   | Phase        | Script                              | Target                                                                                     | Mutation        |
+| ---- | ------------ | ----------------------------------- | ------------------------------------------------------------------------------------------ | --------------- |
+| T-01 | 0            | `test-configurator-engine.ts`       | `lib/configurator/engine.ts`                                                               | 60              |
+| T-02 | 0            | `test-configurator-catalog.ts`      | `lib/configurator/mock-data.ts`                                                            | 30              |
+| T-03 | 0            | `test-hero-pins.ts`                 | `lib/catalog/hero.ts`                                                                      | 40              |
+| T-04 | 0            | `test-proxy.ts`                     | `proxy.ts`                                                                                 | 30              |
+| T-05 | 0            | `test-i18n.ts`                      | `lib/i18n/index.ts`                                                                        | 30              |
+| T-06 | 0            | `test-utils.ts`                     | `lib/utils.ts`                                                                             | 30              |
+| T-07 | 0            | `test-shopify-mappers.ts`           | mappers (`lib/shopify/index.ts`, later `storefront.mapper.ts`)                             | 30              |
+| T-08 | 2            | `test-shopify-fetch.ts`             | `shopifyFetch`                                                                             | 40              |
+| T-09 | 2            | `test-shopify-webhooks.ts`          | `computeShopifyHmac`                                                                       | 20              |
+| T-10 | 2            | `test-imagekit.ts`                  | `isAllowedImageType` and constants                                                         | 15              |
+| T-11 | 3            | `test-catalog-overrides-service.ts` | `withOverrides`, `getOverridesForHandles`, `toOverride`                                    | 40              |
+| T-12 |              | reserved, unused                    | existing `test-newly-released` and `test-shop-now` already pin the read-failure resilience |                 |
+| T-13 | 4            | `test-bundle-contract.ts`           | `bundle-contract.ts` (with oracle)                                                         | 40              |
+| T-14 | 4            | `test-cart-service.ts`              | `cart.service.ts`                                                                          | 50              |
+| T-15 | 4 (optional) | `test-bundle-validation.ts`         | `bundle-validation.ts`                                                                     | 40              |
+| T-16 | 5            | `test-enquiry-validation.ts`        | `enquiry-validation.ts`                                                                    | 60              |
+| T-17 | 5            | `test-submit-enquiry.ts`            | `enquiries.service.ts`                                                                     | 50              |
+| T-18 | 5            | `test-rate-limit-decision.ts`       | `checkContactRateLimit` (injected db)                                                      | 50              |
+| T-19 | 6            | `test-admin-schemas.ts`             | `admin-action.shared.ts`                                                                   | 40              |
+| T-20 |              | reserved, unused                    | `test-admin-auth` (17) already pins session tokens, revocation and password limits         |                 |
+| T-21 | 7            | `test-schema-parity.ts`             | `lib/db/schema.ts` shape vs baseline                                                       | n/a (data test) |
+| T-22 |              | reserved, unused                    | architecture rules are covered by dependency-cruiser                                       |                 |
+| T-23 | 6            | `test-media-probe.ts`               | `probeMediaUrl`                                                                            | 30              |
 
 ### T-01 Configurator engine
 
@@ -1900,33 +1978,33 @@ Checked by `cache-parity.mjs` by **function name**, so moving a function between
 
 ### Cached functions (15)
 
-| Function | Directive | Tags | Life | Today in | Final owner |
-|---|---|---|---|---|---|
-| `getProduct` | `use cache` | products | days | `lib/shopify/index.ts` (override merge inside) | `modules/catalog/products.service.ts` |
-| `getRawProduct` | `use cache` | products | days | same | `products.service.ts` |
-| `getProducts` | `use cache` | products | days | same | `products.service.ts` |
-| `getProductRecommendations` | `use cache` | products | days | same | `products.service.ts` |
-| `getConfiguratorProducts` | `use cache` | products | days | same | `products.service.ts` |
-| `getCollectionProducts` | `use cache` | collections, products | days | same | `products.service.ts` |
-| `getAdminProductCatalog` | `use cache` | products | days | same | `products.service.ts` |
-| `getCollection` | `use cache` | collections | days | same | `collections.service.ts` |
-| `getCollections` | `use cache` | collections | days | same | `collections.service.ts` |
-| `getMenu` | `use cache` | collections | days | same | `modules/content/content.service.ts` |
-| `getCart` | **`use cache: private`** | cart | seconds | same | `modules/cart/cart.service.ts` |
-| `loadHeroRows` | `use cache` | hero | minutes | `lib/catalog/hero-feed.ts` | `modules/catalog/hero.service.ts` |
-| `loadNewlyReleasedItems` | `use cache` | newlyReleased | minutes | `lib/catalog/newly-released-feed.ts` | `newly-released.service.ts` |
-| `loadShopNowItems` | `use cache` | shopNow | minutes | `lib/catalog/shop-now-feed.ts` | `shop-now.service.ts` |
+| Function                    | Directive                | Tags                  | Life    | Today in                                       | Final owner                           |
+| --------------------------- | ------------------------ | --------------------- | ------- | ---------------------------------------------- | ------------------------------------- |
+| `getProduct`                | `use cache`              | products              | days    | `lib/shopify/index.ts` (override merge inside) | `modules/catalog/products.service.ts` |
+| `getRawProduct`             | `use cache`              | products              | days    | same                                           | `products.service.ts`                 |
+| `getProducts`               | `use cache`              | products              | days    | same                                           | `products.service.ts`                 |
+| `getProductRecommendations` | `use cache`              | products              | days    | same                                           | `products.service.ts`                 |
+| `getConfiguratorProducts`   | `use cache`              | products              | days    | same                                           | `products.service.ts`                 |
+| `getCollectionProducts`     | `use cache`              | collections, products | days    | same                                           | `products.service.ts`                 |
+| `getAdminProductCatalog`    | `use cache`              | products              | days    | same                                           | `products.service.ts`                 |
+| `getCollection`             | `use cache`              | collections           | days    | same                                           | `collections.service.ts`              |
+| `getCollections`            | `use cache`              | collections           | days    | same                                           | `collections.service.ts`              |
+| `getMenu`                   | `use cache`              | collections           | days    | same                                           | `modules/content/content.service.ts`  |
+| `getCart`                   | **`use cache: private`** | cart                  | seconds | same                                           | `modules/cart/cart.service.ts`        |
+| `loadHeroRows`              | `use cache`              | hero                  | minutes | `lib/catalog/hero-feed.ts`                     | `modules/catalog/hero.service.ts`     |
+| `loadNewlyReleasedItems`    | `use cache`              | newlyReleased         | minutes | `lib/catalog/newly-released-feed.ts`           | `newly-released.service.ts`           |
+| `loadShopNowItems`          | `use cache`              | shopNow               | minutes | `lib/catalog/shop-now-feed.ts`                 | `shop-now.service.ts`                 |
 
 Deliberately **uncached**: `getOverridesForHandles`, `withOverrides`, `readProductForPage`, `getNewlyReleased`, `getShopNow`, `getHero`, `readNewlyReleasedItems`, `readShopNowItems`.
 
 ### Invalidation sites (19)
 
-| Site | Calls |
-|---|---|
-| `app/api/webhooks/shopify/route.ts` | product topics: `revalidateTag(TAGS.products,"seconds")` and `revalidateTag(TAGS.collections,"seconds")`; collection topics: `revalidateTag(TAGS.collections,"seconds")` (3 sites) |
-| `revalidate()` in `lib/shopify/index.ts` -> `catalog-cache.service.ts` | collection topics: collections; product topics: products only (2 sites) |
-| `lib/admin/actions.ts` -> `modules/admin/actions/*` | save override: products + collections; delete override: products + collections; `saveNewlyReleased`: newlyReleased; `saveShopNow`: shopNow; `saveHero`: hero (7 sites) |
-| `components/cart/actions.ts` -> `modules/cart/cart.actions.ts` | `updateTag(TAGS.cart)` x 6 |
+| Site                                                                   | Calls                                                                                                                                                                              |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/api/webhooks/shopify/route.ts`                                    | product topics: `revalidateTag(TAGS.products,"seconds")` and `revalidateTag(TAGS.collections,"seconds")`; collection topics: `revalidateTag(TAGS.collections,"seconds")` (3 sites) |
+| `revalidate()` in `lib/shopify/index.ts` -> `catalog-cache.service.ts` | collection topics: collections; product topics: products only (2 sites)                                                                                                            |
+| `lib/admin/actions.ts` -> `modules/admin/actions/*`                    | save override: products + collections; delete override: products + collections; `saveNewlyReleased`: newlyReleased; `saveShopNow`: shopNow; `saveHero`: hero (7 sites)             |
+| `components/cart/actions.ts` -> `modules/cart/cart.actions.ts`         | `updateTag(TAGS.cart)` x 6                                                                                                                                                         |
 
 ---
 
@@ -1934,57 +2012,57 @@ Deliberately **uncached**: `getOverridesForHandles`, `withOverrides`, `readProdu
 
 Run against the **base preview first** (baseline), then after every phase you touch. Record pass/fail per item.
 
-| ID | Check |
-|---|---|
-| M-01 | Home loads; hero rotates and pauses; Newly Released and Shop Now carousels scroll; toast and footer present. |
-| M-02 | Language switch en <-> hi keeps the path. |
-| M-03 | Navbar search box sets `q` and results filter. |
-| M-04 | Store filters, sort and pagination via URL params; reload keeps state. |
-| M-05 | Product page: variant selection, gallery, description tabs, EMI badge, recommendations. |
-| M-06 | Sold-out product shows "Out Of Stock". |
-| M-07 | Add to cart: optimistic badge and toast, drawer opens. |
-| M-08 | Drawer: change quantity, remove item, edit variant. |
-| M-09 | `/cart` mirrors state; quantities editable. |
-| M-10 | Buy now opens the GoKwik popup (and falls back to Shopify checkout if the SDK is blocked). |
-| M-11 | Checkout from the drawer and from `/cart` triggers GoKwik. |
-| M-12 | Configurator: choose board type; select deck, trucks, wheels, bearings, griptape; incompatible items disabled with reasons; out-of-stock toggle; review; add to cart; drawer shows "Custom Setups" with the right lines and total. |
-| M-13 | The `cartLinesAdd` request from M-12 carries `_configurator_bundle: "true"` and one shared `_bundle_id` on every line (save the payload from the base and compare). |
+| ID   | Check                                                                                                                                                                                                                                |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| M-01 | Home loads; hero rotates and pauses; Newly Released and Shop Now carousels scroll; toast and footer present.                                                                                                                         |
+| M-02 | Language switch en <-> hi keeps the path.                                                                                                                                                                                            |
+| M-03 | Navbar search box sets `q` and results filter.                                                                                                                                                                                       |
+| M-04 | Store filters, sort and pagination via URL params; reload keeps state.                                                                                                                                                               |
+| M-05 | Product page: variant selection, gallery, description tabs, EMI badge, recommendations.                                                                                                                                              |
+| M-06 | Sold-out product shows "Out Of Stock".                                                                                                                                                                                               |
+| M-07 | Add to cart: optimistic badge and toast, drawer opens.                                                                                                                                                                               |
+| M-08 | Drawer: change quantity, remove item, edit variant.                                                                                                                                                                                  |
+| M-09 | `/cart` mirrors state; quantities editable.                                                                                                                                                                                          |
+| M-10 | Buy now opens the GoKwik popup (and falls back to Shopify checkout if the SDK is blocked).                                                                                                                                           |
+| M-11 | Checkout from the drawer and from `/cart` triggers GoKwik.                                                                                                                                                                           |
+| M-12 | Configurator: choose board type; select deck, trucks, wheels, bearings, griptape; incompatible items disabled with reasons; out-of-stock toggle; review; add to cart; drawer shows "Custom Setups" with the right lines and total.   |
+| M-13 | The `cartLinesAdd` request from M-12 carries `_configurator_bundle: "true"` and one shared `_bundle_id` on every line (save the payload from the base and compare).                                                                  |
 | M-14 | Contact: every reason group; valid submit shows the receipt (id, team, SLA); invalid shows messages; honeypot (fill the hidden field) returns success and writes no row; the 6th submission within 10 minutes shows the 429 message. |
-| M-15 | Admin login and logout; wrong password error; session survives reload; after a password change the other session is signed out. |
-| M-16 | Admin products: filters, open an override, change title, description, photos, cover, gallery mode; storefront reflects immediately. |
-| M-17 | Admin upload: valid image ok; wrong type rejected; unauthenticated upload returns 401 JSON. |
-| M-18 | Admin Newly Released: add, reorder, remove, subtitle, photos; autosave indicator; homepage reflects. |
-| M-19 | Admin Shop Now: same. |
-| M-20 | Admin Hero: add image and video, duration, poster; invalid URL rejected; large-media warning; homepage reflects. |
-| M-21 | Admin Enquiries: the M-14 submission appears; filter by reason; pagination. |
-| M-22 | Admin Settings: change password, add admin, list admins. |
-| M-23 | Edit a product in Shopify; the storefront updates within seconds through the webhook (test each subscribed endpoint). |
-| M-24 | Redirects: `/terms`, `/product/<handle>`, `/hi/product/<handle>`. |
-| M-25 | A Shopify page handle renders at `/<handle>`. |
-| M-26 | `sitemap.xml` and `robots.txt` correct. |
-| M-27 | Five guides and the board-finder tools (quiz, size tool, decision helper). |
-| M-28 | Shopify outage (unset the domain locally): product page shows the unavailable state; admin products shows the degraded banner; homepage sections hide instead of erroring. |
-| M-29 | Database outage (bad `DATABASE_URL` on a **branch**, never production): homepage renders without curated sections; contact returns the 500 message; the limiter fails open. |
-| M-30 | `/studio` loads. |
+| M-15 | Admin login and logout; wrong password error; session survives reload; after a password change the other session is signed out.                                                                                                      |
+| M-16 | Admin products: filters, open an override, change title, description, photos, cover, gallery mode; storefront reflects immediately.                                                                                                  |
+| M-17 | Admin upload: valid image ok; wrong type rejected; unauthenticated upload returns 401 JSON.                                                                                                                                          |
+| M-18 | Admin Newly Released: add, reorder, remove, subtitle, photos; autosave indicator; homepage reflects.                                                                                                                                 |
+| M-19 | Admin Shop Now: same.                                                                                                                                                                                                                |
+| M-20 | Admin Hero: add image and video, duration, poster; invalid URL rejected; large-media warning; homepage reflects.                                                                                                                     |
+| M-21 | Admin Enquiries: the M-14 submission appears; filter by reason; pagination.                                                                                                                                                          |
+| M-22 | Admin Settings: change password, add admin, list admins.                                                                                                                                                                             |
+| M-23 | Edit a product in Shopify; the storefront updates within seconds through the webhook (test each subscribed endpoint).                                                                                                                |
+| M-24 | Redirects: `/terms`, `/product/<handle>`, `/hi/product/<handle>`.                                                                                                                                                                    |
+| M-25 | A Shopify page handle renders at `/<handle>`.                                                                                                                                                                                        |
+| M-26 | `sitemap.xml` and `robots.txt` correct.                                                                                                                                                                                              |
+| M-27 | Five guides and the board-finder tools (quiz, size tool, decision helper).                                                                                                                                                           |
+| M-28 | Shopify outage (unset the domain locally): product page shows the unavailable state; admin products shows the degraded banner; homepage sections hide instead of erroring.                                                           |
+| M-29 | Database outage (bad `DATABASE_URL` on a **branch**, never production): homepage renders without curated sections; contact returns the 500 message; the limiter fails open.                                                          |
+| M-30 | `/studio` loads.                                                                                                                                                                                                                     |
 
 ---
 
 ## Appendix F: Risk register
 
-| ID | Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|---|
-| R-01 | Server-action IDs change when action files move, breaking open sessions once. | Certain | Low | Skew protection or off-peak deploy (Phase 4, 6). |
-| R-02 | Cold `"use cache"` after each deploy (cache keys follow function identity). | Likely | Low | Tags unchanged so invalidation still works; expect slower first requests. |
-| R-03 | A composed cached function accidentally drops the override merge or caches the uncached override lookup, serving stale or Shopify-only data. | Medium | High | I-5, T-11, cache parity, Claude's function-by-function diff, M-16. |
-| R-04 | Cart cookie or attribute contract changes silently. | Low | High | T-13, T-14, M-13 payload comparison, cookie-options check. |
-| R-05 | Snapshot noise from live Shopify data hides a real regression or produces false alarms. | Medium | Medium | Capture before and after in one sitting; capture twice to prove determinism; re-capture the baseline if a product is edited. |
-| R-06 | The team keeps shipping features on the base while the refactor runs; ledger and baselines drift. | High | Medium | Weekly base merge, re-run step 0.4, `/sync-prs`. |
-| R-07 | The public-surface rule blocks a legitimate import late in a phase. | Medium | Low | The rule is data; extend `PUBLIC` deliberately and record the decision. |
-| R-08 | `mutate-cli` under-mutates JSX or generic-heavy code and over-reports quality. | Medium | Low | Aim it at pure `.ts`; review survivors manually. |
-| R-09 | Characterization tests pin a bug and future fixes look like regressions. | Medium | Low | `KB` labels plus `FINDINGS.md`; Appendix H tracks the fixes. |
-| R-10 | `next build` or GoKwik regressions that no automated check sees. | Medium | High | You run build, snapshot and M-10/M-11 on a preview before each merge. |
-| R-11 | Moving the schema files subtly changes a column or index. | Low | High | Phase 7 baselines, T-21, `drizzle-kit` no-drift, migration hash check. |
-| R-12 | Skill instructions (standing rules in `AGENTS.md`) make the agent stop for confirmation mid-step. | Medium | Low | Preamble pre-approval; deviations recorded instead of silent changes. |
+| ID   | Risk                                                                                                                                         | Likelihood | Impact | Mitigation                                                                                                                   |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| R-01 | Server-action IDs change when action files move, breaking open sessions once.                                                                | Certain    | Low    | Skew protection or off-peak deploy (Phase 4, 6).                                                                             |
+| R-02 | Cold `"use cache"` after each deploy (cache keys follow function identity).                                                                  | Likely     | Low    | Tags unchanged so invalidation still works; expect slower first requests.                                                    |
+| R-03 | A composed cached function accidentally drops the override merge or caches the uncached override lookup, serving stale or Shopify-only data. | Medium     | High   | I-5, T-11, cache parity, Claude's function-by-function diff, M-16.                                                           |
+| R-04 | Cart cookie or attribute contract changes silently.                                                                                          | Low        | High   | T-13, T-14, M-13 payload comparison, cookie-options check.                                                                   |
+| R-05 | Snapshot noise from live Shopify data hides a real regression or produces false alarms.                                                      | Medium     | Medium | Capture before and after in one sitting; capture twice to prove determinism; re-capture the baseline if a product is edited. |
+| R-06 | The team keeps shipping features on the base while the refactor runs; ledger and baselines drift.                                            | High       | Medium | Weekly base merge, re-run step 0.4, `/sync-prs`.                                                                             |
+| R-07 | The public-surface rule blocks a legitimate import late in a phase.                                                                          | Medium     | Low    | The rule is data; extend `PUBLIC` deliberately and record the decision.                                                      |
+| R-08 | `mutate-cli` under-mutates JSX or generic-heavy code and over-reports quality.                                                               | Medium     | Low    | Aim it at pure `.ts`; review survivors manually.                                                                             |
+| R-09 | Characterization tests pin a bug and future fixes look like regressions.                                                                     | Medium     | Low    | `KB` labels plus `FINDINGS.md`; Appendix H tracks the fixes.                                                                 |
+| R-10 | `next build` or GoKwik regressions that no automated check sees.                                                                             | Medium     | High   | You run build, snapshot and M-10/M-11 on a preview before each merge.                                                        |
+| R-11 | Moving the schema files subtly changes a column or index.                                                                                    | Low        | High   | Phase 7 baselines, T-21, `drizzle-kit` no-drift, migration hash check.                                                       |
+| R-12 | Skill instructions (standing rules in `AGENTS.md`) make the agent stop for confirmation mid-step.                                            | Medium     | Low    | Preamble pre-approval; deviations recorded instead of silent changes.                                                        |
 
 ---
 
@@ -2016,16 +2094,16 @@ PHASE: N   BRANCH: refactor/pN-...   BASE: old-origin/testing/commerce-deploymen
 
 File each as an issue (`/investigate-issue` can take it from there). The refactor's tests pin today's behaviour, so each fix can later ship as its own reviewed change.
 
-| ID | Change | Why deferred |
-|---|---|---|
-| H-1 | Group configurator bundles on the `/cart` page (F-14). Now a one-line call to `groupBundleLines`. | Changes the UI (I-1). |
-| H-2 | Enforce server-side bundle validation (turn shadow mode into blocking). | New behaviour; needs a decision on error copy. |
-| H-3 | Align the two webhook endpoints' topic mappings (F-13). | Changes cache invalidation behaviour. |
-| H-4 | Remove dead code from `refactor/DEAD-CODE.md`. | Needs your approval per item. |
-| H-5 | Harden the `cartId` cookie (`httpOnly`, `secure`, `sameSite`, `maxAge`) (F-20). | Can break client code that reads it and changes checkout behaviour. |
-| H-6 | Timing-safe HMAC comparison in the webhook route. | Behavioural (security) change. |
-| H-7 | Move `revalidateTag` calls into the owning modules (centralise invalidation). | Would alter the 18-site parity baseline. |
-| H-8 | Share one connect-retry helper between `storefront.client.ts` and `lib/db/index.ts` (F-19). | Two behaviours, two risk surfaces. |
-| H-9 | Fix the engine oddities pinned in T-01 (OOS decks landing in `compatible`; griptape mislabel). | Changes what customers see. |
-| H-10 | Replace mock configurator metafields with real Shopify metafields (D-10). | Blocked on client product data. |
-| H-11 | Mass-format the 64 Prettier-failing files. | Would violate diff purity for UI files; do it as its own PR after the refactor. |
+| ID   | Change                                                                                            | Why deferred                                                                    |
+| ---- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| H-1  | Group configurator bundles on the `/cart` page (F-14). Now a one-line call to `groupBundleLines`. | Changes the UI (I-1).                                                           |
+| H-2  | Enforce server-side bundle validation (turn shadow mode into blocking).                           | New behaviour; needs a decision on error copy.                                  |
+| H-3  | Align the two webhook endpoints' topic mappings (F-13).                                           | Changes cache invalidation behaviour.                                           |
+| H-4  | Remove dead code from `refactor/DEAD-CODE.md`.                                                    | Needs your approval per item.                                                   |
+| H-5  | Harden the `cartId` cookie (`httpOnly`, `secure`, `sameSite`, `maxAge`) (F-20).                   | Can break client code that reads it and changes checkout behaviour.             |
+| H-6  | Timing-safe HMAC comparison in the webhook route.                                                 | Behavioural (security) change.                                                  |
+| H-7  | Move `revalidateTag` calls into the owning modules (centralise invalidation).                     | Would alter the 18-site parity baseline.                                        |
+| H-8  | Share one connect-retry helper between `storefront.client.ts` and `lib/db/index.ts` (F-19).       | Two behaviours, two risk surfaces.                                              |
+| H-9  | Fix the engine oddities pinned in T-01 (OOS decks landing in `compatible`; griptape mislabel).    | Changes what customers see.                                                     |
+| H-10 | Replace mock configurator metafields with real Shopify metafields (D-10).                         | Blocked on client product data.                                                 |
+| H-11 | Mass-format the 64 Prettier-failing files.                                                        | Would violate diff purity for UI files; do it as its own PR after the refactor. |

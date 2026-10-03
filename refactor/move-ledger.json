@@ -1,592 +1,584 @@
 [
- {
-  "kind": "move",
-  "from": "lib/shopify/queries/cart.ts",
-  "to": "integrations/shopify/storefront/queries/cart.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/shopify/queries/collection.ts",
-  "to": "integrations/shopify/storefront/queries/collection.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/shopify/queries/configurator.ts",
-  "to": "integrations/shopify/storefront/queries/configurator.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/shopify/queries/menu.ts",
-  "to": "integrations/shopify/storefront/queries/menu.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/shopify/queries/page.ts",
-  "to": "integrations/shopify/storefront/queries/page.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/shopify/queries/product.ts",
-  "to": "integrations/shopify/storefront/queries/product.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/shopify/mutations/cart.ts",
-  "to": "integrations/shopify/storefront/mutations/cart.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/shopify/fragments/cart.ts",
-  "to": "integrations/shopify/storefront/fragments/cart.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/shopify/fragments/image.ts",
-  "to": "integrations/shopify/storefront/fragments/image.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/shopify/fragments/product.ts",
-  "to": "integrations/shopify/storefront/fragments/product.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/shopify/fragments/seo.ts",
-  "to": "integrations/shopify/storefront/fragments/seo.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "extract",
-  "from": "lib/shopify/index.ts",
-  "to": [
-   "integrations/shopify/storefront/storefront.client.ts",
-   "integrations/shopify/storefront/storefront.mapper.ts",
-   "integrations/shopify/storefront/products.api.ts",
-   "integrations/shopify/storefront/collections.api.ts",
-   "integrations/shopify/storefront/content.api.ts",
-   "integrations/shopify/storefront/cart.api.ts",
-   "integrations/shopify/webhooks.ts"
-  ],
-  "phase": 2,
-  "note": "raw, uncached, cookie-free integration functions"
- },
- {
-  "kind": "move",
-  "from": "lib/admin/imagekit.ts",
-  "to": "integrations/imagekit/imagekit.client.ts",
-  "phase": 2,
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/shopify/types.ts",
-  "note": "shared commerce types, 36 importers, pure"
- },
- {
-  "kind": "stay",
-  "from": "lib/shopify/image-url.ts",
-  "note": "pure, 19 importers"
- },
- {
-  "kind": "stay",
-  "from": "lib/shopify/description-html.ts",
-  "note": "pure"
- },
- {
-  "kind": "extract",
-  "from": "lib/shopify/index.ts",
-  "to": [
-   "modules/catalog/products.service.ts",
-   "modules/catalog/collections.service.ts",
-   "modules/catalog/catalog-cache.service.ts",
-   "modules/content/content.service.ts"
-  ],
-  "phase": 3,
-  "note": "cached compositions; overrides applied inside the cache scope exactly as today"
- },
- {
-  "kind": "move",
-  "from": "lib/catalog/hero.ts",
-  "to": "modules/catalog/domain/hero.ts",
-  "phase": 3,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/catalog/newly-released.ts",
-  "to": "modules/catalog/domain/newly-released.ts",
-  "phase": 3,
-  "note": "readNewlyReleasedItems() extracted to data/"
- },
- {
-  "kind": "move",
-  "from": "lib/catalog/shop-now.ts",
-  "to": "modules/catalog/domain/shop-now.ts",
-  "phase": 3,
-  "note": "readShopNowItems() extracted to data/"
- },
- {
-  "kind": "move",
-  "from": "lib/catalog/product-page.ts",
-  "to": "modules/catalog/domain/product-page.ts",
-  "phase": 3,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/catalog/overrides.ts",
-  "to": "modules/catalog/domain/overrides.ts",
-  "phase": 3,
-  "note": "withOverrides/getOverridesForHandles extracted to overrides.service.ts"
- },
- {
-  "kind": "new",
-  "to": [
-   "modules/catalog/overrides.service.ts"
-  ],
-  "phase": 3,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/catalog/hero-feed.ts",
-  "to": "modules/catalog/hero.service.ts",
-  "phase": 3,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/catalog/newly-released-feed.ts",
-  "to": "modules/catalog/newly-released.service.ts",
-  "phase": 3,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/catalog/shop-now-feed.ts",
-  "to": "modules/catalog/shop-now.service.ts",
-  "phase": 3,
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/catalog/social-posts.ts",
-  "note": "social posts feature, same shape as hero/newly-released/shop-now; present at base, stays in lib/ in this refactor"
- },
- {
-  "kind": "stay",
-  "from": "lib/catalog/social-posts-feed.ts",
-  "note": "social posts feed; present at base, stays in lib/ in this refactor"
- },
- {
-  "kind": "extract",
-  "from": "lib/admin/queries.ts",
-  "to": [
-   "modules/catalog/data/overrides.data.ts",
-   "modules/catalog/data/newly-released.data.ts",
-   "modules/catalog/data/shop-now.data.ts",
-   "modules/catalog/data/hero.data.ts",
-   "modules/catalog/catalog-admin.service.ts",
-   "modules/catalog/catalog.types.ts"
-  ],
-  "phase": 3,
-  "note": "data access split by owner; admin pages keep identical function names via catalog-admin.service.ts"
- },
- {
-  "kind": "extract",
-  "from": "components/cart/actions.ts",
-  "to": [
-   "modules/cart/cart.service.ts",
-   "modules/cart/cart-session.ts",
-   "modules/bundles/domain/bundle-contract.ts"
-  ],
-  "phase": 4,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "components/cart/actions.ts",
-  "to": "modules/cart/cart.actions.ts",
-  "phase": 4,
-  "note": "'use server' wrappers only"
- },
- {
-  "kind": "extract",
-  "from": "lib/shopify/index.ts",
-  "to": [
-   "modules/cart/cart.service.ts"
-  ],
-  "phase": 4,
-  "note": "getCart and cookie-bound cart functions"
- },
- {
-  "kind": "delete",
-  "from": "lib/shopify/index.ts",
-  "phase": 4,
-  "note": "facade fully dismantled"
- },
- {
-  "kind": "move",
-  "from": "lib/configurator/engine.ts",
-  "to": "modules/bundles/domain/compat/engine.ts",
-  "phase": 4,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/configurator/types.ts",
-  "to": "modules/bundles/domain/compat/types.ts",
-  "phase": 4,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/configurator/mock-data.ts",
-  "to": "modules/bundles/sources/mock-metafields.source.ts",
-  "phase": 4,
-  "note": "PRODUCTION data source today: live configurator runs on mock metafields"
- },
- {
-  "kind": "delete",
-  "from": "lib/configurator/index.ts",
-  "phase": 4,
-  "note": "3-line barrel; importers switch to concrete files"
- },
- {
-  "kind": "move",
-  "from": "config/compatibility-rules.json",
-  "to": "modules/bundles/domain/compat/compatibility-rules.json",
-  "phase": 4,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "config/mock-configurator-data.json",
-  "to": "modules/bundles/sources/mock-configurator-data.json",
-  "phase": 4,
-  "note": ""
- },
- {
-  "kind": "new",
-  "to": [
-   "modules/bundles/bundles.service.ts"
-  ],
-  "phase": 4,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/contact/routes.ts",
-  "to": "modules/enquiries/domain/routes.ts",
-  "phase": 5,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/contact/enquiry-display.ts",
-  "to": "modules/enquiries/domain/enquiry-display.ts",
-  "phase": 5,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/contact/enquiry-reference.ts",
-  "to": "modules/enquiries/domain/enquiry-reference.ts",
-  "phase": 5,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/contact/rate-limit.ts",
-  "to": "platform/rate-limit/rate-limit.ts",
-  "phase": 5,
-  "note": ""
- },
- {
-  "kind": "extract",
-  "from": "app/api/contact/submit/route.ts",
-  "to": [
-   "modules/enquiries/enquiries.service.ts",
-   "modules/enquiries/domain/enquiry-validation.ts"
-  ],
-  "phase": 5,
-  "note": ""
- },
- {
-  "kind": "extract",
-  "from": "lib/admin/queries.ts",
-  "to": [
-   "modules/enquiries/enquiries.data.ts"
-  ],
-  "phase": 5,
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "app/api/contact/submit/route.ts",
-  "note": "becomes thin: parse -> service -> response"
- },
- {
-  "kind": "move",
-  "from": "lib/admin/auth.ts",
-  "to": "modules/admin/auth.service.ts",
-  "phase": 6,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/admin/session.ts",
-  "to": "modules/admin/domain/session.ts",
-  "phase": 6,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/admin/password.ts",
-  "to": "modules/admin/domain/password.ts",
-  "phase": 6,
-  "note": ""
- },
- {
-  "kind": "move",
-  "from": "lib/admin/media-probe.ts",
-  "to": "modules/admin/media-probe.ts",
-  "phase": 6,
-  "note": ""
- },
- {
-  "kind": "extract",
-  "from": "lib/admin/actions.ts",
-  "to": [
-   "modules/admin/actions/auth.actions.ts",
-   "modules/admin/actions/products.actions.ts",
-   "modules/admin/actions/newly-released.actions.ts",
-   "modules/admin/actions/shop-now.actions.ts",
-   "modules/admin/actions/hero.actions.ts",
-   "modules/admin/actions/users.actions.ts",
-   "modules/admin/actions/admin-action.shared.ts",
-   "modules/admin/actions/admin-action.types.ts"
-  ],
-  "phase": 6,
-  "note": ""
- },
- {
-  "kind": "delete",
-  "from": "lib/admin/actions.ts",
-  "phase": 6,
-  "note": ""
- },
- {
-  "kind": "extract",
-  "from": "lib/admin/queries.ts",
-  "to": [
-   "modules/admin/data/users.data.ts",
-   "modules/admin/admin-users.service.ts"
-  ],
-  "phase": 6,
-  "note": ""
- },
- {
-  "kind": "delete",
-  "from": "lib/admin/queries.ts",
-  "phase": 6,
-  "note": "must be empty by now; all functions have an owner"
- },
- {
-  "kind": "stay",
-  "from": "lib/admin/pagination.ts",
-  "note": "pure admin-UI support consumed by components/admin"
- },
- {
-  "kind": "stay",
-  "from": "lib/admin/product-filters.ts",
-  "note": "pure admin-UI support consumed by components/admin"
- },
- {
-  "kind": "stay",
-  "from": "lib/admin/editor-extensions.ts",
-  "note": "pure admin-UI support consumed by components/admin"
- },
- {
-  "kind": "extract",
-  "from": "lib/db/schema.ts",
-  "to": [
-   "modules/admin/admin.schema.ts",
-   "modules/catalog/catalog.schema.ts",
-   "modules/enquiries/enquiries.schema.ts",
-   "platform/rate-limit/rate-limit.schema.ts"
-  ],
-  "phase": 7,
-  "note": "lib/db/schema.ts stays as the single aggregator (export * from each *.schema.ts) so drizzle.config.ts and `import * as schema` typing are unchanged"
- },
- {
-  "kind": "stay",
-  "from": "lib/db/index.ts",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/db/migrations/**",
-  "note": "never touched by the refactor"
- },
- {
-  "kind": "stay",
-  "from": "lib/db/migrations/0006_closed_daredevil.sql",
-  "note": "social_posts migration; present at base, never touched by the refactor"
- },
- {
-  "kind": "stay",
-  "from": "lib/db/migrations/0007_soft_mercury.sql",
-  "note": "present at base, never touched by the refactor"
- },
- {
-  "kind": "move",
-  "from": "lib/sanity/client.ts",
-  "to": "integrations/sanity/client.ts",
-  "phase": 9,
-  "note": "conditional: D-03"
- },
- {
-  "kind": "move",
-  "from": "lib/sanity/queries.ts",
-  "to": "integrations/sanity/queries.ts",
-  "phase": 9,
-  "note": "conditional: D-03"
- },
- {
-  "kind": "stay",
-  "from": "lib/constants.ts",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/utils.ts",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/type-guards.ts",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/fonts.ts",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/gokwik/**",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/i18n/**",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/hooks/**",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/filters/**",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/filters/derive.ts",
-  "note": "derived-filters rewrite; present at base, stays in lib/ in this refactor"
- },
- {
-  "kind": "stay",
-  "from": "lib/guides/**",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/board-finder/**",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/deck-guide/**",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/griptape-guide/**",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/truck-guide/**",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/wheel-guide/**",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "lib/surfskate-guide/**",
-  "note": "sixth guide; present at base, stays in lib/ in this refactor"
- },
- {
-  "kind": "stay",
-  "from": "proxy.ts",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "drizzle.config.ts",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "app/admin/api/upload/route.ts",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "app/api/webhooks/shopify/route.ts",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "app/[locale]/api/revalidate/route.ts",
-  "note": ""
- },
- {
-  "kind": "stay",
-  "from": "components/admin/social-posts-manager.tsx",
-  "note": "social posts manager UI; present at base, UI frozen"
- },
- {
-  "kind": "stay",
-  "from": "components/surfskate-guide/**",
-  "note": "surfskate guide UI; present at base, UI frozen"
- }
+  {
+    "kind": "move",
+    "from": "lib/shopify/queries/cart.ts",
+    "to": "integrations/shopify/storefront/queries/cart.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/shopify/queries/collection.ts",
+    "to": "integrations/shopify/storefront/queries/collection.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/shopify/queries/configurator.ts",
+    "to": "integrations/shopify/storefront/queries/configurator.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/shopify/queries/menu.ts",
+    "to": "integrations/shopify/storefront/queries/menu.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/shopify/queries/page.ts",
+    "to": "integrations/shopify/storefront/queries/page.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/shopify/queries/product.ts",
+    "to": "integrations/shopify/storefront/queries/product.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/shopify/mutations/cart.ts",
+    "to": "integrations/shopify/storefront/mutations/cart.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/shopify/fragments/cart.ts",
+    "to": "integrations/shopify/storefront/fragments/cart.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/shopify/fragments/image.ts",
+    "to": "integrations/shopify/storefront/fragments/image.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/shopify/fragments/product.ts",
+    "to": "integrations/shopify/storefront/fragments/product.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/shopify/fragments/seo.ts",
+    "to": "integrations/shopify/storefront/fragments/seo.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "extract",
+    "from": "lib/shopify/index.ts",
+    "to": [
+      "integrations/shopify/storefront/storefront.client.ts",
+      "integrations/shopify/storefront/storefront.mapper.ts",
+      "integrations/shopify/storefront/products.api.ts",
+      "integrations/shopify/storefront/collections.api.ts",
+      "integrations/shopify/storefront/content.api.ts",
+      "integrations/shopify/storefront/cart.api.ts",
+      "integrations/shopify/webhooks.ts"
+    ],
+    "phase": 2,
+    "note": "raw, uncached, cookie-free integration functions"
+  },
+  {
+    "kind": "move",
+    "from": "lib/admin/imagekit.ts",
+    "to": "integrations/imagekit/imagekit.client.ts",
+    "phase": 2,
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/shopify/types.ts",
+    "note": "shared commerce types, 36 importers, pure"
+  },
+  {
+    "kind": "stay",
+    "from": "lib/shopify/image-url.ts",
+    "note": "pure, 19 importers"
+  },
+  {
+    "kind": "stay",
+    "from": "lib/shopify/description-html.ts",
+    "note": "pure"
+  },
+  {
+    "kind": "extract",
+    "from": "lib/shopify/index.ts",
+    "to": [
+      "modules/catalog/products.service.ts",
+      "modules/catalog/collections.service.ts",
+      "modules/catalog/catalog-cache.service.ts",
+      "modules/content/content.service.ts"
+    ],
+    "phase": 3,
+    "note": "cached compositions; overrides applied inside the cache scope exactly as today"
+  },
+  {
+    "kind": "move",
+    "from": "lib/catalog/hero.ts",
+    "to": "modules/catalog/domain/hero.ts",
+    "phase": 3,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/catalog/newly-released.ts",
+    "to": "modules/catalog/domain/newly-released.ts",
+    "phase": 3,
+    "note": "readNewlyReleasedItems() extracted to data/"
+  },
+  {
+    "kind": "move",
+    "from": "lib/catalog/shop-now.ts",
+    "to": "modules/catalog/domain/shop-now.ts",
+    "phase": 3,
+    "note": "readShopNowItems() extracted to data/"
+  },
+  {
+    "kind": "move",
+    "from": "lib/catalog/product-page.ts",
+    "to": "modules/catalog/domain/product-page.ts",
+    "phase": 3,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/catalog/overrides.ts",
+    "to": "modules/catalog/domain/overrides.ts",
+    "phase": 3,
+    "note": "withOverrides/getOverridesForHandles extracted to overrides.service.ts"
+  },
+  {
+    "kind": "new",
+    "to": ["modules/catalog/overrides.service.ts"],
+    "phase": 3,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/catalog/hero-feed.ts",
+    "to": "modules/catalog/hero.service.ts",
+    "phase": 3,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/catalog/newly-released-feed.ts",
+    "to": "modules/catalog/newly-released.service.ts",
+    "phase": 3,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/catalog/shop-now-feed.ts",
+    "to": "modules/catalog/shop-now.service.ts",
+    "phase": 3,
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/catalog/social-posts.ts",
+    "note": "social posts feature, same shape as hero/newly-released/shop-now; present at base, stays in lib/ in this refactor"
+  },
+  {
+    "kind": "stay",
+    "from": "lib/catalog/social-posts-feed.ts",
+    "note": "social posts feed; present at base, stays in lib/ in this refactor"
+  },
+  {
+    "kind": "extract",
+    "from": "lib/admin/queries.ts",
+    "to": [
+      "modules/catalog/data/overrides.data.ts",
+      "modules/catalog/data/newly-released.data.ts",
+      "modules/catalog/data/shop-now.data.ts",
+      "modules/catalog/data/hero.data.ts",
+      "modules/catalog/catalog-admin.service.ts",
+      "modules/catalog/catalog.types.ts"
+    ],
+    "phase": 3,
+    "note": "data access split by owner; admin pages keep identical function names via catalog-admin.service.ts"
+  },
+  {
+    "kind": "extract",
+    "from": "components/cart/actions.ts",
+    "to": [
+      "modules/cart/cart.service.ts",
+      "modules/cart/cart-session.ts",
+      "modules/bundles/domain/bundle-contract.ts"
+    ],
+    "phase": 4,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "components/cart/actions.ts",
+    "to": "modules/cart/cart.actions.ts",
+    "phase": 4,
+    "note": "'use server' wrappers only"
+  },
+  {
+    "kind": "extract",
+    "from": "lib/shopify/index.ts",
+    "to": ["modules/cart/cart.service.ts"],
+    "phase": 4,
+    "note": "getCart and cookie-bound cart functions"
+  },
+  {
+    "kind": "delete",
+    "from": "lib/shopify/index.ts",
+    "phase": 4,
+    "note": "facade fully dismantled"
+  },
+  {
+    "kind": "move",
+    "from": "lib/configurator/engine.ts",
+    "to": "modules/bundles/domain/compat/engine.ts",
+    "phase": 4,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/configurator/types.ts",
+    "to": "modules/bundles/domain/compat/types.ts",
+    "phase": 4,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/configurator/mock-data.ts",
+    "to": "modules/bundles/sources/mock-metafields.source.ts",
+    "phase": 4,
+    "note": "PRODUCTION data source today: live configurator runs on mock metafields"
+  },
+  {
+    "kind": "delete",
+    "from": "lib/configurator/index.ts",
+    "phase": 4,
+    "note": "3-line barrel; importers switch to concrete files"
+  },
+  {
+    "kind": "move",
+    "from": "config/compatibility-rules.json",
+    "to": "modules/bundles/domain/compat/compatibility-rules.json",
+    "phase": 4,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "config/mock-configurator-data.json",
+    "to": "modules/bundles/sources/mock-configurator-data.json",
+    "phase": 4,
+    "note": ""
+  },
+  {
+    "kind": "new",
+    "to": ["modules/bundles/bundles.service.ts"],
+    "phase": 4,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/contact/routes.ts",
+    "to": "modules/enquiries/domain/routes.ts",
+    "phase": 5,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/contact/enquiry-display.ts",
+    "to": "modules/enquiries/domain/enquiry-display.ts",
+    "phase": 5,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/contact/enquiry-reference.ts",
+    "to": "modules/enquiries/domain/enquiry-reference.ts",
+    "phase": 5,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/contact/rate-limit.ts",
+    "to": "platform/rate-limit/rate-limit.ts",
+    "phase": 5,
+    "note": ""
+  },
+  {
+    "kind": "extract",
+    "from": "app/api/contact/submit/route.ts",
+    "to": [
+      "modules/enquiries/enquiries.service.ts",
+      "modules/enquiries/domain/enquiry-validation.ts"
+    ],
+    "phase": 5,
+    "note": ""
+  },
+  {
+    "kind": "extract",
+    "from": "lib/admin/queries.ts",
+    "to": ["modules/enquiries/enquiries.data.ts"],
+    "phase": 5,
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "app/api/contact/submit/route.ts",
+    "note": "becomes thin: parse -> service -> response"
+  },
+  {
+    "kind": "move",
+    "from": "lib/admin/auth.ts",
+    "to": "modules/admin/auth.service.ts",
+    "phase": 6,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/admin/session.ts",
+    "to": "modules/admin/domain/session.ts",
+    "phase": 6,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/admin/password.ts",
+    "to": "modules/admin/domain/password.ts",
+    "phase": 6,
+    "note": ""
+  },
+  {
+    "kind": "move",
+    "from": "lib/admin/media-probe.ts",
+    "to": "modules/admin/media-probe.ts",
+    "phase": 6,
+    "note": ""
+  },
+  {
+    "kind": "extract",
+    "from": "lib/admin/actions.ts",
+    "to": [
+      "modules/admin/actions/auth.actions.ts",
+      "modules/admin/actions/products.actions.ts",
+      "modules/admin/actions/newly-released.actions.ts",
+      "modules/admin/actions/shop-now.actions.ts",
+      "modules/admin/actions/hero.actions.ts",
+      "modules/admin/actions/users.actions.ts",
+      "modules/admin/actions/admin-action.shared.ts",
+      "modules/admin/actions/admin-action.types.ts"
+    ],
+    "phase": 6,
+    "note": ""
+  },
+  {
+    "kind": "delete",
+    "from": "lib/admin/actions.ts",
+    "phase": 6,
+    "note": ""
+  },
+  {
+    "kind": "extract",
+    "from": "lib/admin/queries.ts",
+    "to": [
+      "modules/admin/data/users.data.ts",
+      "modules/admin/admin-users.service.ts"
+    ],
+    "phase": 6,
+    "note": ""
+  },
+  {
+    "kind": "delete",
+    "from": "lib/admin/queries.ts",
+    "phase": 6,
+    "note": "must be empty by now; all functions have an owner"
+  },
+  {
+    "kind": "stay",
+    "from": "lib/admin/pagination.ts",
+    "note": "pure admin-UI support consumed by components/admin"
+  },
+  {
+    "kind": "stay",
+    "from": "lib/admin/product-filters.ts",
+    "note": "pure admin-UI support consumed by components/admin"
+  },
+  {
+    "kind": "stay",
+    "from": "lib/admin/editor-extensions.ts",
+    "note": "pure admin-UI support consumed by components/admin"
+  },
+  {
+    "kind": "extract",
+    "from": "lib/db/schema.ts",
+    "to": [
+      "modules/admin/admin.schema.ts",
+      "modules/catalog/catalog.schema.ts",
+      "modules/enquiries/enquiries.schema.ts",
+      "platform/rate-limit/rate-limit.schema.ts"
+    ],
+    "phase": 7,
+    "note": "lib/db/schema.ts stays as the single aggregator (export * from each *.schema.ts) so drizzle.config.ts and `import * as schema` typing are unchanged"
+  },
+  {
+    "kind": "stay",
+    "from": "lib/db/index.ts",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/db/migrations/**",
+    "note": "never touched by the refactor"
+  },
+  {
+    "kind": "stay",
+    "from": "lib/db/migrations/0006_closed_daredevil.sql",
+    "note": "social_posts migration; present at base, never touched by the refactor"
+  },
+  {
+    "kind": "stay",
+    "from": "lib/db/migrations/0007_soft_mercury.sql",
+    "note": "present at base, never touched by the refactor"
+  },
+  {
+    "kind": "move",
+    "from": "lib/sanity/client.ts",
+    "to": "integrations/sanity/client.ts",
+    "phase": 9,
+    "note": "conditional: D-03"
+  },
+  {
+    "kind": "move",
+    "from": "lib/sanity/queries.ts",
+    "to": "integrations/sanity/queries.ts",
+    "phase": 9,
+    "note": "conditional: D-03"
+  },
+  {
+    "kind": "stay",
+    "from": "lib/constants.ts",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/utils.ts",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/type-guards.ts",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/fonts.ts",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/gokwik/**",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/i18n/**",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/hooks/**",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/filters/**",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/filters/derive.ts",
+    "note": "derived-filters rewrite; present at base, stays in lib/ in this refactor"
+  },
+  {
+    "kind": "stay",
+    "from": "lib/guides/**",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/board-finder/**",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/deck-guide/**",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/griptape-guide/**",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/truck-guide/**",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/wheel-guide/**",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "lib/surfskate-guide/**",
+    "note": "sixth guide; present at base, stays in lib/ in this refactor"
+  },
+  {
+    "kind": "stay",
+    "from": "proxy.ts",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "drizzle.config.ts",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "app/admin/api/upload/route.ts",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "app/api/webhooks/shopify/route.ts",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "app/[locale]/api/revalidate/route.ts",
+    "note": ""
+  },
+  {
+    "kind": "stay",
+    "from": "components/admin/social-posts-manager.tsx",
+    "note": "social posts manager UI; present at base, UI frozen"
+  },
+  {
+    "kind": "stay",
+    "from": "components/surfskate-guide/**",
+    "note": "surfskate guide UI; present at base, UI frozen"
+  }
 ]
