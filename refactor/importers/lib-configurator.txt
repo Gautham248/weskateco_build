@@ -1,0 +1,8 @@
+components/configurator/build-summary-sidebar.tsx
+components/configurator/product-card.tsx
+components/configurator/steps/board-type-step.tsx
+components/configurator/steps/product-selection-step.tsx
+components/configurator/steps/review-step.tsx
+components/configurator/wizard.tsx
+lib/configurator/engine.ts
+lib/configurator/mock-data.ts

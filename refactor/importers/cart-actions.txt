@@ -1,0 +1,11 @@
+app/[locale]/cart/page.tsx
+components/cart/delete-item-button.tsx
+components/cart/edit-item-quantity-button.tsx
+components/configurator/steps/review-step.tsx
+components/configurator/wizard.tsx
+components/home/newly-release-content.tsx
+components/home/shop-now-content.tsx
+components/product/product-actions.tsx
+components/product/product-card.tsx
+components/product/product-description.tsx
+components/product/quick-buy-sidebar.tsx
