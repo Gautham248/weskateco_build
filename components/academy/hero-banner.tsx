@@ -2,7 +2,7 @@ import academyHero from "components/icons/academy/hero.png";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function AcademyHeroBanner({ locale }: { locale?: string }) {
+export default function AcademyHeroBanner() {
   return (
     <section className="relative h-screen w-full overflow-hidden -mt-[72px]">
       {/* Mobile Image */}

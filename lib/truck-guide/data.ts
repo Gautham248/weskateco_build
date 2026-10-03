@@ -39,10 +39,10 @@ export const PARTS_SECTION = {
   kicker: "Anatomy",
   title: "The nine parts of a truck",
   intro:
-    "A truck is a hinge with a rubber spring in it. Two views, because three of the nine parts are hidden inside an assembled one — and those three are the ones you are most likely to need.",
+    "A truck is a hinge with a rubber spring in it. Two views, because the parts hidden inside an assembled one are the ones you are most likely to need.",
   hint: "Tap a numbered part.",
   caption:
-    "Everything above the hanger and below it is a stack of rubber and steel threaded onto one bolt. That is the whole mechanism: you lean, the bushings squash on one side and rebound on the other, and the hanger tilts. Two views because neither carries all nine parts on its own — assembled shows how they sit together, exploded shows the three that are hidden inside.",
+    "Everything above the hanger and below it is a stack of rubber and steel threaded onto one bolt. That is the whole mechanism: you lean, the bushings squash on one side and rebound on the other, and the hanger tilts. Two views because neither carries all nine parts on its own — assembled shows how they sit together, exploded shows the parts that are hidden inside.",
   assembledAlt:
     "A skateboard truck photographed square from behind, showing the baseplate bolted to the deck, the hanger, the axle and an axle nut",
 };
