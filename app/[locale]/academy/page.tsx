@@ -17,14 +17,10 @@ export const metadata = {
   },
 };
 
-export default async function AcademyPage(props: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await props.params;
-
+export default function AcademyPage() {
   return (
     <>
-      <AcademyHeroBanner locale={locale} />
+      <AcademyHeroBanner />
       <PhilosophySection />
       <LovedByCommunity />
       <Footer />
