@@ -45,6 +45,14 @@ export default function Footer() {
               </li>
               <li>
                 <Link
+                  href="/store/portable-ramps"
+                  className="hover:text-white transition-colors"
+                >
+                  Portable Ramps
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/store/apparel"
                   className="hover:text-white transition-colors"
                 >
@@ -190,6 +198,14 @@ export default function Footer() {
                     className="hover:text-white transition-colors block"
                   >
                     Surfskates
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/store/portable-ramps"
+                    className="hover:text-white transition-colors block"
+                  >
+                    Portable Ramps
                   </Link>
                 </li>
                 <li>
