@@ -28,6 +28,11 @@ export default function MegaMenuLeft({
       id: "skateboards",
     },
     { title: t("nav.surfskates"), href: "/store/surfskates", id: "surfskates" },
+    {
+      title: t("nav.portable_ramps"),
+      href: "/store/portable-ramps",
+      id: "portable_ramps",
+    },
     { title: t("nav.apparel"), href: "/store/apparel-1", id: "apparel" },
     {
       title: t("nav.protective_gear"),
