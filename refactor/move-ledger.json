@@ -190,6 +190,16 @@
   "note": ""
  },
  {
+  "kind": "stay",
+  "from": "lib/catalog/social-posts.ts",
+  "note": "social posts feature, same shape as hero/newly-released/shop-now; present at base, stays in lib/ in this refactor"
+ },
+ {
+  "kind": "stay",
+  "from": "lib/catalog/social-posts-feed.ts",
+  "note": "social posts feed; present at base, stays in lib/ in this refactor"
+ },
+ {
   "kind": "extract",
   "from": "lib/admin/queries.ts",
   "to": [
@@ -441,6 +451,16 @@
   "note": "never touched by the refactor"
  },
  {
+  "kind": "stay",
+  "from": "lib/db/migrations/0006_closed_daredevil.sql",
+  "note": "social_posts migration; present at base, never touched by the refactor"
+ },
+ {
+  "kind": "stay",
+  "from": "lib/db/migrations/0007_soft_mercury.sql",
+  "note": "present at base, never touched by the refactor"
+ },
+ {
   "kind": "move",
   "from": "lib/sanity/client.ts",
   "to": "integrations/sanity/client.ts",
@@ -496,6 +516,11 @@
  },
  {
   "kind": "stay",
+  "from": "lib/filters/derive.ts",
+  "note": "derived-filters rewrite; present at base, stays in lib/ in this refactor"
+ },
+ {
+  "kind": "stay",
   "from": "lib/guides/**",
   "note": ""
  },
@@ -526,6 +551,11 @@
  },
  {
   "kind": "stay",
+  "from": "lib/surfskate-guide/**",
+  "note": "sixth guide; present at base, stays in lib/ in this refactor"
+ },
+ {
+  "kind": "stay",
   "from": "proxy.ts",
   "note": ""
  },
@@ -548,5 +578,15 @@
   "kind": "stay",
   "from": "app/[locale]/api/revalidate/route.ts",
   "note": ""
+ },
+ {
+  "kind": "stay",
+  "from": "components/admin/social-posts-manager.tsx",
+  "note": "social posts manager UI; present at base, UI frozen"
+ },
+ {
+  "kind": "stay",
+  "from": "components/surfskate-guide/**",
+  "note": "surfskate guide UI; present at base, UI frozen"
  }
 ]
