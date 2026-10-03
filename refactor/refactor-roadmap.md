@@ -286,7 +286,7 @@ Tick a row only when its evidence has passed **after the last phase that touches
 | FI-B06 | GoKwik: script loader, checkout hook, fallback to Shopify `checkoutUrl`; Snapmint EMI banners | `lib/gokwik/*`, `components/cart/snapmint-*`, `components/product/snapmint-*` | none (stays in `lib`) | M-10, M-11 | [ ] |
 | FI-B07 | Configurator: board type -> product selection -> review; compatibility engine; filters sidebar; build summary; progress; out-of-stock toggle; mock metafield data source | `components/configurator/*`, `lib/configurator/*`, `config/*.json` | P4 | T-01, T-02, `test-configurator`, M-12 | [ ] |
 | FI-B08 | Webhooks revalidate tags: HMAC endpoint (products and collections) and query-secret endpoint (different mapping, F-13) | `app/api/webhooks/shopify/route.ts`, `lib/shopify/index.ts` `revalidate` | P2, P3 | T-09, C, M-23 | [ ] |
-| FI-B09 | Cache tags and lifetimes for the 14 cached functions and 18 invalidation sites | see Appendix D | P2, P3, P4, P6 | C | [ ] |
+| FI-B09 | Cache tags and lifetimes for the 15 cached functions and 19 invalidation sites | see Appendix D | P2, P3, P4, P6 | C | [ ] |
 | FI-B10 | Shopify fetch: 2 retries with 500ms/1000ms backoff on connect errors only; first GraphQL error thrown; error shaping `{cause,status,message,query}` | `shopifyFetch` | P2 | T-08 | [ ] |
 | FI-B11 | Admin catalog: up to 4 pages of 250, `truncated`/`failed` flags, never throws | `getAdminProductCatalog` | P2, P3 | M-16, M-28 | [ ] |
 
@@ -434,7 +434,7 @@ Do not modify any source file.
 **Actions**
 1. Cache parity:
    `node refactor/scripts/cache-parity.mjs snapshot > refactor/cache-parity.baseline.json`
-   Expect 14 cached functions and 18 invalidation sites (Appendix D). Investigate any other number before proceeding.
+   Expect 15 cached functions and 19 invalidation sites (Appendix D). Investigate any other number before proceeding.
 2. Prettier baseline (pre-existing failures):
    ```bash
    npx prettier --check --ignore-unknown . 2>&1 | grep '^\[warn\]' | sed 's/\[warn\] //' | grep -v 'Code style' | grep -v '^refactor/' | sort > refactor/prettier-baseline.txt
@@ -1682,7 +1682,7 @@ Delivered as `refactor-kit.zip`; unzip at the repo root to get `refactor/`. Ever
 | `scripts/run-tests.mjs` | Runs every `scripts/test-*.ts` with `tsx` and `NODE_ENV=development`; exit 1 if any fails. | Wired as `pnpm test:all`. Optional substring filter. |
 | `scripts/ui-guard.mjs <base>` | Enforces I-1. For every UI file changed since `<base>`, compares the TypeScript AST **with import declarations removed**. Non-TS files (CSS, JSON, SVG, locales) must be byte-identical. Allowlist: `refactor/ui-guard.allowlist.json`. | Verified: import-path change passes, `className` change fails. Asset imports (`.png`, `.svg`, `.css`, `.json`) are compared, not stripped. `components/cart/actions.ts` is excluded because it moves. |
 | `scripts/verify-ledger.mjs --phase N --base <base>` | Proves nothing is missed. (1) Every base source file under `lib/`, `config/`, route handlers, `proxy.ts`, `drizzle.config.ts` and `components/cart/actions.ts` has a ledger entry. (2) Each entry is in the right state for phase N. (3) No unaccounted file under `lib/` or `config/`. | Ledger is `move-ledger.json` (80 entries covering 88 files). Kinds: `move`, `extract`, `new`, `delete`, `stay`. Add entries when the base gains files. |
-| `scripts/cache-parity.mjs snapshot\|check` | Extracts every function whose first statement is a `"use cache"` directive with its `cacheTag`/`cacheLife`, plus every `revalidateTag`/`updateTag`. Compares by function name to `cache-parity.baseline.json`. | Baseline: 14 cached functions, 18 invalidation sites. |
+| `scripts/cache-parity.mjs snapshot\|check` | Extracts every function whose first statement is a `"use cache"` directive with its `cacheTag`/`cacheLife`, plus every `revalidateTag`/`updateTag`. Compares by function name to `cache-parity.baseline.json`. | Baseline: 15 cached functions, 19 invalidation sites. |
 | `scripts/snapshot.mjs capture\|compare` | HTML regression without a browser (see step 0.5). | Verified offline on three routes; **unverified against live Shopify data**. |
 | `.dependency-cruiser.cjs` | Eleven architecture rules (step 1.1). | Verified with synthetic violations. |
 | `depcruise-known-violations.json` | The six UI cycles. | Baseline for `--ignore-known`. |
