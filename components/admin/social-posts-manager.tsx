@@ -259,7 +259,7 @@ export function SocialPostsManager({
 
       // Now the row is complete, so persist it rather than waiting for a
       // keystroke that will never come.
-      const next = items.map((item, i) =>
+      const next = itemsRef.current.map((item, i) =>
         i === index ? { ...item, imageUrl: payload.url! } : item,
       );
 
@@ -418,7 +418,7 @@ export function SocialPostsManager({
                         className={labelClasses}
                         htmlFor={`permalink-${item.id}`}
                       >
-                        Instagram link
+                        Post link
                       </label>
                       <input
                         id={`permalink-${item.id}`}
@@ -427,7 +427,7 @@ export function SocialPostsManager({
                         onChange={(event) =>
                           update(index, { permalink: event.target.value })
                         }
-                        placeholder="https://www.instagram.com/p/…"
+                        placeholder="https://…"
                         aria-invalid={permalinkProblem || undefined}
                         aria-describedby={
                           permalinkProblem
