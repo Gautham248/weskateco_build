@@ -150,9 +150,9 @@ const shopNowSchema = z.object({
 });
 
 /**
- * The permalink is deliberately not `absoluteUrl`: it is checked against the
- * Instagram allowlist further down, which gives a far more useful message than
- * "must be an absolute URL" would.
+ * The permalink is deliberately not `absoluteUrl`: it is validated further down
+ * (https-only, any host), which gives a more useful message than "must be an
+ * absolute URL" would.
  */
 const socialPostsSchema = z.object({
   items: z
@@ -605,11 +605,12 @@ export async function saveHeroAction(input: unknown): Promise<HeroActionState> {
  * Saves the curated social posts behind the storefront's community strip.
  *
  * The image check is a shape check only (https or site-relative), matching
- * isAllowedHeroUrl. The permalink is stricter — it must be an Instagram https
- * URL — because it is rendered as an outbound anchor, so a wrong host would be a
- * phishing-shaped link sitting in the brand's own footer. A post with no
- * permalink at all is allowed, so an image can be staged before its link is
- * known; that card then renders inert instead of linking nowhere.
+ * isAllowedHeroUrl. The permalink must be an absolute https URL — it is rendered
+ * as an outbound anchor, so https-only is what keeps it a normal secure link.
+ * Any host is accepted: a hard allowlist only breaks the next platform the brand
+ * adds (see isAllowedPermalink). A post with no permalink at all is allowed, so
+ * an image can be staged before its link is known; that card then renders inert
+ * instead of linking nowhere.
  */
 export async function saveSocialPostsAction(
   input: unknown,
@@ -638,7 +639,7 @@ export async function saveSocialPostsAction(
 
     if (item.permalink && !isAllowedPermalink(item.permalink)) {
       return {
-        error: `Post ${index + 1}: the link must be an https:// Instagram URL, or left blank.`,
+        error: `Post ${index + 1}: the link must be an https:// URL, or left blank.`,
       };
     }
   }
@@ -652,7 +653,7 @@ export async function saveSocialPostsAction(
 
   if (missingLinks > 0) {
     warnings.push(
-      `${missingLinks} of ${items.length} post${items.length === 1 ? " has" : "s have"} no Instagram link, so ${missingLinks === 1 ? "its" : "their"} button will not go anywhere.`,
+      `${missingLinks} of ${items.length} post${items.length === 1 ? " has" : "s have"} no link, so ${missingLinks === 1 ? "its" : "their"} button will not go anywhere.`,
     );
   }
 
