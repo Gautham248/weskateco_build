@@ -324,7 +324,7 @@ Tick a row only when its evidence has passed **after the last phase that touches
 | FI-E04 | Environment variable contract (`.env.example`) unchanged | `.env.example` | none | review | [ ] |
 | FI-E05 | Operational scripts: `create-admin`, `seed-hero`, `seed-newly-released`, `seed-shop-now`, `dump-products`, `deploy.js` still run with updated imports | `scripts/*` | P3..P6 | `tsc` + dry read (no DB writes, I-12) | [ ] |
 | FI-E06 | Deploy flow (`pnpm deploy`, `pnpm vercel`) | `scripts/deploy.js` | none | review | [ ] |
-| FI-E07 | All 16 existing test scripts stay green, with import-path edits only | `scripts/test-*.ts` | every phase | `run-tests.mjs` | [ ] |
+| FI-E07 | All 17 existing test scripts stay green, with import-path edits only | `scripts/test-*.ts` | every phase | `run-tests.mjs` | [ ] |
 
 ---
 
@@ -441,7 +441,7 @@ Do not modify any source file.
    ```
    Expect 64 lines on the studied commit.
 3. Ledger coverage against your base: `node refactor/scripts/verify-ledger.mjs --phase 0 --base old-origin/testing/commerce-deployment`. If it prints `UNCOVERED at base: <file>`, someone added a source file since the ledger was written. **Add a ledger entry** (kind `move`, `extract`, or `stay`) and re-run until clean.
-4. Write `refactor/baseline-results.md` recording: base SHA, date, `tsc` result, the 16 test scripts with assertion counts, `next build` result (you), and Node/pnpm versions.
+4. Write `refactor/baseline-results.md` recording: base SHA, date, `tsc` result, the 17 test scripts with assertion counts, `next build` result (you), and Node/pnpm versions.
 
 **Verify:** `bash refactor/scripts/verify-phase.sh 0 old-origin/testing/commerce-deployment` prints `PHASE 0: ALL CHECKS PASSED`.
 
@@ -1668,7 +1668,7 @@ These are heuristics; label them so.
 
 ## Completion criteria for the whole refactor
 
-The refactor is complete when: the ledger passes at phase 9; `pnpm arch` passes with only the six known UI cycles; the cache-parity check and drizzle no-drift check pass; the UI guard reports one allowlisted file; `next build` and the full snapshot and smoke pass; the test suite is the original 16 scripts plus every T-ID, all green, with mutation survivors explained; and every functionality row in section 6 is ticked.
+The refactor is complete when: the ledger passes at phase 9; `pnpm arch` passes with only the six known UI cycles; the cache-parity check and drizzle no-drift check pass; the UI guard reports one allowlisted file; `next build` and the full snapshot and smoke pass; the test suite is the original 17 scripts plus every T-ID, all green, with mutation survivors explained; and every functionality row in section 6 is ticked.
 
 ---
 
@@ -1898,7 +1898,7 @@ Legend: **EP** equivalence partitioning, **BVA** boundary values, **NEG** negati
 
 Checked by `cache-parity.mjs` by **function name**, so moving a function between files is fine but changing a directive, tag or life is not.
 
-### Cached functions (14)
+### Cached functions (15)
 
 | Function | Directive | Tags | Life | Today in | Final owner |
 |---|---|---|---|---|---|
@@ -1919,7 +1919,7 @@ Checked by `cache-parity.mjs` by **function name**, so moving a function between
 
 Deliberately **uncached**: `getOverridesForHandles`, `withOverrides`, `readProductForPage`, `getNewlyReleased`, `getShopNow`, `getHero`, `readNewlyReleasedItems`, `readShopNowItems`.
 
-### Invalidation sites (18)
+### Invalidation sites (19)
 
 | Site | Calls |
 |---|---|
