@@ -1,0 +1,120 @@
+[
+  {
+    "type": "cycle",
+    "from": "components/board-finder/board-finder-page.tsx",
+    "to": "components/board-finder/quiz.tsx",
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "components/board-finder/quiz.tsx",
+        "dependencyTypes": ["local", "import"]
+      },
+      {
+        "name": "components/board-finder/board-finder-page.tsx",
+        "dependencyTypes": ["local", "type-only", "import"]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
+    "from": "components/board-finder/board-finder-page.tsx",
+    "to": "components/board-finder/size-tool.tsx",
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "components/board-finder/size-tool.tsx",
+        "dependencyTypes": ["local", "import"]
+      },
+      {
+        "name": "components/board-finder/board-finder-page.tsx",
+        "dependencyTypes": ["local", "type-only", "import"]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
+    "from": "components/layout/navbar/index.tsx",
+    "to": "components/layout/navbar/mobile-menu.tsx",
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "components/layout/navbar/mobile-menu.tsx",
+        "dependencyTypes": ["local", "import"]
+      },
+      {
+        "name": "components/layout/navbar/index.tsx",
+        "dependencyTypes": ["local", "import"]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
+    "from": "components/layout/search/filter/dropdown.tsx",
+    "to": "components/layout/search/filter/index.tsx",
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "components/layout/search/filter/index.tsx",
+        "dependencyTypes": ["local", "type-only", "import"]
+      },
+      {
+        "name": "components/layout/search/filter/dropdown.tsx",
+        "dependencyTypes": ["local", "import"]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
+    "from": "components/layout/search/filter/dropdown.tsx",
+    "to": "components/layout/search/filter/item.tsx",
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "components/layout/search/filter/item.tsx",
+        "dependencyTypes": ["local", "import"]
+      },
+      {
+        "name": "components/layout/search/filter/index.tsx",
+        "dependencyTypes": ["local", "type-only", "import"]
+      },
+      {
+        "name": "components/layout/search/filter/dropdown.tsx",
+        "dependencyTypes": ["local", "import"]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
+    "from": "components/layout/search/filter/index.tsx",
+    "to": "components/layout/search/filter/item.tsx",
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "components/layout/search/filter/item.tsx",
+        "dependencyTypes": ["local", "import"]
+      },
+      {
+        "name": "components/layout/search/filter/index.tsx",
+        "dependencyTypes": ["local", "type-only", "import"]
+      }
+    ]
+  }
+]
