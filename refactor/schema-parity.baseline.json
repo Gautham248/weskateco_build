@@ -1,0 +1,178 @@
+{
+ "keys": [
+  "HERO_SETTINGS_ID",
+  "adminUsers",
+  "contactEnquiries",
+  "heroItems",
+  "heroItemsRelations",
+  "heroSettings",
+  "heroSettingsRelations",
+  "newlyReleasedItems",
+  "newlyReleasedItemsRelations",
+  "productOverrideImages",
+  "productOverrideImagesRelations",
+  "productOverrides",
+  "productOverridesRelations",
+  "rateLimitCounters",
+  "shopNowItems",
+  "shopNowItemsRelations",
+  "socialPosts",
+  "socialPostsRelations"
+ ],
+ "shape": [
+  {
+   "name": "admin_users",
+   "cols": [
+    "created_at",
+    "id",
+    "password_hash",
+    "session_version",
+    "updated_at",
+    "username"
+   ],
+   "idx": 0,
+   "fk": 0
+  },
+  {
+   "name": "contact_enquiries",
+   "cols": [
+    "answers",
+    "consent",
+    "created_at",
+    "enquiry_id",
+    "id",
+    "meta",
+    "reason",
+    "reason_label",
+    "response_sla",
+    "routed_to"
+   ],
+   "idx": 1,
+   "fk": 0
+  },
+  {
+   "name": "hero_items",
+   "cols": [
+    "alt_text",
+    "created_at",
+    "id",
+    "kind",
+    "position",
+    "poster_url",
+    "seconds",
+    "updated_at",
+    "updated_by",
+    "url"
+   ],
+   "idx": 1,
+   "fk": 1
+  },
+  {
+   "name": "hero_settings",
+   "cols": [
+    "created_at",
+    "default_seconds",
+    "id",
+    "updated_at",
+    "updated_by"
+   ],
+   "idx": 0,
+   "fk": 1
+  },
+  {
+   "name": "newly_released_items",
+   "cols": [
+    "card_image_url",
+    "created_at",
+    "hero_image_url",
+    "id",
+    "position",
+    "product_handle",
+    "shopify_product_id",
+    "subtitle",
+    "updated_at",
+    "updated_by"
+   ],
+   "idx": 1,
+   "fk": 1
+  },
+  {
+   "name": "product_override_images",
+   "cols": [
+    "alt_text",
+    "created_at",
+    "height",
+    "id",
+    "imagekit_file_id",
+    "override_id",
+    "position",
+    "url",
+    "width"
+   ],
+   "idx": 1,
+   "fk": 1
+  },
+  {
+   "name": "product_overrides",
+   "cols": [
+    "cover_image_url",
+    "created_at",
+    "description_html",
+    "gallery_mode",
+    "id",
+    "product_handle",
+    "removed_image_urls",
+    "shopify_product_id",
+    "title",
+    "updated_at",
+    "updated_by"
+   ],
+   "idx": 0,
+   "fk": 1
+  },
+  {
+   "name": "rate_limit_counters",
+   "cols": [
+    "hits",
+    "key",
+    "window_started_at"
+   ],
+   "idx": 0,
+   "fk": 0
+  },
+  {
+   "name": "shop_now_items",
+   "cols": [
+    "created_at",
+    "id",
+    "image_url_1",
+    "image_url_2",
+    "image_url_3",
+    "position",
+    "product_handle",
+    "shopify_product_id",
+    "updated_at",
+    "updated_by"
+   ],
+   "idx": 1,
+   "fk": 1
+  },
+  {
+   "name": "social_posts",
+   "cols": [
+    "alt_text",
+    "created_at",
+    "id",
+    "image_url",
+    "is_reel",
+    "permalink",
+    "platform",
+    "position",
+    "updated_at",
+    "updated_by"
+   ],
+   "idx": 1,
+   "fk": 1
+  }
+ ]
+}
