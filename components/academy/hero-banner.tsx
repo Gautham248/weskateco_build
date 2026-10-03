@@ -1,5 +1,4 @@
 import academyHero from "components/icons/academy/hero.png";
-import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -55,7 +54,9 @@ export default function AcademyHeroBanner({ locale }: { locale?: string }) {
             </p>
 
             <Link
-              href={"https://docs.google.com/forms/d/1V-D-i3AU-a4xm7-SYva6CQYmCACR5hWqidMU4hdOMSI"}
+              href="https://docs.google.com/forms/d/e/1FAIpQLSd7-aCVZjIHQVEEeGKa57TopycXICoGgk6J9dKnfBlnxot8uA/viewform"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group inline-flex items-center gap-2 rounded-full bg-white px-4 py-3 md:px-5 md:py-4 text-sm md:text-base font-[400] text-black transition-all duration-300 hover:bg-neutral-200 hover:scale-105 active:scale-95"
               style={{ fontFamily: "'Archivo', sans-serif" }}
             >

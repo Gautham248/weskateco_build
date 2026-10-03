@@ -43,9 +43,11 @@ function TurnFigure({
   return (
     <FigCard tone="plain" className="flex flex-col gap-3">
       {/* The four photographs are different shapes — the behind pair is
-          landscape, the above pair portrait — so each is contained inside a
-          fixed-ratio box. Without that, toggling between them would resize the
-          card and read as a jump rather than a change in the truck. */}
+          landscape, the above pair portrait — so each sits in a plain wrapper
+          that centres it and caps its rendered size (max-h-[520px], max-w-full)
+          rather than stretching it to fill. The two cards can still end up
+          different heights; the cap is what keeps either from overwhelming the
+          grid. */}
       <div className="flex w-full items-center justify-center overflow-hidden rounded-[12px] bg-white">
         <Image
           src={shot.image}
