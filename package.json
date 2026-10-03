@@ -27,6 +27,9 @@
     "test:contact-submit": "tsx scripts/test-contact-submit.ts",
     "test:product-page": "tsx scripts/test-product-page.ts",
     "test:image-url": "tsx scripts/test-image-url.ts",
+    "test:all": "node refactor/scripts/run-tests.mjs",
+    "test:configurator": "tsx scripts/test-configurator.ts",
+    "verify:phase": "bash refactor/scripts/verify-phase.sh",
     "deploy": "node scripts/deploy.js --prod",
     "vercel": "node scripts/deploy.js"
   },
