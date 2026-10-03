@@ -318,7 +318,7 @@ Tick a row only when its evidence has passed **after the last phase that touches
 
 | ID | Must still work | Lives in today | Touched in | Evidence | Done |
 |---|---|---|---|---|---|
-| FI-E01 | Nine tables, migrations `0000` to `0005`, unchanged | `lib/db/schema.ts`, `lib/db/migrations/*` | P7 | drizzle no-drift, T-21 | [ ] |
+| FI-E01 | Ten tables, migrations `0000` to `0007`, unchanged | `lib/db/schema.ts`, `lib/db/migrations/*` | P7 | drizzle no-drift, T-21 | [ ] |
 | FI-E02 | Neon HTTP driver with retrying fetch; lazy client (importing never requires `DATABASE_URL`) | `lib/db/index.ts` | none | M-29 | [ ] |
 | FI-E03 | Sanity Studio at `/studio` and 13 schemas | `app/studio/*`, `sanity/*` | P9 | M-30 | [ ] |
 | FI-E04 | Environment variable contract (`.env.example`) unchanged | `.env.example` | none | review | [ ] |
@@ -1513,7 +1513,7 @@ prints nothing.
    TS
    npx tsx scripts/_schema-shape.ts > refactor/schema-parity.baseline.json && rm scripts/_schema-shape.ts
    ```
-   Expected today (verified): **16** runtime exports, namely `HERO_SETTINGS_ID`, the 9 table objects (`adminUsers`, `contactEnquiries`, `heroItems`, `heroSettings`, `newlyReleasedItems`, `productOverrideImages`, `productOverrides`, `rateLimitCounters`, `shopNowItems`) and 6 relation objects (`heroItemsRelations`, `heroSettingsRelations`, `newlyReleasedItemsRelations`, `productOverrideImagesRelations`, `productOverridesRelations`, `shopNowItemsRelations`); **9** tables.
+   Expected today (verified): **18** runtime exports: 10 pgTable exports (`adminUsers`, `contactEnquiries`, `heroItems`, `heroSettings`, `newlyReleasedItems`, `productOverrideImages`, `productOverrides`, `rateLimitCounters`, `shopNowItems`, `socialPosts`), 7 relations exports (`heroItemsRelations`, `heroSettingsRelations`, `newlyReleasedItemsRelations`, `productOverrideImagesRelations`, `productOverridesRelations`, `shopNowItemsRelations`, `socialPostsRelations`) and 1 `HERO_SETTINGS_ID` constant; **10** tables.
 2. `git ls-files lib/db/migrations | xargs sha256sum > refactor/migrations.sha256`.
 3. `DATABASE_URL=postgres://u:p@localhost/db npx drizzle-kit generate` must say `No schema changes, nothing to migrate` (verified today; it works offline because `generate` does not connect).
 
@@ -1886,7 +1886,7 @@ Legend: **EP** equivalence partitioning, **BVA** boundary values, **NEG** negati
 
 ### T-21 Schema parity
 
-- Compares `Object.keys(schema)` (16) and per-table shape (9 tables: column names, index count, foreign-key count) with `refactor/schema-parity.baseline.json`.
+- Compares `Object.keys(schema)` (18) and per-table shape (10 tables: column names, index count, foreign-key count) with `refactor/schema-parity.baseline.json`.
 
 ### T-23 Media probe
 
