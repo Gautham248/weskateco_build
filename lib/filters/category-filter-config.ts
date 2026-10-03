@@ -53,6 +53,7 @@ export const CATEGORY_GROUP: FilterGroup = {
     { label: "All Products", value: "" },
     { label: "Skateboards", value: "skateboards" },
     { label: "Surfskates", value: "surfskates" },
+    { label: "Portable Ramps", value: "portable-ramps" },
     { label: "Apparel", value: "apparel-1" },
     { label: "Protection Gear", value: "protection-gears" },
   ],
@@ -81,6 +82,8 @@ const SUB_TO_PARENT: Record<string, string> = {
   "surfskate-trucks": "surfskates",
   "surfskate-wheels": "surfskates",
   "surfskate-accessories": "surfskates",
+
+  "portable-ramps": "portable-ramps",
 
   "apparel-1": "apparel-1",
   apparel: "apparel-1",
@@ -124,6 +127,7 @@ export function getParentCategory(handle: string): string {
 export const CATEGORY_PREFIXES: Record<string, string> = {
   skateboards: "skateboard",
   surfskates: "surfskate",
+  "portable-ramps": "portable",
   "apparel-1": "apparel",
   "protection-gears": "protection",
 };

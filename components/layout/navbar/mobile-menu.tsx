@@ -84,6 +84,11 @@ export default function MobileMenu() {
   const storeCategories = [
     { name: "Skateboards", key: "skateboards", href: "/store/skateboards" },
     { name: "Surfskate", key: "surfskates", href: "/store/surfskates" },
+    {
+      name: "Portable Ramps",
+      key: "portable_ramps",
+      href: "/store/portable-ramps",
+    },
     { name: "Apparel", key: "apparel", href: "/store/apparel-1" },
     {
       name: "Protective Gear",
@@ -96,6 +101,7 @@ export default function MobileMenu() {
   const subItems: Record<string, string[]> = {
     Skateboards: ["Completes", "Decks", "Wheels", "Trucks", "Accessories"],
     Surfskate: ["Completes", "Decks", "Wheels", "Trucks", "Accessories"],
+    "Portable Ramps": [],
     Apparel: [],
     "Protective Gear": [],
     Brands: [],
