@@ -13,8 +13,10 @@ import {
   Section,
   GRID_CLASS,
 } from "components/guides/ui";
+import diametersImg from "components/icons/wheel_guide/wheel-diameters.jpeg";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -33,41 +35,53 @@ export default function DiameterSection() {
           intro={DIAMETER_INTRO}
         />
 
-        {/* To-scale diagram */}
-        <div className="w-full bg-white rounded-[16px] p-5 md:p-10 flex flex-col items-center gap-4">
-          <div className="flex flex-wrap items-end justify-center gap-4 md:gap-8">
+        {/* All five wheels at true relative size, so the jump from a trick
+            wheel to a cruiser is obvious in one look. The chips below double as
+            the selector, which is what the generated circles used to be. */}
+        <div className="w-full bg-white rounded-[16px] p-5 md:p-10 flex flex-col items-center gap-6">
+          <Image
+            src={diametersImg}
+            alt="Five skateboard wheels photographed side by side at true relative size, from a 51mm trick wheel up to a 66mm surfskate wheel"
+            sizes="(min-width: 1024px) 1100px, 92vw"
+            className="h-auto w-full rounded-[12px]"
+            priority={false}
+          />
+
+          <div
+            role="group"
+            aria-label="Choose a diameter"
+            className="flex flex-wrap items-end justify-center gap-2 md:gap-4"
+          >
             {DIAMETERS.map((d) => {
-              const size = parseInt(d.id, 10);
-              const px = size * 1.6;
               const isActive = d.id === activeId;
               return (
-                <div
+                <button
                   key={d.id}
-                  className="flex flex-col items-center gap-2"
-                  aria-hidden={!isActive}
+                  type="button"
+                  onClick={() => setActiveId(d.id)}
+                  aria-pressed={isActive}
+                  className={`flex flex-col items-center gap-2 px-3 py-2 rounded-4 cursor-pointer transition-colors border-b-2 ${
+                    isActive
+                      ? "border-black"
+                      : "border-transparent hover:border-neutral-300"
+                  }`}
                 >
                   <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-neutral-500">
                     {d.category === "Surfskate wheel" ? "Surfskate" : "Skate"}
                   </span>
-                  <div
-                    className={`rounded-full border-2 border-black flex items-center justify-center transition-colors ${
-                      isActive ? "bg-black" : "bg-white"
+                  <span
+                    className={`text-xs md:text-base font-bold uppercase tracking-wide ${
+                      isActive ? "text-black" : "text-neutral-500"
                     }`}
-                    style={{ width: px, height: px }}
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
-                    <span
-                      className={`text-[10px] md:text-xs font-bold ${isActive ? "text-white" : "text-black"}`}
-                      style={{ fontFamily: "'Clash Display', sans-serif" }}
-                    >
-                      {d.id}
-                    </span>
-                  </div>
-                </div>
+                    {d.size}
+                  </span>
+                </button>
               );
             })}
           </div>
-          {/* Ground line */}
-          <div className="w-full border-b-2 border-black" />
+
           <p className="text-xs md:text-sm text-neutral-600 leading-[150%] text-center max-w-4xl">
             {DIAMETER_CAPTION}
           </p>

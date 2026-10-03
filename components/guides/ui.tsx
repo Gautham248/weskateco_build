@@ -294,6 +294,10 @@ function cellSpan(cell: TableCell): number | undefined {
   return typeof cell === "string" ? undefined : cell.span;
 }
 
+function cellMuted(cell: TableCell): boolean {
+  return typeof cell === "string" ? false : Boolean(cell.muted);
+}
+
 /** Comparison table — the shared griptape-table pattern, with `span`
  * support for merged cells, `warn` cells and optional `warnRow` tint. */
 export function GuideTable({
@@ -301,16 +305,24 @@ export function GuideTable({
   cols,
   rows,
   minW = "min-w-[720px]",
+  cue = false,
+  fade = "white",
 }: {
   srLabel: string;
   cols: TableCol[];
   rows: TableRow[];
   minW?: string;
+  /** Show the horizontal-overflow fade + hint only when the table overflows. */
+  cue?: boolean;
+  /** Background the table sits on, so the overflow fade matches. */
+  fade?: "white" | "muted";
 }) {
   return (
     <DragScrollArea
       className="-mx-4 px-4 lg:mx-0 lg:px-0"
       ariaLabel={`${srLabel}, scrollable`}
+      cue={cue}
+      fade={fade}
     >
       <table className={`w-full ${minW} border-collapse text-left`}>
         <thead>
@@ -352,7 +364,9 @@ export function GuideTable({
                 <td
                   key={i}
                   colSpan={cellSpan(cell)}
-                  className="py-4 pr-6 text-sm md:text-base leading-[150%] font-[400] text-black align-top"
+                  className={`py-4 pr-6 text-sm md:text-base leading-[150%] font-[400] align-top ${
+                    cellMuted(cell) ? "text-neutral-500" : "text-black"
+                  }`}
                 >
                   {renderCell(cell)}
                 </td>
@@ -444,87 +458,5 @@ export function FigCaption({ children }: { children: ReactNode }) {
     <figcaption className="mt-4 text-xs md:text-sm text-neutral-500 leading-[160%] max-w-4xl">
       {children}
     </figcaption>
-  );
-}
-
-/**
- * Dashed "Photography pending" note — stands in where the spec calls for
- * a future photograph but a reference drawing is showing instead. The
- * pending copy itself always starts "Photography pending", so no extra
- * chrome is added beyond the dashed treatment.
- */
-export function PendingNote({ text }: { text: string }) {
-  return (
-    <p className="border border-dashed border-neutral-300 rounded-[12px] bg-white/60 p-4 text-xs md:text-sm text-neutral-500 leading-[160%]">
-      {renderRich(text)}
-    </p>
-  );
-}
-
-/**
- * "Photo(s) to come" checklist card — the pending state for a photo spot
- * with no drawing to stand in for it yet. `alt` is the spec's suggested
- * alt text for the future photo, exposed to screen readers via figure.
- */
-export function PendingCard({
-  kicker,
-  title,
-  brief,
-  shots,
-  alt,
-}: {
-  kicker: string;
-  title: string;
-  brief: string;
-  shots: (string | { title: string; text: string })[];
-  alt?: string;
-}) {
-  return (
-    <figure
-      aria-label={alt}
-      className="rounded-[16px] border border-dashed border-neutral-300 bg-white/60 p-5 md:p-8 flex flex-col gap-4"
-    >
-      <div className="flex flex-col gap-2">
-        <span
-          className="text-xs font-semibold uppercase tracking-wider text-neutral-500"
-          style={CLASH}
-        >
-          {kicker}
-        </span>
-        <h3
-          className="text-base md:text-xl font-bold tracking-[-1%] text-black uppercase leading-none"
-          style={CLASH}
-        >
-          {title}
-        </h3>
-        <p className="text-sm md:text-base text-neutral-600 leading-[150%]">
-          {renderRich(brief)}
-        </p>
-      </div>
-      <ul className="flex flex-col gap-2">
-        {shots.map((shot) => (
-          <li
-            key={typeof shot === "string" ? shot : shot.title}
-            className="flex gap-3 items-start"
-          >
-            <span
-              aria-hidden
-              className="w-1.5 h-1.5 rounded-full bg-neutral-400 mt-2 shrink-0"
-            />
-            <span className="text-sm text-neutral-600 leading-[150%]">
-              {typeof shot === "string" ? (
-                renderRich(shot)
-              ) : (
-                <>
-                  <span className="font-semibold text-black">{shot.title}</span>
-                  {" — "}
-                  {shot.text}
-                </>
-              )}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </figure>
   );
 }

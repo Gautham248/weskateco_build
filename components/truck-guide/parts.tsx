@@ -1,18 +1,15 @@
 "use client";
 
-import {
-  EXPLODED_CARD,
-  PARTS_SECTION,
-  TRUCK_PARTS,
-} from "lib/truck-guide/data";
+import { PARTS_SECTION, TRUCK_PARTS } from "lib/truck-guide/data";
+import assembledImg from "components/icons/truck_guide/truck-assembled.jpeg";
+import explodedImg from "components/icons/truck_guide/truck-exploded.jpeg";
 import { useState } from "react";
+import Image from "next/image";
 import {
   FigCaption,
   FigCard,
   FigHint,
   PanelKicker,
-  PendingCard,
-  PendingNote,
   SectionHeader,
   Seg,
   SpecList,
@@ -21,233 +18,115 @@ import {
   GRID_CLASS,
 } from "components/guides/ui";
 
-// Hotspot button positions, as % centres over the front-view drawing
-// (viewBox 0 0 560 340). Dashed hotspots mark the parts hidden inside
-// an assembled truck: 2 pivot cup, 4 boardside bushing, 6 washers.
-const HOTSPOTS: Record<
+/**
+ * Hotspot positions, as % of each photograph's box.
+ *
+ * Exploded and assembled need their own maps because the parts sit in
+ * completely different places in each: the exploded photo is a flat lay, the
+ * assembled one a single object. `hidden` marks the parts you cannot see on an
+ * assembled truck — the pivot cup, boardside bushing and washers are inside it —
+ * and those buttons render dashed, as the spec drawing did.
+ */
+const EXPLODED_HOTSPOTS: Record<number, { left: string; top: string }> = {
+  1: { left: "13%", top: "52%" }, // baseplate
+  2: { left: "33%", top: "46%" }, // pivot cup
+  3: { left: "9%", top: "31%" }, // kingpin
+  4: { left: "48%", top: "40%" }, // boardside bushing
+  5: { left: "76%", top: "55%" }, // roadside bushing
+  6: { left: "38%", top: "57%" }, // washers
+  7: { left: "74%", top: "31%" }, // hanger
+  8: { left: "59%", top: "78%" }, // axle
+  9: { left: "59%", top: "91%" }, // axle nut
+};
+
+const ASSEMBLED_HOTSPOTS: Record<
   number,
   { left: string; top: string; hidden?: boolean }
 > = {
-  1: { left: "27.9%", top: "15%" },
-  2: { left: "38.2%", top: "25.3%", hidden: true },
-  3: { left: "56.8%", top: "64.7%" },
-  4: { left: "58.9%", top: "24.7%", hidden: true },
-  5: { left: "50%", top: "56.8%" },
-  6: { left: "40.4%", top: "54.7%", hidden: true },
-  7: { left: "26.8%", top: "41.2%" },
-  8: { left: "78.6%", top: "41.2%" },
-  9: { left: "90%", top: "41.2%" },
+  1: { left: "50%", top: "19%" }, // baseplate
+  2: { left: "42%", top: "40%", hidden: true }, // pivot cup
+  3: { left: "38%", top: "30%", hidden: true }, // kingpin
+  4: { left: "52%", top: "58%", hidden: true }, // boardside bushing
+  7: { left: "30%", top: "67%" }, // hanger
+  9: { left: "98%", top: "65%" }, // axle nut
 };
 
-/** Front view of an assembled truck, wheels removed — reference drawing
- * standing in for the assembled photograph. */
-function TruckFrontView({ selected }: { selected: number }) {
+/**
+ * The two photographs, with numbered hotspots overlaid.
+ *
+ * `hidden` is only meaningful on the assembled view, where three of the nine
+ * parts sit inside the truck and cannot be pointed at.
+ */
+function TruckFigure({
+  image,
+  alt,
+  hotspots,
+  selected,
+  onSelect,
+}: {
+  image: { src: string; width: number; height: number };
+  alt: string;
+  hotspots: Record<number, { left: string; top: string; hidden?: boolean }>;
+  selected: number;
+  onSelect: (n: number) => void;
+}) {
   return (
-    <svg
-      viewBox="0 0 560 340"
-      className="w-full h-auto"
-      role="img"
-      aria-label={PARTS_SECTION.assembledAlt}
-    >
-      {/* Hanger arms (behind the centre body) */}
-      <rect
-        x="96"
-        y="126"
-        width="368"
-        height="28"
-        rx="8"
-        fill="#EDEEF0"
-        stroke="#000000"
-        strokeWidth="4"
+    <div className="relative w-full">
+      {/* Portrait-leaning photographs, so the box follows the image's own ratio.
+          That is what keeps the hotspots — positioned as a % of this same box —
+          on the right parts at every width. */}
+      <Image
+        src={image}
+        alt={alt}
+        sizes="(min-width: 1024px) 420px, (min-width: 768px) 45vw, 90vw"
+        className="h-auto w-full rounded-[12px]"
       />
-      {selected === 7 && (
-        <rect
-          x="96"
-          y="126"
-          width="368"
-          height="28"
-          rx="8"
-          className="fill-black"
-          opacity="0.45"
-        />
-      )}
+      {TRUCK_PARTS.map((p) => {
+        const pos = hotspots[p.n];
+        if (!pos) return null;
 
-      {/* Hanger centre body */}
-      <rect
-        x="236"
-        y="96"
-        width="88"
-        height="82"
-        rx="10"
-        fill="#EDEEF0"
-        stroke="#000000"
-        strokeWidth="4"
-      />
-      {selected === 7 && (
-        <rect
-          x="236"
-          y="96"
-          width="88"
-          height="82"
-          rx="10"
-          className="fill-black"
-          opacity="0.45"
-        />
-      )}
-
-      {/* Baseplate */}
-      <rect
-        x="130"
-        y="44"
-        width="300"
-        height="18"
-        rx="4"
-        fill="#F7F7F9"
-        stroke="#000000"
-        strokeWidth="3"
-      />
-      {selected === 1 && (
-        <rect
-          x="130"
-          y="44"
-          width="300"
-          height="18"
-          rx="4"
-          className="fill-black"
-          opacity="0.75"
-        />
-      )}
-
-      {/* Hanger pivot arm up into the baseplate */}
-      <line
-        x1="200"
-        y1="64"
-        x2="244"
-        y2="104"
-        stroke="#000000"
-        strokeWidth="10"
-        strokeLinecap="round"
-      />
-
-      {/* Axle through the hanger */}
-      <line
-        x1="44"
-        y1="140"
-        x2="516"
-        y2="140"
-        stroke="#000000"
-        strokeWidth="6"
-      />
-      {selected === 8 && (
-        <line
-          x1="44"
-          y1="140"
-          x2="516"
-          y2="140"
-          className="stroke-black"
-          strokeWidth="16"
-          strokeLinecap="round"
-          opacity="0.85"
-        />
-      )}
-
-      {/* Axle nuts */}
-      <rect
-        x="44"
-        y="126"
-        width="26"
-        height="28"
-        rx="3"
-        fill="#FFFFFF"
-        stroke="#000000"
-        strokeWidth="4"
-      />
-      <rect
-        x="490"
-        y="126"
-        width="26"
-        height="28"
-        rx="3"
-        fill="#FFFFFF"
-        stroke="#000000"
-        strokeWidth="4"
-      />
-      {selected === 9 && (
-        <g className="fill-black" stroke="#000000" strokeWidth="4">
-          <rect x="44" y="126" width="26" height="28" rx="3" />
-          <rect x="490" y="126" width="26" height="28" rx="3" />
-        </g>
-      )}
-
-      {/* Roadside bushing, under the hanger */}
-      <rect
-        x="254"
-        y="180"
-        width="52"
-        height="26"
-        rx="5"
-        fill="#F7F7F9"
-        stroke="#000000"
-        strokeWidth="4"
-      />
-      {selected === 5 && (
-        <rect
-          x="254"
-          y="180"
-          width="52"
-          height="26"
-          rx="5"
-          className="fill-black"
-          opacity="0.85"
-        />
-      )}
-
-      {/* Kingpin down through the stack */}
-      <line
-        x1="280"
-        y1="52"
-        x2="280"
-        y2="224"
-        stroke="#000000"
-        strokeWidth="5"
-      />
-      {selected === 3 && (
-        <line
-          x1="280"
-          y1="52"
-          x2="280"
-          y2="224"
-          className="stroke-black"
-          strokeWidth="14"
-          strokeLinecap="round"
-          opacity="0.9"
-        />
-      )}
-
-      {/* Kingpin nut */}
-      <rect
-        x="264"
-        y="210"
-        width="32"
-        height="20"
-        rx="3"
-        fill="#FFFFFF"
-        stroke="#000000"
-        strokeWidth="4"
-      />
-    </svg>
+        const isActive = p.n === selected;
+        return (
+          <button
+            key={p.n}
+            type="button"
+            onClick={() => onSelect(p.n)}
+            aria-pressed={isActive}
+            aria-label={`Part ${p.n}: ${p.name}`}
+            className={`absolute w-8 h-8 md:w-9 md:h-9 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center text-xs md:text-sm font-bold cursor-pointer transition-colors ${
+              pos.hidden ? "border-dashed " : ""
+            }${
+              isActive
+                ? "bg-black text-white border-2 border-black"
+                : "bg-white text-black border-2 border-black hover:bg-neutral-200"
+            }`}
+            style={{
+              left: pos.left,
+              top: pos.top,
+              fontFamily: "'Clash Display', sans-serif",
+            }}
+          >
+            {p.n}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
+// Exploded first: it is the view that shows all nine parts, so it is the one to
+// land on. The assembled photograph only carries six of the nine.
 const VIEWS = [
-  { id: "assembled", label: "Assembled" },
   { id: "exploded", label: "Exploded" },
+  { id: "assembled", label: "Assembled" },
 ] as const;
 
 export default function PartsSection() {
-  const [view, setView] = useState<string>("assembled");
+  const [view, setView] = useState<string>("exploded");
   const [selected, setSelected] = useState(1);
   const part = TRUCK_PARTS.find((p) => p.n === selected) ?? TRUCK_PARTS[0]!;
+
+  const exploded = view === "exploded";
 
   return (
     <Section id="parts">
@@ -273,48 +152,17 @@ export default function PartsSection() {
             </div>
 
             <FigCard tone="muted">
-              {view === "assembled" ? (
-                <div className="flex flex-col gap-4">
-                  <PendingNote text={PARTS_SECTION.pendingNote} />
-                  <div className="relative w-full">
-                    <TruckFrontView selected={selected} />
-                    {TRUCK_PARTS.map((p) => {
-                      const pos = HOTSPOTS[p.n]!;
-                      const isActive = p.n === selected;
-                      return (
-                        <button
-                          key={p.n}
-                          type="button"
-                          onClick={() => setSelected(p.n)}
-                          aria-pressed={isActive}
-                          aria-label={`Part ${p.n}: ${p.name}`}
-                          className={`absolute w-8 h-8 md:w-9 md:h-9 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center text-xs md:text-sm font-bold cursor-pointer transition-colors ${
-                            pos.hidden ? "border-dashed " : ""
-                          }${
-                            isActive
-                              ? "bg-black text-white border-2 border-black"
-                              : "bg-white text-black border-2 border-black hover:bg-neutral-200"
-                          }`}
-                          style={{
-                            left: pos.left,
-                            top: pos.top,
-                            fontFamily: "'Clash Display', sans-serif",
-                          }}
-                        >
-                          {p.n}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                <PendingCard
-                  kicker={EXPLODED_CARD.kicker}
-                  title={EXPLODED_CARD.title}
-                  brief={EXPLODED_CARD.brief}
-                  shots={EXPLODED_CARD.shots}
-                />
-              )}
+              <TruckFigure
+                image={exploded ? explodedImg : assembledImg}
+                alt={
+                  exploded
+                    ? "One skateboard truck taken fully apart and laid out in stack order on a flat white background"
+                    : PARTS_SECTION.assembledAlt
+                }
+                hotspots={exploded ? EXPLODED_HOTSPOTS : ASSEMBLED_HOTSPOTS}
+                selected={selected}
+                onSelect={setSelected}
+              />
             </FigCard>
 
             <FigCaption>{PARTS_SECTION.caption}</FigCaption>

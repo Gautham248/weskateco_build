@@ -9,7 +9,7 @@
 
 export type TableCell =
   | string
-  | { text: string; warn?: boolean; span?: number };
+  | { text: string; warn?: boolean; muted?: boolean; span?: number };
 
 export interface TableCol {
   name: string;
