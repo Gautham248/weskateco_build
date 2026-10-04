@@ -1,0 +1,25 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [refactor/architecture]
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgres://u:p@localhost/db
+      DATABASE_URL_UNPOOLED: postgres://u:p@localhost/db
+      SHOPIFY_STORE_DOMAIN: example.invalid
+      SHOPIFY_STOREFRONT_ACCESS_TOKEN: x
+      SHOPIFY_REVALIDATION_SECRET: x
+      AUTH_SECRET: ci-only-secret-at-least-32-characters-long
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11 # set to the major from `pnpm --version` on your machine
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: bash refactor/scripts/verify-phase.sh "$(cat refactor/PHASE.txt)" "origin/${{ github.base_ref || 'testing/commerce-deployment' }}"
