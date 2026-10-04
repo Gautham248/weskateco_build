@@ -30,6 +30,7 @@
     "test:all": "node refactor/scripts/run-tests.mjs",
     "test:configurator": "tsx scripts/test-configurator.ts",
     "verify:phase": "bash refactor/scripts/verify-phase.sh",
+    "arch": "depcruise app components lib --config refactor/.dependency-cruiser.cjs --ignore-known refactor/depcruise-known-violations.json",
     "deploy": "node scripts/deploy.js --prod",
     "vercel": "node scripts/deploy.js"
   },
@@ -69,6 +70,7 @@
     "@types/react": "19.0.12",
     "@types/react-dom": "19.0.4",
     "baseline-browser-mapping": "^2.11.26",
+    "dependency-cruiser": "^16.10.4",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
     "jsdom": "^26.1.0",
