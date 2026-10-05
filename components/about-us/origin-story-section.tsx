@@ -1,17 +1,22 @@
+import originImg from "components/icons/about_us/about_us_origin.jpg";
+import Image from "next/image";
+
 export default function OriginStorySection() {
   return (
     <section className="w-full bg-white py-12 md:py-20">
       <div className="mx-auto w-full max-w-(--breakpoint-2xl) px-4 lg:px-15">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-20 items-start">
-          <div
-            aria-hidden
-            className="w-full aspect-square rounded-[8px] bg-[#d9d9d9]"
-          />
+          <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[8px] bg-[#d9d9d9]">
+            <Image
+              src={originImg}
+              alt="Young skater mid-air over a skatepark ramp at dusk"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </div>
 
-          <p
-            className="text-base md:text-xl lg:text-2xl font-medium text-black leading-[130%] tracking-[-0.01em]"
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
+          <p className="text-sm leading-[1.3] font-normal text-black md:text-base">
             Indian skateboarding is young, and it grew out of cracked tar,
             borrowed boards and parks poured by volunteers. Auroville had
             surfing, skateboarding and a concrete mini ramp early on, and in
