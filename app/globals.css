@@ -58,6 +58,13 @@
   --color-brand: #ccff02;
   --color-brand-dark: #b8e602;
   --radius-4: 4px;
+
+  /* About Us — "Toucan exists to fix" brands panel. Teal accent plus the
+     diagonal panel gradient stops (top-left grey to bottom-right black). */
+  --color-toucan: #2bbccd;
+  --color-toucan-panel-1: #5a5b5f;
+  --color-toucan-panel-2: #111111;
+  --color-toucan-panel-3: #000000;
 }
 
 /* Guides use the brand token as a monochrome accent rather than lime. */
