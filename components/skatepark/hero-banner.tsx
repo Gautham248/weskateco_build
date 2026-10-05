@@ -1,4 +1,4 @@
-import skateparkBanner from "components/icons/skatepark/skatepark_banner.png";
+import skateparkBanner from "components/icons/skatepark/skatepark_banner.jpg";
 import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,8 +40,8 @@ export default function SkateparkHeroBanner({ locale }: { locale?: string }) {
             >
               From Bangalore and Kerala, WB Skateparks brings together riders
               and builders from around the world to create raw, purpose-built
-              concrete skateparks for skaters, BMXers, and roller crews—built
-              by people who live the culture, never by the corporate playbook.
+              concrete skateparks for skaters, BMXers, and roller crews—built by
+              people who live the culture, never by the corporate playbook.
             </p>
 
             <Link
