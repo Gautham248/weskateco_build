@@ -1,6 +1,5 @@
 "use client";
 
-import PeopleBehindHero from "components/about-us/people-behind-hero";
 import aboutBannerImg from "components/icons/about_us/about_us_banner.png";
 import Image from "next/image";
 
@@ -101,10 +100,6 @@ export default function AboutUsContent() {
             </svg>
           </div>
         </div>
-      </section>
-
-      <section className="w-full bg-white py-12 md:py-20 px-4 lg:px-15">
-        <PeopleBehindHero />
       </section>
     </div>
   );
