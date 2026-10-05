@@ -95,7 +95,6 @@ export default function MobileMenu() {
       key: "protective_gear",
       href: "/store/protection-gears",
     },
-    { name: "Brands", key: "brands", href: "/store" },
   ];
 
   const subItems: Record<string, string[]> = {
@@ -104,7 +103,6 @@ export default function MobileMenu() {
     "Portable Ramps": [],
     Apparel: [],
     "Protective Gear": [],
-    Brands: [],
   };
 
   const getSubItemHref = (
