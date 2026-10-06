@@ -55,7 +55,7 @@ export type ConfiguratorMeta =
 export interface DeckMeta {
   category: "deck";
   deck_board_type: BoardType;
-  deck_width: number; // inches — specific to this variant
+  deck_width?: number; // inches — specific to this variant; undefined when the deck has no width (e.g. old-school shapes)
   deck_concave?: string; // e.g. 'Mellow', 'Medium'
   deck_wheel_wells?: string; // e.g. 'Yes', 'No'
 }
