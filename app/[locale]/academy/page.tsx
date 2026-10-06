@@ -1,5 +1,5 @@
 import AcademyHeroBanner from "components/academy/hero-banner";
-import LovedByCommunity from "components/academy/loved-by-community";
+// import LovedByCommunity from "components/academy/loved-by-community";
 import PhilosophySection from "components/academy/philosophy-section";
 import Footer from "components/layout/footer";
 
@@ -22,7 +22,7 @@ export default function AcademyPage() {
     <>
       <AcademyHeroBanner />
       <PhilosophySection />
-      <LovedByCommunity />
+      {/* <LovedByCommunity /> */}
       <Footer />
     </>
   );

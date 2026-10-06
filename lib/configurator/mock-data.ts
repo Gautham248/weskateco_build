@@ -22,6 +22,21 @@ interface MockProductData {
 }
 
 /**
+ * Mock widths are keyed by exact Shopify variant title, but those titles drift
+ * (e.g. "7 / Regular" became "7 / Mellow" / "7 / Medium" when concave variants
+ * were added). Fall back to the width number embedded in the title so a variant
+ * still maps when its key no longer matches, keeping the full 7"–8.875" range
+ * of deck widths in the configurator.
+ */
+function parseDeckWidthFromTitle(title: string): number | undefined {
+  const match = title.match(/(\d+(?:\.\d+)?)/);
+  if (!match) return undefined;
+  const value = Number(match[1]);
+  if (!Number.isFinite(value) || value < 6 || value > 10) return undefined;
+  return value;
+}
+
+/**
  * Transforms Shopify products into ConfiguratorItems using mock metafield data.
  * Each product variant becomes a separate ConfiguratorItem.
  *
@@ -54,8 +69,10 @@ export function buildConfiguratorItems(products: Product[]): {
       const widthByVariant = mock.deck_width_by_variant || {};
 
       for (const variant of product.variants) {
-        const width = widthByVariant[variant.title];
-        if (width === undefined) continue; // skip variants we don't have width data for
+        const width =
+          widthByVariant[variant.title] ??
+          parseDeckWidthFromTitle(variant.title);
+        if (width === undefined) continue; // skip variants we can't get a width for
 
         let concave: string | undefined;
         if (variant.title.toLowerCase().includes("mellow")) {

@@ -26,6 +26,13 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
     product;
   const isSoldOut = !availableForSale;
 
+  // Ramps ship as wide (16:9) product shots that get badly cropped by the
+  // portrait card's object-cover — show them whole instead.
+  const fitImage =
+    product.collections?.edges?.some(
+      (edge) => edge.node.handle === "portable-ramps",
+    ) ?? false;
+
   const productPath = getLocalizedPath(`/products/${handle}`, locale);
 
   const imgRef = useRef<HTMLDivElement>(null);
@@ -172,7 +179,11 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
                   alt={img.altText || title}
                   fill
                   sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-                  className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
+                  className={`transition-transform duration-500 ease-out ${
+                    fitImage
+                      ? "object-contain"
+                      : "object-cover object-center group-hover:scale-105"
+                  }`}
                   priority={false}
                 />
               </div>

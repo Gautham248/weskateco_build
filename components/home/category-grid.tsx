@@ -105,7 +105,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
 
   const categories = [
     {
-      name: "Surfboards",
+      name: "Surfskates",
       image: surfboardsImg,
       href: "/store/surfskates",
     },
