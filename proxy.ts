@@ -7,6 +7,26 @@ const defaultLocale = "en";
 const ADMIN_LOGIN_PATH = "/admin/login";
 const ADMIN_API_PREFIX = "/admin/api/";
 
+const SHOPIFY_STORE_HOST = process.env.SHOPIFY_STORE_DOMAIN?.replace(
+  /^https?:\/\//,
+  "",
+);
+
+// Shopify's new Customer Accounts are hosted on the store's primary domain
+// (this app). These paths belong to Shopify, not the storefront, so they are
+// reverse-proxied through to the Shopify store.
+const SHOPIFY_ACCOUNT_PREFIXES = [
+  "/account",
+  "/services/login_with_shop",
+  "/services/logout",
+];
+
+function isShopifyAccountPath(pathname: string) {
+  return SHOPIFY_ACCOUNT_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
 /**
  * Cheap cookie-presence gate only. Signature verification happens in the admin
  * layouts, server actions, and route handlers (Node runtime) — this exists so an
@@ -40,6 +60,16 @@ function handleAdminRequest(request: NextRequest, pathname: string) {
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Must run before the locale rewrite below, otherwise /account becomes
+  // /en/account and is swallowed by the [locale]/[page] catch-all (soft 404).
+  if (SHOPIFY_STORE_HOST && isShopifyAccountPath(pathname)) {
+    const url = request.nextUrl.clone();
+    url.protocol = "https:";
+    url.host = SHOPIFY_STORE_HOST;
+    url.port = "";
+    return NextResponse.rewrite(url);
+  }
 
   // The admin panel lives outside the locale tree. It must be handled before
   // the locale rewrite below, otherwise /admin becomes /en/admin and is
