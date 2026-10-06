@@ -1,6 +1,7 @@
 import { CartProvider } from "components/cart/cart-context";
 import { Navbar } from "components/layout/navbar";
 import { NavbarScrollWrapper } from "components/layout/navbar/navbar-scroll";
+// import { WelcomeToast } from "components/welcome-toast";
 import { GeistSans } from "geist/font/sans";
 import { GoKwikScript } from "lib/gokwik";
 import { getDictionary } from "lib/i18n";
@@ -49,6 +50,7 @@ export default async function RootLayout(props: {
             <main className="pt-[72px]">
               {children}
               <Toaster closeButton />
+              {/* <WelcomeToast /> */}
             </main>
           </TranslationProvider>
         </CartProvider>
