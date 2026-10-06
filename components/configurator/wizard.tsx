@@ -60,7 +60,7 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
 
   const [compatibilityFilterOn, setCompatibilityFilterOn] =
     useState<boolean>(true);
-  const [showOutOfStock, setShowOutOfStock] = useState<boolean>(false);
+  const [showOutOfStock, setShowOutOfStock] = useState<boolean>(true);
   const [selectedFilters, setSelectedFilters] = useState<
     Record<string, string[]>
   >({});
@@ -114,7 +114,10 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
         currentItem.variantId === item.variantId;
 
       setState((prev) => {
-        const newState = { ...prev, [category]: isAlreadySelected ? null : item };
+        const newState = {
+          ...prev,
+          [category]: isAlreadySelected ? null : item,
+        };
 
         // Define upstream → downstream order for cascade clearing
         const cascadeOrder: (keyof ConfiguratorState)[] = [
@@ -186,7 +189,8 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
           if (groupId === "deck_shape" && meta.category === "deck") {
             // Shape derived from board type: Old School → "Old School", others → "Popsicle"
             const boardType = (meta as DeckMeta).deck_board_type;
-            const shape = boardType === "Old School" ? "Old School" : "Popsicle";
+            const shape =
+              boardType === "Old School" ? "Old School" : "Popsicle";
             return values.includes(shape);
           }
           if (groupId === "deck_concave" && meta.category === "deck")
@@ -208,9 +212,7 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
             return values.includes(`${axle}"`);
           }
           if (groupId === "wheel_diameter" && meta.category === "wheel")
-            return values.includes(
-              `${(meta as WheelMeta).wheel_diameter}mm`,
-            );
+            return values.includes(`${(meta as WheelMeta).wheel_diameter}mm`);
           if (groupId === "wheel_hardness" && meta.category === "wheel")
             return values.includes((meta as WheelMeta).wheel_hardness);
           if (groupId === "wheel_type" && meta.category === "wheel")
@@ -218,9 +220,7 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
           if (groupId === "bearing_type" && meta.category === "bearing")
             return values.includes((meta as BearingMeta).bearing_type);
           if (groupId === "grip_width" && meta.category === "griptape")
-            return values.includes(
-              `${(meta as GriptapeMeta).griptape_width}"`,
-            );
+            return values.includes(`${(meta as GriptapeMeta).griptape_width}"`);
           if (groupId === "grip_type" && meta.category === "griptape")
             return (
               (meta as GriptapeMeta).griptape_type !== undefined &&
@@ -275,16 +275,25 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
       pool.forEach((i) => {
         if (i.meta.category === "deck") {
           const dm = i.meta as DeckMeta;
-          const w = `${dm.deck_width}"`;
-          widthMap.set(w, (widthMap.get(w) || 0) + 1);
+          if (dm.deck_width !== undefined) {
+            const w = `${dm.deck_width}"`;
+            widthMap.set(w, (widthMap.get(w) || 0) + 1);
+          }
           // Shape derived from board type (we only have Skateboard and Old School in current catalog)
-          const shape = dm.deck_board_type === "Old School" ? "Old School" : "Popsicle";
+          const shape =
+            dm.deck_board_type === "Old School" ? "Old School" : "Popsicle";
           shapeMap.set(shape, (shapeMap.get(shape) || 0) + 1);
           if (dm.deck_concave) {
-            concaveMap.set(dm.deck_concave, (concaveMap.get(dm.deck_concave) || 0) + 1);
+            concaveMap.set(
+              dm.deck_concave,
+              (concaveMap.get(dm.deck_concave) || 0) + 1,
+            );
           }
           if (dm.deck_wheel_wells) {
-            wellsMap.set(dm.deck_wheel_wells, (wellsMap.get(dm.deck_wheel_wells) || 0) + 1);
+            wellsMap.set(
+              dm.deck_wheel_wells,
+              (wellsMap.get(dm.deck_wheel_wells) || 0) + 1,
+            );
           }
         }
       });
@@ -377,7 +386,10 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
           const wm = i.meta as WheelMeta;
           const d = `${wm.wheel_diameter}mm`;
           diamMap.set(d, (diamMap.get(d) || 0) + 1);
-          hardMap.set(wm.wheel_hardness, (hardMap.get(wm.wheel_hardness) || 0) + 1);
+          hardMap.set(
+            wm.wheel_hardness,
+            (hardMap.get(wm.wheel_hardness) || 0) + 1,
+          );
           typeMap.set(wm.wheel_type, (typeMap.get(wm.wheel_type) || 0) + 1);
         }
       });
@@ -439,7 +451,10 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
           const g = `${gm.griptape_width}"`;
           gripMap.set(g, (gripMap.get(g) || 0) + 1);
           if (gm.griptape_type) {
-            typeMap.set(gm.griptape_type, (typeMap.get(gm.griptape_type) || 0) + 1);
+            typeMap.set(
+              gm.griptape_type,
+              (typeMap.get(gm.griptape_type) || 0) + 1,
+            );
           }
         }
       });

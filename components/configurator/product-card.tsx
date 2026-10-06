@@ -22,8 +22,12 @@ interface ConfiguratorProductCardProps {
 function getSubtitle(item: ConfiguratorItem): string {
   const meta = item.meta;
   switch (meta.category) {
-    case "deck":
-      return `${(meta as DeckMeta).deck_width}" width — ${item.variantTitle}`;
+    case "deck": {
+      const deckWidth = (meta as DeckMeta).deck_width;
+      return deckWidth !== undefined
+        ? `${deckWidth}" width — ${item.variantTitle}`
+        : item.variantTitle;
+    }
     case "truck": {
       const truckMeta = meta as TruckMeta;
       if (truckMeta.truck_hanger_size) {
@@ -66,9 +70,7 @@ export function ConfiguratorProductCard({
       tabIndex={canInteract ? 0 : undefined}
       onClick={canInteract ? onSelect : undefined}
       onKeyDown={
-        canInteract
-          ? (e) => e.key === "Enter" && onSelect()
-          : undefined
+        canInteract ? (e) => e.key === "Enter" && onSelect() : undefined
       }
       title={
         !isCompatible && item.incompatibilityReason
@@ -167,9 +169,7 @@ export function ConfiguratorProductCard({
       <div className="flex flex-1 flex-col p-3">
         {/* Brand */}
         {item.brand && (
-          <span
-            className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-black dark:text-white font-clash"
-          >
+          <span className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-black dark:text-white font-clash">
             {item.brand}
           </span>
         )}

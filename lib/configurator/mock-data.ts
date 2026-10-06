@@ -72,7 +72,6 @@ export function buildConfiguratorItems(products: Product[]): {
         const width =
           widthByVariant[variant.title] ??
           parseDeckWidthFromTitle(variant.title);
-        if (width === undefined) continue; // skip variants we can't get a width for
 
         let concave: string | undefined;
         if (variant.title.toLowerCase().includes("mellow")) {

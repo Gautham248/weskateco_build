@@ -64,12 +64,14 @@ export function getCompatibleDecks(
       continue;
     }
 
-    // If a truck is already selected, validate width compatibility
+    // If a truck is already selected, validate width compatibility.
+    // Decks with no known width can't be judged, so they stay compatible.
     if (selectedTruck) {
       const truckMeta = selectedTruck.meta as TruckMeta;
       if (
         truckMeta.truck_hanger_size !== null &&
-        truckMeta.truck_type !== "Surfskate"
+        truckMeta.truck_type !== "Surfskate" &&
+        meta.deck_width !== undefined
       ) {
         const axleWidth = truckMeta.truck_hanger_size + offset;
         const widthDiff = Math.abs(axleWidth - meta.deck_width);
@@ -185,7 +187,9 @@ export function getCompatibleTrucks(
       const deckMeta = selectedDeck.meta as DeckMeta;
       const deckWidth = deckMeta.deck_width;
       const axleWidth = meta.truck_hanger_size + offset;
-      const widthDiff = Math.abs(axleWidth - deckWidth);
+      // Deck width unknown — can't judge fit, so don't block the truck.
+      const widthDiff =
+        deckWidth === undefined ? 0 : Math.abs(axleWidth - deckWidth);
 
       if (widthDiff > tolerance) {
         incompatible.push({
@@ -335,6 +339,17 @@ export function getCompatibleGriptape(
     const deckMeta = selectedDeck.meta as DeckMeta;
     const deckWidth = deckMeta.deck_width;
     const gripWidth = meta.griptape_width;
+
+    // Deck width unknown — can't judge fit, so show all griptape.
+    if (deckWidth === undefined) {
+      if (item.availableForSale) {
+        compatible.push(item);
+      } else {
+        incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
+      }
+      continue;
+    }
+
     const maxDeckWidth =
       compatRules.griptape_deck_max_width[String(gripWidth)];
 
