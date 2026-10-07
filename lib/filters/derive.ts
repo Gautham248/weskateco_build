@@ -131,6 +131,37 @@ function groupRank(id: string): number {
 }
 
 /**
+ * Free-text search. The navbar's `q` param is not a filter group — it needs a
+ * real text match over the structured product fields a shopper would consider:
+ * title, brand, product type, tags, collections and variant option values.
+ * Product descriptions are deliberately excluded: they are marketing copy that
+ * cross-references other categories ("griptape, trucks, wheels… sold
+ * separately"), so including them made a "wheels" search return decks.
+ * Multi-word queries are ANDed ("toucan wheels" needs both tokens), and the
+ * check is a plain case-insensitive substring so "wheel" also finds "Wheels".
+ */
+export function matchesSearch(product: Product, term: string): boolean {
+  const tokens = term.toLowerCase().split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return true;
+
+  const haystack = [
+    product.title,
+    product.vendor,
+    product.productType ?? "",
+    ...(product.tags ?? []),
+    ...(product.collections?.edges ?? []).flatMap((edge) => [
+      edge.node.handle,
+      edge.node.title,
+    ]),
+    ...(product.options ?? []).flatMap((option) => option.values),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return tokens.every((token) => haystack.includes(token));
+}
+
+/**
  * Does a product satisfy one filter group's option?
  *
  * Option-derived groups match on the Shopify option of the same name and on an
@@ -140,12 +171,17 @@ function groupRank(id: string): number {
  * width would drag in unrelated products. Because groups are derived from the
  * same option values they match on, every derived option is guaranteed to match
  * at least the product it came from.
+ *
+ * The one exception is the search term (`q`), which is a text query rather than
+ * a facet and is handled by `matchesSearch`.
  */
 export function productMatches(
   product: Product,
   groupId: string,
   value: string,
 ): boolean {
+  if (groupId === "q") return matchesSearch(product, value);
+
   const target = normalizeValue(value);
   if (!target) return false;
 

@@ -16,7 +16,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
-import { WeskatecoIcon } from "./index";
 
 // Import bottom images
 import shopImg1 from "components/icons/shop_image_1.png";
@@ -155,8 +154,12 @@ export default function MobileMenu() {
                 >
                   <XMarkIcon className="h-6 w-6" />
                 </button>
-                <div className="flex-1 flex justify-center text-black dark:text-white">
-                  <WeskatecoIcon color="currentColor" />
+                <div className="flex-1 flex justify-center">
+                  <img
+                    src="/icons/weskate-logo.png"
+                    alt="WeSkate Co"
+                    className="h-9 w-auto invert dark:invert-0"
+                  />
                 </div>
                 <div className="w-11" />
               </div>

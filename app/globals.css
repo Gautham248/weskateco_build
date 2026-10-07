@@ -1,4 +1,5 @@
 @import "@fontsource/archivo";
+@import "@fontsource/archivo/900.css";
 @import "tailwindcss";
 
 @font-face {
@@ -275,10 +276,6 @@ html {
 
 [data-scrolled="false"] nav input {
   @apply border-white/20 bg-white/10 text-white placeholder-white/50;
-}
-
-[data-scrolled="false"] nav img[alt*="Weskateco"] {
-  filter: brightness(0) invert(1);
 }
 
 [data-scrolled="true"] nav a {
