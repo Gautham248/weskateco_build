@@ -39,9 +39,9 @@ function CategoryTitle({
 
   if (lastOIndex === -1) {
     return (
-      <div className="flex items-center justify-between w-full">
-        <h3 className="text-white text-[clamp(1rem,2.5vw,1.375rem)] font-bold uppercase tracking-wide">
-          {name}
+      <div className="relative w-full flex items-center justify-between h-8">
+        <h3 className="text-white text-[clamp(1rem,2.5vw,1.375rem)] font-medium uppercase tracking-wide flex items-center whitespace-nowrap select-none z-0">
+          <span>{name}</span>
         </h3>
         <span className="bg-[#CCFF02] text-black rounded-full w-6 h-6 flex items-center justify-center text-[10px]">
           ➔
