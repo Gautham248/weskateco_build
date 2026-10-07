@@ -208,8 +208,10 @@ export default function FilterSortBar({
 
     return deriveFilterGroups(products, staticGroups);
   }, [products, collections]);
+  // The search term (`q`) is a text query, not a facet — keep it out of the
+  // active-filter chips and the count badge.
   const activeFilterEntries = Object.entries(activeFilters).filter(
-    ([, v]) => v,
+    ([key, v]) => v && key !== "q",
   );
   const activeFiltersCount = activeFilterEntries.length;
   const hasActiveFilters = activeFiltersCount > 0;
@@ -613,7 +615,7 @@ function FilterDrawer({
   }
 
   Object.entries(activeFilters).forEach(([key, value]) => {
-    if (value) {
+    if (value && key !== "q") {
       const values = value.split(",").filter(Boolean);
       values.forEach((val) => {
         const label = getLabelForFilterValue(key, val, filterGroups);

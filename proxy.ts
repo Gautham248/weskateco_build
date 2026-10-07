@@ -7,6 +7,9 @@ const defaultLocale = "en";
 const ADMIN_LOGIN_PATH = "/admin/login";
 const ADMIN_API_PREFIX = "/admin/api/";
 
+// Directories served from public/ — requests must bypass the locale rewrite.
+const PUBLIC_ASSET_PREFIXES = ["/fonts", "/hero", "/icons"];
+
 const SHOPIFY_STORE_HOST = process.env.SHOPIFY_STORE_DOMAIN?.replace(
   /^https?:\/\//,
   "",
@@ -85,8 +88,12 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/favicon.ico") ||
     pathname.startsWith("/robots.txt") ||
     pathname.startsWith("/sitemap.xml") ||
-    pathname.startsWith("/fonts") ||
-    pathname.startsWith("/studio") // Sanity Studio (future)
+    pathname.startsWith("/studio") || // Sanity Studio (future)
+    // Public asset directories and any file with an extension (e.g.
+    // /icons/logo.png, /hero/banner.jpg) must never be locale-rewritten,
+    // otherwise they 404 against the [locale] catch-all.
+    PUBLIC_ASSET_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
+    /\.[a-zA-Z0-9]+$/.test(pathname)
   ) {
     return NextResponse.next();
   }
