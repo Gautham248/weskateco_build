@@ -2,7 +2,24 @@
 
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import type { ConfiguratorItem } from "lib/configurator/types";
-import { ConfiguratorProductCard } from "../product-card";
+import { ConfiguratorProductGroupCard } from "../product-group-card";
+
+/**
+ * Collapse a flat list of variants into one entry per Shopify product,
+ * preserving the order in which each product first appears.
+ */
+function groupByProduct(items: ConfiguratorItem[]): ConfiguratorItem[][] {
+  const groups = new Map<string, ConfiguratorItem[]>();
+  for (const item of items) {
+    const existing = groups.get(item.productId);
+    if (existing) {
+      existing.push(item);
+    } else {
+      groups.set(item.productId, [item]);
+    }
+  }
+  return [...groups.values()];
+}
 
 interface ProductSelectionStepProps {
   title: string;
@@ -31,15 +48,25 @@ export function ProductSelectionStep({
 }: ProductSelectionStepProps) {
   const { t } = useTranslation();
 
+  // Out-of-stock items are reported by the engine in the incompatible list with
+  // the reason "Out of stock". Split them out so they appear in their own
+  // section rather than under "not compatible".
+  const outOfStockItems = incompatibleItems.filter(
+    (i) => i.incompatibilityReason === "Out of stock",
+  );
+  const notCompatibleItems = incompatibleItems.filter(
+    (i) => i.incompatibilityReason !== "Out of stock",
+  );
+
   const hasAnyItems =
-    items.length > 0 || (!compatibilityFilterOn && incompatibleItems.length > 0);
+    items.length > 0 ||
+    outOfStockItems.length > 0 ||
+    (!compatibilityFilterOn && notCompatibleItems.length > 0);
 
   if (!hasAnyItems) {
     return (
       <div>
-        <h2
-          className="mb-6 text-xl font-bold uppercase tracking-wide text-black dark:text-white font-clash"
-        >
+        <h2 className="mb-6 text-xl font-bold uppercase tracking-wide text-black dark:text-white font-clash">
           {title}
         </h2>
         <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 py-16 text-center dark:border-neutral-700">
@@ -58,9 +85,7 @@ export function ProductSelectionStep({
   return (
     <div>
       <div className="mb-4 flex items-baseline justify-between">
-        <h2
-          className="text-xl font-bold uppercase tracking-wide text-black dark:text-white font-clash"
-        >
+        <h2 className="text-xl font-bold uppercase tracking-wide text-black dark:text-white font-clash">
           {title}
         </h2>
         <span className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -71,12 +96,12 @@ export function ProductSelectionStep({
       {/* Compatible items grid */}
       {items.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {items.map((item) => (
-            <ConfiguratorProductCard
-              key={item.variantId}
-              item={item}
-              isSelected={selectedItem?.variantId === item.variantId}
-              onSelect={() => onSelect(item)}
+          {groupByProduct(items).map((group) => (
+            <ConfiguratorProductGroupCard
+              key={group[0]!.productId}
+              items={group}
+              selectedItem={selectedItem}
+              onSelect={onSelect}
               isCompatible={true}
               isSelectable={true}
             />
@@ -88,14 +113,35 @@ export function ProductSelectionStep({
         </div>
       )}
 
-      {/* Incompatible items (shown when compatibility filter is OFF) */}
-      {!compatibilityFilterOn && incompatibleItems.length > 0 && (
+      {/* Out-of-stock items — their own section, not a compatibility error */}
+      {showOutOfStock && outOfStockItems.length > 0 && (
         <div className="mt-10 border-t border-neutral-200 pt-6 dark:border-neutral-800">
           <div className="mb-4 flex items-center gap-3">
-            <h3
-              className="text-sm font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 font-clash"
-            >
-              Not Compatible With Current Build ({incompatibleItems.length})
+            <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-clash">
+              Out of Stock ({outOfStockItems.length})
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {groupByProduct(outOfStockItems).map((group) => (
+              <ConfiguratorProductGroupCard
+                key={group[0]!.productId}
+                items={group}
+                selectedItem={selectedItem}
+                onSelect={onSelect}
+                isCompatible={true}
+                isSelectable={false}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Incompatible items (shown when compatibility filter is OFF) */}
+      {!compatibilityFilterOn && notCompatibleItems.length > 0 && (
+        <div className="mt-10 border-t border-neutral-200 pt-6 dark:border-neutral-800">
+          <div className="mb-4 flex items-center gap-3">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 font-clash">
+              Not Compatible With Current Build ({notCompatibleItems.length})
             </h3>
           </div>
 
@@ -122,12 +168,12 @@ export function ProductSelectionStep({
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {incompatibleItems.map((item) => (
-              <ConfiguratorProductCard
-                key={item.variantId}
-                item={item}
-                isSelected={selectedItem?.variantId === item.variantId}
-                onSelect={() => onSelect(item)}
+            {groupByProduct(notCompatibleItems).map((group) => (
+              <ConfiguratorProductGroupCard
+                key={group[0]!.productId}
+                items={group}
+                selectedItem={selectedItem}
+                onSelect={onSelect}
                 isCompatible={false}
                 isSelectable={false}
               />

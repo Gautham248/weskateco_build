@@ -50,9 +50,13 @@ export function getCompatibleDecks(
   for (const item of allDecks) {
     const meta = item.meta as DeckMeta;
 
-    // Out-of-stock gating
-    if (!item.availableForSale && !showOutOfStock) {
-      continue; // exclude out of stock when toggle is off
+    // Out-of-stock gating — before compatibility, so an unavailable item is
+    // always reported as "Out of stock" rather than a compatibility error.
+    if (!item.availableForSale) {
+      if (showOutOfStock && meta.deck_board_type === boardType) {
+        incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
+      }
+      continue;
     }
 
     // Board type gate
@@ -86,25 +90,6 @@ export function getCompatibleDecks(
     }
 
     compatible.push(item);
-  }
-
-  // Add out-of-stock items when showOutOfStock is on
-  if (showOutOfStock) {
-    for (const item of allDecks) {
-      const meta = item.meta as DeckMeta;
-      if (!item.availableForSale && meta.deck_board_type === boardType) {
-        // Check if already added as incompatible
-        const alreadyAdded =
-          incompatible.some((i) => i.variantId === item.variantId) ||
-          compatible.some((i) => i.variantId === item.variantId);
-        if (!alreadyAdded) {
-          incompatible.push({
-            ...item,
-            incompatibilityReason: "Out of stock",
-          });
-        }
-      }
-    }
   }
 
   return {
@@ -141,8 +126,15 @@ export function getCompatibleTrucks(
   for (const item of allTrucks) {
     const meta = item.meta as TruckMeta;
 
-    // Out-of-stock gating
-    if (!item.availableForSale && !showOutOfStock) continue;
+    // Out-of-stock gating — checked before compatibility so an unavailable
+    // item is always reported as "Out of stock" rather than a compatibility
+    // error it happens to also fail.
+    if (!item.availableForSale) {
+      if (showOutOfStock) {
+        incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
+      }
+      continue;
+    }
 
     // Truck type must match board type
     if (!allowedTruckTypes.includes(meta.truck_type)) {
@@ -174,11 +166,7 @@ export function getCompatibleTrucks(
       meta.truck_type === "Surfskate" &&
       compatRules.surfskate_skip_width_match
     ) {
-      if (item.availableForSale) {
-        compatible.push(item);
-      } else {
-        incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
-      }
+      compatible.push(item);
       continue;
     }
 
@@ -194,19 +182,13 @@ export function getCompatibleTrucks(
       if (widthDiff > tolerance) {
         incompatible.push({
           ...item,
-          incompatibilityReason: item.availableForSale
-            ? `Width mismatch: axle ${axleWidth.toFixed(2)}" vs deck ${deckWidth}" (max ±${tolerance}")` 
-            : "Out of stock",
+          incompatibilityReason: `Width mismatch: axle ${axleWidth.toFixed(2)}" vs deck ${deckWidth}" (max ±${tolerance}")`,
         });
         continue;
       }
     }
 
-    if (item.availableForSale) {
-      compatible.push(item);
-    } else {
-      incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
-    }
+    compatible.push(item);
   }
 
   return {
@@ -243,7 +225,14 @@ export function getCompatibleWheels(
   for (const item of allWheels) {
     const meta = item.meta as WheelMeta;
 
-    if (!item.availableForSale && !showOutOfStock) continue;
+    // Out-of-stock gating — before compatibility, so an unavailable item is
+    // always reported as "Out of stock" rather than a compatibility error.
+    if (!item.availableForSale) {
+      if (showOutOfStock) {
+        incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
+      }
+      continue;
+    }
 
     if (!allowedWheelTypes.includes(meta.wheel_type)) {
       incompatible.push({
@@ -268,11 +257,7 @@ export function getCompatibleWheels(
       continue;
     }
 
-    if (item.availableForSale) {
-      compatible.push(item);
-    } else {
-      incompatible.push({ ...item, incompatibilityReason: "Out of stock" });
-    }
+    compatible.push(item);
   }
 
   return {
@@ -350,8 +335,7 @@ export function getCompatibleGriptape(
       continue;
     }
 
-    const maxDeckWidth =
-      compatRules.griptape_deck_max_width[String(gripWidth)];
+    const maxDeckWidth = compatRules.griptape_deck_max_width[String(gripWidth)];
 
     if (maxDeckWidth !== undefined && deckWidth <= maxDeckWidth) {
       if (item.availableForSale) {
