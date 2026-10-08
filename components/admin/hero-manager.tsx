@@ -4,6 +4,7 @@ import { ConfirmDialog } from "components/admin/confirm-dialog";
 import clsx from "clsx";
 import { saveHeroAction } from "lib/admin/actions";
 import {
+  deriveHeroPosterUrl,
   HERO_DEFAULT_SECONDS,
   HERO_MAX_SECONDS,
   HERO_MIN_SECONDS,
@@ -14,6 +15,7 @@ import {
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { gifFileName, videoToGif } from "./video-to-gif";
 
 export type HeroManagerItem = {
   id: string;
@@ -24,6 +26,19 @@ export type HeroManagerItem = {
   /** Kept as a string so the field can be empty, meaning "use the default". */
   seconds: string;
 };
+
+/**
+ * Duplicated here rather than imported from lib/admin/imagekit.ts, which pulls in
+ * the ImageKit SDK and must never reach the browser bundle. Keep in step with
+ * ALLOWED_IMAGE_MIME_TYPES / ALLOWED_VIDEO_MIME_TYPES there - the server re-checks
+ * both regardless, this only drives the file picker's filter.
+ */
+const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/gif";
+const VIDEO_ACCEPT =
+  "video/mp4,video/webm,video/quicktime,video/x-quicktime,video/x-matroska";
+
+/** Matches HERO_UPLOAD_FOLDER server-side; scripts/seed-hero.ts uses the same path. */
+const HERO_UPLOAD_FOLDER = "/weskateco/hero";
 
 type HeroPayload = {
   items: {
@@ -107,8 +122,12 @@ function HeroPreview({
   const [failed, setFailed] = useState(false);
 
   const url = source && isAllowedHeroUrl(source.url) ? source.url : null;
-  const poster =
+  const storedPoster =
     source && isAllowedHeroUrl(source.posterUrl) ? source.posterUrl : null;
+  // Mirrors buildHeroSlides so the tile shows the same frame the storefront will,
+  // rather than dropping to the bare <video> branch below.
+  const poster =
+    storedPoster ?? (kind === "video" && url ? deriveHeroPosterUrl(url) : null);
 
   // A corrected URL is a fresh attempt, so an earlier failure must not stick.
   useEffect(() => {
@@ -238,6 +257,10 @@ export function HeroManager({
     "idle",
   );
   const [isUploading, setIsUploading] = useState(false);
+  const [convertProgress, setConvertProgress] = useState<{
+    frame: number;
+    total: number;
+  } | null>(null);
 
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inFlightRef = useRef(false);
@@ -446,34 +469,81 @@ export function HeroManager({
     setNotice("Enter a URL for the new slide to save it.");
   }
 
-  async function handleUpload(index: number, file: File) {
+  async function uploadFile(file: File): Promise<string | null> {
+    const body = new FormData();
+    body.append("file", file);
+    body.append("folder", HERO_UPLOAD_FOLDER);
+
+    const response = await fetch("/admin/api/upload", {
+      method: "POST",
+      body,
+    });
+
+    const payload = (await response.json()) as {
+      url?: string;
+      error?: string;
+    };
+
+    if (!response.ok || !payload.url) {
+      toast.error(payload.error ?? `Could not upload ${file.name}.`);
+      return null;
+    }
+
+    return payload.url;
+  }
+
+  async function handleUpload(index: number, file: File, kind: HeroItemKind) {
     setIsUploading(true);
+    setConvertProgress(null);
 
     try {
-      const body = new FormData();
-      body.append("file", file);
+      // A video is converted to a GIF in the browser before it is ever sent, so
+      // the server needs no ffmpeg and the hero renders it as a plain looping
+      // image. The slide therefore flips to kind "image" - a GIF served to a
+      // <video> element would simply sit on its first frame.
+      let upload: File = file;
+      let converted = false;
 
-      const response = await fetch("/admin/api/upload", {
-        method: "POST",
-        body,
-      });
+      if (kind === "video") {
+        try {
+          const result = await videoToGif(file, {
+            onProgress: ({ frame, total }) =>
+              setConvertProgress({ frame, total }),
+          });
 
-      const payload = (await response.json()) as {
-        url?: string;
-        error?: string;
-      };
+          upload = new File([result.blob], gifFileName(file.name), {
+            type: "image/gif",
+          });
+          converted = true;
+        } catch (error) {
+          setConvertProgress(null);
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : `Could not convert ${file.name}.`,
+          );
+          return;
+        }
+      }
 
-      if (!response.ok || !payload.url) {
-        toast.error(payload.error ?? `Could not upload ${file.name}.`);
+      const url = await uploadFile(upload);
+
+      if (!url) {
         return;
       }
 
-      update(index, { url: payload.url });
-      toast.success("Image uploaded.");
+      update(index, converted ? { url, kind: "image" } : { url });
+
+      if (converted) {
+        toast.success("Converted to GIF and uploaded.");
+      } else {
+        toast.success("Image uploaded.");
+      }
     } catch {
       toast.error(`Could not upload ${file.name}.`);
     } finally {
       setIsUploading(false);
+      setConvertProgress(null);
     }
   }
 
@@ -730,29 +800,35 @@ export function HeroManager({
                         className={clsx(inputClasses, "min-w-0 flex-1")}
                       />
 
-                      {item.kind === "image" ? (
-                        <label
-                          className={clsx(
-                            smallButtonClasses,
-                            isUploading && "cursor-not-allowed opacity-60",
-                          )}
-                        >
-                          {isUploading ? "Uploading…" : "Upload"}
-                          <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
-                            disabled={isUploading}
-                            onChange={(event) => {
-                              const file = event.target.files?.[0];
-                              if (file) {
-                                void handleUpload(index, file);
-                              }
-                              event.target.value = "";
-                            }}
-                            className="sr-only"
-                          />
-                        </label>
-                      ) : null}
+                      <label
+                        className={clsx(
+                          smallButtonClasses,
+                          isUploading && "cursor-not-allowed opacity-60",
+                        )}
+                      >
+                        {convertProgress
+                          ? `Converting ${convertProgress.frame}/${convertProgress.total}…`
+                          : isUploading
+                            ? "Uploading…"
+                            : "Upload"}
+                        <input
+                          type="file"
+                          accept={
+                            item.kind === "video"
+                              ? VIDEO_ACCEPT
+                              : IMAGE_ACCEPT
+                          }
+                          disabled={isUploading}
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            if (file) {
+                              void handleUpload(index, file, item.kind);
+                            }
+                            event.target.value = "";
+                          }}
+                          className="sr-only"
+                        />
+                      </label>
                     </div>
                     <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-400">
                       https:// links, or a path on this site such as

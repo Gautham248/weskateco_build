@@ -2,6 +2,13 @@ export default {
   experimental: {
     ppr: true,
     useCache: true,
+    // Requests whose pathname matches proxy.ts's matcher have their body cloned
+    // for the proxy sandbox, and that clone is capped at 10MB by default
+    // (next/dist/server/body-streams.js). A truncated multipart body makes
+    // request.formData() throw, so /admin/api/upload rejected every video over
+    // 10MB with a misleading "Expected a multipart form upload" 400. Keep this
+    // at or above MAX_VIDEO_UPLOAD_BYTES in lib/admin/imagekit.ts.
+    middlewareClientMaxBodySize: "100mb",
   },
   images: {
     formats: ["image/avif", "image/webp"],

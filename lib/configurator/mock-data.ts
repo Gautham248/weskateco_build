@@ -1,6 +1,9 @@
 import type { Product } from "lib/shopify/types";
 import type { ConfiguratorItem } from "./types";
 import mockData from "config/mock-configurator-data.json";
+import compatRulesJson from "config/compatibility-rules.json";
+
+const compatRules = compatRulesJson as { hanger_to_axle_offset: number };
 
 // Type for the mock data JSON structure
 interface MockProductData {
@@ -33,6 +36,40 @@ function parseDeckWidthFromTitle(title: string): number | undefined {
   if (!match) return undefined;
   const value = Number(match[1]);
   if (!Number.isFinite(value) || value < 6 || value > 10) return undefined;
+  return value;
+}
+
+/**
+ * Same drift problem as deck widths: mock wheel diameters are keyed by exact
+ * variant title (e.g. "51"), but Shopify titles carry units and resize over
+ * time (e.g. "51mm"). Fall back to the millimetre number in the title so a
+ * variant still maps when its key no longer matches.
+ */
+function parseWheelDiameterFromTitle(title: string): number | undefined {
+  const match = title.match(/(\d+(?:\.\d+)?)\s*mm/i);
+  if (!match) return undefined;
+  const value = Number(match[1]);
+  if (!Number.isFinite(value) || value < 40 || value > 120) return undefined;
+  return value;
+}
+
+/**
+ * Truck hangers drift the same way — mock keys like "5.5\"" no longer match
+ * live titles like "8.125\"" once the store quotes axle width instead of
+ * hanger size. Only variants whose titles are plain hanger sizes fall back to
+ * the raw number; anything larger than a hanger (i.e. an axle width) is
+ * converted back to a hanger by subtracting the axle offset.
+ */
+function parseTruckHangerFromTitle(title: string): number | undefined {
+  const match = title.match(/(\d+(?:\.\d+)?)\s*"?/);
+  if (!match) return undefined;
+  const value = Number(match[1]);
+  if (!Number.isFinite(value) || value < 3 || value > 12) return undefined;
+  if (value > 6.5) {
+    const offset = compatRules.hanger_to_axle_offset;
+    const hanger = value - offset;
+    return hanger > 0 ? Number(hanger.toFixed(2)) : undefined;
+  }
   return value;
 }
 
@@ -120,7 +157,9 @@ export function buildConfiguratorItems(products: Product[]): {
       const hangerByVariant = mock.truck_hanger_size_by_variant || {};
 
       for (const variant of product.variants) {
-        const hangerSize = hangerByVariant[variant.title];
+        const hangerSize =
+          hangerByVariant[variant.title] ??
+          parseTruckHangerFromTitle(variant.title);
 
         trucks.push({
           productId: product.id,
@@ -154,7 +193,9 @@ export function buildConfiguratorItems(products: Product[]): {
       const diameterByVariant = mock.wheel_diameter_by_variant || {};
 
       for (const variant of product.variants) {
-        const diameter = diameterByVariant[variant.title];
+        const diameter =
+          diameterByVariant[variant.title] ??
+          parseWheelDiameterFromTitle(variant.title);
         if (diameter === undefined) continue;
 
         wheels.push({

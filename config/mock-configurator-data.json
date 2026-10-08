@@ -182,12 +182,31 @@
     "double-hollow-skateboard-trucks": {
       "truck_type": "Standard (TKP)",
       "truck_hanger_size_by_variant": {
-        "5": 5.0,
-        "5.25\"": 5.25,
-        "5.5\"": 5.5
+        "7.75\"": 5.0,
+        "8.125\"": 5.375
       },
       "truck_sold_as": "Pair",
       "truck_compatible_board_types": "Skateboard,Old School",
+      "brand": "Toucan"
+    },
+    "toucan-pro-trucks": {
+      "truck_type": "Standard (TKP)",
+      "truck_hanger_size_by_variant": {
+        "6.625\"": 4.0
+      },
+      "truck_sold_as": "Pair",
+      "truck_compatible_board_types": "Skateboard,Old School",
+      "_note": "6.625\" axle, 4\" hanger. Suits decks 6.5\"–7\".",
+      "brand": "Toucan"
+    },
+    "toucan-pro-kingpin-hollow-trucks": {
+      "truck_type": "Standard (TKP)",
+      "truck_hanger_size_by_variant": {
+        "7.375\"": 4.75
+      },
+      "truck_sold_as": "Pair",
+      "truck_compatible_board_types": "Skateboard,Old School",
+      "_note": "7.375\" axle, 4.75\" hanger. Suits decks 7.25\"–7.5\".",
       "brand": "Toucan"
     },
     "toucan-trucks-kids": {
@@ -215,13 +234,13 @@
   "wheels": {
     "toucan-tropical-wheels": {
       "wheel_diameter_by_variant": {
-        "51": 51,
-        "52": 52
+        "51mm": 51,
+        "52mm": 52
       },
-      "wheel_hardness": "99A",
+      "wheel_hardness": "100A",
       "wheel_type": "Street/Park",
       "wheel_compatible_board_types": "Skateboard,Old School",
-      "_note": "Hardness estimated at 99A based on street/park classification. Confirm with Arun.",
+      "_note": "100A per product title/description. Classic shape, technical street.",
       "brand": "Toucan"
     },
     "toucan-tropical-wheels-53mm-55mm-85bd": {
@@ -229,20 +248,41 @@
         "53mm": 53,
         "55mm": 55
       },
-      "wheel_hardness": "85BD",
+      "wheel_hardness": "100A",
       "wheel_type": "Street/Park",
       "wheel_compatible_board_types": "Skateboard,Old School",
+      "_note": "Handle is legacy (85BD); live title and description both say 100A. Jungle Classic shape.",
       "brand": "Toucan"
     },
-    "surfskate-wheels-66-x-58mm": {
+    "surfskate-wheels-66-x-50mm": {
       "wheel_diameter_by_variant": {
         "Default Title": 66
       },
-      "wheel_hardness": "78A",
+      "wheel_hardness": "82A",
       "wheel_type": "Surfskate",
       "wheel_compatible_board_types": "Surfskate,Cruiser",
-      "_note": "66mm x 58mm. Hardness estimated at 78A (soft, typical for surfskate). Confirm with Arun.",
+      "_note": "66mm x 50mm, 82A. Suits surfskates, cruisers and longboards.",
       "brand": "Toucan"
+    },
+    "spitfire-formula-four-99-duro-skateboard-wheels": {
+      "wheel_diameter_by_variant": {
+        "Default Title": 54
+      },
+      "wheel_hardness": "99A",
+      "wheel_type": "Street/Park",
+      "wheel_compatible_board_types": "Skateboard,Old School",
+      "_note": "54mm per product description (title says 99 Duro). Conical Full.",
+      "brand": "Spitfire"
+    },
+    "spitfire-formula-four-101-duro-skateboard-wheels": {
+      "wheel_diameter_by_variant": {
+        "Default Title": 52
+      },
+      "wheel_hardness": "101A",
+      "wheel_type": "Street/Park",
+      "wheel_compatible_board_types": "Skateboard,Old School",
+      "_note": "52mm per product description (title says 101 Duro). Conical Full.",
+      "brand": "Spitfire"
     }
   },
   "bearings": {

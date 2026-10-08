@@ -153,6 +153,66 @@ export function isHeroItemKind(value: unknown): value is HeroItemKind {
 }
 
 /**
+ * ImageKit serves a video's first frame when `/ik-thumbnail.jpg` is appended to
+ * the file's URL, and picks the best format for the requesting device.
+ */
+const IMAGEKIT_HOST = "imagekit.io";
+
+const VIDEO_EXTENSIONS = new Set(["mp4", "webm", "mov", "mkv"]);
+
+/**
+ * Derives a poster from a video's own URL, so a video slide shows a real frame
+ * while it buffers instead of a blank rectangle.
+ *
+ * Deliberately limited to ImageKit over https: that is the one host whose
+ * thumbnail convention is known here, so deriving for an arbitrary CDN URL
+ * would produce a link that 404s. A site-relative path (a file in public/) has
+ * no equivalent, so it yields null and the slide simply goes without a poster.
+ *
+ * No `tr` parameter is added on purpose. ImageKit auto-optimises the bare form
+ * to roughly 60KB, whereas asking for any transformation - even just a start
+ * offset - returns an unoptimised full-size PNG measured at 3.3MB for a 1080p
+ * clip, which is a terrible trade for an image shown for a few seconds.
+ */
+export function deriveHeroPosterUrl(url: string): string | null {
+  if (typeof url !== "string" || !url.startsWith("https://")) {
+    return null;
+  }
+
+  let parsed: URL;
+
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+
+  const { hostname, pathname } = parsed;
+
+  // Compared as a whole label: a bare endsWith("imagekit.io") would also accept
+  // a lookalike host such as evilimagekit.io.
+  const isImageKit =
+    hostname === IMAGEKIT_HOST || hostname.endsWith(`.${IMAGEKIT_HOST}`);
+
+  if (!isImageKit) {
+    return null;
+  }
+
+  const lastSegment = pathname.slice(pathname.lastIndexOf("/") + 1);
+  const dot = lastSegment.lastIndexOf(".");
+
+  if (dot === -1) {
+    return null;
+  }
+
+  if (!VIDEO_EXTENSIONS.has(lastSegment.slice(dot + 1).toLowerCase())) {
+    return null;
+  }
+
+  return `${url}/ik-thumbnail.jpg`;
+}
+
+/**
  * Pure and synchronous so it can be tested without a database. An item whose URL
  * no longer passes validation is dropped rather than rendered, and a poster that
  * would not is cleared: a row stored before a rule changed must never be able to
@@ -169,14 +229,19 @@ export function buildHeroSlides(
       continue;
     }
 
+    const kind = isHeroItemKind(item.kind) ? item.kind : "image";
+
+    // A poster set in the admin always wins; the derived one only fills the gap
+    // so an existing video row with no poster gets a frame without a backfill.
+    const storedPoster =
+      item.posterUrl && isAllowedHeroUrl(item.posterUrl) ? item.posterUrl : null;
+
     const posterUrl =
-      item.posterUrl && isAllowedHeroUrl(item.posterUrl)
-        ? item.posterUrl
-        : null;
+      storedPoster ?? (kind === "video" ? deriveHeroPosterUrl(item.url) : null);
 
     slides.push({
       id: item.id,
-      kind: isHeroItemKind(item.kind) ? item.kind : "image",
+      kind,
       url: item.url,
       altText: item.altText,
       posterUrl,
