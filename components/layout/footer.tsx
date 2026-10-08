@@ -324,7 +324,7 @@ export default function Footer() {
 
             {/* YouTube */}
             <a
-              href="https://youtube.com/@weskateco"
+              href="https://www.youtube.com/@weskateco2020"
               target="_blank"
               rel="noreferrer"
               aria-label="YouTube"
