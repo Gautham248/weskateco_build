@@ -93,6 +93,9 @@ export default function Footer() {
             >
               BUYING GUIDES
             </Link>
+            {/* Hidden: /blogs and /stores 404 — no such page exists.
+                Restore by uncommenting. */}
+            {/*
             <Link
               href="/blogs"
               className="hover:text-neutral-300 transition-colors"
@@ -105,6 +108,7 @@ export default function Footer() {
             >
               STORES
             </Link>
+            */}
           </div>
 
           {/* Column 3: Legal & Support Links */}
@@ -258,7 +262,9 @@ export default function Footer() {
             </Link>
           </div>
 
-          {/* BLOGS */}
+          {/* Hidden: /blogs and /stores 404 — no such page exists.
+              Restore by uncommenting. */}
+          {/*
           <div className="border-b border-neutral-800">
             <Link
               href="/blogs"
@@ -268,7 +274,6 @@ export default function Footer() {
             </Link>
           </div>
 
-          {/* STORES */}
           <div className="border-b border-neutral-800">
             <Link
               href="/stores"
@@ -277,6 +282,7 @@ export default function Footer() {
               STORES
             </Link>
           </div>
+          */}
         </div>
 
         {/* DESKTOP MIDDLE SECTION: Large Logo & Social Icons

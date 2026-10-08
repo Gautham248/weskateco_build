@@ -5,91 +5,16 @@ import skateboardsImg from "components/icons/skateboards.png";
 import surfboardsImg from "components/icons/surfboards.png";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-function CategoryTitle({
-  name,
-  isExpanded,
-  id,
-}: {
-  name: string;
-  isExpanded: boolean;
-  id: string;
-}) {
-  const upperName = name.toUpperCase();
-  const lastOIndex = upperName.lastIndexOf("O");
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const oTargetRef = useRef<HTMLSpanElement>(null);
-  const [oOffset, setOOffset] = useState<number>(0);
-
-  useEffect(() => {
-    if (
-      oTargetRef.current &&
-      containerRef.current &&
-      containerRef.current.offsetParent !== null
-    ) {
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const oRect = oTargetRef.current.getBoundingClientRect();
-
-      const offset = oRect.left + oRect.width / 2 - containerRect.left;
-      setOOffset(offset);
-    }
-  }, [name, isExpanded]);
-
-  if (lastOIndex === -1) {
-    return (
-      <div className="relative w-full flex items-center justify-between h-8">
-        <h3 className="text-white text-[clamp(1rem,2.5vw,1.375rem)] font-medium uppercase tracking-wide flex items-center whitespace-nowrap select-none z-0">
-          <span>{name}</span>
-        </h3>
-        <span className="bg-[#CCFF02] text-black rounded-full w-6 h-6 flex items-center justify-center text-[10px]">
-          ➔
-        </span>
-      </div>
-    );
-  }
-
-  const firstPart = name.slice(0, lastOIndex);
-  const secondPart = name.slice(lastOIndex + 1);
-
+function CategoryTitle({ name }: { name: string }) {
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full flex items-center justify-between h-8"
-    >
+    <div className="relative w-full flex items-center justify-between h-8">
       <h3 className="text-white text-[clamp(1rem,2.5vw,1.375rem)] font-medium uppercase tracking-wide flex items-center whitespace-nowrap select-none z-0">
-        <span>{firstPart}</span>
-        <span ref={oTargetRef} className="relative">
-          {name[lastOIndex]}
-        </span>
-        <span>{secondPart}</span>
+        <span>{name}</span>
       </h3>
-
-      <span
-        className={`absolute bg-[#C5FF1A] text-black rounded-full flex items-center justify-center transition-all duration-[1600ms] top-1/2 -translate-y-1/2 z-10 ${!isExpanded
-          ? "w-5 h-5 -translate-x-1/2"
-          : "w-10 h-10 left-full -translate-x-full"
-          }`}
-        style={{
-          transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-          left: !isExpanded ? `${oOffset}px` : undefined,
-        }}
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-[40%] h-[40%]"
-        >
-          <path
-            d="M5 12H19M12 19L19 12L12 5"
-            stroke="#1D6A2B"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+      <span className="bg-[#CCFF02] text-black rounded-full w-6 h-6 flex items-center justify-center text-[10px]">
+        ➔
       </span>
     </div>
   );
@@ -302,11 +227,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                 />
 
                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
-                  <CategoryTitle
-                    name={category.name}
-                    isExpanded={isExpanded}
-                    id={`desktop-${index}`}
-                  />
+                  <CategoryTitle name={category.name} />
                 </div>
               </div>
             </Link>
