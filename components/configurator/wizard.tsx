@@ -66,6 +66,16 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
   >({});
   const [isAddingToCart, setIsAddingToCart] = useState<boolean>(false);
 
+  // Filters sit in a fixed left column from md up, where there is room for
+  // them. Stacked below that they would push the product grid off the screen,
+  // so on mobile they collapse behind this disclosure instead.
+  const [isFiltersOpen, setIsFiltersOpen] = useState<boolean>(false);
+
+  const activeFilterCount = Object.values(selectedFilters).reduce(
+    (total, values) => total + values.length,
+    0,
+  );
+
   const [state, setState] = useState<ConfiguratorState>({
     boardType: null,
     deck: null,
@@ -686,7 +696,10 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="h-[calc(100vh-72px)] flex flex-col bg-neutral-50 text-black dark:bg-neutral-950 dark:text-white overflow-hidden">
+    // Below md this stops being a fixed-height clipped workspace and becomes a
+    // normal scrolling document. Two nested overflow-hidden ancestors used to
+    // clip everything below the fold on a phone, making it unreachable.
+    <div className="min-h-[calc(100vh-72px)] md:h-[calc(100vh-72px)] flex flex-col overflow-y-auto md:overflow-hidden bg-neutral-50 text-black dark:bg-neutral-950 dark:text-white">
       {/* Top Header Bar */}
       <ConfiguratorHeader
         title={stepTitles[currentStep] || "Board Builder"}
@@ -696,9 +709,41 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
       />
 
       {/* 3-Panel Workspace */}
-      <div className="flex-1 min-h-0 mx-auto flex w-full max-w-[1600px] flex-col gap-6 px-4 py-6 md:flex-row md:px-6 overflow-hidden">
-        {/* Left Sidebar: Filters */}
-        <div className="w-72 flex-shrink-0 h-full flex flex-col">
+      <div className="flex-1 min-h-0 mx-auto flex w-full max-w-[1600px] flex-col gap-6 px-4 py-6 md:flex-row md:px-6 md:overflow-hidden">
+        {/* Mobile: filters behind a disclosure. Hidden from md up, where the
+            column is always visible and this control would be redundant. */}
+        <button
+          type="button"
+          onClick={() => setIsFiltersOpen((open) => !open)}
+          aria-expanded={isFiltersOpen}
+          aria-controls="configurator-filters"
+          className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-white px-5 py-4 font-bold uppercase tracking-wide text-black md:hidden dark:border-neutral-800 dark:bg-neutral-950 dark:text-white"
+        >
+          <span className="flex items-center gap-2">
+            Filters
+            {activeFilterCount > 0 && (
+              <span className="rounded-full bg-neutral-900 px-2 py-0.5 text-[10px] font-bold text-white dark:bg-white dark:text-neutral-900">
+                {activeFilterCount}
+              </span>
+            )}
+          </span>
+          <span
+            aria-hidden="true"
+            className="text-xs font-normal normal-case tracking-normal text-neutral-500 dark:text-neutral-400"
+          >
+            {isFiltersOpen ? "Hide" : "Show"}
+          </span>
+        </button>
+
+        {/* Left Sidebar: Filters.
+            Full width when stacked; the fixed 18rem column only from md up,
+            where there is room for it. */}
+        <div
+          id="configurator-filters"
+          className={`w-full md:w-72 md:flex-shrink-0 md:h-full flex flex-col ${
+            isFiltersOpen ? "flex" : "hidden md:flex"
+          }`}
+        >
           <FilterSidebar
             compatibilityFilterOn={compatibilityFilterOn}
             onToggleCompatibilityFilter={setCompatibilityFilterOn}
@@ -711,13 +756,16 @@ export function ConfiguratorWizard({ products, locale }: WizardProps) {
           />
         </div>
 
-        {/* Center: Product Grid */}
-        <main className="flex-1 min-w-0 h-full overflow-y-auto pr-2">
+        {/* Center: Product Grid.
+            The inner scroller only exists in the fixed-height desktop layout;
+            on mobile the page itself scrolls instead, so this must not be
+            height-constrained or it collapses to nothing. */}
+        <main className="flex-1 min-w-0 md:h-full md:overflow-y-auto pr-2">
           {renderStepContent()}
         </main>
 
         {/* Right Sidebar: Build Summary */}
-        <div className="w-80 flex-shrink-0 h-full flex flex-col">
+        <div className="w-full md:w-80 md:flex-shrink-0 md:h-full flex flex-col">
           <BuildSummarySidebar
             state={state}
             currentStepId={currentStep}
