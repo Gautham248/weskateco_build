@@ -370,6 +370,21 @@ export default function MobileMenu() {
                   )}
                 </div>
 
+                {/* CONFIGURATOR Link — on desktop this sits in the STORE mega
+                    menu (mega-menu-left.tsx). Top level here rather than buried
+                    inside the STORE accordion, since a builder is a destination
+                    in its own right and three taps down is easy to miss. */}
+                <div className="border-b border-neutral-100 dark:border-neutral-900 py-4">
+                  <Link
+                    href={getLocalizedPath("/configurator", locale)}
+                    onClick={closeMobileMenu}
+                    className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
+                    {t("nav.configurator")}
+                  </Link>
+                </div>
+
                 {/* SKATEPARKS Link */}
                 <div className="border-b border-neutral-100 dark:border-neutral-900 py-4">
                   <Link

@@ -230,50 +230,59 @@ export function ConfiguratorProductGroupCard({
           </p>
         )}
 
-        {/* Variant (size) selector */}
+        {/* Variant (size) selector.
+            A select rather than a chip row: a single deck can carry nine widths
+            and the wrapped chips swallowed the card. Option labels are the full
+            variant title rather than a stripped width, because for some decks the
+            second half is the distinguishing part ("8 / wheel well", "Mellow /
+            8.25"). Out-of-stock sizes stay visible but disabled, matching what the
+            chips did via line-through. */}
         {hasVariants && (
           <div className="mb-3">
-            <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
-              Size
-            </span>
-            <div
-              role="radiogroup"
-              aria-label="Size"
-              className="flex flex-wrap gap-1.5"
+            <label
+              htmlFor={`configurator-size-${product.productId}`}
+              className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500"
             >
-              {items.map((variant) => {
-                const variantSelected =
-                  variant.variantId === selectedItem?.variantId;
-                const variantDisabled =
-                  !isSelectable || !variant.availableForSale;
-                return (
-                  <button
-                    key={variant.variantId}
-                    type="button"
-                    role="radio"
-                    aria-checked={variantSelected}
-                    disabled={variantDisabled}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      selectVariant(variant);
-                    }}
-                    title={
-                      !variant.availableForSale ? "Out of stock" : undefined
-                    }
-                    className={clsx(
-                      "min-w-[3.25rem] rounded-lg border-2 px-3 py-1.5 text-xs font-bold uppercase tracking-wide transition-all duration-150",
-                      variantSelected
-                        ? "border-black bg-black text-white shadow-sm dark:border-white dark:bg-white dark:text-black"
-                        : "border-neutral-300 bg-white text-neutral-700 hover:border-black hover:text-black dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:border-white dark:hover:text-white",
-                      variantDisabled &&
-                        "cursor-not-allowed border-neutral-200 text-neutral-300 line-through hover:border-neutral-200 hover:text-neutral-300 dark:border-neutral-800 dark:text-neutral-700 dark:hover:border-neutral-800 dark:hover:text-neutral-700",
-                    )}
-                  >
-                    {variant.variantTitle}
-                  </button>
-                );
-              })}
-            </div>
+              Select Size
+            </label>
+            <select
+              id={`configurator-size-${product.productId}`}
+              value={selectedVariant?.variantId ?? ""}
+              disabled={!isSelectable}
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => {
+                e.stopPropagation();
+                const next = items.find((i) => i.variantId === e.target.value);
+                if (next) {
+                  selectVariant(next);
+                }
+              }}
+              className={clsx(
+                "w-full rounded-lg border-2 bg-white px-3 py-2 text-xs font-bold uppercase tracking-wide transition-colors",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:focus-visible:outline-white",
+                isSelected
+                  ? "border-black text-black dark:border-white dark:text-white"
+                  : "border-neutral-300 text-neutral-700 hover:border-black hover:text-black dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:border-white dark:hover:text-white",
+                !isSelectable &&
+                  "cursor-not-allowed border-neutral-200 text-neutral-300 dark:border-neutral-800 dark:text-neutral-700",
+              )}
+            >
+              {!selectedVariant && (
+                <option value="" disabled>
+                  Select Size…
+                </option>
+              )}
+              {items.map((variant) => (
+                <option
+                  key={variant.variantId}
+                  value={variant.variantId}
+                  disabled={!isSelectable || !variant.availableForSale}
+                >
+                  {variant.variantTitle}
+                  {variant.availableForSale ? "" : " — Out of stock"}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 
