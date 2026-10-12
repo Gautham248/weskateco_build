@@ -18,8 +18,8 @@ import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 
 // Import bottom images
-import shopImg1 from "components/icons/shop_image_1.png";
-import shopImg2 from "components/icons/shop_image_2.png";
+import shopImg1 from "components/icons/shop_image_1.jpg";
+import shopImg2 from "components/icons/shop_image_2.jpg";
 
 const CATEGORY_PREFIXES = [
   { match: "skateboards", prefix: "skateboard" },
