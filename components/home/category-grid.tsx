@@ -1,7 +1,7 @@
 "use client";
 
 import accessoriesImg from "components/icons/accessories.png";
-import skateboardsImg from "components/icons/skateboards.png";
+import skateboardsImg from "components/icons/skateboards.jpg";
 import surfboardsImg from "components/icons/surfboards.png";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 import Link from "next/link";

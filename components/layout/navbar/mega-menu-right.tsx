@@ -1,7 +1,7 @@
 "use client";
 
-import shopImg1 from "components/icons/shop_image_1.png";
-import shopImg2 from "components/icons/shop_image_2.png";
+import shopImg1 from "components/icons/shop_image_1.jpg";
+import shopImg2 from "components/icons/shop_image_2.jpg";
 import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
 import Link from "next/link";
