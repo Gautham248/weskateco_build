@@ -15,10 +15,10 @@ import { createUrl } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { QuickBuySidebar } from "../product/quick-buy-sidebar";
-import { createCartAndSetCookie, redirectToCheckout } from "./actions";
+import { redirectToCheckout } from "./actions";
 import { useCart } from "./cart-context";
 import { DeleteItemButton } from "./delete-item-button";
 import { EditItemQuantityButton } from "./edit-item-quantity-button";
@@ -51,11 +51,11 @@ export default function CartModal() {
     setIsOpen(true);
   };
 
-  useEffect(() => {
-    if (!cart) {
-      createCartAndSetCookie();
-    }
-  }, [cart]);
+  // NOTE: do NOT create a cart here when `cart` is undefined. The client cart
+  // is briefly undefined on every page load (before the server cart resolves),
+  // and creating one in that window replaced the cartId cookie with a fresh
+  // empty cart, stranding the user's real cart. Carts are created on add
+  // (see addItem / addConfiguratorBundle).
 
   return (
     <>
@@ -155,7 +155,9 @@ export default function CartModal() {
                             <div className="mb-6">
                               <h4
                                 className="text-[11px] font-bold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-3 px-1"
-                                style={{ fontFamily: "'Clash Display', sans-serif" }}
+                                style={{
+                                  fontFamily: "'Clash Display', sans-serif",
+                                }}
                               >
                                 Custom Setups ({bundles.length})
                               </h4>
@@ -163,11 +165,13 @@ export default function CartModal() {
                                 {bundles.map(([bundleId, items]) => {
                                   const bundleTotal = items.reduce(
                                     (sum, item) =>
-                                      sum + Number(item.cost.totalAmount.amount),
+                                      sum +
+                                      Number(item.cost.totalAmount.amount),
                                     0,
                                   );
                                   const currencyCode =
-                                    items[0]?.cost.totalAmount.currencyCode || "INR";
+                                    items[0]?.cost.totalAmount.currencyCode ||
+                                    "INR";
 
                                   return (
                                     <li
@@ -186,10 +190,13 @@ export default function CartModal() {
                                         </div>
                                         <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
                                           {currencyCode === "INR" ? "₹" : "$"}
-                                          {bundleTotal.toLocaleString(undefined, {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2,
-                                          })}
+                                          {bundleTotal.toLocaleString(
+                                            undefined,
+                                            {
+                                              minimumFractionDigits: 2,
+                                              maximumFractionDigits: 2,
+                                            },
+                                          )}
                                         </span>
                                       </div>
 
@@ -224,7 +231,9 @@ export default function CartModal() {
                                               <div className="absolute z-40 -ml-1 -mt-1">
                                                 <DeleteItemButton
                                                   item={item}
-                                                  optimisticUpdate={updateCartItem}
+                                                  optimisticUpdate={
+                                                    updateCartItem
+                                                  }
                                                 />
                                               </div>
                                               <div className="flex flex-row">
@@ -236,12 +245,15 @@ export default function CartModal() {
                                                     sizes="48px"
                                                     alt={
                                                       item.merchandise.product
-                                                        .featuredImage?.altText ||
-                                                      item.merchandise.product.title
+                                                        .featuredImage
+                                                        ?.altText ||
+                                                      item.merchandise.product
+                                                        .title
                                                     }
                                                     src={shopifyImageUrl(
                                                       item.merchandise.product
-                                                        .featuredImage?.url || "",
+                                                        .featuredImage?.url ||
+                                                        "",
                                                       SHOPIFY_IMAGE_WIDTH.thumb,
                                                     )}
                                                   />
@@ -254,21 +266,33 @@ export default function CartModal() {
                                                   >
                                                     <div className="flex flex-1 flex-col text-sm">
                                                       <span className="leading-tight">
-                                                        {item.merchandise.product.title}
+                                                        {
+                                                          item.merchandise
+                                                            .product.title
+                                                        }
                                                       </span>
-                                                      {item.merchandise.title !==
-                                                        DEFAULT_OPTION ? (
+                                                      {item.merchandise
+                                                        .title !==
+                                                      DEFAULT_OPTION ? (
                                                         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                                          {item.merchandise.title}
+                                                          {
+                                                            item.merchandise
+                                                              .title
+                                                          }
                                                         </p>
                                                       ) : null}
                                                     </div>
                                                   </Link>
                                                   <button
                                                     type="button"
-                                                    onClick={() => setEditingItem(item)}
+                                                    onClick={() =>
+                                                      setEditingItem(item)
+                                                    }
                                                     className="text-[11px] font-semibold uppercase underline hover:text-neutral-500 transition-colors cursor-pointer mt-1 w-fit text-left text-neutral-500 dark:text-neutral-400"
-                                                    style={{ fontFamily: "Archivo, sans-serif" }}
+                                                    style={{
+                                                      fontFamily:
+                                                        "Archivo, sans-serif",
+                                                    }}
                                                   >
                                                     Edit
                                                   </button>
@@ -281,14 +305,17 @@ export default function CartModal() {
                                                     item.cost.totalAmount.amount
                                                   }
                                                   currencyCode={
-                                                    item.cost.totalAmount.currencyCode
+                                                    item.cost.totalAmount
+                                                      .currencyCode
                                                   }
                                                 />
                                                 <div className="flex h-8 flex-row items-center gap-1">
                                                   <EditItemQuantityButton
                                                     item={item}
                                                     type="minus"
-                                                    optimisticUpdate={updateCartItem}
+                                                    optimisticUpdate={
+                                                      updateCartItem
+                                                    }
                                                   />
                                                   <p className="w-5 text-center">
                                                     <span className="w-full text-xs">
@@ -298,7 +325,9 @@ export default function CartModal() {
                                                   <EditItemQuantityButton
                                                     item={item}
                                                     type="plus"
-                                                    optimisticUpdate={updateCartItem}
+                                                    optimisticUpdate={
+                                                      updateCartItem
+                                                    }
                                                   />
                                                 </div>
                                               </div>
@@ -339,7 +368,9 @@ export default function CartModal() {
 
                                     const merchandiseUrl = createUrl(
                                       `/products/${item.merchandise.product.handle}`,
-                                      new URLSearchParams(merchandiseSearchParams),
+                                      new URLSearchParams(
+                                        merchandiseSearchParams,
+                                      ),
                                     );
 
                                     return (
@@ -347,7 +378,8 @@ export default function CartModal() {
                                         <div className="flex gap-4 items-start justify-between">
                                           {/* Product Image */}
                                           <div className="relative aspect-square w-20 overflow-hidden rounded-md bg-[#f4f4f4] dark:bg-neutral-900 flex-shrink-0 flex items-center justify-center">
-                                            {item.merchandise.product.featuredImage ? (
+                                            {item.merchandise.product
+                                              .featuredImage ? (
                                               <Image
                                                 src={shopifyImageUrl(
                                                   item.merchandise.product
@@ -355,7 +387,8 @@ export default function CartModal() {
                                                   SHOPIFY_IMAGE_WIDTH.thumb,
                                                 )}
                                                 alt={
-                                                  item.merchandise.product.featuredImage.altText ||
+                                                  item.merchandise.product
+                                                    .featuredImage.altText ||
                                                   item.merchandise.product.title
                                                 }
                                                 fill
@@ -363,7 +396,9 @@ export default function CartModal() {
                                                 className="object-contain p-1"
                                               />
                                             ) : (
-                                              <div className="text-neutral-400 text-xs">No Image</div>
+                                              <div className="text-neutral-400 text-xs">
+                                                No Image
+                                              </div>
                                             )}
                                           </div>
 
@@ -377,9 +412,17 @@ export default function CartModal() {
                                               >
                                                 {item.merchandise.product.title}
                                               </Link>
-                                              <p className="text-xs font-normal tracking-wide text-neutral-400 dark:text-neutral-500 uppercase mt-0.5" style={{ fontFamily: "Archivo, sans-serif" }}>
-                                                {item.merchandise.product.vendor ||
-                                                  (item.merchandise.title !== DEFAULT_OPTION
+                                              <p
+                                                className="text-xs font-normal tracking-wide text-neutral-400 dark:text-neutral-500 uppercase mt-0.5"
+                                                style={{
+                                                  fontFamily:
+                                                    "Archivo, sans-serif",
+                                                }}
+                                              >
+                                                {item.merchandise.product
+                                                  .vendor ||
+                                                  (item.merchandise.title !==
+                                                  DEFAULT_OPTION
                                                     ? item.merchandise.title
                                                     : "")}
                                               </p>
@@ -389,21 +432,38 @@ export default function CartModal() {
                                               <EditItemQuantityButton
                                                 item={item}
                                                 type="minus"
-                                                optimisticUpdate={updateCartItem}
+                                                optimisticUpdate={
+                                                  updateCartItem
+                                                }
                                               />
-                                              <span className="w-5 text-center text-xs font-semibold text-black dark:text-white" style={{ fontFamily: "Archivo, sans-serif" }}>
-                                                {item.quantity < 10 ? `0${item.quantity}` : item.quantity}
+                                              <span
+                                                className="w-5 text-center text-xs font-semibold text-black dark:text-white"
+                                                style={{
+                                                  fontFamily:
+                                                    "Archivo, sans-serif",
+                                                }}
+                                              >
+                                                {item.quantity < 10
+                                                  ? `0${item.quantity}`
+                                                  : item.quantity}
                                               </span>
                                               <EditItemQuantityButton
                                                 item={item}
                                                 type="plus"
-                                                optimisticUpdate={updateCartItem}
+                                                optimisticUpdate={
+                                                  updateCartItem
+                                                }
                                               />
                                               <button
                                                 type="button"
-                                                onClick={() => setEditingItem(item)}
+                                                onClick={() =>
+                                                  setEditingItem(item)
+                                                }
                                                 className="text-xs font-medium uppercase underline hover:text-neutral-500 transition-colors cursor-pointer text-neutral-400 dark:text-neutral-500 ml-2"
-                                                style={{ fontFamily: "Archivo, sans-serif" }}
+                                                style={{
+                                                  fontFamily:
+                                                    "Archivo, sans-serif",
+                                                }}
                                               >
                                                 Edit
                                               </button>
@@ -413,11 +473,19 @@ export default function CartModal() {
                                           {/* Price & Delete */}
                                           <div className="flex flex-col items-end justify-between self-stretch flex-shrink-0">
                                             <Price
-                                              amount={item.cost.totalAmount.amount}
-                                              currencyCode={item.cost.totalAmount.currencyCode}
+                                              amount={
+                                                item.cost.totalAmount.amount
+                                              }
+                                              currencyCode={
+                                                item.cost.totalAmount
+                                                  .currencyCode
+                                              }
                                               currencyCodeClassName="hidden"
                                               className="text-base font-semibold text-black dark:text-white"
-                                              style={{ fontFamily: "'Clash Display', sans-serif" }}
+                                              style={{
+                                                fontFamily:
+                                                  "'Clash Display', sans-serif",
+                                              }}
                                             />
                                             <DeleteItemButton
                                               item={item}
@@ -435,11 +503,12 @@ export default function CartModal() {
                       );
                     })()}
                   </ul>
-                  <div className="py-4 border-t border-neutral-200 dark:border-neutral-800" style={{ fontFamily: "Archivo, sans-serif" }}>
+                  <div
+                    className="py-4 border-t border-neutral-200 dark:border-neutral-800"
+                    style={{ fontFamily: "Archivo, sans-serif" }}
+                  >
                     <div className="mb-4 flex items-baseline justify-between">
-                      <span
-                        className="text-lg font-bold uppercase text-neutral-900 dark:text-white tracking-wider"
-                      >
+                      <span className="text-lg font-bold uppercase text-neutral-900 dark:text-white tracking-wider">
                         {t("cart.estimated_total")}
                       </span>
                       <Price
@@ -463,7 +532,12 @@ export default function CartModal() {
                       </p>
                     </div>
                   </div>
-                  <div className="-mx-6 px-6 space-y-3 pt-6 border-t border-neutral-200" style={{ boxShadow: "0px -3px 44px 0px rgba(0, 0, 0, 0.15)" }}>
+                  <div
+                    className="-mx-6 px-6 space-y-3 pt-6 border-t border-neutral-200"
+                    style={{
+                      boxShadow: "0px -3px 44px 0px rgba(0, 0, 0, 0.15)",
+                    }}
+                  >
                     {useFallback ? (
                       <form action={redirectToCheckout} className="w-full">
                         <CheckoutButton />
@@ -472,8 +546,11 @@ export default function CartModal() {
                       <button
                         onClick={triggerCheckout}
                         disabled={!gokwikReady || isCheckingOut || !cart?.id}
-                        className={`w-full h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors flex items-center justify-center ${!gokwikReady || isCheckingOut || !cart?.id ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
+                        className={`w-full h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors flex items-center justify-center ${
+                          !gokwikReady || isCheckingOut || !cart?.id
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }`}
                         style={{ fontFamily: "Archivo, sans-serif" }}
                       >
                         {isCheckingOut
@@ -507,10 +584,16 @@ export default function CartModal() {
           locale={locale}
           isEdit={true}
           lineId={editingItem.id}
-          initialOptions={editingItem.merchandise.selectedOptions.reduce((acc: Record<string, string>, option: { name: string; value: string }) => {
-            acc[option.name.toLowerCase()] = option.value;
-            return acc;
-          }, {})}
+          initialOptions={editingItem.merchandise.selectedOptions.reduce(
+            (
+              acc: Record<string, string>,
+              option: { name: string; value: string },
+            ) => {
+              acc[option.name.toLowerCase()] = option.value;
+              return acc;
+            },
+            {},
+          )}
           quantity={editingItem.quantity}
         />
       )}
@@ -529,7 +612,11 @@ function CheckoutButton() {
       disabled={pending}
       style={{ fontFamily: "Archivo, sans-serif" }}
     >
-      {pending ? <LoadingDots className="bg-white" /> : t("cart.proceed_to_checkout")}
+      {pending ? (
+        <LoadingDots className="bg-white" />
+      ) : (
+        t("cart.proceed_to_checkout")
+      )}
     </button>
   );
 }

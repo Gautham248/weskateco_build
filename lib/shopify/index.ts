@@ -341,27 +341,38 @@ export async function updateCart(
   return reshapeCart(res.body.data.cartLinesUpdate.cart);
 }
 
+// NOTE: intentionally NOT cached ("use cache"). A cart is per-user live data;
+// caching it here intermittently returned stale "empty/missing cart" results,
+// which made adds create duplicate carts and refreshes empty the UI.
 export async function getCart(): Promise<Cart | undefined> {
-  "use cache: private";
-  cacheTag(TAGS.cart);
-  cacheLife("seconds");
-
   const cartId = (await cookies()).get("cartId")?.value;
 
   if (!cartId) {
     return undefined;
   }
 
-  const res = await shopifyFetch<ShopifyCartOperation>({
-    query: getCartQuery,
-    variables: { cartId },
-  });
-
-  if (!res.body.data.cart) {
-    return undefined;
+  // The connection to Shopify fails intermittently on some networks ("fetch
+  // failed" from the HTTP layer). Retry reads with a short backoff so a
+  // hiccup degrades into a slightly slower load instead of a lost cart.
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await shopifyFetch<ShopifyCartOperation>({
+        query: getCartQuery,
+        variables: { cartId },
+      });
+      if (!res.body.data.cart) {
+        return undefined;
+      }
+      return reshapeCart(res.body.data.cart);
+    } catch (e) {
+      lastError = e;
+      if (attempt < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 250 * attempt));
+      }
+    }
   }
-
-  return reshapeCart(res.body.data.cart);
+  throw lastError;
 }
 
 export async function getCollection(

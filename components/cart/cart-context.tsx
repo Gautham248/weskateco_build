@@ -226,6 +226,36 @@ function cartReducer(state: Cart | undefined, action: CartAction): Cart {
       return currentCart;
   }
 }
+const CART_STORAGE_KEY = "weskateco_cart_v1";
+
+/**
+ * Best-effort localStorage mirror of the cart. It paints the cart instantly on
+ * refresh and keeps it visible across browser restarts or a failed server
+ * fetch — the server cart stays authoritative whenever it resolves.
+ */
+function readStoredCart(): Cart | undefined {
+  try {
+    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw) as Cart;
+    return Array.isArray(parsed?.lines) ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function writeStoredCart(cart: Cart | undefined) {
+  try {
+    if (!cart || cart.lines.length === 0) {
+      window.localStorage.removeItem(CART_STORAGE_KEY);
+    } else {
+      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    }
+  } catch {
+    // Storage unavailable (private mode / quota) — persistence is best-effort.
+  }
+}
+
 export function CartProvider({
   children,
   cartPromise,
@@ -234,21 +264,37 @@ export function CartProvider({
   cartPromise: Promise<Cart | undefined>;
 }) {
   const [resolvedCart, setResolvedCart] = useState<Cart | undefined>(undefined);
+  const [hydrated, setHydrated] = useState(false);
 
+  // 1) Restore the local mirror immediately so a refresh or browser restart
+  //    never shows an empty cart while the server round-trip is in flight.
+  useEffect(() => {
+    setResolvedCart(readStoredCart());
+    setHydrated(true);
+  }, []);
+
+  // 2) The server cart wins whenever it resolves with one. `undefined` (no
+  //    cookie / stale fetch) or a failure keeps the local copy instead of
+  //    blanking the cart.
   useEffect(() => {
     let active = true;
     Promise.resolve(cartPromise)
       .then((cart) => {
-        if (active) setResolvedCart(cart);
+        if (active && cart) setResolvedCart(cart);
       })
       .catch(() => {
-        // Keep the cart empty on failure; the server actions still mutate the
-        // real cart and revalidate it on the next successful request.
+        // Keep the local mirror; the server actions still mutate the real cart
+        // and revalidate it on the next successful request.
       });
     return () => {
       active = false;
     };
   }, [cartPromise]);
+
+  // 3) Persist every change back to localStorage.
+  useEffect(() => {
+    if (hydrated) writeStoredCart(resolvedCart);
+  }, [resolvedCart, hydrated]);
 
   const [optimisticCart, updateOptimisticCart] = useOptimistic(
     resolvedCart,
