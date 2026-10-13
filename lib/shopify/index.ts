@@ -102,6 +102,15 @@ function isTransientConnectError(error: unknown): boolean {
   return false;
 }
 
+/**
+ * Hard cap on any single Shopify request. Without it, a dead or stalled
+ * upstream sits on undici's default 300s headers timeout — the request looks
+ * like a ~5-minute hang (seen as `POST /configurator 404 in 318000ms` plus
+ * `UND_ERR_HEADERS_TIMEOUT`) instead of a fast, explainable failure. 15s is
+ * far above normal Storefront API latency (typically <1s).
+ */
+const SHOPIFY_FETCH_TIMEOUT_MS = 15_000;
+
 export async function shopifyFetch<T>({
   headers,
   query,
@@ -131,6 +140,7 @@ export async function shopifyFetch<T>({
           ...(query && { query }),
           ...(variables && { variables }),
         }),
+        signal: AbortSignal.timeout(SHOPIFY_FETCH_TIMEOUT_MS),
       });
 
       const body = await result.json();

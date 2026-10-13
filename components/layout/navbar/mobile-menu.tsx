@@ -403,7 +403,7 @@ export default function MobileMenu() {
                 <div className="flex overflow-x-auto gap-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   {/* Shop Image 1 (Skateboarder in air) */}
                   <Link
-                    href={getLocalizedPath("/search", locale)}
+                    href={getLocalizedPath("/store/skateboards", locale)}
                     onClick={closeMobileMenu}
                     className="relative w-[50vw] shrink-0 aspect-[1.1] rounded-sm overflow-hidden bg-neutral-100 dark:bg-neutral-900 group"
                   >
@@ -418,7 +418,7 @@ export default function MobileMenu() {
 
                   {/* Shop Image 2 (Newly Released) */}
                   <Link
-                    href={getLocalizedPath("/search?sort=latest", locale)}
+                    href={getLocalizedPath("/store/newly-released", locale)}
                     onClick={closeMobileMenu}
                     className="relative w-[50vw] shrink-0 aspect-[1.1] rounded-sm overflow-hidden bg-neutral-100 dark:bg-neutral-900 group"
                   >
