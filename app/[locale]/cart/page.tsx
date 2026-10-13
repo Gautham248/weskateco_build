@@ -144,7 +144,7 @@ function CartPageContent() {
                   You're signed out right now. To save these items or see your
                   previously saved items,{" "}
                   <Link
-                    href="#"
+                    href="/account"
                     className="underline font-bold hover:text-neutral-300"
                   >
                     Sign in
