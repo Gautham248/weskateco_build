@@ -12,6 +12,9 @@ import { updateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+/** Keep the Shopify cart link alive across browser restarts (30 days). */
+const CART_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
+
 export async function addItem(
   prevState: any,
   selectedVariantId: string | undefined,
@@ -31,7 +34,10 @@ export async function addItem(
     try {
       cart = await createCart();
       cartId = cart.id;
-      (await cookies()).set("cartId", cartId!);
+      (await cookies()).set("cartId", cartId!, {
+        maxAge: CART_COOKIE_MAX_AGE,
+        path: "/",
+      });
     } catch (e) {
       return "Error creating cart";
     }
@@ -120,7 +126,10 @@ export async function redirectToCheckout() {
 
 export async function createCartAndSetCookie() {
   let cart = await createCart();
-  (await cookies()).set("cartId", cart.id!);
+  (await cookies()).set("cartId", cart.id!, {
+    maxAge: CART_COOKIE_MAX_AGE,
+    path: "/",
+  });
 }
 
 export async function createSingleItemCartAction(selectedVariantId: string) {
@@ -146,6 +155,19 @@ export async function addConfiguratorBundle(
 ) {
   if (!items || items.length === 0) {
     return "No items to add";
+  }
+
+  // addToCart requires an existing cart id — create one for fresh sessions
+  // (e.g. first-ever visit, or after the cartId cookie expired). If a cookie
+  // already exists we trust it: creating a replacement here would orphan a
+  // cart that still holds the user's items.
+  const existingCartId = (await cookies()).get("cartId")?.value;
+  if (!existingCartId) {
+    const cart = await createCart();
+    (await cookies()).set("cartId", cart.id!, {
+      maxAge: CART_COOKIE_MAX_AGE,
+      path: "/",
+    });
   }
 
   try {
@@ -189,13 +211,11 @@ export async function buyNowAction(selectedVariantId: string | undefined) {
   }
 }
 
-export async function editCartItemVariantAction(
-  payload: {
-    lineId: string;
-    newMerchandiseId: string;
-    quantity: number;
-  },
-) {
+export async function editCartItemVariantAction(payload: {
+  lineId: string;
+  newMerchandiseId: string;
+  quantity: number;
+}) {
   const { lineId, newMerchandiseId, quantity } = payload;
 
   try {
