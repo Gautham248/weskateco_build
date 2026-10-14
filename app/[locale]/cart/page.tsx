@@ -120,38 +120,6 @@ function CartPageContent() {
               >
                 My Cart
               </h1>
-              {/* Alert Sign In */}
-              <div
-                className="flex items-center gap-3 bg-neutral-900 text-white rounded-md p-4 text-sm font-normal"
-                style={{ fontFamily: "Archivo, sans-serif" }}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="flex-shrink-0"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-                <span>
-                  You're signed out right now. To save these items or see your
-                  previously saved items,{" "}
-                  <Link
-                    href="/account"
-                    className="underline font-bold hover:text-neutral-300"
-                  >
-                    Sign in
-                  </Link>
-                  .
-                </span>
-              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">

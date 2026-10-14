@@ -49,7 +49,7 @@ export default async function RootLayout(props: {
             </NavbarScrollWrapper>
             <main className="pt-[72px]">
               {children}
-              <Toaster closeButton />
+              <Toaster position="top-center" offset={56} closeButton />
               {/* <WelcomeToast /> */}
             </main>
           </TranslationProvider>
