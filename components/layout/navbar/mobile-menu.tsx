@@ -307,6 +307,13 @@ export default function MobileMenu() {
                         Wheels Guide
                       </Link>
                       <Link
+                        href={getLocalizedPath("/guides/bearing-guide", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Bearing Guide
+                      </Link>
+                      <Link
                         href={getLocalizedPath(
                           "/guides/griptape-guide",
                           locale,

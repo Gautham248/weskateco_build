@@ -68,6 +68,24 @@
   --color-toucan-panel-3: #000000;
 }
 
+/* Guides brand colour palette for drawings */
+:root {
+  --lime: #ccff02;
+  --lime-deep: #8fb300;
+  --on-lime: #1d3b0f;
+  --pink: #dc2626;
+  --cyan: #0284c7;
+}
+
+.dark,
+[data-theme="dark"] {
+  --lime: #ccff02;
+  --lime-deep: #ccff02;
+  --on-lime: #1d3b0f;
+  --pink: #f87171;
+  --cyan: #38bdf8;
+}
+
 /* Guides use the brand token as a monochrome accent rather than lime. */
 .guides-monochrome {
   --color-brand: #ffffff;
@@ -375,7 +393,7 @@ button {
   display: block;
   width: 100%;
   height: auto;
-  min-width: 560px;
+  max-width: 100%;
 }
 
 /* Drawn figures */
@@ -419,7 +437,7 @@ button {
 }
 .surfskate-figs .sf-spring {
   fill: none;
-  stroke: var(--color-neutral-800);
+  stroke: var(--pink);
   stroke-width: 2;
 }
 .surfskate-figs .sf-bush {
@@ -438,9 +456,12 @@ button {
 }
 .surfskate-figs .sf-path {
   fill: none;
-  stroke: var(--color-neutral-800);
+  stroke: var(--lime-deep);
   stroke-width: 2.4;
   stroke-linecap: round;
+}
+.surfskate-figs .sf-path[marker-end*="sp"] {
+  stroke: var(--pink);
 }
 .surfskate-figs .sf-path.faint {
   stroke: var(--color-neutral-300);
@@ -461,7 +482,7 @@ button {
   opacity: 0.18;
 }
 .surfskate-figs .sf-axis2 {
-  stroke: var(--color-neutral-600);
+  stroke: var(--pink);
   stroke-width: 1.4;
   stroke-dasharray: 9 4 2 4;
 }
@@ -479,7 +500,7 @@ button {
 }
 .surfskate-figs .sk-arr {
   fill: none;
-  stroke: var(--color-neutral-800);
+  stroke: var(--lime-deep);
   stroke-width: 2.6;
 }
 .surfskate-figs .sk-arr.thin {
@@ -516,10 +537,28 @@ button {
   fill: var(--color-black);
 }
 .surfskate-figs .sf-t.lime {
-  fill: var(--color-black);
+  fill: var(--lime-deep);
 }
 .surfskate-figs .sf-t.pink {
-  fill: var(--color-neutral-600);
+  fill: var(--pink);
+}
+.surfskate-figs .sf-t.cyan {
+  fill: var(--cyan);
+}
+
+@media (max-width: 640px) {
+  .surfskate-figs .dim text {
+    font-size: 13px;
+  }
+  .surfskate-figs .dimnote {
+    font-size: 12.5px;
+  }
+  .surfskate-figs .sf-t {
+    font-size: 14px;
+  }
+  .surfskate-figs .sf-t.big {
+    font-size: 15px;
+  }
 }
 
 /* Mechanism figure — one selected part at a time */
@@ -598,3 +637,61 @@ button {
     transition: none;
   }
 }
+
+/* ================= wheel & truck guide figures ================= */
+.wheel-figs .wpart,
+.truck-figs .tpart {
+  cursor: pointer;
+}
+.wheel-figs .wpart rect,
+.wheel-figs .wpart circle,
+.wheel-figs .wpart path,
+.wheel-figs .wpart line,
+.truck-figs .tpart rect,
+.truck-figs .tpart circle,
+.truck-figs .tpart path,
+.truck-figs .tpart line,
+.truck-figs .tpart polygon {
+  transition: fill-opacity 0.15s, stroke-width 0.15s, opacity 0.15s;
+}
+.wheel-figs .badge,
+.truck-figs .badge {
+  cursor: pointer;
+}
+.wheel-figs .badge circle,
+.truck-figs .badge circle {
+  fill: #ffffff;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  transition: fill 0.15s, stroke 0.15s;
+}
+.wheel-figs .badge text,
+.truck-figs .badge text {
+  font-size: 11px;
+  font-weight: 700;
+  fill: currentColor;
+  dominant-baseline: central;
+}
+.wheel-figs .badge.on circle,
+.truck-figs .badge.on circle {
+  fill: var(--lime);
+  stroke: var(--lime-deep);
+}
+.wheel-figs .badge.on text,
+.truck-figs .badge.on text {
+  fill: var(--on-lime);
+}
+
+@media (max-width: 880px) {
+  #wAnat text,
+  #tAnat text,
+  #lnA text,
+  #lnB text {
+    font-size: 14px;
+  }
+  #wAnat .badge circle,
+  #tAnat .badge circle {
+    r: 13;
+  }
+}
+

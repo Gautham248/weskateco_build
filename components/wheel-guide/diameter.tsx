@@ -5,7 +5,7 @@ import {
   DIAMETER_BLURBS,
   DIAMETER_CAPTION,
   DIAMETER_DEFAULT,
-  DIAMETER_INTRO,
+  DIAMETER_SECTION,
 } from "lib/wheel-guide/data";
 import {
   SectionHeader,
@@ -30,9 +30,9 @@ export default function DiameterSection() {
       <Container>
         {/* Header */}
         <SectionHeader
-          kicker="02 — Diameter"
-          title="Diameter"
-          intro={DIAMETER_INTRO}
+          kicker={DIAMETER_SECTION.kicker}
+          title={DIAMETER_SECTION.title}
+          intro={DIAMETER_SECTION.intro}
         />
 
         {/* All five wheels at true relative size, so the jump from a trick

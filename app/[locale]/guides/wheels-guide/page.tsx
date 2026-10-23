@@ -11,7 +11,12 @@ import RangeSection from "components/wheel-guide/range";
 import ShapeSection from "components/wheel-guide/shape";
 import WearSection from "components/wheel-guide/wear";
 import Footer from "components/layout/footer";
-import { ANCHOR_NAV, WHEEL_FAQ, WHEEL_HERO } from "lib/wheel-guide/data";
+import {
+  ANCHOR_NAV,
+  FAQ_SECTION,
+  WHEEL_FAQ,
+  WHEEL_HERO,
+} from "lib/wheel-guide/data";
 import { guideMetadata } from "lib/guides/metadata";
 
 export const dynamicParams = true;
@@ -49,8 +54,9 @@ export default async function WheelsGuidePage() {
         items={WHEEL_FAQ}
         idBase="wheel-faq"
         variant="chevron"
-        kicker="08 — FAQ"
-        title="FAQ"
+        kicker={FAQ_SECTION.kicker}
+        title={FAQ_SECTION.title}
+        intro={FAQ_SECTION.intro}
         stockLabel="What we stock:"
       />
       <Footer />

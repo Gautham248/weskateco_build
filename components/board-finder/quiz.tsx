@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   BANDS,
+  FINDER_SECTION,
   QUESTIONS,
   buildResult,
   toPath,
@@ -34,7 +35,7 @@ function tagClasses(tone: "cyan" | "pink" | "neutral") {
       return "bg-white border border-neutral-300 text-black";
   }
 }
-import { Container, Section, H2_CLASS } from "components/guides/ui";
+import { SectionHeader, Container, Section } from "components/guides/ui";
 
 export default function QuizSection({
   unit,
@@ -98,18 +99,11 @@ export default function QuizSection({
     <Section id="find-your-board" scroll={72}>
       <Container>
         {/* Header */}
-        <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
-          <h2
-            className={H2_CLASS}
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
-            Find your board
-          </h2>
-          <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-            Four questions. We&apos;ll turn the answers into the four numbers
-            that decide how the board rides.
-          </p>
-        </div>
+        <SectionHeader
+          kicker={FINDER_SECTION.kicker}
+          title={FINDER_SECTION.title}
+          intro={FINDER_SECTION.intro}
+        />
 
         {/* Progress pips */}
         <nav aria-label="Quiz progress">

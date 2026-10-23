@@ -29,28 +29,19 @@ const BAND_COLUMNS = [
     make: "Double Hollow",
   },
 ];
-import { Container, Section, H2_CLASS } from "components/guides/ui";
+import { Container, Section, SectionHeader } from "components/guides/ui";
+import { TRUCKS_SECTION } from "lib/board-finder/data";
 
 export default function TrucksSection() {
   return (
     <Section bg="muted" scroll={false}>
       <Container>
         {/* Header */}
-        <div className="flex flex-col gap-3 md:gap-4 max-w-3xl">
-          <h2
-            className={H2_CLASS}
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
-            Trucks
-          </h2>
-          <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-            Trucks are the two metal axles bolted under the deck. They carry the
-            wheels and they are the only reason a skateboard turns: you lean,
-            rubber rings called bushings squash on one side, and the axle tilts.
-            Two things to get right: the size, and which tier of truck
-            you&apos;re actually on.
-          </p>
-        </div>
+        <SectionHeader
+          kicker={TRUCKS_SECTION.kicker}
+          title={TRUCKS_SECTION.title}
+          intro={TRUCKS_SECTION.intro}
+        />
 
         {/* Sizing table */}
         <DragScrollArea

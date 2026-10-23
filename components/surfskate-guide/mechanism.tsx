@@ -70,7 +70,7 @@ export default function MechanismSection() {
           <div className="lg:col-span-5 w-full flex flex-col gap-4">
             <FigHint>{MECH_HINT}</FigHint>
             <FigCard tone="muted">
-              <div className="surfskate-figs -mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
+              <div className="surfskate-figs w-full">
                 <svg
                   viewBox="0 0 560 424"
                   role="img"

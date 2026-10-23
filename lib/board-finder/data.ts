@@ -6,6 +6,77 @@
 import type { GuideFaqItem } from "lib/guides/types";
 export const SHOP = "https://weskateco.vercel.app";
 
+// ── Section Headers ────────────────────────────────────────────────────────
+export const FINDER_SECTION = {
+  kicker: "Start here",
+  title: "Find your board",
+  intro:
+    "Four questions about your feet and your plans, and you get a full spec back — deck width, concave, truck size, wheels and grip.",
+};
+
+export const ANATOMY_SECTION = {
+  kicker: "Parts of a board",
+  title: "Anatomy of a complete skateboard",
+  intro:
+    "A complete is a board sold fully assembled — deck, griptape, trucks, wheels, bearings and hardware, ready to ride. Here are two views of one: the top, which you stand on, and the bottom, where the graphic and the moving parts are. Tap a number for a close-up of that part, what it does, and the specs that decide how it rides.",
+};
+
+export const SIZE_SECTION = {
+  kicker: "Deck width",
+  title: "What size deck should I get?",
+  intro:
+    "Deck width is measured in inches across the middle of the board. Your shoe is the fastest way to get close.",
+};
+
+export const CONCAVE_SECTION = {
+  kicker: "The curve of the deck",
+  title: "Concave — how curved the deck is",
+  intro:
+    "Concave is the dish shape pressed across the width of the deck, so the two long edges (the rails) sit higher than the middle. Width is what your feet decide; concave is what your riding decides, because it’s the shape your foot braces against.",
+};
+
+export const GRIPTAPE_SECTION = {
+  kicker: "Griptape",
+  title: "Griptape grades: 80AB, OS780, HS780",
+  intro:
+    "Griptape is sandpaper with adhesive on the back. The numbers are grit size — lower numbers are coarser, higher numbers are finer.",
+};
+
+export const TRUCKS_SECTION = {
+  kicker: "Trucks",
+  title: "Trucks — the part that turns",
+  intro:
+    "Trucks are the two metal axles bolted under the deck. They carry the wheels and they are the only reason a skateboard turns: you lean, rubber rings called bushings squash on one side, and the axle tilts. Two things to get right: the size, and which tier of truck you are actually on.",
+};
+
+export const DECISION_SECTION = {
+  kicker: "Ready-made or custom",
+  title: "Buy a complete, or build it yourself?",
+  intro:
+    "Two ways to end up with a board: buy one already assembled (a complete), or choose each part yourself. Answer three questions and we tell you which one is actually yours — then hand you over to the right place.",
+};
+
+export const STYLES_SECTION = {
+  kicker: "Riding style",
+  title: "What’s your style or goal?",
+  intro:
+    "Deck width follows what you actually want to do on the board. Three directions.",
+};
+
+export const MAINTENANCE_SECTION = {
+  kicker: "Looking after it",
+  title: "What about maintenance?",
+  intro:
+    "A skateboard has only two moving parts: the bearings inside the wheels, and the trucks that lean on their bushings. Keeping it rolling nicely is five minutes once a month, not a weekend project.",
+};
+
+export const FAQ_SECTION = {
+  kicker: "Common questions",
+  title: "Still deciding?",
+  intro:
+    "Answers to the things beginners ask most. If what you want to know is not here, ask — a real human answers.",
+};
+
 // Widths we stock, inches
 export const STOCK = [7, 7.25, 7.5, 7.75, 8, 8.125, 8.25, 8.5, 8.875] as const;
 // Which of the STOCK widths ship as a "beginner complete"
@@ -223,14 +294,14 @@ export function buildResult(answers: QuizAnswers): QuizResult {
       reasons: [
         "Deck length 32″, wide underfoot, with rocker — a gentle upward curve — through the nose and tail. Shoe size barely matters here; wheelbase does, meaning the distance between the two trucks.",
         "A short wheelbase (around 17″) turns tighter and pumps harder; a longer one (around 19″) is calmer and holds a line at speed.",
-        "66 × 55mm wheels at 82A — big, wide and soft, so they roll over broken tar instead of stopping on it and hold their line through a hard carve.",
+        "66 × 50mm wheels at 82A — big, wide and soft, so they roll over broken tar instead of stopping on it and hold their line through a hard carve.",
         "A skateboard truck leans a few degrees. A surfskate front truck swings a full circle, which is why it carves like it does — and why you cannot learn ollies on one.",
       ],
       spec: [
         ["Board type", "Surfskate"],
         ["Deck length", "32″"],
         ["Wheelbase", "~17″ or ~19″"],
-        ["Wheels", "66 × 55mm · 82A"],
+        ["Wheels", "66 × 50mm · 82A"],
         ["Front truck", "360° pivot"],
         ["Comes", "Fully assembled"],
       ],
@@ -463,12 +534,12 @@ export const PARTS: Part[] = [
     x: 77.5,
     y: 18,
     name: "Wheels",
-    text: "Measured two ways: diameter in millimetres, and hardness on the A scale, where a higher number means a harder wheel. Skateboard wheels are 100A high rebound — hard and fast, built to break traction predictably rather than to soak up bumps — so on a skateboard the real choice is diameter: bigger holds speed over broken ground, smaller sits lower and spins up quicker under a flip. Surfskates go the other way entirely, on 66 × 55mm at 82A. The size is printed on the face — the one here reads 53 × 33mm 100A.",
+    text: "Measured two ways: diameter in millimetres, and hardness on the A scale, where a higher number means a harder wheel. Skateboard wheels are 100A high rebound — hard and fast, built to break traction predictably rather than to soak up bumps — so on a skateboard the real choice is diameter: bigger holds speed over broken ground, smaller sits lower and spins up quicker under a flip. Surfskates go the other way entirely, on 66 × 50mm at 82A. The size is printed on the face — the one here reads 53 × 33mm 100A.",
     spec: [
       ["Skate diameters", "51 · 52 · 53 · 55 mm"],
-      ["Contact width", "33 mm"],
+      ["Overall width", "33 mm"],
       ["Skate durometer", "100A high rebound"],
-      ["Surfskate wheel", "66 × 55 mm, 82A"],
+      ["Surfskate wheel", "66 × 50 mm, 82A"],
       ["51–52mm", "Lower, lighter, flip tricks"],
       ["53–55mm", "Speed and clearance on rough tar"],
       ["Rotate", "When one edge wears to a cone"],
@@ -619,9 +690,9 @@ export const FAQ: GuideFaqItem[] = [
   },
   {
     q: "Which wheels for Indian roads?",
-    a: "Two numbers describe a wheel and both matter on bad tar: **diameter** in millimetres and **durometer** on the A scale.\n\n**Durometer is the one that decides how the road feels.** Around 99–101A is standard street and park — hard, fast on smooth concrete, and predictable when it breaks traction, which is what tricks need. Drop to 78–87A and the urethane deforms around grit and cracks instead of stopping on them; the ride goes quiet and the wheel grips. The cost is that soft wheels feel sluggish on smooth ground and make flip tricks harder, because the board sits higher and the wheels don't slide.\n\n**Diameter is the smaller lever.** Bigger wheels (54–60mm) carry speed better and clear small stones; smaller ones (50–53mm) sit the board lower and spin up faster. On broken tar, going softer helps far more than going bigger.\n\nContact width counts too: a wider wheel spreads the load and rolls over ruts more calmly, while a narrow one slides more willingly.\n\nSo the rule for rough Indian roads: if you need to flip the board, stay hard and take the largest diameter you can fit. If you don't, go soft — it is a different ride entirely.",
+    a: "Two numbers describe a wheel and both matter on bad tar: **diameter** in millimetres and **durometer** on the A scale.\n\n**Durometer is the one that decides how the road feels.** Around 99–101A is standard street and park — hard, fast on smooth concrete, and predictable when it breaks traction, which is what tricks need. Drop to 78–87A and the urethane deforms around grit and cracks instead of stopping on them; the ride goes quiet and the wheel grips. The cost is that soft wheels feel sluggish on smooth ground and make flip tricks harder, because the board sits higher and the wheels don't slide.\n\n**Diameter is the smaller lever.** Bigger wheels (54–60mm) carry speed better and clear small stones; smaller ones (50–53mm) sit the board lower and spin up faster. On broken tar, going softer helps far more than going bigger.\n\nWidth counts too: a wider wheel spreads the load and rolls over ruts more calmly, while a narrow one slides more willingly.\n\nSo the rule for rough Indian roads: if you need to flip the board, stay hard and take the largest diameter you can fit. If you don't, go soft — it is a different ride entirely.",
     stock:
-      "100A skate wheels in 51, 52, 53 and 55mm with a 33mm contact width. The soft option in our range is the surfskate, on 66 × 55mm at 82A.",
+      "100A skate wheels in 51, 52, 53 and 55mm, 33mm wide. Beginner completes ship on 52mm 95A, a step softer. The soft option in our range is the surfskate, on 66 × 50mm at 82A.",
   },
   {
     q: "Do bearings really matter?",
@@ -633,7 +704,7 @@ export const FAQ: GuideFaqItem[] = [
     q: "Skateboard, surfskate or cruiser?",
     a: "Three different machines that happen to share a silhouette.\n\n**A skateboard** is a symmetrical popsicle, roughly 7″–8.9″ wide, kicked at both ends, on hard wheels and trucks that lean a few degrees. Everything about it is arranged so the board can be popped off the tail, flipped and landed on. It is the only one of the three you can learn tricks on.\n\n**A cruiser** is a shorter, often shaped deck on soft wheels, built for getting somewhere over imperfect ground. Soft urethane and a bit more diameter do most of the work; the deck is usually small enough to carry.\n\n**A surfskate** replaces the front truck. Where a skateboard truck pivots a few degrees on a fixed kingpin, a surfskate's front truck swings through a full circle on its own arm, so the nose can steer independently of the tail. That lets you generate speed by pumping your hips rather than pushing — the closest thing on land to surfing or snowboarding. The deck is longer and wider with rocker through the nose and tail, and the wheels are big and soft, because a carve wants grip rather than release. The rear truck stays conventional, for control.\n\nChoosing is simple: tricks, take a skateboard. Getting places comfortably, a cruiser. Flow and carving without pushing, a surfskate.",
     stock:
-      "Skateboards across nine widths, and 32″ surfskates on 66 × 55mm 82A wheels with a spring-loaded 360° pivot front truck. Cruisers are coming.",
+      "Skateboards across nine widths, and 32″ surfskates on 66 × 50mm 82A wheels with a spring-loaded 360° pivot front truck. Cruisers are coming.",
   },
   {
     q: "How long does a deck last?",

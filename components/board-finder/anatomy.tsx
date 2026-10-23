@@ -5,10 +5,10 @@ import boardUnderside from "components/icons/board_finder/board-underside.webp";
 import partSprite from "components/icons/board_finder/part-closeups-sprite.webp";
 import Image from "next/image";
 import { useState } from "react";
-import { CAPTIONS, HINTS, PARTS } from "lib/board-finder/data";
+import { ANATOMY_SECTION, CAPTIONS, HINTS, PARTS } from "lib/board-finder/data";
 
 type View = "top" | "under";
-import { Container, Section, H2_CLASS } from "components/guides/ui";
+import { Container, Section, SectionHeader } from "components/guides/ui";
 
 export default function AnatomySection() {
   const [view, setView] = useState<View>("top");
@@ -28,51 +28,42 @@ export default function AnatomySection() {
   return (
     <Section bg="muted" scroll={false} pad="compact">
       <Container gap="tight">
-        {/* Header + view toggle (one row to save vertical space) */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div className="flex flex-col gap-2 max-w-2xl">
-            <h2
-              className={H2_CLASS}
-              style={{ fontFamily: "'Clash Display', sans-serif" }}
-            >
-              Anatomy of a complete skateboard
-            </h2>
-            <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-              Six parts, numbered. Tap a marker to see what it does.
-            </p>
-          </div>
+        <SectionHeader
+          kicker={ANATOMY_SECTION.kicker}
+          title={ANATOMY_SECTION.title}
+          intro={ANATOMY_SECTION.intro}
+        />
 
-          {/* View toggle */}
-          <div className="flex flex-wrap items-center gap-4">
-            <div
-              className="inline-flex rounded-4 border border-neutral-200 bg-white p-1 gap-1"
-              role="group"
-              aria-label="Board view"
-            >
-              {(
-                [
-                  ["top", "Top"],
-                  ["under", "Bottom"],
-                ] as const
-              ).map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => switchView(value)}
-                  aria-pressed={view === value}
-                  className={`px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-wider rounded-4 transition-colors cursor-pointer ${
-                    view === value
-                      ? "bg-black text-white"
-                      : "text-black hover:bg-neutral-100"
-                  }`}
-                  style={{ fontFamily: "'Clash Display', sans-serif" }}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            <span className="text-sm text-neutral-500">{HINTS[view]}</span>
+        {/* View toggle */}
+        <div className="flex flex-wrap items-center justify-between gap-4 -mt-4 mb-2">
+          <div
+            className="inline-flex rounded-4 border border-neutral-200 bg-white p-1 gap-1"
+            role="group"
+            aria-label="Board view"
+          >
+            {(
+              [
+                ["top", "Top"],
+                ["under", "Bottom"],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => switchView(value)}
+                aria-pressed={view === value}
+                className={`px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-wider rounded-4 transition-colors cursor-pointer ${
+                  view === value
+                    ? "bg-black text-white"
+                    : "text-black hover:bg-neutral-100"
+                }`}
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                {label}
+              </button>
+            ))}
           </div>
+          <span className="text-sm text-neutral-500">{HINTS[view]}</span>
         </div>
 
         {/* Image with hotspots */}

@@ -104,7 +104,7 @@ export default function GuideFaq({
                     role="region"
                     aria-labelledby={`${idBase}-btn-${index}`}
                     hidden={!isOpen}
-                    className="flex flex-col gap-4 pb-5 pr-10"
+                    className={`flex-col gap-4 pb-5 pr-10 ${isOpen ? "flex" : "hidden"}`}
                   >
                     <div className="flex flex-col gap-3">
                       {renderParagraphs(item.a)}
@@ -167,7 +167,7 @@ export default function GuideFaq({
                     role="region"
                     aria-labelledby={id}
                     hidden={!isOpen}
-                    className="pb-6 flex flex-col gap-4 max-w-4xl"
+                    className={`pb-6 flex-col gap-4 max-w-4xl ${isOpen ? "flex" : "hidden"}`}
                   >
                     {item.a.split("\n\n").map((paragraph, pi) => (
                       <p
@@ -179,7 +179,15 @@ export default function GuideFaq({
                     ))}
                     {item.stock && (
                       <p className="text-xs md:text-sm text-neutral-500 leading-[160%] bg-[#F7F7F9] border border-neutral-200 rounded-[8px] px-4 py-3">
-                        {renderRich(item.stock)}
+                        <span
+                          className="font-semibold uppercase tracking-wider text-xs mr-2 text-neutral-500"
+                          style={{ fontFamily: "'Clash Display', sans-serif" }}
+                        >
+                          {stockLabel}
+                        </span>
+                        <span className="text-black font-[400]">
+                          {renderRich(item.stock)}
+                        </span>
                       </p>
                     )}
                   </div>

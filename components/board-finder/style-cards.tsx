@@ -31,7 +31,8 @@ const STYLES = [
     href: "/store/decks",
   },
 ];
-import { Container, Section, H2_CLASS } from "components/guides/ui";
+import { Container, Section, SectionHeader } from "components/guides/ui";
+import { STYLES_SECTION } from "lib/board-finder/data";
 
 export default function StyleCardsSection() {
   const { locale } = useTranslation();
@@ -40,18 +41,11 @@ export default function StyleCardsSection() {
     <Section bg="muted" scroll={false}>
       <Container>
         {/* Header */}
-        <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
-          <h2
-            className={H2_CLASS}
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
-            What&apos;s your style <br /> or goal?
-          </h2>
-          <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-            Deck width follows what you actually want to do on the board. Three
-            directions.
-          </p>
-        </div>
+        <SectionHeader
+          kicker={STYLES_SECTION.kicker}
+          title={STYLES_SECTION.title}
+          intro={STYLES_SECTION.intro}
+        />
 
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-stretch">

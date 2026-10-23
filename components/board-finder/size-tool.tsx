@@ -65,7 +65,13 @@ const CONCAVE_CARDS = [
 
 // Ruler: 7″ to 9″ in 0.25″ steps.
 const TICKS = Array.from({ length: 9 }, (_, i) => 7 + i * 0.25);
-import { Container, Section, GRID_CLASS, H2_CLASS } from "components/guides/ui";
+import {
+  Container,
+  Section,
+  GRID_CLASS,
+  SectionHeader,
+} from "components/guides/ui";
+import { CONCAVE_SECTION, SIZE_SECTION } from "lib/board-finder/data";
 
 export default function SizeToolSection({
   unit,
@@ -80,21 +86,15 @@ export default function SizeToolSection({
       <Section scroll={false}>
         <Container>
           {/* Header with unit toggle */}
-          <div className="flex flex-row items-center justify-between gap-4 w-full">
-            <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
-              <h2
-                className={H2_CLASS}
-                style={{ fontFamily: "'Clash Display', sans-serif" }}
-              >
-                What size deck should I get?
-              </h2>
-              <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-                Width follows the foot. Pick your shoe size band.
-              </p>
-            </div>
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 w-full">
+            <SectionHeader
+              kicker={SIZE_SECTION.kicker}
+              title={SIZE_SECTION.title}
+              intro={SIZE_SECTION.intro}
+            />
 
             <div
-              className="inline-flex rounded-4 border border-neutral-200 p-1 gap-1 shrink-0"
+              className="inline-flex rounded-4 border border-neutral-200 p-1 gap-1 shrink-0 self-start md:mt-2"
               role="group"
               aria-label="Shoe size unit"
             >
@@ -254,17 +254,11 @@ export default function SizeToolSection({
       {/* Concave explainer */}
       <Section bg="muted" scroll={false}>
         <Container>
-          <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
-            <h2
-              className={H2_CLASS}
-              style={{ fontFamily: "'Clash Display', sans-serif" }}
-            >
-              What&apos;s concave?
-            </h2>
-            <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-              The dish across the board — how curved the deck is underfoot.
-            </p>
-          </div>
+          <SectionHeader
+            kicker={CONCAVE_SECTION.kicker}
+            title={CONCAVE_SECTION.title}
+            intro={CONCAVE_SECTION.intro}
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-stretch">
             {CONCAVE_CARDS.map((card) => (

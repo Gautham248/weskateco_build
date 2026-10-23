@@ -37,7 +37,8 @@ function loadChecked(): boolean[] {
     return DEFAULT_STATE;
   }
 }
-import { Container, Section, GRID_CLASS, H2_CLASS } from "components/guides/ui";
+import { Container, Section, GRID_CLASS, SectionHeader } from "components/guides/ui";
+import { MAINTENANCE_SECTION } from "lib/board-finder/data";
 
 export default function MaintenanceSection() {
   const [checked, setChecked] = useState<boolean[]>(DEFAULT_STATE);
@@ -65,18 +66,11 @@ export default function MaintenanceSection() {
     <Section scroll={false}>
       <Container>
         {/* Header */}
-        <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
-          <h2
-            className={H2_CLASS}
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
-            Maintenance
-          </h2>
-          <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-            Easier than it looks. Tick these off as you go — the page remembers
-            on this device.
-          </p>
-        </div>
+        <SectionHeader
+          kicker={MAINTENANCE_SECTION.kicker}
+          title={MAINTENANCE_SECTION.title}
+          intro={MAINTENANCE_SECTION.intro}
+        />
 
         <div className={GRID_CLASS}>
           {/* Checklist */}

@@ -1,10 +1,10 @@
 import { DragScrollArea } from "components/guides/drag-scroll-area";
 import {
   DURO_BANDS,
-  DURO_INTRO,
   DURO_NOTE,
   DURO_ROWS,
   DURO_SCALES,
+  DUROMETER_SECTION,
 } from "lib/wheel-guide/data";
 import { SectionHeader, Container, Section } from "components/guides/ui";
 
@@ -14,9 +14,9 @@ export default function DurometerSection() {
       <Container>
         {/* Header */}
         <SectionHeader
-          kicker="03 — Durometer"
-          title="Durometer"
-          intro={DURO_INTRO}
+          kicker={DUROMETER_SECTION.kicker}
+          title={DUROMETER_SECTION.title}
+          intro={DUROMETER_SECTION.intro}
         />
 
         {/* The two scales */}
