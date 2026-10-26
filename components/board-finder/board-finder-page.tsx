@@ -3,7 +3,7 @@
 import GuideFaq from "components/guides/faq";
 import GuideHero from "components/guides/hero";
 import skateboardGuideBanner from "components/icons/skateboard_guide/skateboard_guide_banner.png";
-import { FAQ } from "lib/board-finder/data";
+import { FAQ, FAQ_SECTION } from "lib/board-finder/data";
 import { useState } from "react";
 import AnatomySection from "./anatomy";
 import DecisionHelperSection from "./decision-helper";
@@ -68,7 +68,9 @@ export default function BoardFinderPage() {
         items={FAQ}
         idBase="faq"
         variant="chevron"
-        title="FAQ"
+        kicker={FAQ_SECTION.kicker}
+        title={FAQ_SECTION.title}
+        intro={FAQ_SECTION.intro}
         headerWidth="2xl"
         scroll={false}
         stockLabel="What we stock:"

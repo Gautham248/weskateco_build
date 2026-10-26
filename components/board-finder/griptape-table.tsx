@@ -127,7 +127,8 @@ function renderCell(cell: Cell, locale: string) {
     </span>
   );
 }
-import { Container, Section, H2_CLASS } from "components/guides/ui";
+import { Container, Section, SectionHeader } from "components/guides/ui";
+import { GRIPTAPE_SECTION } from "lib/board-finder/data";
 
 export default function GriptapeSection() {
   const { locale } = useTranslation();
@@ -136,17 +137,11 @@ export default function GriptapeSection() {
     <Section scroll={false}>
       <Container>
         {/* Header */}
-        <div className="flex flex-col gap-3 md:gap-4 max-w-2xl">
-          <h2
-            className={H2_CLASS}
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
-            Griptape grades
-          </h2>
-          <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-            Three grades, side by side — the grain is the difference.
-          </p>
-        </div>
+        <SectionHeader
+          kicker={GRIPTAPE_SECTION.kicker}
+          title={GRIPTAPE_SECTION.title}
+          intro={GRIPTAPE_SECTION.intro}
+        />
 
         {/* Comparison table */}
         <DragScrollArea

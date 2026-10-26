@@ -32,6 +32,17 @@ export default {
         destination: "/terms-of-service",
         permanent: true,
       },
+      // Redirect singular /guides/wheel-guide to canonical plural /guides/wheels-guide.
+      {
+        source: "/guides/wheel-guide",
+        destination: "/guides/wheels-guide",
+        permanent: true,
+      },
+      {
+        source: "/:locale(en|hi)/guides/wheel-guide",
+        destination: "/:locale/guides/wheels-guide",
+        permanent: true,
+      },
       // Product pages moved from the singular /product/<handle> to /products/<handle>.
       // Without these, every previously shared or indexed product URL 404s. The
       // unprefixed form is matched too because the proxy rewrites it to the default

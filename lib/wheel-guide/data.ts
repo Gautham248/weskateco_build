@@ -103,7 +103,7 @@ export interface Diameter {
 export const DIAMETERS: Diameter[] = [
   {
     id: "51",
-    size: "51mm",
+    size: "51 × 33mm",
     category: "Skate wheel",
     text: "The smallest we make, and the lightest. Sits the board lowest and spins up quickest, which is what you want when the board has to come off the ground and rotate. Gives up the most on rough ground — a stone that a 55 rolls over will stop a 51.",
     spec: [
@@ -115,7 +115,7 @@ export const DIAMETERS: Diameter[] = [
   },
   {
     id: "52",
-    size: "52mm",
+    size: "52 × 33mm",
     category: "Skate wheel",
     text: "A millimetre up and the most common street size in the world. Almost everything said about 51 applies, with a fraction more roll. If you have no particular reason to choose, this is the safe one.",
     spec: [
@@ -127,7 +127,7 @@ export const DIAMETERS: Diameter[] = [
   },
   {
     id: "53",
-    size: "53mm",
+    size: "53 × 33mm",
     category: "Skate wheel",
     text: "The middle of the range and the sensible default for skating in India, where the ground is rarely smooth. Enough extra roll to notice on broken tar without materially changing how the board flips.",
     spec: [
@@ -139,7 +139,7 @@ export const DIAMETERS: Diameter[] = [
   },
   {
     id: "55",
-    size: "55mm",
+    size: "55 × 34mm",
     category: "Skate wheel",
     text: "The largest skate wheel we make. Holds speed best over bad ground and clears small stones the others catch on, at the cost of weight and height. Worth checking clearance if your trucks are low — this is the size where wheelbite starts to be a question.",
     spec: [
@@ -151,17 +151,81 @@ export const DIAMETERS: Diameter[] = [
   },
   {
     id: "66",
-    size: "66mm",
+    size: "66 × 50mm",
     category: "Surfskate wheel",
-    text: "A different category of wheel altogether. 66mm at 82A on a 55mm-wide body, made to grip through a hard carve and roll over ground a trick wheel skips across. It is built for carving and travel, and gives up flip tricks to do it.",
+    text: "A different category of wheel altogether. 66mm at 82A on a 50mm-wide body, made to grip through a hard carve and roll over ground a trick wheel skips across. It is built for carving and travel, and gives up flip tricks to do it.",
     spec: [
       ["Durometer", "82A"],
-      ["Width", "55mm overall"],
+      ["Width", "50mm overall"],
       ["Core", "Centre-set"],
       ["Fits", "Surfskates and most longboards"],
     ],
   },
 ];
+
+export const WBOX = [
+  { id: "51", cx: 8.67, size: "51 × 33mm" },
+  { id: "52", cx: 27.47, size: "52 × 33mm" },
+  { id: "53", cx: 46.37, size: "53 × 33mm" },
+  { id: "55", cx: 65.7, size: "55 × 34mm" },
+  { id: "66", cx: 87.9, size: "66 × 50mm" },
+];
+
+export const ANATOMY_SECTION = {
+  kicker: "Anatomy",
+  title: "A wheel, cut in half",
+  intro:
+    "A wheel looks like one solid object and behaves like several. Cut one through the middle and the parts that decide how it rides are obvious.",
+};
+
+export const DIAMETER_SECTION = {
+  kicker: "The first number",
+  title: "Diameter",
+  intro:
+    "Printed first, quoted most, and on a skateboard it is the smaller of the two levers. Seen side by side at true size, the reason is obvious.",
+};
+
+export const DUROMETER_SECTION = {
+  kicker: "The second number",
+  title: "Durometer, and the scale nobody explains",
+  intro:
+    "The letter matters as much as the number: a wheel marked 84B is considerably harder than one marked 99A.",
+};
+
+export const SHAPE_SECTION = {
+  kicker: "The thing without a number",
+  title: "Shape, and the width that isn’t the contact patch",
+  intro:
+    "Two wheels of the same diameter and the same durometer can ride completely differently, and nothing printed on the side tells you why.",
+};
+
+export const ROADS_SECTION = {
+  kicker: "Local conditions",
+  title: "Choosing for Indian roads",
+  intro:
+    "Most wheel advice is written for smooth American concrete. Very little of India is smooth American concrete, and the standard answer changes when the ground does.",
+};
+
+export const WEAR_SECTION = {
+  kicker: "Diagnosis",
+  title: "How wheels die",
+  intro:
+    "Five ways, and only one of them is the wheel’s fault. Pick what yours are doing.",
+};
+
+export const RANGE_SECTION = {
+  kicker: "The range",
+  title: "What we make",
+  intro:
+    "Two families, at opposite ends of the durometer scale, because they are doing opposite jobs.",
+};
+
+export const FAQ_SECTION = {
+  kicker: "Common questions",
+  title: "Straight answers",
+  intro:
+    "True of any wheels from any brand. What we happen to stock is at the end of each one.",
+};
 
 export const DIAMETER_DEFAULT = "53";
 
@@ -468,7 +532,7 @@ export const RANGE_COLUMNS = [
 
 export const RANGE_ROWS: { label: string; cells: [string, string] }[] = [
   { label: "Diameters", cells: ["51 · 52 · 53 · 55 mm", "66 mm"] },
-  { label: "Width", cells: ["33 mm overall", "55 mm overall"] },
+  { label: "Width", cells: ["33 mm overall", "50 mm overall"] },
   { label: "Durometer", cells: ["100A high rebound", "82A high rebound"] },
   {
     label: "Made for",
@@ -506,7 +570,7 @@ export const WHEEL_FAQ: GuideFaqItem[] = [
     q: "Which wheels for a beginner?",
     a: "Harder than feels intuitive. The instinct is that a softer wheel will be more forgiving, and for the ride itself it is — but a beginner is mostly learning to push, turn, stop and eventually pop the board, and soft wheels grip when you need them to let go, sit the board higher and make every one of those harder.\n\nDiameter matters less than people think at this stage. Anything from about 51 to 54mm is fine; the smaller end is a fraction lighter and lower, the bigger end rolls a little better over bad ground. Do not spend the decision here.\n\nThe exception is a rider who has no intention of learning tricks and just wants to travel. That person should be on soft wheels, and probably not on a popsicle at all.",
     stock:
-      "Beginner completes ship on 100A wheels. The complete's listing says which diameter.",
+      "Beginner completes ship on 52mm 95A wheels — a step softer than our 100A skate wheels, and still hard enough to learn to pop the board on.",
   },
   {
     q: "What is 84B, and is it softer than 99A?",

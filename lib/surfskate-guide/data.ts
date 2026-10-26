@@ -629,6 +629,6 @@ export const SURF_FAQ: GuideFaqItem[] = [
     q: "Is it any good on Indian roads?",
     a: "Better than a street setup, which is the low bar. 66\u00a0mm at 82A rolls over the grit and the patched tar that stops a 100A wheel dead, and the high ride height keeps the deck clear of what a low board catches.\n\nBroken surfaces still interrupt a pumping rhythm, so a smooth stretch — a car park, a promenade, a quiet service road early in the morning — pays for itself. It is the same advice as for a cruiser, and we do not make a cruiser yet.",
     stock:
-      "82A surfskate wheels are the softest thing in our range. The [wheel guide](/guides/wheel-guide) has the full durometer picture.",
+      "82A surfskate wheels are the softest thing in our range. The [wheel guide](/guides/wheels-guide) has the full durometer picture.",
   },
 ];

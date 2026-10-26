@@ -5,8 +5,8 @@ import radialImg from "components/icons/wheel_guide/wheel-shape-radial.png";
 import {
   SHAPE_CAPTION,
   SHAPE_EXTRA,
-  SHAPE_INTRO,
   SHAPE_OPENING,
+  SHAPE_SECTION,
   SHAPES,
 } from "lib/wheel-guide/data";
 import type { ShapeProfile } from "lib/wheel-guide/data";
@@ -34,7 +34,11 @@ export default function ShapeSection() {
     <Section id="shape" bg="muted">
       <Container>
         {/* Header */}
-        <SectionHeader kicker="04 — Shape" title="Shape" intro={SHAPE_INTRO} />
+        <SectionHeader
+          kicker={SHAPE_SECTION.kicker}
+          title={SHAPE_SECTION.title}
+          intro={SHAPE_SECTION.intro}
+        />
 
         <p className="text-sm md:text-lg text-black font-[400] leading-[150%] max-w-4xl">
           {SHAPE_OPENING}

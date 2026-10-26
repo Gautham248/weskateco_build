@@ -5,9 +5,9 @@ import {
   RANGE_BEARINGS,
   RANGE_CALLOUT,
   RANGE_COLUMNS,
-  RANGE_INTRO,
   RANGE_NOTE,
   RANGE_ROWS,
+  RANGE_SECTION,
 } from "lib/wheel-guide/data";
 import { SectionHeader, Container, Section } from "components/guides/ui";
 import { getLocalizedPath } from "lib/i18n";
@@ -22,9 +22,9 @@ export default function RangeSection() {
       <Container>
         {/* Header */}
         <SectionHeader
-          kicker="07 — Range"
-          title="The range"
-          intro={RANGE_INTRO}
+          kicker={RANGE_SECTION.kicker}
+          title={RANGE_SECTION.title}
+          intro={RANGE_SECTION.intro}
         />
 
         {/* Comparison table */}

@@ -199,6 +199,14 @@ export default function NavLinks({
                 Wheels Guide
               </Link>
               <Link
+                href={getLocalizedPath("/guides/bearing-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Bearing Guide
+              </Link>
+              <Link
                 href={getLocalizedPath("/guides/griptape-guide", locale)}
                 onClick={() => setIsGuidesOpen(false)}
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"

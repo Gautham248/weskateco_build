@@ -9,10 +9,11 @@ import {
   ROUTE_QUESTIONS,
   getVerdict,
   toPath,
+  DECISION_SECTION,
 } from "lib/board-finder/data";
 
 type Selection = Record<"width" | "parts" | "first", number>;
-import { Container, Section, GRID_CLASS, H2_CLASS } from "components/guides/ui";
+import { Container, Section, GRID_CLASS, SectionHeader } from "components/guides/ui";
 
 export default function DecisionHelperSection() {
   const { locale } = useTranslation();
@@ -31,20 +32,11 @@ export default function DecisionHelperSection() {
     <Section scroll={false}>
       <Container>
         {/* Header */}
-        <div className="flex flex-col gap-3 md:gap-4 max-w-3xl">
-          <h2
-            className={H2_CLASS}
-            style={{ fontFamily: "'Clash Display', sans-serif" }}
-          >
-            Buy a complete, or build it yourself?
-          </h2>
-          <p className="text-sm md:text-xl text-black font-[400] leading-[140%]">
-            Two ways to end up with a board: buy one already assembled (a
-            complete), or choose each part yourself. Answer three questions and
-            we&apos;ll tell you which one is actually yours — then hand you over
-            to the right place.
-          </p>
-        </div>
+        <SectionHeader
+          kicker={DECISION_SECTION.kicker}
+          title={DECISION_SECTION.title}
+          intro={DECISION_SECTION.intro}
+        />
 
         {/* Questions + verdict */}
         <div className={GRID_CLASS}>

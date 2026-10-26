@@ -1,6 +1,6 @@
 "use client";
 
-import { SYMPTOMS, WEAR_CLOSING, WEAR_INTRO } from "lib/wheel-guide/data";
+import { SYMPTOMS, WEAR_CLOSING, WEAR_SECTION } from "lib/wheel-guide/data";
 import { SectionHeader, Container, Section } from "components/guides/ui";
 import { useState } from "react";
 
@@ -12,7 +12,11 @@ export default function WearSection() {
     <Section id="wear" bg="muted">
       <Container>
         {/* Header */}
-        <SectionHeader kicker="06 — Wear" title="Wear" intro={WEAR_INTRO} />
+        <SectionHeader
+          kicker={WEAR_SECTION.kicker}
+          title={WEAR_SECTION.title}
+          intro={WEAR_SECTION.intro}
+        />
 
         {/* Symptom chips */}
         <div

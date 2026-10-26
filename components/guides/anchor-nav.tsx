@@ -2,13 +2,15 @@
 import { Container } from "./ui";
 export default function GuideAnchorNav({
   items,
+  className = "",
 }: {
   items: { label: string; href: string }[];
+  className?: string;
 }) {
   return (
     <nav
       aria-label="Section navigation"
-      className="sticky top-[72px] z-30 w-full bg-white border-b border-neutral-100"
+      className={`sticky top-[72px] z-30 w-full bg-white border-b border-neutral-100 ${className}`}
     >
       <Container stack={false}>
         <ul className="flex items-center gap-5 md:gap-8 overflow-x-auto py-4 md:py-5">

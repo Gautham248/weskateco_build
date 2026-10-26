@@ -1,6 +1,6 @@
 "use client";
 
-import { ROADS_CALLOUT, ROADS_INTRO, ROAD_TERMS } from "lib/wheel-guide/data";
+import { ROADS_CALLOUT, ROADS_SECTION, ROAD_TERMS } from "lib/wheel-guide/data";
 import { SectionHeader, Container, Section } from "components/guides/ui";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
@@ -14,9 +14,9 @@ export default function IndianRoadsSection() {
       <Container>
         {/* Header */}
         <SectionHeader
-          kicker="05 — Indian roads"
-          title="Indian roads"
-          intro={ROADS_INTRO}
+          kicker={ROADS_SECTION.kicker}
+          title={ROADS_SECTION.title}
+          intro={ROADS_SECTION.intro}
         />
 
         {/* Definition list */}
