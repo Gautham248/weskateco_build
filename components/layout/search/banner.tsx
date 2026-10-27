@@ -1,18 +1,22 @@
+import apparelBanner from "components/icons/apparel_banner.png";
 import skateboardsBanner from "components/icons/skateboards_banner.png";
-import Image from "next/image";
+import surfskatesBanner from "components/icons/surfskates_banner.png";
+import Image, { StaticImageData } from "next/image";
 
 interface StoreBannerProps {
   title: string;
   description?: string;
+  handle?: string;
 }
 
-export default function StoreBanner({ title, description }: StoreBannerProps) {
-  // Try to load collection-specific image, fall back to default
-  let bannerImg = skateboardsBanner;
-  try {
-    bannerImg = require(`components/icons/${title.toLowerCase()}_banner.png`);
-  } catch (e) {
-    // Use default skateboard_banner if image not found
+export default function StoreBanner({ title, description, handle }: StoreBannerProps) {
+  const key = (handle || title || "").toLowerCase();
+  let bannerImg: StaticImageData = skateboardsBanner;
+  if (key.includes("surfskate")) {
+    bannerImg = surfskatesBanner;
+  } else if (key.includes("apparel")) {
+    bannerImg = apparelBanner;
+  } else {
     bannerImg = skateboardsBanner;
   }
 

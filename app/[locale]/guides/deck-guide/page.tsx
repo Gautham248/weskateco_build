@@ -1,6 +1,7 @@
 import GuideAnchorNav from "components/guides/anchor-nav";
 import GuideFaq from "components/guides/faq";
 import GuideHero from "components/guides/hero";
+import deckGuideBanner from "components/icons/deck_guide/deck_guide_banner.png";
 import CareSection from "components/deck-guide/care";
 import ConcaveSection from "components/deck-guide/concave";
 import FinishSection from "components/deck-guide/finish";
@@ -33,7 +34,14 @@ export const metadata = guideMetadata(
 export default async function DeckGuidePage() {
   return (
     <>
-      <GuideHero hero={DECK_HERO} />
+      <GuideHero
+        hero={DECK_HERO}
+        background={{
+          src: deckGuideBanner,
+          alt: "Seven-ply maple skateboard decks stacked, showing plies and griptape",
+          objectPosition: "center",
+        }}
+      />
       <GuideAnchorNav items={ANCHOR_NAV} />
       <PliesSection />
       <ShapeSection />

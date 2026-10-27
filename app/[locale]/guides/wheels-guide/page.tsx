@@ -1,8 +1,7 @@
 import GuideAnchorNav from "components/guides/anchor-nav";
 import GuideFaq from "components/guides/faq";
 import GuideHero from "components/guides/hero";
-import wheelsGuideBanner from "components/icons/skateboard_guide/wheel_guide.png";
-import wheelsGuideBannerMobile from "components/icons/skateboard_guide/wheel_guide_mobile.png";
+import wheelsGuideBanner from "components/icons/wheel_guide/wheel_guide_banner.png";
 import DiameterSection from "components/wheel-guide/diameter";
 import DurometerSection from "components/wheel-guide/durometer";
 import IndianRoadsSection from "components/wheel-guide/indian-roads";
@@ -37,9 +36,8 @@ export default async function WheelsGuidePage() {
         hero={WHEEL_HERO}
         background={{
           src: wheelsGuideBanner,
-          mobileSrc: wheelsGuideBannerMobile,
-          alt: "Close-up of a skateboard truck and red wheels",
-          mobileAlt: "Skateboard truck and wheels on a skateboard",
+          alt: "Skateboard wheels close-up on asphalt surface",
+          objectPosition: "center",
         }}
       />
       <GuideAnchorNav items={ANCHOR_NAV} />

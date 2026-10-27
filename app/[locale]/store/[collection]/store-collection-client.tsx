@@ -372,6 +372,7 @@ export default function StoreCollectionClient({
       <StoreBanner
         title={activeMeta.title}
         description={activeMeta.description}
+        handle={activeHandle || activeParent}
       />
 
       <div className="mb-6">
