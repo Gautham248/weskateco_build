@@ -235,13 +235,16 @@ export default function FilterSortBar({
                 products)
               </span>
             </h2>
+            <p className="block md:hidden text-xs font-medium text-neutral-500 dark:text-neutral-400 normal-case font-sans tracking-normal mt-1">
+              (Showing 1 – {totalProducts} products of {totalProducts} products)
+            </p>
           </div>
 
-          {/* Single "Filter & Sort" button — mobile */}
+          {/* Filter & Sort buttons — mobile */}
           <div className="flex items-center gap-3 text-neutral-800 dark:text-neutral-200 md:hidden ml-auto">
             <button
               onClick={openFilters}
-              aria-label="Filter and Sort"
+              aria-label="Filter"
               className="p-1 cursor-pointer hover:opacity-75 transition-opacity relative"
             >
               <svg
@@ -253,7 +256,7 @@ export default function FilterSortBar({
               >
                 <path
                   d="M8.21735 16.4075C8.21726 16.5787 8.26552 16.7465 8.3567 16.8921C8.44788 17.0377 8.57838 17.1553 8.73355 17.2318L10.6005 18.1529C10.7428 18.223 10.901 18.2562 11.06 18.2491C11.2189 18.242 11.3734 18.1949 11.5088 18.1123C11.6441 18.0297 11.7558 17.9143 11.8332 17.7772C11.9107 17.64 11.9513 17.4856 11.9512 17.3285V10.8813C11.9514 10.4249 12.1234 9.98471 12.4338 9.64623L19.1762 2.28812C19.297 2.15601 19.3765 1.99218 19.405 1.81645C19.4334 1.64071 19.4097 1.4606 19.3366 1.2979C19.2636 1.13519 19.1443 0.996857 18.9932 0.899623C18.8422 0.802389 18.6658 0.75042 18.4854 0.75H1.68312C1.5026 0.750064 1.32597 0.801776 1.17462 0.898872C1.02328 0.995968 0.903712 1.13428 0.830412 1.29706C0.757112 1.45983 0.733222 1.64009 0.761635 1.81599C0.790048 1.99189 0.869545 2.15589 0.990496 2.28812L7.73475 9.64623C8.04516 9.98471 8.21714 10.4249 8.21735 10.8813V16.4075Z"
-                  stroke="black"
+                  stroke="currentColor"
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -264,6 +267,27 @@ export default function FilterSortBar({
                   {badgeCount}
                 </span>
               )}
+            </button>
+            <button
+              onClick={openFilters}
+              aria-label="Sort"
+              className="p-1 cursor-pointer hover:opacity-75 transition-opacity"
+            >
+              <svg
+                width="20"
+                height="18"
+                viewBox="0 0 20 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1 3H19M1 9H13M1 15H7"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
           </div>
 
