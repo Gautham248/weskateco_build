@@ -2,7 +2,7 @@
 
 import accessoriesImg from "components/icons/accessories.png";
 import skateboardsImg from "components/icons/skateboards.jpg";
-import surfboardsImg from "components/icons/surfboards.png";
+import surfskatesImg from "components/icons/surfskates.jpg";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -31,7 +31,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
   const categories = [
     {
       name: "Surfskates",
-      image: surfboardsImg,
+      image: surfskatesImg,
       href: "/store/surfskates",
     },
     {

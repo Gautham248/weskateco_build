@@ -1,6 +1,7 @@
 import GuideAnchorNav from "components/guides/anchor-nav";
 import GuideFaq from "components/guides/faq";
 import GuideHero from "components/guides/hero";
+import truckGuideBanner from "components/icons/truck_guide/truck_guide_banner.png";
 import BushingsSection from "components/truck-guide/bushings";
 import BuildSection from "components/truck-guide/build";
 import CareSection from "components/truck-guide/care";
@@ -30,7 +31,14 @@ export const metadata = guideMetadata("Truck Guide", TRUCK_HERO.lede);
 export default async function TruckGuidePage() {
   return (
     <>
-      <GuideHero hero={TRUCK_HERO} />
+      <GuideHero
+        hero={TRUCK_HERO}
+        background={{
+          src: truckGuideBanner,
+          alt: "Skateboard truck close-up showing hanger, baseplate, and bushings",
+          objectPosition: "center",
+        }}
+      />
       <GuideAnchorNav items={ANCHOR_NAV} />
       <PartsSection />
       <SizeSection />
