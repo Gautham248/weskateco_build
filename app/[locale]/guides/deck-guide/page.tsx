@@ -2,6 +2,7 @@ import GuideAnchorNav from "components/guides/anchor-nav";
 import GuideFaq from "components/guides/faq";
 import GuideHero from "components/guides/hero";
 import deckGuideBanner from "components/icons/deck_guide/deck_guide_banner.png";
+import deckGuideBannerMobile from "components/icons/deck_guide/deck_guide_banner_mobile.jpg";
 import CareSection from "components/deck-guide/care";
 import ConcaveSection from "components/deck-guide/concave";
 import FinishSection from "components/deck-guide/finish";
@@ -38,8 +39,11 @@ export default async function DeckGuidePage() {
         hero={DECK_HERO}
         background={{
           src: deckGuideBanner,
+          mobileSrc: deckGuideBannerMobile,
           alt: "Seven-ply maple skateboard decks stacked, showing plies and griptape",
+          mobileAlt: "Stacked black skateboard decks showing Sphere grip tape logo",
           objectPosition: "center",
+          mobileObjectPosition: "center",
         }}
       />
       <GuideAnchorNav items={ANCHOR_NAV} />

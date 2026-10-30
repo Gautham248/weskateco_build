@@ -125,6 +125,19 @@ export default function NavLinks({
           </div>
         </li>
 
+        {/* ABOUT US */}
+        <li
+          className={isDropdownOpen ? "opacity-50" : ""}
+          onMouseEnter={() => {
+            setIsDropdownOpen(false);
+            setIsGuidesOpen(false);
+            setIsAcademyOpen(false);
+            setActiveCategory(null);
+          }}
+        >
+          <Link href={getLocalizedPath("/about-us", locale)}>WE ARE</Link>
+        </li>
+
         {/* GUIDES DROPDOWN */}
         <li
           ref={guidesRef}

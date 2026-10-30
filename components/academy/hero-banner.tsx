@@ -1,4 +1,5 @@
 import academyHero from "components/icons/academy/hero.png";
+import academyHeroMobile from "components/icons/academy/hero-mobile.png";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -8,8 +9,8 @@ export default function AcademyHeroBanner() {
       {/* Mobile Image */}
       <div className="absolute inset-0 md:hidden">
         <Image
-          src={academyHero}
-          alt="WeSkate Academy riders with their skateboards at the park"
+          src={academyHeroMobile}
+          alt="Skater mid-air in front of a stone building"
           fill
           className="object-cover"
           priority

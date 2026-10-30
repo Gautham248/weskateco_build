@@ -1,4 +1,5 @@
 import skateparkBanner from "components/icons/skatepark/skatepark_banner.jpg";
+import skateparkBannerMobile from "components/icons/skatepark/skatepark_banner_mobile.png";
 import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,13 +7,22 @@ import Link from "next/link";
 export default function SkateparkHeroBanner({ locale }: { locale?: string }) {
   return (
     <section className="relative h-screen w-full overflow-hidden -mt-[72px]">
-      {/* Background Image */}
+      {/* Background Image — desktop and mobile variants */}
       <div className="absolute inset-0">
         <Image
           src={skateparkBanner}
           alt="WB Skateparks background"
           fill
-          className="object-cover"
+          className="hidden md:block object-cover"
+          sizes="100vw"
+          priority
+        />
+        <Image
+          src={skateparkBannerMobile}
+          alt="Skaters riding an indoor skatepark with ramps and rails"
+          fill
+          className="block md:hidden object-cover object-center"
+          sizes="100vw"
           priority
         />
       </div>
