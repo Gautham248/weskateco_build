@@ -39,8 +39,16 @@ export function ProductActions({
     customSelectedVariantId || variant?.id || defaultVariantId;
   const finalVariant = variants.find((v) => v.id === selectedVariantId);
 
+  // A product is available for sale when at least one variant is in stock, so
+  // the product-level check above is not enough: the variant actually selected
+  // here (from the URL params, the quick-buy panel, or a single-variant
+  // product) can still be sold out while the product itself is not.
+  const isSelectedVariantSoldOut =
+    finalVariant !== undefined && !finalVariant.availableForSale;
+
   const handleBuyNow = () => {
-    if (!selectedVariantId || !finalVariant) return;
+    if (!selectedVariantId || !finalVariant || !finalVariant.availableForSale)
+      return;
     startBuyNowTransition(async () => {
       const singleCartId = await createSingleItemCartAction(selectedVariantId);
       if (singleCartId) {
@@ -77,7 +85,7 @@ export function ProductActions({
   }
 
   async function handleAddToCart() {
-    if (!selectedVariantId || isAdding) return;
+    if (!selectedVariantId || isAdding || isSelectedVariantSoldOut) return;
 
     setIsAdding(true);
     setMessage(null);
@@ -129,10 +137,15 @@ export function ProductActions({
       <form action={handleAddToCart}>
         <button
           type="submit"
-          disabled={!selectedVariantId || isAdding || isAdded}
+          disabled={
+            !selectedVariantId ||
+            isSelectedVariantSoldOut ||
+            isAdding ||
+            isAdded
+          }
           className={clsx(
             buttonBaseClasses,
-            !selectedVariantId
+            !selectedVariantId || isSelectedVariantSoldOut
               ? "bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed"
               : isAdding || isAdded
                 ? "bg-neutral-200 text-black border-neutral-300 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 cursor-not-allowed"
@@ -142,11 +155,13 @@ export function ProductActions({
         >
           {!selectedVariantId
             ? "Select Option"
-            : isAdding
-              ? "Adding to Cart..."
-              : isAdded
-                ? "Added to Cart ✓"
-                : "Add To Cart"}
+            : isSelectedVariantSoldOut
+              ? "Out Of Stock"
+              : isAdding
+                ? "Adding to Cart..."
+                : isAdded
+                  ? "Added to Cart ✓"
+                  : "Add To Cart"}
         </button>
         {message ? (
           <p
@@ -160,11 +175,13 @@ export function ProductActions({
       {/* Buy Now Button */}
       <button
         type="button"
-        disabled={!selectedVariantId || isBuyNowPending}
+        disabled={
+          !selectedVariantId || isSelectedVariantSoldOut || isBuyNowPending
+        }
         onClick={handleBuyNow}
         className={clsx(
           buttonBaseClasses,
-          selectedVariantId
+          selectedVariantId && !isSelectedVariantSoldOut
             ? "bg-white text-black hover:bg-neutral-50 border-black dark:bg-black dark:text-white dark:hover:bg-neutral-900 dark:border-white"
             : "bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed",
         )}

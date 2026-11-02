@@ -214,9 +214,17 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            // Sold out: stay a dead end instead of opening quick buy, matching
+            // the disabled Add To Cart button on the product page.
+            if (isSoldOut) return;
             setIsSidebarOpen(true);
           }}
-          className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 md:hover:w-[120px] items-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white transition-all duration-300 active:scale-95 overflow-hidden"
+          aria-disabled={isSoldOut}
+          className={`group/btn absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 md:hover:w-[120px] items-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white transition-all duration-300 overflow-hidden ${
+            isSoldOut
+              ? "cursor-not-allowed opacity-40"
+              : "cursor-pointer active:scale-95"
+          }`}
         >
           <div className="flex items-center justify-start gap-2 px-2 md:px-3 w-full h-full">
             <svg
@@ -234,7 +242,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
             <span className="text-sm font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
-              Add to Cart
+              {isSoldOut ? t("product.sold_out") : "Add to Cart"}
             </span>
           </div>
         </div>
