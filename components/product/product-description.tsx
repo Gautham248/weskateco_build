@@ -26,19 +26,22 @@ export function ProductDescription({
   const [, startTransition] = useTransition();
   const { triggerCheckout } = useGoKwikCheckout({ cartId: cart?.id });
 
-  const handleEmiCheckout = () => {
-    const variant =
-      product.variants.find((v) =>
-        v.selectedOptions.every(
-          (option) =>
-            option.value === searchParams.get(option.name.toLowerCase()),
-        ),
-      ) || product.variants[0];
+  // The variant chosen via the URL, else the first in-stock one. variants[0]
+  // may be sold out while the product is not.
+  const emiVariant =
+    product.variants.find((v) =>
+      v.selectedOptions.every(
+        (option) =>
+          option.value === searchParams.get(option.name.toLowerCase()),
+      ),
+    ) ?? product.variants.find((v) => v.availableForSale);
+  const canBuyOnEmi = emiVariant?.availableForSale === true;
 
-    if (!variant?.availableForSale) return;
+  const handleEmiCheckout = () => {
+    if (!emiVariant?.availableForSale) return;
 
     startTransition(async () => {
-      const singleCartId = await createSingleItemCartAction(variant.id);
+      const singleCartId = await createSingleItemCartAction(emiVariant.id);
       if (singleCartId) {
         if (window.merchantInfo) {
           window.merchantInfo.cart = { id: singleCartId };
@@ -178,13 +181,15 @@ export function ProductDescription({
       />
 
       {/* Snapmint EMI Banner */}
-      <SnapmintEmiCartBanner
-        totalAmount={product.priceRange.maxVariantPrice.amount}
-        onBuyOnEmi={handleEmiCheckout}
-      />
+      {canBuyOnEmi && (
+        <SnapmintEmiCartBanner
+          totalAmount={product.priceRange.maxVariantPrice.amount}
+          onBuyOnEmi={handleEmiCheckout}
+        />
+      )}
 
       {/* Product Buttons Actions */}
-      <ProductActions product={product} />
+      <ProductActions product={product} locale={locale} />
 
       {/* Separator Line */}
       <div className="my-8 border-t border-neutral-200 dark:border-neutral-800" />

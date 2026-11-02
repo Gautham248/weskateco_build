@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { addItem, createSingleItemCartAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
+import { createTranslator } from "lib/i18n";
 import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -10,13 +11,16 @@ import { toast } from "sonner";
 
 export function ProductActions({
   product,
+  locale,
   selectedVariantId: customSelectedVariantId,
   onAddedToCart,
 }: {
   product: Product;
+  locale: string;
   selectedVariantId?: string;
   onAddedToCart?: () => void;
 }) {
+  const t = createTranslator(locale);
   const { variants, availableForSale } = product;
   const { addCartItem } = useCart();
   const searchParams = useSearchParams();
@@ -78,7 +82,7 @@ export function ProductActions({
             "bg-neutral-200 text-neutral-400 border-transparent cursor-not-allowed",
           )}
         >
-          Out Of Stock
+          {t("product.out_of_stock")}
         </button>
       </div>
     );
@@ -156,7 +160,7 @@ export function ProductActions({
           {!selectedVariantId
             ? "Select Option"
             : isSelectedVariantSoldOut
-              ? "Out Of Stock"
+              ? t("product.out_of_stock")
               : isAdding
                 ? "Adding to Cart..."
                 : isAdded

@@ -46,8 +46,9 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    const variant = product.variants[0];
-    if (!variant?.availableForSale) return;
+    // First in-stock variant: variants[0] may be sold out while the product is not.
+    const variant = product.variants.find((v) => v.availableForSale);
+    if (!variant) return;
 
     startTransition(async () => {
       const singleCartId = await createSingleItemCartAction(variant.id);

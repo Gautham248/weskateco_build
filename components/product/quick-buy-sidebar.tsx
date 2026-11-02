@@ -260,6 +260,7 @@ export function QuickBuySidebar({
               ) : (
                 <ProductActions
                   product={product}
+                  locale={locale}
                   selectedVariantId={selectedVariantId}
                   onAddedToCart={closePanel}
                 />
