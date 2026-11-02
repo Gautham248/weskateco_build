@@ -2,6 +2,7 @@ import GuideAnchorNav from "components/guides/anchor-nav";
 import GuideFaq from "components/guides/faq";
 import GuideHero from "components/guides/hero";
 import truckGuideBanner from "components/icons/truck_guide/truck_guide_banner.png";
+import truckGuideBannerMobile from "components/icons/truck_guide/truck_guide_banner_mobile.jpg";
 import BushingsSection from "components/truck-guide/bushings";
 import BuildSection from "components/truck-guide/build";
 import CareSection from "components/truck-guide/care";
@@ -35,8 +36,11 @@ export default async function TruckGuidePage() {
         hero={TRUCK_HERO}
         background={{
           src: truckGuideBanner,
+          mobileSrc: truckGuideBannerMobile,
           alt: "Skateboard truck close-up showing hanger, baseplate, and bushings",
+          mobileAlt: "Skateboard truck adapter with green wheel and graphic deck",
           objectPosition: "center",
+          mobileObjectPosition: "center",
         }}
       />
       <GuideAnchorNav items={ANCHOR_NAV} />

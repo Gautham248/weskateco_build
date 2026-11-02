@@ -1,4 +1,5 @@
 import schoolBanner from "components/icons/school/school_banner.png";
+import schoolBannerMobile from "components/icons/school/school_banner_mobile.png";
 import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,13 +7,21 @@ import Link from "next/link";
 export default function SchoolHeroBanner({ locale }: { locale?: string }) {
   return (
     <section className="relative h-screen w-full overflow-hidden -mt-[72px]">
-      {/* Background Image — one asset serves every breakpoint */}
+      {/* Background Image — desktop and mobile variants */}
       <div className="absolute inset-0">
         <Image
           src={schoolBanner}
           alt="School students with skateboards wearing helmets and pads"
           fill
-          className="object-cover"
+          className="hidden md:block object-cover"
+          sizes="100vw"
+          priority
+        />
+        <Image
+          src={schoolBannerMobile}
+          alt="A coach and a student with a skateboard standing outside"
+          fill
+          className="block md:hidden object-cover object-center"
           sizes="100vw"
           priority
         />

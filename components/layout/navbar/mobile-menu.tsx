@@ -254,6 +254,18 @@ export default function MobileMenu() {
                   )}
                 </div>
 
+                {/* ABOUT US Link */}
+                <div className="border-b border-neutral-100 dark:border-neutral-900 py-4">
+                  <Link
+                    href={getLocalizedPath("/about-us", locale)}
+                    onClick={closeMobileMenu}
+                    className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
+                    ABOUT US
+                  </Link>
+                </div>
+
                 {/* GUIDES Accordion */}
                 <div className="border-b border-neutral-100 dark:border-neutral-900 py-3">
                   <button

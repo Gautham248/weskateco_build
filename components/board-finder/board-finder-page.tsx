@@ -3,6 +3,7 @@
 import GuideFaq from "components/guides/faq";
 import GuideHero from "components/guides/hero";
 import skateboardGuideBanner from "components/icons/skateboard_guide/skateboard_guide_banner.png";
+import skateboardGuideBannerMobile from "components/icons/skateboard_guide/skateboard_guide_banner_mobile.jpg";
 import { FAQ, FAQ_SECTION } from "lib/board-finder/data";
 import { useState } from "react";
 import AnatomySection from "./anatomy";
@@ -41,9 +42,11 @@ export default function BoardFinderPage() {
         hero={BOARD_FINDER_HERO}
         background={{
           src: skateboardGuideBanner,
-          alt: "A skateboarder choosing wheels at a skatepark",
+          mobileSrc: skateboardGuideBannerMobile,
+          alt: "Skateboards buying guide banner",
+          mobileAlt: "Three skateboards leaning against stone wall",
           objectPosition: "center",
-          mobileObjectPosition: "55% center",
+          mobileObjectPosition: "center",
         }}
       />
       <QuizSection
