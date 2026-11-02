@@ -40,7 +40,7 @@ export function ProductActions({
   const finalVariant = variants.find((v) => v.id === selectedVariantId);
 
   // A product is available for sale when at least one variant is in stock, so
-  // the product-level check above is not enough: the variant actually selected
+  // the product-level check below is not enough: the variant actually selected
   // here (from the URL params, the quick-buy panel, or a single-variant
   // product) can still be sold out while the product itself is not.
   const isSelectedVariantSoldOut =

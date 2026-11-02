@@ -35,7 +35,7 @@ export function ProductDescription({
         ),
       ) || product.variants[0];
 
-    if (!variant) return;
+    if (!variant?.availableForSale) return;
 
     startTransition(async () => {
       const singleCartId = await createSingleItemCartAction(variant.id);
