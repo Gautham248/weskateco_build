@@ -13,7 +13,6 @@ import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { checkoutCart } from "lib/gokwik/checkout";
-import { CHECKOUT_START_ERROR } from "lib/gokwik/checkout-cart";
 
 const TRACK_PADDING = "var(--track-padding)";
 
@@ -186,16 +185,11 @@ function ShopNowCard({
     if (!variant) return;
 
     startTransition(async () => {
-      // A network failure rejects; a Shopify failure returns null
-      const singleCart = await createSingleItemCartAction(variant.id).catch(
-        () => null,
-      );
-      if (!singleCart) {
-        toast.error(CHECKOUT_START_ERROR);
-        return;
+      const singleCart = await createSingleItemCartAction(variant.id);
+      if (singleCart) {
+        // GoKwik where it's offered and loaded, else Shopify's checkout
+        await checkoutCart(singleCart);
       }
-      // GoKwik where it's offered and loaded, else Shopify's checkout
-      await checkoutCart(singleCart);
     });
   };
 

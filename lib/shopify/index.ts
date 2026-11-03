@@ -345,9 +345,8 @@ export async function updateCart(
 // NOTE: intentionally NOT cached ("use cache"). A cart is per-user live data;
 // caching it here intermittently returned stale "empty/missing cart" results,
 // which made adds create duplicate carts and refreshes empty the UI.
-// Reads the shopper's cart (the cartId cookie) unless given another cart's id.
-export async function getCart(id?: string): Promise<Cart | undefined> {
-  const cartId = id ?? (await cookies()).get("cartId")?.value;
+export async function getCart(): Promise<Cart | undefined> {
+  const cartId = (await cookies()).get("cartId")?.value;
 
   if (!cartId) {
     return undefined;

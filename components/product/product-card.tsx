@@ -4,8 +4,6 @@ import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { checkoutCart } from "lib/gokwik/checkout";
-import { CHECKOUT_START_ERROR } from "lib/gokwik/checkout-cart";
-import { toast } from "sonner";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import { Product } from "lib/shopify/types";
@@ -54,16 +52,11 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
     if (!variant) return;
 
     startTransition(async () => {
-      // A network failure rejects; a Shopify failure returns null
-      const singleCart = await createSingleItemCartAction(variant.id).catch(
-        () => null,
-      );
-      if (!singleCart) {
-        toast.error(CHECKOUT_START_ERROR);
-        return;
+      const singleCart = await createSingleItemCartAction(variant.id);
+      if (singleCart) {
+        // GoKwik where it's offered and loaded, else Shopify's checkout
+        await checkoutCart(singleCart);
       }
-      // GoKwik where it's offered and loaded, else Shopify's checkout
-      await checkoutCart(singleCart);
     });
   };
 

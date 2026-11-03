@@ -6,8 +6,6 @@ import Price from "components/price";
 import { DraggableProse } from "./draggable-prose";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { checkoutCart } from "lib/gokwik/checkout";
-import { CHECKOUT_START_ERROR } from "lib/gokwik/checkout-cart";
-import { toast } from "sonner";
 import { createTranslator } from "lib/i18n";
 import { prepareProductDescriptionHtml } from "lib/shopify/description-html";
 import { Product } from "lib/shopify/types";
@@ -44,16 +42,11 @@ export function ProductDescription({
     if (!emiVariant?.availableForSale) return;
 
     startTransition(async () => {
-      // A network failure rejects; a Shopify failure returns null
-      const singleCart = await createSingleItemCartAction(emiVariant.id).catch(
-        () => null,
-      );
-      if (!singleCart) {
-        toast.error(CHECKOUT_START_ERROR);
-        return;
+      const singleCart = await createSingleItemCartAction(emiVariant.id);
+      if (singleCart) {
+        // GoKwik where it's offered and loaded, else Shopify's checkout
+        await checkoutCart(singleCart);
       }
-      // GoKwik where it's offered and loaded, else Shopify's checkout
-      await checkoutCart(singleCart);
     });
   };
 

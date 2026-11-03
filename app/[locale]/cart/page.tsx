@@ -58,7 +58,6 @@ function CartPageContent() {
     triggerCheckout,
   } = useGoKwikCheckout({
     cartId: cart?.id,
-    checkoutUrl: cart?.checkoutUrl,
   });
 
   // Wait for GoKwik while it loads; only fall back to Shopify's checkout once

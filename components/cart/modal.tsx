@@ -42,7 +42,6 @@ export default function CartModal() {
     useFallback,
   } = useGoKwikCheckout({
     cartId: cart?.id,
-    checkoutUrl: cart?.checkoutUrl,
   });
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<CartItem | null>(null);

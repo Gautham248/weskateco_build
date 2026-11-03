@@ -42,31 +42,6 @@ async function stubGokwik(page: Page, { delayMs = 0 } = {}) {
   });
 }
 
-/**
- * Where /cart/checkout sends the shopper, with this page's cookies. The
- * redirect is read rather than followed: the dev store's checkout sits
- * behind its storefront password.
- */
-async function cartCheckoutRedirect(page: Page): Promise<string> {
-  const res = await page.request.get("/cart/checkout", { maxRedirects: 0 });
-  expect(res.status()).toBe(303);
-  return res.headers()["location"]!;
-}
-
-/** A GoKwik SDK that loads but whose checkout fails to open. */
-async function brokenGokwik(page: Page) {
-  await page.route(GOKWIK_SDK, (route) =>
-    route.fulfill({
-      contentType: "application/javascript",
-      headers: { "Cache-Control": "no-store" },
-      body: `${GOKWIK_STUB}
-        window.triggerGokwikCustomCheckout = function () {
-          throw new Error("GoKwik checkout failed to open");
-        };`,
-    }),
-  );
-}
-
 async function blockGokwik(page: Page) {
   await page.route(GOKWIK_SDK, (route) => route.abort());
 }
@@ -323,81 +298,5 @@ test.describe("fallback to Shopify checkout when GoKwik doesn't load", () => {
     const shopifyCheckouts = await interceptShopifyCheckout(page);
     await buyNow(page);
     await expectShopifyCheckout(page, shopifyCheckouts);
-  });
-});
-
-test.describe("when checkout can't start normally", () => {
-  test("GoKwik's own fallback URL, /cart/checkout, reaches Shopify checkout", async ({
-    page,
-  }) => {
-    // GoKwik's script sends shoppers to /cart/checkout when it decides it
-    // can't run. That's a Shopify theme URL, so the site has to answer it.
-    await addToCartOrSkip(page);
-    const location = await cartCheckoutRedirect(page);
-    expect(location).toMatch(/\/cart\/c\//);
-    expect(new URL(location).host).not.toBe(
-      new URL(test.info().project.use.baseURL!).host,
-    );
-  });
-
-  test("/cart/checkout uses the one-item cart Buy Now handed to GoKwik", async ({
-    page,
-  }) => {
-    await stubGokwik(page);
-    await buyNow(page);
-    await expect.poll(async () => (await handoffs(page)).length).toBe(1);
-    const buyNowCart = (await handoffs(page))[0]!.cart!.id;
-
-    // Shopify's checkout URL carries the cart's token: gid://shopify/Cart/<token>
-    const token = buyNowCart.split("/").pop()!.split("?")[0]!;
-    expect(await cartCheckoutRedirect(page)).toContain(`/cart/c/${token}`);
-  });
-
-  test("/cart/checkout without a cart goes to the cart page", async ({
-    page,
-  }) => {
-    await page.goto("/cart/checkout");
-    await expect(page).toHaveURL(/\/cart$/);
-  });
-
-  test("the cart page uses Shopify checkout when GoKwik's checkout won't open", async ({
-    page,
-  }) => {
-    await brokenGokwik(page);
-    const shopifyCheckouts = await interceptShopifyCheckout(page);
-    await addToCartOrSkip(page);
-
-    await page.goto("/cart");
-    await checkoutButton(page, "Proceed to Checkout").click();
-    await expectShopifyCheckout(page, shopifyCheckouts);
-  });
-
-  test("Buy Now tells the shopper when it can't start checkout", async ({
-    page,
-  }) => {
-    const name = await openFirstPurchasableProduct(page);
-    test.skip(
-      !name,
-      "None of the first products in the collection can be bought",
-    );
-
-    // The server action that makes the one-item cart fails (network error)
-    await page.route("**/*", (route) =>
-      route.request().method() === "POST" &&
-      "next-action" in route.request().headers()
-        ? route.abort()
-        : route.fallback(),
-    );
-    const buyNowButton = checkoutButton(page, "Buy Now")
-      .filter({ visible: true })
-      .first();
-    // Clicks before React hydrates the page do nothing, so retry
-    await expect(async () => {
-      await buyNowButton.click({ timeout: 2_000 });
-      await expect(
-        page.getByText("We couldn't start checkout. Please try again."),
-      ).toBeVisible({ timeout: 2_000 });
-    }).toPass({ timeout: 30_000 });
-    await expect(page).toHaveURL(/\/products\//);
   });
 });
