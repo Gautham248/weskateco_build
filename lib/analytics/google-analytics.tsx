@@ -3,12 +3,17 @@
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect } from "react";
-import { GA_MEASUREMENT_ID, GOOGLE_ADS_ID, trackPageView } from "./events";
+import {
+  GA_MEASUREMENT_ID,
+  GOOGLE_ADS_ID,
+  GOOGLE_TAG_ID,
+  trackPageView,
+} from "./events";
 
 /**
- * Loads gtag.js for GA4 and Google Ads. Renders nothing when neither
- * NEXT_PUBLIC_GA_MEASUREMENT_ID nor NEXT_PUBLIC_GOOGLE_ADS_ID is set,
- * so local/dev builds don't send data.
+ * Loads gtag.js for GA4, Google Ads and the Merchant Center Google tag.
+ * Renders nothing when none of their NEXT_PUBLIC_* IDs are set, so local/dev
+ * builds don't send data.
  *
  * GA4 page views on client-side navigation come from Enhanced Measurement
  * ("Page changes based on browser history events", on by default), so we
@@ -16,7 +21,9 @@ import { GA_MEASUREMENT_ID, GOOGLE_ADS_ID, trackPageView } from "./events";
  */
 export function GoogleAnalytics() {
   const pathname = usePathname();
-  const tagIds = [GA_MEASUREMENT_ID, GOOGLE_ADS_ID].filter(Boolean);
+  const tagIds = [GA_MEASUREMENT_ID, GOOGLE_ADS_ID, GOOGLE_TAG_ID].filter(
+    Boolean,
+  );
 
   useEffect(() => {
     trackPageView();

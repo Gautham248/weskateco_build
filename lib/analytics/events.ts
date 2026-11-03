@@ -7,6 +7,8 @@ import type {
 
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 export const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
+/** Google tag (GT-…) that routes to the store's Merchant Center accounts. */
+export const GOOGLE_TAG_ID = process.env.NEXT_PUBLIC_GOOGLE_TAG_ID;
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
 /**
@@ -50,6 +52,7 @@ function sendGtag(
   const label = GOOGLE_ADS_CONVERSION_LABELS[name];
   const sendTo = [
     ga ? GA_MEASUREMENT_ID : undefined,
+    ga ? GOOGLE_TAG_ID : undefined,
     GOOGLE_ADS_ID && label ? `${GOOGLE_ADS_ID}/${label}` : undefined,
   ].filter(Boolean);
   if (sendTo.length === 0) return;
