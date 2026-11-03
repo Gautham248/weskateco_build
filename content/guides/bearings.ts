@@ -455,7 +455,7 @@ export const BEARING_GUIDE_CONTENT: BearingGuideContent = {
           text: "If a number on a box is the thing you are trying to judge, the wheel guide makes the same argument about durometer — where the number does mean something, and where the second number nobody quotes matters more.",
           cta: {
             label: "Wheel guide",
-            href: "/guides/wheel-guide",
+            href: "/guides/wheels-guide",
           },
         },
       ],
@@ -1327,7 +1327,7 @@ export const BEARING_GUIDE_CONTENT: BearingGuideContent = {
           },
           {
             label: "Wheel guide",
-            href: "/guides/wheel-guide",
+            href: "/guides/wheels-guide",
           },
           {
             label: "Griptape guide",
@@ -1348,7 +1348,7 @@ export const BEARING_GUIDE_CONTENT: BearingGuideContent = {
           },
           {
             label: "Wheels",
-            href: "/store/wheels",
+            href: "/store/skateboard-wheels",
           },
           {
             label: "Completes",
