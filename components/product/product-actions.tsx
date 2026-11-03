@@ -9,6 +9,8 @@ import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { checkoutCart } from "lib/gokwik/checkout";
+import { CHECKOUT_START_ERROR } from "lib/gokwik/checkout-cart";
 
 export function ProductActions({
   product,
@@ -55,19 +57,20 @@ export function ProductActions({
     if (!selectedVariantId || !finalVariant || !finalVariant.availableForSale)
       return;
     startBuyNowTransition(async () => {
-      const singleCartId = await createSingleItemCartAction(selectedVariantId);
-      if (singleCartId) {
-        trackBuyNow(product, finalVariant);
-        if (window.merchantInfo) {
-          window.merchantInfo.cart = { id: singleCartId };
-        }
-        if (typeof window.triggerGokwikCustomCheckout === "function") {
-          window.triggerGokwikCustomCheckout();
-        }
-        if (onAddedToCart) {
-          onAddedToCart();
-        }
+      // A network failure rejects; a Shopify failure returns null
+      const singleCart = await createSingleItemCartAction(
+        selectedVariantId,
+      ).catch(() => null);
+      if (!singleCart) {
+        toast.error(CHECKOUT_START_ERROR);
+        return;
       }
+      trackBuyNow(product, finalVariant);
+      if (onAddedToCart) {
+        onAddedToCart();
+      }
+      // GoKwik's popup when it's on the page, else Shopify's checkout
+      checkoutCart(singleCart);
     });
   };
 

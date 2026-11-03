@@ -138,7 +138,8 @@ export async function createSingleItemCartAction(selectedVariantId: string) {
     const cart = await createCart([
       { merchandiseId: selectedVariantId, quantity: 1 },
     ]);
-    return cart.id;
+    // The checkout URL is the way to pay when GoKwik isn't available
+    return cart.id ? { id: cart.id, checkoutUrl: cart.checkoutUrl } : null;
   } catch (e) {
     console.error("Error creating single item cart:", e);
     return null;

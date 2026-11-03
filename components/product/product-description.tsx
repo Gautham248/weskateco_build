@@ -12,6 +12,9 @@ import { useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { ProductActions } from "./product-actions";
 import { VariantSelector } from "./variant-selector";
+import { checkoutCart } from "lib/gokwik/checkout";
+import { CHECKOUT_START_ERROR } from "lib/gokwik/checkout-cart";
+import { toast } from "sonner";
 
 export function ProductDescription({
   product,
@@ -41,15 +44,16 @@ export function ProductDescription({
     if (!emiVariant?.availableForSale) return;
 
     startTransition(async () => {
-      const singleCartId = await createSingleItemCartAction(emiVariant.id);
-      if (singleCartId) {
-        if (window.merchantInfo) {
-          window.merchantInfo.cart = { id: singleCartId };
-        }
-        if (typeof window.triggerGokwikCustomCheckout === "function") {
-          window.triggerGokwikCustomCheckout();
-        }
+      // A network failure rejects; a Shopify failure returns null
+      const singleCart = await createSingleItemCartAction(emiVariant.id).catch(
+        () => null,
+      );
+      if (!singleCart) {
+        toast.error(CHECKOUT_START_ERROR);
+        return;
       }
+      // GoKwik's popup when it's on the page, else Shopify's checkout
+      checkoutCart(singleCart);
     });
   };
 

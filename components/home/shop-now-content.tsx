@@ -12,6 +12,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
+import { checkoutCart } from "lib/gokwik/checkout";
+import { CHECKOUT_START_ERROR } from "lib/gokwik/checkout-cart";
 
 const TRACK_PADDING = "var(--track-padding)";
 
@@ -184,15 +186,16 @@ function ShopNowCard({
     if (!variant) return;
 
     startTransition(async () => {
-      const singleCartId = await createSingleItemCartAction(variant.id);
-      if (singleCartId) {
-        if (window.merchantInfo) {
-          window.merchantInfo.cart = { id: singleCartId };
-        }
-        if (typeof window.triggerGokwikCustomCheckout === "function") {
-          window.triggerGokwikCustomCheckout();
-        }
+      // A network failure rejects; a Shopify failure returns null
+      const singleCart = await createSingleItemCartAction(variant.id).catch(
+        () => null,
+      );
+      if (!singleCart) {
+        toast.error(CHECKOUT_START_ERROR);
+        return;
       }
+      // GoKwik's popup when it's on the page, else Shopify's checkout
+      checkoutCart(singleCart);
     });
   };
 
