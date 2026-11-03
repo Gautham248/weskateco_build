@@ -11,6 +11,8 @@ export function GoKwikScript() {
         strategy="beforeInteractive"
         dangerouslySetInnerHTML={{
           __html: `
+            // GoKwik checkout reads this to send GA4 events (incl. purchase)
+            window.gaTag = { ga4: "${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || ""}" };
             window.merchantInfo = {
               mid: "${process.env.NEXT_PUBLIC_GOKWIK_MERCHANT_ID || ""}",
               environment: "${process.env.NEXT_PUBLIC_GOKWIK_ENVIRONMENT || "sandbox"}",

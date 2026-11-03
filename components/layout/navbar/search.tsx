@@ -1,9 +1,14 @@
 "use client";
 
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { trackSearch } from "lib/analytics";
 import Form from "next/form";
 import { useSearchParams } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { FormEvent, useState, useRef, useEffect } from "react";
+
+function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
+  trackSearch(String(new FormData(event.currentTarget).get("q") ?? ""));
+}
 
 export default function Search() {
   const searchParams = useSearchParams();
@@ -39,7 +44,11 @@ export default function Search() {
       {/* Absolute dropdown search input: rendered below LG viewport */}
       {expanded && (
         <div className="absolute top-full -right-17 mt-2 z-50 lg:hidden">
-          <Form action="/store" className="flex items-center">
+          <Form
+            action="/store"
+            onSubmit={handleSearchSubmit}
+            className="flex items-center"
+          >
             <input
               key={searchParams?.get("q")}
               ref={inputRef}
@@ -57,7 +66,11 @@ export default function Search() {
 
       {/* Inline search input: rendered on LG viewports and above */}
       {expanded && (
-        <Form action="/store" className="hidden lg:flex items-center">
+        <Form
+          action="/store"
+          onSubmit={handleSearchSubmit}
+          className="hidden lg:flex items-center"
+        >
           <input
             key={searchParams?.get("q")}
             ref={inputRef}

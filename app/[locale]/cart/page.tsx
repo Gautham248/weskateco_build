@@ -6,13 +6,14 @@ import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner"
 import secure from "components/icons/secure.svg";
 import Footer from "components/layout/footer";
 import Price from "components/price";
+import { trackBeginCheckout, trackViewCart } from "lib/analytics";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Suspense, useState, useTransition } from "react";
+import { Suspense, useEffect, useRef, useState, useTransition } from "react";
 import { QuickBuySidebar } from "components/product/quick-buy-sidebar";
 
 function CartSkeleton() {
@@ -56,7 +57,16 @@ function CartPageContent() {
     cartId: cart?.id,
   });
 
+  // Fire view_cart once, after the cart has loaded
+  const viewCartTracked = useRef(false);
+  useEffect(() => {
+    if (viewCartTracked.current || !cart) return;
+    viewCartTracked.current = true;
+    trackViewCart(cart);
+  }, [cart]);
+
   const handleCheckout = () => {
+    trackBeginCheckout(cart);
     if (gokwikReady && !gokwikError) {
       triggerCheckout();
     } else if (cart?.checkoutUrl) {

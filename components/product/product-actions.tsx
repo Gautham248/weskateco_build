@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { addItem, buyNowAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
+import { trackBuyNow } from "lib/analytics";
 import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
@@ -41,6 +42,7 @@ export function ProductActions({
     if (!selectedVariantId || !finalVariant) return;
     startBuyNowTransition(async () => {
       addCartItem(finalVariant, product);
+      trackBuyNow(product, finalVariant);
       await buyNowAction(selectedVariantId);
     });
   };

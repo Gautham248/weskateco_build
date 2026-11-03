@@ -1,5 +1,6 @@
 "use client";
 
+import { trackAddToCart } from "lib/analytics";
 import type {
   Cart,
   CartItem,
@@ -277,6 +278,7 @@ export function useCart() {
 
   const addCartItem = (variant: ProductVariant, product: Product) => {
     updateOptimisticCart({ type: "ADD_ITEM", payload: { variant, product } });
+    trackAddToCart(product, variant);
   };
 
   const updateLineVariant = (lineId: string, newVariant: ProductVariant) => {
