@@ -1,5 +1,6 @@
 "use client";
 
+import { GA_MEASUREMENT_ID } from "lib/analytics";
 import Script from "next/script";
 
 export function GoKwikScript() {
@@ -12,7 +13,7 @@ export function GoKwikScript() {
         dangerouslySetInnerHTML={{
           __html: `
             // GoKwik checkout reads this to send GA4 events (incl. purchase)
-            window.gaTag = { ga4: "${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || ""}" };
+            window.gaTag = { ga4: "${GA_MEASUREMENT_ID || ""}" };
             window.merchantInfo = {
               mid: "${process.env.NEXT_PUBLIC_GOKWIK_MERCHANT_ID || ""}",
               environment: "${process.env.NEXT_PUBLIC_GOKWIK_ENVIRONMENT || "sandbox"}",

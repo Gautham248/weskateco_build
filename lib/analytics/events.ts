@@ -38,7 +38,6 @@ type GaItem = {
 
 declare global {
   interface Window {
-    dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
     fbq?: (...args: unknown[]) => void;
   }
@@ -63,10 +62,6 @@ function sendGtag(
 function sendFbq(name: string, params: Record<string, unknown>) {
   if (!META_PIXEL_ID || typeof window === "undefined" || !window.fbq) return;
   window.fbq("track", name, params);
-}
-
-export function trackEvent(name: string, params: Record<string, unknown> = {}) {
-  sendGtag(name, params);
 }
 
 // "gid://shopify/ProductVariant/123" -> "123"

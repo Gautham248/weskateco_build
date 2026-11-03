@@ -1,9 +1,9 @@
 export {
+  GA_MEASUREMENT_ID,
   trackAddToCart,
   trackBeginCheckout,
   trackBuyNow,
   trackConfiguratorAddToCart,
-  trackEvent,
   trackRemoveFromCart,
   trackSearch,
   trackViewCart,
