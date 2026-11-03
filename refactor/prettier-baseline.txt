@@ -57,8 +57,6 @@ lib/db/migrations/meta/0005_snapshot.json
 lib/db/migrations/meta/_journal.json
 lib/utils.ts
 pnpm-lock.yaml
+refactor/refactor-roadmap.md
 scripts/deploy.js
-scripts/test-configurator.ts
-scripts/test-filters.ts
-scripts/test-image-url.ts
 tsconfig.json
