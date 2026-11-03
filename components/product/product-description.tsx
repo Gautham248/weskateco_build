@@ -1,9 +1,15 @@
 "use client";
-import Price from "components/price";
-import Prose from "components/prose";
+import { createSingleItemCartAction } from "components/cart/actions";
+import { useCart } from "components/cart/cart-context";
 import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
+import Price from "components/price";
+import { DraggableProse } from "./draggable-prose";
+import { useGoKwikCheckout } from "lib/gokwik";
 import { createTranslator } from "lib/i18n";
+import { prepareProductDescriptionHtml } from "lib/shopify/description-html";
 import { Product } from "lib/shopify/types";
+import { useSearchParams } from "next/navigation";
+import { useTransition } from "react";
 import { ProductActions } from "./product-actions";
 import { VariantSelector } from "./variant-selector";
 
@@ -15,12 +21,49 @@ export function ProductDescription({
   locale: string;
 }) {
   const t = createTranslator(locale);
+  const { cart, addCartItem } = useCart();
+  const searchParams = useSearchParams();
+  const [, startTransition] = useTransition();
+  const { triggerCheckout } = useGoKwikCheckout({ cartId: cart?.id });
+
+  // The variant chosen via the URL, else the first in-stock one. variants[0]
+  // may be sold out while the product is not.
+  const emiVariant =
+    product.variants.find((v) =>
+      v.selectedOptions.every(
+        (option) =>
+          option.value === searchParams.get(option.name.toLowerCase()),
+      ),
+    ) ?? product.variants.find((v) => v.availableForSale);
+  const canBuyOnEmi = emiVariant?.availableForSale === true;
+
+  const handleEmiCheckout = () => {
+    if (!emiVariant?.availableForSale) return;
+
+    startTransition(async () => {
+      const singleCartId = await createSingleItemCartAction(emiVariant.id);
+      if (singleCartId) {
+        if (window.merchantInfo) {
+          window.merchantInfo.cart = { id: singleCartId };
+        }
+        if (typeof window.triggerGokwikCustomCheckout === "function") {
+          window.triggerGokwikCustomCheckout();
+        }
+      }
+    });
+  };
 
   // Extract artist name if exists
   const getArtistName = (html: string, text: string) => {
-    const htmlMatch = html.match(/Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*(?:<[^>]+>)*([^<]+?)(?:<[^>]+>)*\s*(?:<\/p>|$)/i);
+    const htmlMatch = html.match(
+      /Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*((?:<[^>]+>|[^<>\n\r])+?)(?:<br\s*\/?>|<\/p>|\n|$)/i,
+    );
     if (htmlMatch && htmlMatch[1]) {
-      return htmlMatch[1].trim();
+      const extracted = htmlMatch[1]
+        .replace(/<[^>]+>/g, "")
+        .replace(/&nbsp;|\u00a0/g, " ")
+        .trim();
+      if (extracted) return extracted;
     }
     const textMatch = text.match(/Deck\s+Artwork\s+by\s+(.+)/i);
     if (textMatch && textMatch[1]) {
@@ -29,14 +72,22 @@ export function ProductDescription({
     return null;
   };
 
-  const artistName = getArtistName(product.descriptionHtml || "", product.description || "");
+  const artistName = getArtistName(
+    product.descriptionHtml || "",
+    product.description || "",
+  );
 
-  // Helper function to format "Deck Artwork by..." paragraph in-place
+  // Helper function to format "Deck Artwork by..." in-place
   const formatArtworkBadgeHtml = (html: string) => {
+    if (!html) return "";
     return html.replace(
-      /<p[^>]*>[\s\u00a0&nbsp;]*Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*(?:<[^>]+>)*([^<]+?)(?:<[^>]+>)*[\s\u00a0&nbsp;]*<\/p>/gi,
-      (match, artistName) => {
-        const trimmedArtist = artistName.trim();
+      /Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*((?:<[^>]+>|[^<>\n\r])+?)(?:<br\s*\/?>|<\/p>|\n|(?=<span[^>]*><br)|$)/gi,
+      (match, rawArtist) => {
+        const trimmedArtist = rawArtist
+          .replace(/<[^>]+>/g, "")
+          .replace(/&nbsp;|\u00a0/g, " ")
+          .trim();
+        if (!trimmedArtist) return match;
         const initial = trimmedArtist.charAt(0).toUpperCase();
         return `
           <div class="my-4 flex items-center gap-2 rounded-md bg-[#F4FFCD] dark:bg-lime-950/20 p-2 w-fit">
@@ -48,11 +99,16 @@ export function ProductDescription({
             </span>
           </div>
         `;
-      }
+      },
     );
   };
 
-  const formattedHtml = product.descriptionHtml ? formatArtworkBadgeHtml(product.descriptionHtml) : "";
+  const formattedHtml = product.descriptionHtml
+    ? prepareProductDescriptionHtml(
+        formatArtworkBadgeHtml(product.descriptionHtml),
+        locale,
+      )
+    : "";
 
   return (
     <>
@@ -94,7 +150,7 @@ export function ProductDescription({
               amount={product.priceRange.maxVariantPrice.amount}
               currencyCode={product.priceRange.maxVariantPrice.currencyCode}
               currencyCodeClassName="hidden"
-              className="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-neutral-900 dark:text-neutral-50"
+              className="text-[clamp(1.25rem,3vw,1.75rem)] font-semibold text-neutral-900 dark:text-neutral-50"
             />
             <span className="text-[clamp(0.563rem,1.5vw,0.688rem)] font-semibold text-neutral-600 dark:text-neutral-400">
               MRP
@@ -118,23 +174,22 @@ export function ProductDescription({
       </div>
 
       {/* Options Selectors */}
-      <VariantSelector options={product.options} variants={product.variants} />
-
-      {/* Snapmint EMI Banner */}
-      <SnapmintEmiCartBanner
-        totalAmount={product.priceRange.maxVariantPrice.amount}
-        onBuyOnEmi={() => {
-          if (
-            typeof window !== "undefined" &&
-            typeof window.triggerGokwikCustomCheckout === "function"
-          ) {
-            window.triggerGokwikCustomCheckout();
-          }
-        }}
+      <VariantSelector
+        options={product.options}
+        variants={product.variants}
+        locale={locale}
       />
 
+      {/* Snapmint EMI Banner */}
+      {canBuyOnEmi && (
+        <SnapmintEmiCartBanner
+          totalAmount={product.priceRange.maxVariantPrice.amount}
+          onBuyOnEmi={handleEmiCheckout}
+        />
+      )}
+
       {/* Product Buttons Actions */}
-      <ProductActions product={product} />
+      <ProductActions product={product} locale={locale} />
 
       {/* Separator Line */}
       <div className="my-8 border-t border-neutral-200 dark:border-neutral-800" />
@@ -150,7 +205,7 @@ export function ProductDescription({
 
         <div className="pt-4 pb-6 animate-fadeIn">
           {formattedHtml ? (
-            <Prose
+            <DraggableProse
               className="text-[clamp(0.75rem,1.5vw,0.875rem)] leading-relaxed text-black dark:text-neutral-300"
               html={formattedHtml}
             />

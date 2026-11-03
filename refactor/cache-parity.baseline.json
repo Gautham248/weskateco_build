@@ -1,0 +1,94 @@
+{
+  "cached": {
+    "getAdminProductCatalog": {
+      "directive": "use cache",
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
+    },
+    "getCart": {
+      "directive": "use cache: private",
+      "tags": ["TAGS.cart"],
+      "life": ["\"seconds\""]
+    },
+    "getCollection": {
+      "directive": "use cache",
+      "tags": ["TAGS.collections"],
+      "life": ["\"days\""]
+    },
+    "getCollectionProducts": {
+      "directive": "use cache",
+      "tags": ["TAGS.collections, TAGS.products"],
+      "life": ["\"days\""]
+    },
+    "getCollections": {
+      "directive": "use cache",
+      "tags": ["TAGS.collections"],
+      "life": ["\"days\""]
+    },
+    "getConfiguratorProducts": {
+      "directive": "use cache",
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
+    },
+    "getMenu": {
+      "directive": "use cache",
+      "tags": ["TAGS.collections"],
+      "life": ["\"days\""]
+    },
+    "getProduct": {
+      "directive": "use cache",
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
+    },
+    "getProductRecommendations": {
+      "directive": "use cache",
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
+    },
+    "getProducts": {
+      "directive": "use cache",
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
+    },
+    "getRawProduct": {
+      "directive": "use cache",
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
+    },
+    "loadHeroRows": {
+      "directive": "use cache",
+      "tags": ["TAGS.hero"],
+      "life": ["\"minutes\""]
+    },
+    "loadNewlyReleasedItems": {
+      "directive": "use cache",
+      "tags": ["TAGS.newlyReleased"],
+      "life": ["\"minutes\""]
+    },
+    "loadShopNowItems": {
+      "directive": "use cache",
+      "tags": ["TAGS.shopNow"],
+      "life": ["\"minutes\""]
+    }
+  },
+  "invalidations": [
+    "revalidateTag(TAGS.collections, \"seconds\")",
+    "revalidateTag(TAGS.collections, \"seconds\")",
+    "revalidateTag(TAGS.collections, \"seconds\")",
+    "revalidateTag(TAGS.collections, \"seconds\")",
+    "revalidateTag(TAGS.collections, \"seconds\")",
+    "revalidateTag(TAGS.hero, \"seconds\")",
+    "revalidateTag(TAGS.newlyReleased, \"seconds\")",
+    "revalidateTag(TAGS.products, \"seconds\")",
+    "revalidateTag(TAGS.products, \"seconds\")",
+    "revalidateTag(TAGS.products, \"seconds\")",
+    "revalidateTag(TAGS.products, \"seconds\")",
+    "revalidateTag(TAGS.shopNow, \"seconds\")",
+    "updateTag(TAGS.cart)",
+    "updateTag(TAGS.cart)",
+    "updateTag(TAGS.cart)",
+    "updateTag(TAGS.cart)",
+    "updateTag(TAGS.cart)",
+    "updateTag(TAGS.cart)"
+  ]
+}

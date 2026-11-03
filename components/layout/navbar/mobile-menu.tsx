@@ -16,11 +16,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
-import { WeskatecoIcon } from "./index";
 
 // Import bottom images
-import shopImg1 from "components/icons/shop_image_1.png";
-import shopImg2 from "components/icons/shop_image_2.png";
+import shopImg1 from "components/icons/shop_image_1.jpg";
+import shopImg2 from "components/icons/shop_image_2.jpg";
 
 const CATEGORY_PREFIXES = [
   { match: "skateboards", prefix: "skateboard" },
@@ -37,7 +36,7 @@ const ITEM_SLUGS: Record<string, (prefix: string) => string> = {
 
 function getStorePath(parentCategoryUrl: string, itemLower: string): string {
   const category = CATEGORY_PREFIXES.find((c) =>
-    parentCategoryUrl.includes(c.match)
+    parentCategoryUrl.includes(c.match),
   );
   const slugFn = category && ITEM_SLUGS[itemLower];
   const slug = slugFn ? slugFn(category.prefix) : itemLower;
@@ -52,6 +51,8 @@ export default function MobileMenu() {
 
   // Accordion states
   const [isStoreExpanded, setIsStoreExpanded] = useState(true);
+  const [isGuidesExpanded, setIsGuidesExpanded] = useState(false);
+  const [isAcademyExpanded, setIsAcademyExpanded] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const openMobileMenu = () => setIsOpen(true);
@@ -82,21 +83,25 @@ export default function MobileMenu() {
   const storeCategories = [
     { name: "Skateboards", key: "skateboards", href: "/store/skateboards" },
     { name: "Surfskate", key: "surfskates", href: "/store/surfskates" },
+    {
+      name: "Portable Ramps",
+      key: "portable_ramps",
+      href: "/store/portable-ramps",
+    },
     { name: "Apparel", key: "apparel", href: "/store/apparel-1" },
     {
       name: "Protective Gear",
       key: "protective_gear",
       href: "/store/protection-gears",
     },
-    { name: "Brands", key: "brands", href: "/store" },
   ];
 
   const subItems: Record<string, string[]> = {
     Skateboards: ["Completes", "Decks", "Wheels", "Trucks", "Accessories"],
     Surfskate: ["Completes", "Decks", "Wheels", "Trucks", "Accessories"],
+    "Portable Ramps": [],
     Apparel: [],
     "Protective Gear": [],
-    Brands: [],
   };
 
   const getSubItemHref = (
@@ -149,8 +154,12 @@ export default function MobileMenu() {
                 >
                   <XMarkIcon className="h-6 w-6" />
                 </button>
-                <div className="flex-1 flex justify-center text-black dark:text-white">
-                  <WeskatecoIcon color="currentColor" />
+                <div className="flex-1 flex justify-center">
+                  <img
+                    src="/icons/weskate-logo.png"
+                    alt="WeSkate Co"
+                    className="h-9 w-auto invert dark:invert-0"
+                  />
                 </div>
                 <div className="w-11" />
               </div>
@@ -245,27 +254,153 @@ export default function MobileMenu() {
                   )}
                 </div>
 
-                {/* GUIDES Link */}
+                {/* ABOUT US Link */}
                 <div className="border-b border-neutral-100 dark:border-neutral-900 py-4">
                   <Link
-                    href={getLocalizedPath("/guides", locale)}
+                    href={getLocalizedPath("/about-us", locale)}
                     onClick={closeMobileMenu}
                     className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                     style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
-                    GUIDES
+                    ABOUT US
                   </Link>
                 </div>
 
-                {/* ACADEMY Link */}
+                {/* GUIDES Accordion */}
+                <div className="border-b border-neutral-100 dark:border-neutral-900 py-3">
+                  <button
+                    onClick={() => setIsGuidesExpanded(!isGuidesExpanded)}
+                    className="flex w-full items-center justify-between font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                  >
+                    <span style={{ fontFamily: "'Clash Display', sans-serif" }}>
+                      GUIDES
+                    </span>
+                    {isGuidesExpanded ? (
+                      <ChevronUpIcon className="h-4 w-4 stroke-[2.5]" />
+                    ) : (
+                      <ChevronDownIcon className="h-4 w-4 stroke-[2.5]" />
+                    )}
+                  </button>
+
+                  {isGuidesExpanded && (
+                    <div
+                      className="mt-3 flex flex-col gap-2 pl-1"
+                      style={{ fontFamily: "Archivo, sans-serif" }}
+                    >
+                      <Link
+                        href={getLocalizedPath(
+                          "/guides/skateboard-buying-guide",
+                          locale,
+                        )}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Skateboard Buying Guide
+                      </Link>
+                      <Link
+                        href={getLocalizedPath("/guides/deck-guide", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Deck Guide
+                      </Link>
+                      <Link
+                        href={getLocalizedPath("/guides/truck-guide", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Truck Guide
+                      </Link>
+                      <Link
+                        href={getLocalizedPath("/guides/wheels-guide", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Wheels Guide
+                      </Link>
+                      <Link
+                        href={getLocalizedPath("/guides/bearing-guide", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Bearing Guide
+                      </Link>
+                      <Link
+                        href={getLocalizedPath(
+                          "/guides/griptape-guide",
+                          locale,
+                        )}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Griptape Guide
+                      </Link>
+                      <Link
+                        href={getLocalizedPath(
+                          "/guides/surfskate-guide",
+                          locale,
+                        )}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        Surfskate Guide
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* ACADEMY Accordion */}
+                <div className="border-b border-neutral-100 dark:border-neutral-900 py-4">
+                  <button
+                    onClick={() => setIsAcademyExpanded(!isAcademyExpanded)}
+                    aria-expanded={isAcademyExpanded}
+                    className="flex w-full items-center justify-between font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                  >
+                    <span style={{ fontFamily: "'Clash Display', sans-serif" }}>
+                      ACADEMY
+                    </span>
+                    {isAcademyExpanded ? (
+                      <ChevronUpIcon className="h-4 w-4 stroke-[2.5]" />
+                    ) : (
+                      <ChevronDownIcon className="h-4 w-4 stroke-[2.5]" />
+                    )}
+                  </button>
+
+                  {isAcademyExpanded && (
+                    <div
+                      className="mt-3 flex flex-col gap-2 pl-1"
+                      style={{ fontFamily: "Archivo, sans-serif" }}
+                    >
+                      <Link
+                        href={getLocalizedPath("/academy", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        WeSkate Academy
+                      </Link>
+                      <Link
+                        href={getLocalizedPath("/school", locale)}
+                        onClick={closeMobileMenu}
+                        className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
+                      >
+                        WeSkate School
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* CONFIGURATOR Link — on desktop this sits in the STORE mega
+                    menu (mega-menu-left.tsx). Top level here rather than buried
+                    inside the STORE accordion, since a builder is a destination
+                    in its own right and three taps down is easy to miss. */}
                 <div className="border-b border-neutral-100 dark:border-neutral-900 py-4">
                   <Link
-                    href={getLocalizedPath("/academy", locale)}
+                    href={getLocalizedPath("/configurator", locale)}
                     onClick={closeMobileMenu}
                     className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                     style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
-                    WESKATE ACADEMY
+                    {t("nav.configurator")}
                   </Link>
                 </div>
 
@@ -287,7 +422,7 @@ export default function MobileMenu() {
                 <div className="flex overflow-x-auto gap-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   {/* Shop Image 1 (Skateboarder in air) */}
                   <Link
-                    href={getLocalizedPath("/search", locale)}
+                    href={getLocalizedPath("/store/skateboards", locale)}
                     onClick={closeMobileMenu}
                     className="relative w-[50vw] shrink-0 aspect-[1.1] rounded-sm overflow-hidden bg-neutral-100 dark:bg-neutral-900 group"
                   >
@@ -302,7 +437,7 @@ export default function MobileMenu() {
 
                   {/* Shop Image 2 (Newly Released) */}
                   <Link
-                    href={getLocalizedPath("/search?sort=latest", locale)}
+                    href={getLocalizedPath("/store/newly-released", locale)}
                     onClick={closeMobileMenu}
                     className="relative w-[50vw] shrink-0 aspect-[1.1] rounded-sm overflow-hidden bg-neutral-100 dark:bg-neutral-900 group"
                   >

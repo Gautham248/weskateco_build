@@ -12,12 +12,14 @@ export default async function OpengraphImage(
 ): Promise<ImageResponse> {
   const { title } = {
     ...{
-      title: process.env.SITE_NAME,
+      title: process.env.SITE_NAME || "WeSkate Co",
     },
     ...props,
   };
 
-  const file = await readFile(join(process.cwd(), "./fonts/Inter-Bold.ttf"));
+  const file = await readFile(
+    join(process.cwd(), "./public/fonts/Inter-Bold.ttf"),
+  );
   const font = Uint8Array.from(file).buffer;
 
   return new ImageResponse(

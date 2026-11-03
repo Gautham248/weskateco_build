@@ -1,0 +1,453 @@
+/* Bearing Guide Figures Styling — mapped from figures.reference.css */
+.bearing-fig-root {
+  --b-ground: #ffffff;
+  --b-panel: #f7f7f9;
+  --b-panel-2: #ebecef;
+  --b-ink: currentColor;
+  --b-ink-2: #404040;
+  --b-muted: #737373;
+  --b-rule: #e5e5e5;
+  --b-rule-strong: #a3a3a3;
+  --b-active: #000000;
+  --b-active-fill: #171717;
+  --b-cyan: #0284c7;
+  --b-cyan-soft: #e0f2fe;
+  --b-pink: #dc2626;
+  font-family: inherit;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark .bearing-fig-root {
+    --b-ground: #0a0a0a;
+    --b-panel: #171717;
+    --b-panel-2: #262626;
+    --b-ink: currentColor;
+    --b-ink-2: #d4d4d4;
+    --b-muted: #a3a3a3;
+    --b-rule: #404040;
+    --b-rule-strong: #737373;
+    --b-active: #ffffff;
+    --b-active-fill: #ffffff;
+    --b-cyan: #38bdf8;
+    --b-cyan-soft: #0c4a6e;
+    --b-pink: #f87171;
+  }
+}
+
+.bfig {
+  color: var(--b-ink);
+  font-family: inherit;
+}
+
+.bpart {
+  cursor: pointer;
+}
+.bpart:focus {
+  outline: none;
+}
+.bpart .hi {
+  fill: var(--b-panel-2);
+  stroke: currentColor;
+  stroke-width: 1.3;
+  transition:
+    fill 0.15s,
+    fill-opacity 0.15s,
+    stroke-width 0.15s;
+}
+.bpart .hi.lite {
+  fill: var(--b-panel);
+}
+.bpart .hi.solid {
+  fill: var(--b-ground);
+}
+.bpart .sh {
+  fill: var(--b-panel-2);
+  fill-opacity: 0.9;
+}
+.bpart .shp {
+  fill: var(--b-panel);
+}
+.bpart:hover .hi {
+  fill: var(--b-rule);
+}
+.bpart:focus-visible .hi {
+  stroke-width: 2.4;
+}
+.bpart.on .hi {
+  fill: var(--b-active-fill);
+  fill-opacity: 1;
+  stroke: var(--b-active);
+  stroke-width: 1.7;
+}
+.bpart .lub {
+  color: var(--b-muted);
+  transition: color 0.15s;
+}
+.bpart:hover .lub,
+.bpart.on .lub {
+  color: var(--b-active);
+}
+
+.badge {
+  cursor: pointer;
+}
+.badge:focus {
+  outline: none;
+}
+.badge .lead {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.55;
+}
+.badge circle {
+  fill: var(--b-ground);
+  stroke: currentColor;
+  stroke-width: 1.5;
+  transition:
+    fill 0.15s,
+    stroke 0.15s;
+}
+.badge text {
+  font-size: 11px;
+  font-weight: 700;
+  fill: currentColor;
+  font-family: inherit;
+  pointer-events: none;
+}
+.badge:hover circle {
+  fill: var(--b-panel);
+}
+.badge.on circle {
+  fill: var(--b-active);
+  stroke: var(--b-active);
+}
+.badge.on text {
+  fill: var(--b-ground);
+}
+
+.dim line {
+  stroke: var(--b-muted);
+  stroke-width: 1;
+}
+.dim text {
+  font-size: 11px;
+  fill: var(--b-muted);
+  font-weight: 700;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.dimnote,
+.vcap {
+  font-size: 10.5px;
+  fill: var(--b-muted);
+  font-family: inherit;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.vcap {
+  font-size: 10px;
+}
+.bfig .axis {
+  stroke: var(--b-muted);
+  stroke-width: 1;
+  stroke-dasharray: 14 4 3 4;
+  opacity: 0.8;
+}
+
+.bfig .pnl {
+  font-family: var(--font-clash, "Clash Display", sans-serif);
+  font-weight: 700;
+  font-size: 13px;
+  fill: var(--b-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+.bfig .axl {
+  stroke: var(--b-rule-strong);
+  stroke-width: 1.2;
+}
+.bfig .sep {
+  stroke: var(--b-rule);
+  stroke-width: 1;
+}
+.bfig .axt,
+.bfig .rval,
+.bfig .foot {
+  font-family: inherit;
+  font-size: 10.5px;
+  fill: var(--b-muted);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.bfig .rname {
+  font-family: inherit;
+  font-size: 12px;
+  fill: var(--b-ink-2);
+  font-weight: 600;
+}
+.bfig .lab {
+  font-family: inherit;
+  font-size: 11px;
+  fill: var(--b-ink-2);
+  font-weight: 700;
+}
+.bfig .skate {
+  fill: var(--b-active);
+}
+.bfig .indus {
+  fill: var(--b-rule);
+}
+.bfig .mark {
+  stroke: var(--b-pink);
+  stroke-width: 2;
+}
+.bfig .tol {
+  fill: var(--b-active);
+}
+.bfig .hair {
+  fill: var(--b-rule-strong);
+}
+
+.stackfig .ure {
+  fill: var(--b-panel-2);
+  stroke: currentColor;
+  stroke-width: 1.1;
+}
+.stackfig .core {
+  fill: var(--b-rule-strong);
+  stroke: none;
+}
+.stackfig .hang {
+  fill: var(--b-panel);
+  stroke: currentColor;
+  stroke-width: 1.3;
+}
+.stackfig .axle {
+  fill: var(--b-panel);
+  stroke: currentColor;
+  stroke-width: 1.3;
+}
+.stackfig .st {
+  fill: var(--b-ground);
+  stroke: currentColor;
+  stroke-width: 1.2;
+}
+.stackfig .cav {
+  fill: var(--b-panel);
+  stroke: none;
+}
+.stackfig .shd {
+  fill: var(--b-rule-strong);
+  stroke: none;
+}
+.stackfig .ball {
+  fill: var(--b-ground);
+  stroke: currentColor;
+  stroke-width: 1.2;
+}
+.stackfig .wsh {
+  fill: var(--b-cyan-soft);
+  stroke: var(--b-cyan);
+  stroke-width: 1.1;
+}
+.stackfig .spc {
+  fill: var(--b-panel-2);
+  stroke: var(--b-active);
+  stroke-width: 1.5;
+}
+.stackfig .nut {
+  fill: var(--b-panel);
+  stroke: currentColor;
+  stroke-width: 1.3;
+}
+.stackfig .brk {
+  fill: none;
+  stroke: var(--b-muted);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+.stackfig .lead2 {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.45;
+}
+.stackfig .lpline {
+  fill: none;
+  stroke-width: 2.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.stackfig .lpline.ok {
+  stroke: var(--b-active);
+}
+.stackfig .lpline.bad {
+  stroke: var(--b-pink);
+  stroke-dasharray: 7 4;
+}
+.stackfig .pinch {
+  fill: none;
+  stroke: var(--b-pink);
+  stroke-width: 2;
+}
+.stackfig .orderline {
+  font-family: inherit;
+  font-size: 11px;
+  fill: var(--b-muted);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.sealfig .st {
+  fill: var(--b-panel-2);
+  stroke: currentColor;
+  stroke-width: 1.2;
+}
+.sealfig .ball {
+  fill: var(--b-ground);
+  stroke: currentColor;
+  stroke-width: 1.2;
+}
+.sealfig .cl {
+  fill: var(--b-rule-strong);
+  stroke: currentColor;
+  stroke-width: 0.9;
+}
+.sealfig .cl.rub {
+  fill: var(--b-cyan-soft);
+  stroke: var(--b-cyan);
+}
+.sealfig .dirt {
+  fill: none;
+  stroke: var(--b-pink);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+.sealfig .cnote {
+  font-family: inherit;
+  font-size: 11px;
+  fill: var(--b-muted);
+  font-weight: 700;
+}
+.sealfig .brk2 {
+  fill: none;
+  stroke: var(--b-muted);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+.sealfig .grv {
+  fill: var(--b-panel);
+  stroke: currentColor;
+  stroke-width: 0.9;
+}
+
+.step-fig svg {
+  color: var(--b-ink);
+  font-family: inherit;
+}
+.sk-st {
+  fill: var(--b-ground);
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.sk-ball {
+  fill: var(--b-panel);
+  stroke: currentColor;
+  stroke-width: 1.3;
+}
+.sk-sh {
+  fill: var(--b-panel-2);
+  stroke: currentColor;
+  stroke-width: 1.2;
+}
+.sk-shd {
+  fill: var(--b-rule-strong);
+  stroke: none;
+}
+.sk-hole {
+  fill: var(--b-panel);
+  stroke: currentColor;
+  stroke-width: 1.3;
+}
+.sk-ure {
+  fill: var(--b-panel-2);
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.sk-seat {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-dasharray: 5 4;
+}
+.sk-axle {
+  fill: var(--b-panel);
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+.sk-wsh {
+  fill: var(--b-cyan-soft);
+  stroke: var(--b-cyan);
+  stroke-width: 1.2;
+}
+.sk-nut {
+  fill: var(--b-panel);
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+.sk-tool {
+  fill: var(--b-rule);
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+.sk-jar {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+.sk-liq {
+  fill: var(--b-cyan-soft);
+  stroke: var(--b-cyan);
+  stroke-width: 1.2;
+}
+.sk-cloth {
+  fill: var(--b-panel-2);
+  stroke: currentColor;
+  stroke-width: 1.3;
+}
+.sk-drop {
+  fill: var(--b-cyan);
+  stroke: none;
+}
+.sk-brk {
+  fill: none;
+  stroke: var(--b-muted);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+.sk-guide {
+  stroke: var(--b-muted);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  opacity: 0.65;
+}
+.sk-axis {
+  stroke: var(--b-muted);
+  stroke-width: 1;
+  stroke-dasharray: 14 4 3 4;
+  opacity: 0.8;
+}
+.sk-arr {
+  fill: none;
+  stroke: var(--b-active);
+  stroke-width: 2.6;
+}
+.sk-arr.thin {
+  stroke-width: 1.9;
+}
+.sk-t {
+  font-family: inherit;
+  font-size: 12px;
+  fill: var(--b-muted);
+  font-weight: 700;
+}

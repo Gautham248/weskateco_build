@@ -1,0 +1,25 @@
+# Version control and local agent tooling
+.git
+.github
+graphify-out
+.dev-agent
+.commandcode
+refactor
+docs
+*.md
+.vscode
+.agents-md.sha256
+weskateco_build.code-workspace
+
+# Environment files
+.env*
+!.env.example
+
+# Temporary and build artifacts
+*.bak*
+*.tsbuildinfo
+coverage
+
+# Test scripts (keep json catalog dumps and scripts needed by build)
+scripts/test-*
+scripts/seed-*

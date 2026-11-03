@@ -10,6 +10,7 @@ const productFragment = /* GraphQL */ `
     description
     descriptionHtml
     vendor
+    productType
     options {
       id
       name
@@ -85,7 +86,7 @@ const productFragment = /* GraphQL */ `
       namespace
       type
     }
-    collections(first: 1) {
+    collections(first: 100) {
       edges {
         node {
           handle

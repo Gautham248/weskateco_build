@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
+import Link from "next/link";
 
 interface LinkItem {
   title: string;
@@ -28,23 +28,28 @@ export default function MegaMenuLeft({
       id: "skateboards",
     },
     { title: t("nav.surfskates"), href: "/store/surfskates", id: "surfskates" },
+    {
+      title: t("nav.portable_ramps"),
+      href: "/store/portable-ramps",
+      id: "portable_ramps",
+    },
     { title: t("nav.apparel"), href: "/store/apparel-1", id: "apparel" },
     {
       title: t("nav.protective_gear"),
       href: "/store/protection-gears",
       id: "protective_gear",
     },
-    { title: t("nav.brands"), href: "/store", id: "brands" },
+    { title: t("nav.configurator"), href: "/configurator", id: "configurator" },
   ];
 
   return (
-    <div className="w-auto bg-white dark:bg-neutral-900 rounded-xl p-10">
+    <div className="w-[290px] shrink-0 bg-white dark:bg-neutral-900 rounded-xl p-10">
       <div className="flex flex-col gap-7">
         {links.map((link) => (
           <Link
             key={link.id}
             href={getLocalizedPath(link.href, locale)}
-            className={`block text-[clamp(1.125rem,2vw,1.375rem)] font-semibold hover:text-black dark:hover:text-white ${activeCategory === null || activeCategory === link.href ? "!text-black dark:!text-white" : "!text-[#717171] dark:!text-neutral-400"}`}
+            className={`block text-[20px] font-semibold hover:text-black dark:hover:text-white ${activeCategory === null || activeCategory === link.href ? "!text-black dark:!text-white !font-bold" : "!text-[#717171] dark:!text-neutral-400"}`}
             style={{
               fontFamily: "'Clash Display', sans-serif",
               letterSpacing: "0em",
@@ -52,7 +57,12 @@ export default function MegaMenuLeft({
             onClick={onLinkClick}
             onMouseEnter={() => onCategoryHover(link.href)}
           >
-            {link.title.toUpperCase()}
+            <span
+              className="inline-flex flex-col after:content-[attr(data-text)] after:font-bold after:h-0 after:invisible after:overflow-hidden select-none"
+              data-text={link.title.toUpperCase()}
+            >
+              {link.title.toUpperCase()}
+            </span>
           </Link>
         ))}
       </div>

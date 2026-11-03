@@ -1,3 +1,4 @@
+import { withOverrides } from "lib/catalog/overrides";
 import {
   HIDDEN_PRODUCT_TAG,
   SHOPIFY_GRAPHQL_API_ENDPOINT,
@@ -29,6 +30,7 @@ import { getPageQuery, getPagesQuery } from "./queries/page";
 import {
   getProductQuery,
   getProductRecommendationsQuery,
+  getProductsPageQuery,
   getProductsQuery,
 } from "./queries/product";
 import { getConfiguratorProductsQuery } from "./queries/configurator";
@@ -55,6 +57,8 @@ import {
   ShopifyProductOperation,
   ShopifyProductRecommendationsOperation,
   ShopifyProductsOperation,
+  ShopifyProductsPageOperation,
+  ShopifyProductSummary,
   ShopifyRemoveFromCartOperation,
   ShopifyUpdateCartOperation,
 } from "./types";
@@ -69,6 +73,44 @@ type ExtractVariables<T> = T extends { variables: object }
   ? T["variables"]
   : never;
 
+/**
+ * True only for connection-establishment failures — a connect timeout, DNS
+ * failure, or refused connection — where the request never reached Shopify.
+ * Retrying those is safe even for cart mutations. Anything where a response
+ * may already have started is deliberately not retried.
+ */
+function isTransientConnectError(error: unknown): boolean {
+  const cause = (error as { cause?: unknown } | null)?.cause;
+
+  if (cause && typeof cause === "object") {
+    const code = (cause as { code?: string }).code;
+    if (
+      code === "ECONNREFUSED" ||
+      code === "ENETUNREACH" ||
+      code === "EHOSTUNREACH" ||
+      code === "ENOTFOUND" ||
+      code === "EAI_AGAIN"
+    ) {
+      return true;
+    }
+
+    if ((cause as { name?: string }).name === "ConnectTimeoutError") {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Hard cap on any single Shopify request. Without it, a dead or stalled
+ * upstream sits on undici's default 300s headers timeout — the request looks
+ * like a ~5-minute hang (seen as `POST /configurator 404 in 318000ms` plus
+ * `UND_ERR_HEADERS_TIMEOUT`) instead of a fast, explainable failure. 15s is
+ * far above normal Storefront API latency (typically <1s).
+ */
+const SHOPIFY_FETCH_TIMEOUT_MS = 15_000;
+
 export async function shopifyFetch<T>({
   headers,
   query,
@@ -78,49 +120,64 @@ export async function shopifyFetch<T>({
   query: string;
   variables?: ExtractVariables<T>;
 }): Promise<{ status: number; body: T } | never> {
-  try {
-    if (!endpoint) {
-      throw new Error("SHOPIFY_STORE_DOMAIN environment variable is not set");
-    }
+  const maxRetries = 2;
+  let lastError: unknown;
 
-    const result = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": key,
-        ...headers,
-      },
-      body: JSON.stringify({
-        ...(query && { query }),
-        ...(variables && { variables }),
-      }),
-    });
+  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    try {
+      if (!endpoint) {
+        throw new Error("SHOPIFY_STORE_DOMAIN environment variable is not set");
+      }
 
-    const body = await result.json();
+      const result = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": key,
+          ...headers,
+        },
+        body: JSON.stringify({
+          ...(query && { query }),
+          ...(variables && { variables }),
+        }),
+        signal: AbortSignal.timeout(SHOPIFY_FETCH_TIMEOUT_MS),
+      });
 
-    if (body.errors) {
-      throw body.errors[0];
-    }
+      const body = await result.json();
 
-    return {
-      status: result.status,
-      body,
-    };
-  } catch (e) {
-    if (isShopifyError(e)) {
-      throw {
-        cause: e.cause?.toString() || "unknown",
-        status: e.status || 500,
-        message: e.message,
-        query,
+      if (body.errors) {
+        throw body.errors[0];
+      }
+
+      return {
+        status: result.status,
+        body,
       };
-    }
+    } catch (e) {
+      lastError = e;
 
+      if (attempt < maxRetries && isTransientConnectError(e)) {
+        await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt));
+        continue;
+      }
+
+      break;
+    }
+  }
+
+  if (isShopifyError(lastError)) {
     throw {
-      error: e,
+      cause: lastError.cause?.toString() || "unknown",
+      status: lastError.status || 500,
+      message: lastError.message,
       query,
     };
   }
+
+  throw {
+    error: lastError,
+    query,
+  };
 }
 
 const removeEdgesAndNodes = <T>(array: Connection<T>): T[] => {
@@ -150,6 +207,12 @@ const reshapeCollection = (
 
   return {
     ...collection,
+    image: collection.image
+      ? {
+          ...collection.image,
+          altText: collection.image.altText || `${collection.title} collection`,
+        }
+      : null,
     path: `/store/${collection.handle}`,
   };
 };
@@ -219,9 +282,14 @@ const reshapeProducts = (products: ShopifyProduct[]) => {
   return reshapedProducts;
 };
 
-export async function createCart(): Promise<Cart> {
+export async function createCart(
+  lineItems?: { merchandiseId: string; quantity: number }[],
+): Promise<Cart> {
   const res = await shopifyFetch<ShopifyCreateCartOperation>({
     query: createCartMutation,
+    variables: {
+      lineItems: lineItems || [],
+    },
   });
 
   return reshapeCart(res.body.data.cartCreate.cart);
@@ -273,27 +341,38 @@ export async function updateCart(
   return reshapeCart(res.body.data.cartLinesUpdate.cart);
 }
 
+// NOTE: intentionally NOT cached ("use cache"). A cart is per-user live data;
+// caching it here intermittently returned stale "empty/missing cart" results,
+// which made adds create duplicate carts and refreshes empty the UI.
 export async function getCart(): Promise<Cart | undefined> {
-  "use cache: private";
-  cacheTag(TAGS.cart);
-  cacheLife("seconds");
-
   const cartId = (await cookies()).get("cartId")?.value;
 
   if (!cartId) {
     return undefined;
   }
 
-  const res = await shopifyFetch<ShopifyCartOperation>({
-    query: getCartQuery,
-    variables: { cartId },
-  });
-
-  if (!res.body.data.cart) {
-    return undefined;
+  // The connection to Shopify fails intermittently on some networks ("fetch
+  // failed" from the HTTP layer). Retry reads with a short backoff so a
+  // hiccup degrades into a slightly slower load instead of a lost cart.
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await shopifyFetch<ShopifyCartOperation>({
+        query: getCartQuery,
+        variables: { cartId },
+      });
+      if (!res.body.data.cart) {
+        return undefined;
+      }
+      return reshapeCart(res.body.data.cart);
+    } catch (e) {
+      lastError = e;
+      if (attempt < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 250 * attempt));
+      }
+    }
   }
-
-  return reshapeCart(res.body.data.cart);
+  throw lastError;
 }
 
 export async function getCollection(
@@ -347,8 +426,8 @@ export async function getCollectionProducts({
     return [];
   }
 
-  return reshapeProducts(
-    removeEdgesAndNodes(res.body.data.collection.products),
+  return withOverrides(
+    reshapeProducts(removeEdgesAndNodes(res.body.data.collection.products)),
   );
 }
 
@@ -369,6 +448,7 @@ export async function getCollections(): Promise<Collection[]> {
           description: "All products",
         },
         path: "/search",
+        image: null,
         updatedAt: new Date().toISOString(),
       },
     ];
@@ -388,6 +468,7 @@ export async function getCollections(): Promise<Collection[]> {
         description: "All products",
       },
       path: "/search",
+      image: null,
       updatedAt: new Date().toISOString(),
     },
     // Filter out the `hidden` collections.
@@ -445,6 +526,35 @@ export async function getPages(): Promise<Page[]> {
   return removeEdgesAndNodes(res.body.data.pages);
 }
 
+/**
+ * Admin-only. Returns the raw Shopify product WITHOUT the override layer applied,
+ * so the editor can show the true Shopify title/description/photos alongside the
+ * override fields instead of the already-merged result.
+ */
+export async function getRawProduct(
+  handle: string,
+): Promise<Product | undefined> {
+  "use cache";
+  cacheTag(TAGS.products);
+  cacheLife("days");
+
+  if (!endpoint) {
+    console.log(
+      `Skipping getRawProduct for '${handle}' - Shopify not configured`,
+    );
+    return undefined;
+  }
+
+  const res = await shopifyFetch<ShopifyProductOperation>({
+    query: getProductQuery,
+    variables: {
+      handle,
+    },
+  });
+
+  return reshapeProduct(res.body.data.product, false);
+}
+
 export async function getProduct(handle: string): Promise<Product | undefined> {
   "use cache";
   cacheTag(TAGS.products);
@@ -462,7 +572,49 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
     },
   });
 
-  return reshapeProduct(res.body.data.product, false);
+  const product = reshapeProduct(res.body.data.product, false);
+
+  if (!product) {
+    return undefined;
+  }
+
+  const [merged] = await withOverrides([product]);
+
+  return merged;
+}
+
+/**
+ * What a product page read produced. Three outcomes, not two — see
+ * `productReadState` in lib/catalog/product-page.ts for what the page does with them
+ * and why a failure must never be confused with a missing product.
+ */
+export type ProductReadResult =
+  | { status: "ok"; product: Product | undefined }
+  | { status: "failed" };
+
+/**
+ * `getProduct` for a page render, resolving a Shopify failure to a state instead of
+ * throwing.
+ *
+ * Deliberately **not** cached, so an outage is never remembered: only `getProduct`'s own
+ * successful result is cached, and the next request asks Shopify again. That is the same
+ * arrangement `newly-released-feed.ts` and `shop-now-feed.ts` rely on for the homepage
+ * sections — catch around the `"use cache"` function, never inside a cached wrapper that
+ * would memorise the failure.
+ */
+export async function readProductForPage(
+  handle: string,
+): Promise<ProductReadResult> {
+  try {
+    return { status: "ok", product: await getProduct(handle) };
+  } catch (error) {
+    console.error(
+      `Could not read product "${handle}" from Shopify; the page will show the unavailable state:`,
+      error,
+    );
+
+    return { status: "failed" };
+  }
 }
 
 export async function getProductRecommendations(
@@ -479,7 +631,7 @@ export async function getProductRecommendations(
     },
   });
 
-  return reshapeProducts(res.body.data.productRecommendations);
+  return withOverrides(reshapeProducts(res.body.data.productRecommendations));
 }
 
 export async function getProducts({
@@ -504,7 +656,9 @@ export async function getProducts({
     },
   });
 
-  return reshapeProducts(removeEdgesAndNodes(res.body.data.products));
+  return withOverrides(
+    reshapeProducts(removeEdgesAndNodes(res.body.data.products)),
+  );
 }
 
 export async function getConfiguratorProducts(): Promise<Product[]> {
@@ -516,7 +670,87 @@ export async function getConfiguratorProducts(): Promise<Product[]> {
     query: getConfiguratorProductsQuery,
   });
 
-  return reshapeProducts(removeEdgesAndNodes(res.body.data.products));
+  return withOverrides(
+    reshapeProducts(removeEdgesAndNodes(res.body.data.products)),
+  );
+}
+
+/** Safety valve: 4 x 250 products before we stop paging. */
+const ADMIN_CATALOG_MAX_PAGES = 4;
+const ADMIN_CATALOG_PAGE_SIZE = 250;
+
+export type AdminProductCatalog = {
+  items: ShopifyProductSummary[];
+  /** True when the catalog is larger than the page cap, so the list is partial. */
+  truncated: boolean;
+  /**
+   * True when the catalog could not be read at all. Distinguishes "Shopify is
+   * unreachable" from "there are no products" — an empty list with no explanation
+   * reads as the latter, which would be a lie.
+   */
+  failed: boolean;
+};
+
+/**
+ * The whole admin catalog in one call, so the admin products page can filter
+ * client-side exactly like the storefront does. Sorted by title for a
+ * predictable, scannable list.
+ *
+ * A Shopify outage returns `failed` rather than throwing. The try/catch has to
+ * live in here rather than around a call site: an error escaping a "use cache"
+ * function surfaces as an unhandled 500 in this Next version even when the caller
+ * catches it — which is why all three admin pages using this were 500-ing while
+ * Shopify was unreachable.
+ *
+ * The cost of catching inside is that a failure is cached for this profile, so a
+ * transient blip can hold the banner until the entry expires. A visible, explained
+ * failure is still better than a broken page.
+ */
+export async function getAdminProductCatalog(): Promise<AdminProductCatalog> {
+  "use cache";
+  cacheTag(TAGS.products);
+  cacheLife("days");
+
+  if (!endpoint) {
+    console.log("Skipping getAdminProductCatalog - Shopify not configured");
+    return { items: [], truncated: false, failed: true };
+  }
+
+  try {
+    const items: ShopifyProductSummary[] = [];
+    let after: string | undefined;
+    let hasMore = true;
+    let pages = 0;
+
+    while (hasMore && pages < ADMIN_CATALOG_MAX_PAGES) {
+      const res = await shopifyFetch<ShopifyProductsPageOperation>({
+        query: getProductsPageQuery,
+        variables: {
+          first: ADMIN_CATALOG_PAGE_SIZE,
+          after,
+          sortKey: "TITLE",
+          reverse: false,
+        },
+      });
+
+      const connection = res.body.data.products;
+
+      items.push(...removeEdgesAndNodes(connection));
+
+      hasMore = connection.pageInfo.hasNextPage;
+      after = connection.pageInfo.endCursor ?? undefined;
+      pages += 1;
+    }
+
+    return { items, truncated: hasMore, failed: false };
+  } catch (error) {
+    console.error(
+      "Could not read the product catalog from Shopify; the admin product lists will be empty:",
+      error,
+    );
+
+    return { items: [], truncated: false, failed: true };
+  }
 }
 
 // This is called from `app/api/revalidate.ts` so providers can control revalidation logic.

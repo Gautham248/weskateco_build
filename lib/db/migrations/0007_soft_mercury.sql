@@ -1,0 +1,1 @@
+ALTER TABLE "social_posts" ADD COLUMN "platform" text DEFAULT 'instagram' NOT NULL;

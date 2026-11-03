@@ -1,23 +1,33 @@
 "use client";
 
-import { useState } from "react";
-import shopImg1 from "components/icons/shop_image_1.png";
-import shopImg2 from "components/icons/shop_image_2.png";
-import shopImg3 from "components/icons/shop_image_3.png";
+import shopImg1 from "components/icons/shop_image_1.jpg";
+import shopImg2 from "components/icons/shop_image_2.jpg";
+import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 import MegaMenuSubItems, { hasSubItems } from "./mega-menu-sub-items";
 
 export default function MegaMenuRight({
   activeCategory,
   onCollapse,
+  onLinkClick,
 }: {
   activeCategory: string | null;
   onCollapse?: () => void;
+  onLinkClick?: () => void;
 }) {
+  const params = useParams();
+  const locale = (params?.locale as string) || "en";
   const showPanel = hasSubItems(activeCategory);
   const [lastCategory, setLastCategory] = useState<string | null>(null);
 
-  if (activeCategory && hasSubItems(activeCategory) && activeCategory !== lastCategory) {
+  if (
+    activeCategory &&
+    hasSubItems(activeCategory) &&
+    activeCategory !== lastCategory
+  ) {
     setLastCategory(activeCategory);
   }
 
@@ -32,7 +42,7 @@ export default function MegaMenuRight({
           marginRight: showPanel ? "12px" : "0",
         }}
       >
-        <MegaMenuSubItems category={lastCategory} />
+        <MegaMenuSubItems category={lastCategory} onLinkClick={onLinkClick} />
       </div>
 
       {/* Main Content Grid Container */}
@@ -41,71 +51,61 @@ export default function MegaMenuRight({
         onMouseEnter={onCollapse}
       >
         {/* Left Image Component */}
-        <div
-          className={`relative flex-shrink-0 h-full rounded-lg overflow-hidden transition-all duration-700 ease-in-out ${showPanel ? "w-[65%]" : "w-[55%]"
-            }`}
+        <Link
+          href={getLocalizedPath("/store/skateboards", locale)}
+          onClick={onLinkClick}
+          className={`relative flex-shrink-0 h-full rounded-lg overflow-hidden transition-all duration-700 ease-in-out block group ${
+            showPanel ? "w-[65%]" : "w-[55%]"
+          }`}
         >
-          <Image src={shopImg1} alt="" fill className="object-cover" priority />
-        </div>
+          <Image
+            src={shopImg1}
+            alt="Shop Skateboards"
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            priority
+          />
+        </Link>
 
         {/* Right Composite Component */}
-        <div
-          className="relative flex-1 h-full rounded-lg overflow-hidden flex bg-white dark:bg-neutral-900 transition-all duration-700 ease-in-out"
+        <Link
+          href={getLocalizedPath("/store/newly-released", locale)}
+          onClick={onLinkClick}
+          className="relative flex-1 h-full rounded-lg overflow-hidden flex bg-white dark:bg-neutral-900 transition-all duration-700 ease-in-out block group"
           style={{
             paddingRight: showPanel ? "0px" : "43px",
           }}
         >
           {/* Main Image Layer */}
           <div className="relative flex-1 h-full rounded-lg overflow-hidden bg-black">
-            {/* BASE LAYER: Image 3 (Shrunk State)
-                Fades in quickly and silently underneath, acting as a backdrop */}
+            {/* Single Image Component with smooth transition-transform on state change */}
             <div
-              className="absolute inset-0 transition-opacity duration-500 ease-in-out"
+              className="absolute inset-0 transition-transform duration-700 ease-in-out"
               style={{
-                opacity: showPanel ? 1 : 0,
-                willChange: "opacity",
-                zIndex: 1,
-              }}
-            >
-              <Image
-                src={shopImg3}
-                alt=""
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-
-            {/* TOP LAYER: Image 2 (Default State)
-                Holds its opacity slightly longer during layout shift, then melts away flawlessly */}
-            <div
-              className="absolute inset-0 transition-opacity cubic-bezier(0.4, 0, 0.2, 1)"
-              style={{
-                opacity: showPanel ? 0 : 1,
-                transitionDuration: showPanel ? "1000ms" : "600ms",
-                transitionDelay: showPanel ? "100ms" : "0ms", // Delayed fade-out when closing/opening to sync with flex box width
-                willChange: "opacity",
-                zIndex: 2,
+                transform: showPanel ? "scale(1)" : "scale(1.1)",
+                transformOrigin: "top",
+                willChange: "transform",
               }}
             >
               <Image
                 src={shopImg2}
-                alt=""
+                alt="Newly Released"
                 fill
-                className="object-cover"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
                 priority
               />
             </div>
 
             {/* Horizontal Text Overlay */}
             <div
-              className={`absolute bottom-6 left-6 z-10 max-w-[85%] transition-all duration-700 ease-in-out ${showPanel
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4 pointer-events-none"
-                }`}
+              className={`absolute bottom-6 left-6 z-10 max-w-[85%] transition-all duration-700 ease-in-out ${
+                showPanel
+                  ? "opacity-0 pointer-events-none xl:opacity-100 xl:pointer-events-auto translate-y-0"
+                  : "opacity-0 translate-y-4 pointer-events-none"
+              }`}
             >
               <h3
-                className="text-white font-[700] text-[clamp(1rem,2.5vw,1.25rem)] uppercase leading-tight tracking-wide drop-shadow-md"
+                className="text-white font-[700] text-xs xl:text-[0.95rem] 2xl:text-[1.25rem] uppercase leading-tight tracking-wide drop-shadow-md"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
                 Newly <br /> Released
@@ -126,7 +126,7 @@ export default function MegaMenuRight({
               style={{
                 transform: "rotate(-90deg)",
                 transformOrigin: "center",
-                fontFamily: "Archivo, sans-serif"
+                fontFamily: "'Clash Display', sans-serif",
               }}
             >
               Newly Released
@@ -134,9 +134,10 @@ export default function MegaMenuRight({
           </div>
 
           {/* Floating Action Button */}
-          <button
-            className={`absolute cursor-pointer bottom-6 z-10 w-11 h-11 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center shadow-lg transition-all duration-700 hover:scale-105 active:scale-95 ${showPanel ? "right-6" : "right-16"
-              }`}
+          <div
+            className={`absolute cursor-pointer bottom-6 z-10 w-11 h-11 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center shadow-lg transition-all duration-700 group-hover:scale-105 active:scale-95 ${
+              showPanel ? "right-6" : "right-16"
+            }`}
           >
             <svg
               width="18"
@@ -151,8 +152,8 @@ export default function MegaMenuRight({
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
-          </button>
-        </div>
+          </div>
+        </Link>
       </div>
     </div>
   );

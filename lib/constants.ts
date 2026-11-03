@@ -44,7 +44,18 @@ export const TAGS = {
   collections: "collections",
   products: "products",
   cart: "cart",
+  newlyReleased: "newly-released",
+  shopNow: "shop-now",
+  hero: "hero",
+  socialPosts: "social-posts",
+  siteSettings: "site-settings",
 };
+
+/**
+ * Shared by the admin session helpers and proxy.ts, which runs on the edge and
+ * must not import the bcrypt/jose dependency chain.
+ */
+export const ADMIN_SESSION_COOKIE = "admin_session";
 
 export const HIDDEN_PRODUCT_TAG = "nextjs-frontend-hidden";
 export const DEFAULT_OPTION = "Default Title";

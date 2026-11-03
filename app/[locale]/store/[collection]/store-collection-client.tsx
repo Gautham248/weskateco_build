@@ -1,14 +1,20 @@
 "use client";
 
-import { useState, useEffect, useTransition, useRef } from "react";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import StoreBanner from "components/layout/search/banner";
 import FilterSortBar from "components/layout/search/filter-sort-bar";
 import ProductCard, {
   ProductCardSkeleton,
 } from "components/product/product-card";
+import {
+  CATEGORY_PREFIXES,
+  getParentCategory,
+} from "lib/filters/category-filter-config";
+import { productMatches } from "lib/filters/derive";
+import { createTranslator } from "lib/i18n";
+import { Collection, Product } from "lib/shopify/types";
 import Link from "next/link";
-import { Product } from "lib/shopify/types";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 interface CollectionItem {
   handle: string;
@@ -16,27 +22,26 @@ interface CollectionItem {
   path: string;
 }
 
-interface CollectionMeta {
-  title: string;
-  description?: string;
-}
-
 interface StoreCollectionClientProps {
   initialCollectionHandle: string;
-  productsByCollection: Record<string, Product[]>;
-  collections: CollectionItem[];
-  collectionsMeta: Record<string, CollectionMeta>;
+  allProducts: Product[];
+  allCollections: Collection[];
   locale: string;
   noProductsText: string;
+  initialFilters?: Record<string, string>;
+  initialSort?: string;
+  initialPage?: number;
 }
 
 export default function StoreCollectionClient({
   initialCollectionHandle,
-  productsByCollection,
-  collections,
-  collectionsMeta,
+  allProducts,
+  allCollections,
   locale,
   noProductsText,
+  initialFilters = {},
+  initialSort = "",
+  initialPage = 1,
 }: StoreCollectionClientProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -45,16 +50,14 @@ export default function StoreCollectionClient({
   // Local state
   const [activeHandle, setActiveHandle] = useState(initialCollectionHandle);
   // Generalised filter map: { color: "blue", price: "0-2000", size: "8.0", ... }
-  const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    {},
-  );
-  const [sort, setSort] = useState<string>("");
-  const [page, setPage] = useState<number>(1);
+  const [activeFilters, setActiveFilters] =
+    useState<Record<string, string>>(initialFilters);
+  const [sort, setSort] = useState<string>(initialSort);
+  const [page, setPage] = useState<number>(initialPage);
   const [isPending, startTransition] = useTransition();
 
   // Guards so URL-sync useEffect doesn't undo pushState-based state updates
   const skipNextSyncRef = useRef(false);
-  const knownHandles = new Set(Object.keys(productsByCollection));
 
   // Sync state from URL (only for back/forward navigation, not our own pushState)
   useEffect(() => {
@@ -77,22 +80,129 @@ export default function StoreCollectionClient({
     setPage(Number(searchParams.get("page")) || 1);
   }, [pathname, searchParams]);
 
-  // Store initial index map for stable sort order
-  const [initialIndexMap, setInitialIndexMap] = useState<
-    Record<string, Record<string, number>>
-  >({});
+  // Build productsByCollection dynamically
+  const productsByCollection = useMemo(() => {
+    const map: Record<string, Product[]> = {
+      "": allProducts,
+    };
 
-  useEffect(() => {
-    const newMap: Record<string, Record<string, number>> = {};
+    allProducts.forEach((product) => {
+      product.collections?.edges?.forEach((edge) => {
+        const handle = edge.node.handle;
+        if (!map[handle]) {
+          map[handle] = [];
+        }
+        map[handle].push(product);
+      });
+    });
+
+    return map;
+  }, [allProducts]);
+
+  const t = useMemo(() => createTranslator(locale), [locale]);
+
+  // Build collectionsMeta dynamically
+  const collectionsMeta = useMemo(() => {
+    const meta: Record<string, { title: string; description?: string }> = {};
+
+    allCollections.forEach((c) => {
+      if (c.handle !== "") {
+        meta[c.handle] = {
+          title: c.title,
+          description: c.description,
+        };
+      }
+    });
+
+    // Root page metadata (All Products)
+    meta[""] = {
+      title: t("collection.all_products"),
+      description: t("collection.all_products_description"),
+    };
+
+    return meta;
+  }, [allCollections, t]);
+
+  // Store initial index map for stable sort order
+  const initialIndexMap = useMemo(() => {
+    const map: Record<string, Record<string, number>> = {};
     Object.entries(productsByCollection).forEach(([handle, prods]) => {
       const handleMap: Record<string, number> = {};
       prods.forEach((p, idx) => {
         handleMap[p.handle] = idx;
       });
-      newMap[handle] = handleMap;
+      map[handle] = handleMap;
     });
-    setInitialIndexMap(newMap);
+    return map;
   }, [productsByCollection]);
+
+  const knownHandles = useMemo(() => {
+    const handles = new Set(Object.keys(productsByCollection));
+    allCollections.forEach((c) => handles.add(c.handle));
+    return handles;
+  }, [productsByCollection, allCollections]);
+
+  // Parent mapping and title prefixes live in lib/filters/category-filter-config
+  // so the drawer and this client agree on them.
+  const activeParent = useMemo(
+    () => getParentCategory(activeHandle),
+    [activeHandle],
+  );
+
+  // Compute collections dynamically for tab/subcollection pills
+  const collections = useMemo(() => {
+    let filtered = allCollections;
+
+    if (activeParent) {
+      const prefix = CATEGORY_PREFIXES[activeParent];
+      if (prefix) {
+        filtered = allCollections.filter((c) =>
+          c.title.toLowerCase().startsWith(prefix),
+        );
+      }
+    } else {
+      // If we are on "/store" or a brand page (not in SUB_TO_PARENT), don't show any pills
+      filtered = [];
+    }
+
+    const prefix = activeParent ? CATEGORY_PREFIXES[activeParent] : null;
+
+    return filtered
+      .filter((c) => {
+        const titleLower = c.title.toLowerCase();
+        const handleLower = c.handle.toLowerCase();
+        if (c.handle === "") return false;
+        if (
+          titleLower === "skateboard and surfskate full-setups" ||
+          handleLower === "surfboard full-setups"
+        )
+          return false;
+        return true;
+      })
+      .map((c) => {
+        let displayTitle = c.title;
+        const isSameAsNav =
+          displayTitle.toLowerCase() === activeHandle.toLowerCase() ||
+          (prefix && displayTitle.toLowerCase() === prefix + "s");
+
+        if (isSameAsNav) {
+          displayTitle = "All";
+        } else if (prefix) {
+          const regex = new RegExp(`^(${prefix}s?)\\s+`, "i");
+          displayTitle = displayTitle.replace(regex, "");
+        }
+        return {
+          handle: c.handle,
+          title: displayTitle,
+          path: c.path,
+        };
+      })
+      .sort((a, b) => {
+        if (a.title === "All") return -1;
+        if (b.title === "All") return 1;
+        return 0;
+      });
+  }, [allCollections, activeHandle, activeParent]);
 
   // Sync all state and push to URL history (no router navigation — no remount)
   const updateParams = (
@@ -151,13 +261,13 @@ export default function StoreCollectionClient({
   };
 
   const handleCategoryChange = (handle: string) => {
-    // If the handle is already pre-fetched, switch inline without a router navigation
+    // Since all collections data is preloaded, we switch inline client-side
     if (knownHandles.has(handle) || handle === "") {
-      // Clear filters that may not apply to new subcategory
       updateParams(handle, {}, sort, 1);
       return;
     }
-    // Unknown handle — needs a full page load (e.g. different top-level collection)
+
+    // Unknown handle (fallback router.push if any)
     const pathParts = pathname.split("/");
     const storeIdx = pathParts.indexOf("store");
     if (storeIdx !== -1) {
@@ -179,99 +289,19 @@ export default function StoreCollectionClient({
   // Raw products for the active collection
   const rawProducts = productsByCollection[activeHandle] || [];
 
-  // Apply all active filters generically
-  let filteredProducts = [...rawProducts];
-
-  Object.entries(activeFilters).forEach(([key, value]) => {
-    if (!value) return;
-    const values = value.split(",").filter(Boolean);
-    if (values.length === 0) return;
-
-    if (key === "price") {
-      filteredProducts = filteredProducts.filter((product) => {
-        const productPrice = Number(product.priceRange.minVariantPrice.amount);
-        return values.some((val) => {
-          const parts = val.split("-").map(Number);
-          const minPrice = parts[0] ?? 0;
-          const maxPrice = parts[1] ?? Infinity;
-          return productPrice >= minPrice && productPrice <= maxPrice;
-        });
-      });
-    } else if (key === "color") {
-      filteredProducts = filteredProducts.filter((product) => {
-        return values.some((val) => {
-          const valLower = val.toLowerCase();
-          const matchesOption = product.options?.some(
-            (opt) =>
-              opt.name.toLowerCase() === "color" &&
-              opt.values.some((v) => v.toLowerCase() === valLower),
-          );
-          const matchesTag = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower,
-          );
-          const matchesTitle = product.title.toLowerCase().includes(valLower);
-          const matchesDesc = product.description
-            ?.toLowerCase()
-            .includes(valLower);
-          return matchesOption || matchesTag || matchesTitle || matchesDesc;
-        });
-      });
-    } else if (key === "level") {
-      filteredProducts = filteredProducts.filter((product) => {
-        return values.some((val) => {
-          const valLower = val.toLowerCase();
-          const matchesTag = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower,
-          );
-          const matchesTitle = product.title.toLowerCase().includes(valLower);
-          const matchesDesc = product.description
-            ?.toLowerCase()
-            .includes(valLower);
-          return matchesTag || matchesTitle || matchesDesc;
-        });
-      });
-    } else if (key === "size") {
-      filteredProducts = filteredProducts.filter((product) => {
-        return values.some((val) => {
-          const valLower = val.toLowerCase();
-          const matchesOption = product.options?.some((opt) =>
-            opt.values.some((v) => v.toLowerCase() === valLower),
-          );
-          const matchesTag = product.tags?.some((tag) =>
-            tag.toLowerCase().includes(valLower),
-          );
-          return matchesOption || matchesTag;
-        });
-      });
-    } else if (key === "brand") {
-      filteredProducts = filteredProducts.filter((product) => {
-        return values.some((val) => {
-          const valLower = val.toLowerCase();
-          const vendorMatch =
-            product.vendor?.toLowerCase().replace(/\s+/g, "-") === valLower;
-          const tagMatch = product.tags?.some(
-            (tag) => tag.toLowerCase() === valLower,
-          );
-          const titleMatch = product.title.toLowerCase().includes(valLower);
-          return vendorMatch || tagMatch || titleMatch;
-        });
-      });
-    } else {
-      filteredProducts = filteredProducts.filter((product) => {
-        return values.some((val) => {
-          const valLower = val.toLowerCase();
-          const matchesTag = product.tags?.some((tag) =>
-            tag.toLowerCase().includes(valLower),
-          );
-          const matchesTitle = product.title.toLowerCase().includes(valLower);
-          const matchesOption = product.options?.some((opt) =>
-            opt.values.some((v) => v.toLowerCase().includes(valLower)),
-          );
-          return matchesTag || matchesTitle || matchesOption;
-        });
-      });
-    }
-  });
+  // Apply all active filters. Matching lives in lib/filters/derive so this
+  // grid and the drawer's counts and disabled states always agree — they were
+  // previously separate copies of the same rules.
+  let filteredProducts = rawProducts.filter((product) =>
+    Object.entries(activeFilters).every(([groupId, value]) => {
+      if (!value) return true;
+      const selected = value.split(",").filter(Boolean);
+      if (selected.length === 0) return true;
+      return selected.some((optionValue) =>
+        productMatches(product, groupId, optionValue),
+      );
+    }),
+  );
 
   // Sort
   const activeIndexMap = initialIndexMap[activeHandle] || {};
@@ -342,6 +372,8 @@ export default function StoreCollectionClient({
       <StoreBanner
         title={activeMeta.title}
         description={activeMeta.description}
+        handle={activeHandle || activeParent}
+        locale={locale}
       />
 
       <div className="mb-6">
@@ -363,7 +395,7 @@ export default function StoreCollectionClient({
       </div>
 
       {isPending ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+        <div className="grid grid-cols-2 gap-x-2.5 gap-y-11 sm:grid-cols-3 lg:grid-cols-4 md:gap-x-2.5 md:gap-y-20">
           {Array.from({ length: 8 }).map((_, idx) => (
             <ProductCardSkeleton key={idx} />
           ))}
@@ -376,7 +408,7 @@ export default function StoreCollectionClient({
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+          <div className="grid grid-cols-2 gap-x-2.5 gap-y-11 sm:grid-cols-3 lg:grid-cols-4 md:gap-x-2.5 md:gap-y-20">
             {paginatedProducts.map((product) => (
               <ProductCard
                 key={product.handle}

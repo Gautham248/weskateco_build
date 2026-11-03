@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       revalidateTag(TAGS.collections, "seconds");
       break;
     default:
-      console.log(`Unhandled webhook topic: ${topic}`);
+      console.info(`Unhandled webhook topic: ${topic}`);
       return NextResponse.json({ message: "Unhandled topic" }, { status: 200 });
   }
 

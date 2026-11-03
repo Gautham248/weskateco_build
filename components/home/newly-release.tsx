@@ -1,11 +1,19 @@
+import { getNewlyReleased } from "lib/catalog/newly-released-feed";
 import NewlyReleaseContent from "./newly-release-content";
+import { NewlyReleaseErrorBoundary } from "./newly-release-error-boundary";
 
-export default function NewlyRelease() {
+export default async function NewlyRelease({ locale }: { locale: string }) {
+  const slides = await getNewlyReleased();
+
+  if (slides.length === 0) {
+    return null;
+  }
+
   return (
-    <section className="h-auto md:h-screen w-full bg-white pt-10 md:pt-[120px] pb-10 md:mb-[100px]">
-      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 h-auto md:h-full flex flex-col">
+    <section className="h-auto md:h-screen w-full bg-white pt-15 md:pt-[120px] pb-15 md:mb-[100px]">
+      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 h-auto md:h-full flex flex-col">
         <h2
-          className="text-[clamp(1.5rem,5vw,3.75rem)] font-black tracking-tight text-black dark:text-white uppercase"
+          className="text-[clamp(1.5rem,5vw,2.8125rem)] leading-[clamp(1.5rem,5vw,2.8125rem)] font-black tracking-tight text-black dark:text-white uppercase"
           style={{
             fontFamily: "'Clash Display', sans-serif",
             letterSpacing: "-0.01em",
@@ -13,7 +21,7 @@ export default function NewlyRelease() {
         >
           NEWLY RELEASED
         </h2>
-        <div className="mt-4 md:mt-10 h-auto aspect-[10/16] max-h-[560px] md:h-full md:aspect-auto md:flex-1 md:max-h-none">
+        <div className="mt-6 md:mt-10 h-auto aspect-[10/16] max-h-[560px] md:h-full md:aspect-auto md:flex-1 md:max-h-none">
           <div
             className="w-full h-full rounded-[16px] p-[2px]"
             style={{
@@ -28,7 +36,9 @@ export default function NewlyRelease() {
                   "linear-gradient(262.47deg, #141414 13.74%, #393939 98.84%)",
               }}
             >
-              <NewlyReleaseContent />
+              <NewlyReleaseErrorBoundary>
+                <NewlyReleaseContent slides={slides} locale={locale} />
+              </NewlyReleaseErrorBoundary>
               {/* Mobile SVG */}
               <svg
                 width="324"

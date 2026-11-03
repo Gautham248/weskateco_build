@@ -1,12 +1,16 @@
 "use client";
+import { createSingleItemCartAction } from "components/cart/actions";
+import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
+import { useGoKwikCheckout } from "lib/gokwik";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
-import { SnapmintEmiBadge } from "./snapmint-emi-badge";
+import { useRef, useState, useTransition } from "react";
 import { QuickBuySidebar } from "./quick-buy-sidebar";
+import { SnapmintEmiBadge } from "./snapmint-emi-badge";
 
 interface ProductCardProps {
   product: Product;
@@ -15,18 +19,49 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, locale }: ProductCardProps) {
   const t = createTranslator(locale);
+  const { cart, addCartItem } = useCart();
+  const [, startTransition] = useTransition();
+  const { triggerCheckout } = useGoKwikCheckout({ cartId: cart?.id });
   const { title, handle, availableForSale, priceRange, featuredImage, images } =
     product;
   const isSoldOut = !availableForSale;
 
-  const productPath = getLocalizedPath(`/product/${handle}`, locale);
+  // Ramps ship as wide (16:9) product shots that get badly cropped by the
+  // portrait card's object-cover — show them whole instead.
+  const fitImage =
+    product.collections?.edges?.some(
+      (edge) => edge.node.handle === "portable-ramps",
+    ) ?? false;
+
+  const productPath = getLocalizedPath(`/products/${handle}`, locale);
 
   const imgRef = useRef<HTMLDivElement>(null);
   const [showIndex, setShowIndex] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const moveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
+
+  const handleEmiCheckout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // First in-stock variant: variants[0] may be sold out while the product is not.
+    const variant = product.variants.find((v) => v.availableForSale);
+    if (!variant) return;
+
+    startTransition(async () => {
+      const singleCartId = await createSingleItemCartAction(variant.id);
+      if (singleCartId) {
+        if (window.merchantInfo) {
+          window.merchantInfo.cart = { id: singleCartId };
+        }
+        if (typeof window.triggerGokwikCustomCheckout === "function") {
+          window.triggerGokwikCustomCheckout();
+        }
+      }
+    });
+  };
 
   const displayImages =
     images && images.length > 0
@@ -37,14 +72,11 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imgRef.current || displayImages.length < 2) return;
-    clearTimeout(moveTimer.current);
-    moveTimer.current = setTimeout(() => {
-      if (!imgRef.current) return;
-      const rect = imgRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const pct = x / rect.width;
-      setShowIndex(pct < 0.5 ? 0 : 1);
-    }, 80);
+    clearTimeout(leaveTimer.current);
+    const rect = imgRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = x / rect.width;
+    setShowIndex(pct < 0.5 ? 0 : 1);
   };
 
   const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -117,14 +149,17 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
     >
       <div
         ref={imgRef}
-        className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
+        className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-[#e6e6e6] dark:bg-neutral-900 touch-pan-y"
         onMouseEnter={() => {
+          clearTimeout(leaveTimer.current);
           if (displayImages.length > 1) setShowIndex(1);
         }}
         onMouseMove={handleMouseMove}
         onMouseLeave={() => {
-          clearTimeout(moveTimer.current);
-          setShowIndex(0);
+          clearTimeout(leaveTimer.current);
+          leaveTimer.current = setTimeout(() => {
+            setShowIndex(0);
+          }, 800);
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -141,11 +176,15 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
                 className="relative h-full w-full flex-shrink-0"
               >
                 <Image
-                  src={img.url}
+                  src={shopifyImageUrl(img.url, SHOPIFY_IMAGE_WIDTH.card)}
                   alt={img.altText || title}
                   fill
                   sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-                  className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
+                  className={`transition-transform duration-500 ease-out ${
+                    fitImage
+                      ? "object-contain"
+                      : "object-cover object-center group-hover:scale-105"
+                  }`}
                   priority={false}
                 />
               </div>
@@ -163,42 +202,46 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             {displayImages.map((_, idx) => (
               <span
                 key={idx}
-                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
-                  }`}
+                className={`h-1.5 transition-all duration-300 rounded-full bg-white ${
+                  idx === showIndex ? "w-4 opacity-100" : "w-1.5 opacity-50"
+                }`}
               />
             ))}
           </div>
         )}
 
-        {/* Add to Cart Hover Button (single element) */}
-        <div
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setIsSidebarOpen(true);
-          }}
-          className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 md:hover:w-[120px] items-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white transition-all duration-300 active:scale-95 overflow-hidden"
-        >
-          <div className="flex items-center justify-start gap-2 px-2 md:px-3 w-full h-full">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="flex-shrink-0"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            <span className="text-sm font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
-              Add to Cart
-            </span>
+        {/* Add to Cart Hover Button (single element). Hidden when sold out:
+            the Sold Out badge below already says so. */}
+        {!isSoldOut && (
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsSidebarOpen(true);
+            }}
+            className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 md:hover:w-[120px] items-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white transition-all duration-300 active:scale-95 overflow-hidden"
+          >
+            <div className="flex items-center justify-start gap-2 px-2 md:px-3 w-full h-full">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="flex-shrink-0"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              <span className="text-sm font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
+                Add to Cart
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         {isSoldOut && (
           <div className="absolute top-3 left-3 z-10 rounded-full bg-neutral-900/90 px-3 py-1 text-xs font-semibold tracking-wider text-white backdrop-blur-xs dark:bg-neutral-100 dark:text-neutral-900">
@@ -216,10 +259,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             {product.vendor}
           </p>
         )}
-        <h3
-          className="mb-2 text-[clamp(0.8125rem,2vw,1rem)] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2"
-          style={{ fontFamily: "'Clash Display', sans-serif" }}
-        >
+        <h3 className="mb-2 text-[clamp(0.8125rem,2vw,1rem)] font-semibold text-neutral-900 dark:text-neutral-100 uppercase line-clamp-2 tracking-[-1%]">
           {title}
         </h3>
         <div className="flex items-center gap-3">
@@ -238,7 +278,12 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             />
           )}
         </div>
-        <SnapmintEmiBadge priceAmount={priceRange.minVariantPrice.amount} />
+        {!isSoldOut && (
+          <SnapmintEmiBadge
+            priceAmount={priceRange.minVariantPrice.amount}
+            onClick={handleEmiCheckout}
+          />
+        )}
       </div>
       <QuickBuySidebar
         isOpen={isSidebarOpen}

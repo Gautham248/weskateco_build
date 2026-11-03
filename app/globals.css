@@ -1,0 +1,697 @@
+@import "@fontsource/archivo";
+@import "@fontsource/archivo/900.css";
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Extralight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-clash: "Clash Display", sans-serif;
+
+  /* Guides-scope design tokens: the brand lime previously hand-copied as
+     arbitrary #CCFF02 values (plus its one dark hover shade) and the shared
+     4px control radius previously written as rounded-[4px]. */
+  --color-brand: #ccff02;
+  --color-brand-dark: #b8e602;
+  --radius-4: 4px;
+
+  /* About Us — "Toucan exists to fix" brands panel. Teal accent plus the
+     diagonal panel gradient stops (top-left grey to bottom-right black). */
+  --color-toucan: #2bbccd;
+  --color-toucan-panel-1: #5a5b5f;
+  --color-toucan-panel-2: #111111;
+  --color-toucan-panel-3: #000000;
+}
+
+/* Guides brand colour palette for drawings */
+:root {
+  --lime: #ccff02;
+  --lime-deep: #8fb300;
+  --on-lime: #1d3b0f;
+  --pink: #dc2626;
+  --cyan: #0284c7;
+}
+
+.dark,
+[data-theme="dark"] {
+  --lime: #ccff02;
+  --lime-deep: #ccff02;
+  --on-lime: #1d3b0f;
+  --pink: #f87171;
+  --cyan: #38bdf8;
+}
+
+/* Guides use the brand token as a monochrome accent rather than lime. */
+.guides-monochrome {
+  --color-brand: #ffffff;
+  --color-brand-dark: #e5e5e5;
+}
+
+body .guides-monochrome ::selection {
+  background: #000000;
+  color: #ffffff;
+}
+
+/* Shopify product descriptions can contain wide specification tables. Keep
+   them inside the product-details column and make the overflow discoverable. */
+.product-description-table-scroll {
+  max-width: 100%;
+  margin-block: 1.5rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-padding-inline: 1rem;
+  scrollbar-color: #a3a3a3 transparent;
+  scrollbar-width: thin;
+}
+
+.product-description-table-scroll > table {
+  width: 100%;
+  min-width: 40rem;
+  margin-block: 0;
+}
+
+.product-description-table-scroll > table th {
+  white-space: nowrap;
+}
+
+.product-description-table-scroll:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Applied by the drag-scroll hook while the pointer is over an overflowing
+   region. Kept in CSS so the hook can toggle it without inline styles. */
+.cursor-grab,
+.cursor-grab * {
+  cursor: grab !important;
+}
+
+.cursor-grabbing,
+.cursor-grabbing * {
+  cursor: grabbing !important;
+}
+
+.product-description-table-scroll::-webkit-scrollbar {
+  display: block;
+  height: 6px;
+}
+
+.product-description-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.product-description-table-scroll::-webkit-scrollbar-thumb {
+  background: #a3a3a3;
+  border-radius: 999px;
+}
+
+/* Drag-to-scroll tables (guides and product descriptions). The grab cursor is
+   applied by JS only while the region actually overflows, so a table that fits
+   keeps a normal cursor. */
+.drag-scroll-region:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Admin rich text editor. Mirrors the ProseMirror table defaults shipped by
+   prosemirror-tables, but scoped to the editor and in the admin palette. */
+.admin-editor-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-color: #a3a3a3 transparent;
+  scrollbar-width: thin;
+}
+
+.admin-editor-scroll::-webkit-scrollbar {
+  display: block;
+  height: 6px;
+}
+
+.admin-editor-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-editor-scroll::-webkit-scrollbar-thumb {
+  background: #a3a3a3;
+  border-radius: 999px;
+}
+
+.tiptap .tableWrapper {
+  max-width: 100%;
+  margin-block: 1rem;
+  overflow-x: auto;
+}
+
+.tiptap table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  overflow: hidden;
+}
+
+.tiptap td,
+.tiptap th {
+  position: relative;
+  box-sizing: border-box;
+  min-width: 7rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid #d4d4d8;
+  vertical-align: top;
+}
+
+.tiptap th {
+  background: #f4f4f5;
+  font-weight: 600;
+  text-align: left;
+}
+
+.dark .tiptap th {
+  background: #262626;
+}
+
+.dark .tiptap td,
+.dark .tiptap th {
+  border-color: #404040;
+}
+
+.tiptap .column-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  bottom: 0;
+  z-index: 20;
+  width: 4px;
+  background-color: #171717;
+  pointer-events: none;
+}
+
+.tiptap.resize-cursor {
+  cursor: col-resize;
+}
+
+.tiptap .selectedCell::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  content: "";
+  background: rgba(24, 24, 27, 0.12);
+  pointer-events: none;
+}
+
+[style*="Clash Display"],
+.font-clash {
+  font-family: "Clash Display", sans-serif !important;
+}
+
+@plugin "@tailwindcss/container-queries";
+@plugin "@tailwindcss/typography";
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  body,
+  input,
+  button,
+  select,
+  textarea {
+    font-family: "Archivo", sans-serif;
+  }
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html {
+  color-scheme: light;
+}
+
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+  img[loading="lazy"] {
+    clip-path: inset(0.6px);
+  }
+}
+
+/* Navbar scroll-aware colors */
+[data-scrolled="false"] nav a,
+[data-scrolled="false"] nav button,
+[data-scrolled="false"] nav svg {
+  @apply text-white/90;
+}
+
+[data-scrolled="false"] nav .border {
+  @apply border-white/20;
+}
+
+[data-scrolled="false"] nav input {
+  @apply border-white/20 bg-white/10 text-white placeholder-white/50;
+}
+
+[data-scrolled="true"] nav a {
+  @apply text-black dark:text-white;
+}
+
+[data-scrolled="true"] nav .border {
+  @apply border-neutral-200 dark:border-neutral-700;
+}
+
+[data-scrolled="true"] nav button {
+  @apply text-black dark:text-white;
+}
+
+/* Hide scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+a,
+input,
+button {
+  @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-50 dark:focus-visible:ring-neutral-600 dark:focus-visible:ring-offset-neutral-900;
+}
+
+@layer utilities {
+  .group:hover .animate-nudge-x {
+    animation: nudgeX 0.8s ease-in-out infinite;
+  }
+  @keyframes nudgeX {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(4px);
+    }
+  }
+
+  /* Fluid heading - scales smoothly from sm to 2xl screens */
+  .fluid-heading {
+    font-size: clamp(1.5rem, 4vw, 3.75rem);
+  }
+
+  /* Fluid text sizes - scale from ~640px to ~1536px viewport */
+  .fluid-text-xs {
+    font-size: clamp(0.625rem, 1vw + 0.25rem, 0.75rem);
+  }
+  .fluid-text-sm {
+    font-size: clamp(0.75rem, 1vw + 0.35rem, 0.875rem);
+  }
+  .fluid-text-base {
+    font-size: clamp(0.875rem, 1.5vw + 0.25rem, 1.125rem);
+  }
+  .fluid-text-lg {
+    font-size: clamp(1rem, 2vw + 0.25rem, 1.25rem);
+  }
+  .fluid-text-xl {
+    font-size: clamp(1.125rem, 2.5vw + 0.2rem, 1.5rem);
+  }
+  .fluid-text-2xl {
+    font-size: clamp(1.25rem, 3vw + 0.15rem, 1.75rem);
+  }
+  .fluid-text-3xl {
+    font-size: clamp(1.5rem, 3.5vw + 0.2rem, 2.25rem);
+  }
+  .fluid-text-4xl {
+    font-size: clamp(1.75rem, 4vw + 0.25rem, 2.75rem);
+  }
+
+  /* Fluid leading for headings */
+  .fluid-leading-tight {
+    line-height: clamp(1, 1.1, 1.25);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Surfskate guide figures. The source drawings ship their colour through a
+   vocabulary of classes (sf-deck, sf-wheel, bpart, badge, …). Geometry, stroke
+   weights and dash patterns are kept exactly; every colour is remapped onto
+   the project's tokens — currentColor for ink, the neutral scale for
+   surfaces/secondaries, and `brand` for the active/selected state. Nothing
+   here reproduces the source palette (no lime/cyan/pink), and `brand` renders
+   monochrome on guide pages via `.guides-monochrome`.
+--------------------------------------------------------------------------- */
+
+.surfskate-figs {
+  color: var(--color-black);
+}
+
+.surfskate-figs svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Drawn figures */
+.surfskate-figs .sf-deck {
+  fill: var(--color-neutral-100);
+  stroke: currentColor;
+  stroke-width: 1.6;
+}
+.surfskate-figs .sf-deck.ghost {
+  fill: none;
+  stroke: var(--color-neutral-300);
+  stroke-width: 1.4;
+  stroke-dasharray: 6 4;
+}
+.surfskate-figs .sf-grip {
+  fill: var(--color-neutral-400);
+  opacity: 0.5;
+}
+.surfskate-figs .sf-wheel {
+  fill: var(--color-neutral-100);
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.surfskate-figs .sf-wheel.soft {
+  fill: var(--color-neutral-200);
+  stroke: var(--color-neutral-400);
+  stroke-width: 1.5;
+}
+.surfskate-figs .sf-hanger {
+  fill: var(--color-neutral-200);
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.surfskate-figs .sf-arm {
+  fill: var(--color-neutral-800);
+  stroke: var(--color-neutral-800);
+  stroke-width: 1.6;
+}
+.surfskate-figs .sf-pin {
+  fill: var(--color-black);
+}
+.surfskate-figs .sf-spring {
+  fill: none;
+  stroke: var(--pink);
+  stroke-width: 2;
+}
+.surfskate-figs .sf-bush {
+  fill: var(--color-neutral-200);
+  stroke: var(--color-neutral-500);
+  stroke-width: 1.5;
+}
+.surfskate-figs .sf-riser {
+  fill: var(--color-neutral-200);
+  stroke: var(--color-neutral-600);
+  stroke-width: 1.4;
+}
+.surfskate-figs .sf-road {
+  stroke: var(--color-black);
+  stroke-width: 2;
+}
+.surfskate-figs .sf-path {
+  fill: none;
+  stroke: var(--lime-deep);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+.surfskate-figs .sf-path[marker-end*="sp"] {
+  stroke: var(--pink);
+}
+.surfskate-figs .sf-path.faint {
+  stroke: var(--color-neutral-300);
+  stroke-width: 1.8;
+  stroke-dasharray: 7 5;
+}
+.surfskate-figs .sf-body {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.surfskate-figs .sf-foot {
+  fill: var(--color-black);
+}
+.surfskate-figs .sf-load {
+  fill: var(--color-black);
+  opacity: 0.18;
+}
+.surfskate-figs .sf-axis2 {
+  stroke: var(--pink);
+  stroke-width: 1.4;
+  stroke-dasharray: 9 4 2 4;
+}
+.surfskate-figs .sk-axis {
+  stroke: var(--color-neutral-400);
+  stroke-width: 1;
+  stroke-dasharray: 12 4 3 4;
+  opacity: 0.75;
+}
+.surfskate-figs .sk-guide {
+  stroke: var(--color-neutral-400);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  opacity: 0.65;
+}
+.surfskate-figs .sk-arr {
+  fill: none;
+  stroke: var(--lime-deep);
+  stroke-width: 2.6;
+}
+.surfskate-figs .sk-arr.thin {
+  stroke-width: 1.9;
+}
+.surfskate-figs .lead {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.55;
+}
+.surfskate-figs .dim line {
+  stroke: var(--color-neutral-500);
+  stroke-width: 1;
+}
+.surfskate-figs .dim text {
+  font-size: 11px;
+  fill: var(--color-neutral-500);
+  font-weight: 700;
+}
+.surfskate-figs .dimnote {
+  font-size: 10.5px;
+  fill: var(--color-neutral-500);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+}
+.surfskate-figs .sf-t {
+  font-size: 12px;
+  fill: var(--color-neutral-500);
+  font-weight: 700;
+}
+.surfskate-figs .sf-t.big {
+  font-size: 13px;
+  fill: var(--color-black);
+}
+.surfskate-figs .sf-t.lime {
+  fill: var(--lime-deep);
+}
+.surfskate-figs .sf-t.pink {
+  fill: var(--pink);
+}
+.surfskate-figs .sf-t.cyan {
+  fill: var(--cyan);
+}
+
+@media (max-width: 640px) {
+  .surfskate-figs .dim text {
+    font-size: 13px;
+  }
+  .surfskate-figs .dimnote {
+    font-size: 12.5px;
+  }
+  .surfskate-figs .sf-t {
+    font-size: 14px;
+  }
+  .surfskate-figs .sf-t.big {
+    font-size: 15px;
+  }
+}
+
+/* Mechanism figure — one selected part at a time */
+.surfskate-figs .bpart {
+  cursor: pointer;
+}
+.surfskate-figs .bpart:focus {
+  outline: none;
+}
+.surfskate-figs .bpart:focus-visible .hi {
+  stroke-width: 2.6;
+}
+.surfskate-figs .hi {
+  fill: var(--color-neutral-200);
+  stroke: currentColor;
+  stroke-width: 1.3;
+  transition:
+    fill 0.15s,
+    stroke-width 0.15s;
+}
+.surfskate-figs .hi.lite {
+  fill: var(--color-neutral-100);
+}
+.surfskate-figs .hi.solid {
+  fill: var(--color-white);
+}
+.surfskate-figs .bpart:hover .hi {
+  fill: var(--color-neutral-300);
+}
+.surfskate-figs .bpart.on .hi {
+  fill: var(--color-black);
+  stroke: var(--color-black);
+  stroke-width: 1.7;
+}
+.surfskate-figs .badge {
+  cursor: default;
+}
+.surfskate-figs .badge[role="button"] {
+  cursor: pointer;
+}
+.surfskate-figs .badge:focus {
+  outline: none;
+}
+.surfskate-figs .badge .lead {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.55;
+}
+.surfskate-figs .badge circle {
+  fill: var(--color-white);
+  stroke: currentColor;
+  stroke-width: 1.5;
+  transition: fill 0.15s;
+}
+.surfskate-figs .badge text {
+  font-size: 11px;
+  font-weight: 700;
+  fill: currentColor;
+  pointer-events: none;
+}
+.surfskate-figs .badge[role="button"]:hover circle {
+  fill: var(--color-neutral-200);
+}
+.surfskate-figs .badge:focus-visible circle {
+  stroke-width: 2.4;
+}
+.surfskate-figs .badge.on circle {
+  fill: var(--color-black);
+}
+.surfskate-figs .badge.on text {
+  fill: var(--color-white);
+}
+@media (prefers-reduced-motion: reduce) {
+  .surfskate-figs .hi,
+  .surfskate-figs .badge circle {
+    transition: none;
+  }
+}
+
+/* ================= wheel & truck guide figures ================= */
+.wheel-figs .wpart,
+.truck-figs .tpart {
+  cursor: pointer;
+}
+.wheel-figs .wpart rect,
+.wheel-figs .wpart circle,
+.wheel-figs .wpart path,
+.wheel-figs .wpart line,
+.truck-figs .tpart rect,
+.truck-figs .tpart circle,
+.truck-figs .tpart path,
+.truck-figs .tpart line,
+.truck-figs .tpart polygon {
+  transition: fill-opacity 0.15s, stroke-width 0.15s, opacity 0.15s;
+}
+.wheel-figs .badge,
+.truck-figs .badge {
+  cursor: pointer;
+}
+.wheel-figs .badge circle,
+.truck-figs .badge circle {
+  fill: #ffffff;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  transition: fill 0.15s, stroke 0.15s;
+}
+.wheel-figs .badge text,
+.truck-figs .badge text {
+  font-size: 11px;
+  font-weight: 700;
+  fill: currentColor;
+  dominant-baseline: central;
+}
+.wheel-figs .badge.on circle,
+.truck-figs .badge.on circle {
+  fill: var(--lime);
+  stroke: var(--lime-deep);
+}
+.wheel-figs .badge.on text,
+.truck-figs .badge.on text {
+  fill: var(--on-lime);
+}
+
+@media (max-width: 880px) {
+  #wAnat text,
+  #tAnat text,
+  #lnA text,
+  #lnB text {
+    font-size: 14px;
+  }
+  #wAnat .badge circle,
+  #tAnat .badge circle {
+    r: 13;
+  }
+}
+

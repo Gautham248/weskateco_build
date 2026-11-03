@@ -117,6 +117,7 @@ export type ShopifyCollection = {
   handle: string;
   title: string;
   description: string;
+  image: Image | null;
   seo: SEO;
   updatedAt: string;
 };
@@ -129,6 +130,7 @@ export type ShopifyProduct = {
   description: string;
   descriptionHtml: string;
   vendor: string;
+  productType?: string;
   options: ProductOption[];
   priceRange: {
     maxVariantPrice: Money;
@@ -160,6 +162,12 @@ export type ShopifyCartOperation = {
 
 export type ShopifyCreateCartOperation = {
   data: { cartCreate: { cart: ShopifyCart } };
+  variables: {
+    lineItems?: {
+      merchandiseId: string;
+      quantity: number;
+    }[];
+  };
 };
 
 export type ShopifyAddToCartOperation = {
@@ -256,6 +264,40 @@ export type ShopifyPageOperation = {
 export type ShopifyPagesOperation = {
   data: {
     pages: Connection<Page>;
+  };
+};
+
+export type ShopifyProductSummary = {
+  id: string;
+  handle: string;
+  title: string;
+  vendor: string;
+  productType: string;
+  availableForSale: boolean;
+  updatedAt: string;
+  tags: string[];
+  featuredImage: Image;
+  priceRange: {
+    minVariantPrice: Money;
+  };
+};
+
+export type ShopifyProductsPageOperation = {
+  data: {
+    products: {
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor: string | null;
+      };
+      edges: Edge<ShopifyProductSummary>[];
+    };
+  };
+  variables: {
+    first: number;
+    after?: string;
+    sortKey?: string;
+    reverse?: boolean;
+    query?: string;
   };
 };
 

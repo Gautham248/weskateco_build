@@ -2919,57 +2919,5 @@
       }
     ],
     "featured": "Newly Released"
-  },
-  "shopNow": [
-    {
-      "id": "1",
-      "brand": "SPHERE SKATEBOARDS",
-      "name": "SPHERE LOVERS PRO COMPLETE",
-      "price": "₹8,499",
-      "originalPrice": "₹10,999",
-      "images": ["shop_now_1.png", "shop_now_2.png"],
-      "discount": "50% off",
-      "monthlyPayment": "₹1,166/ Month"
-    },
-    {
-      "id": "2",
-      "brand": "SPHERE SKATEBOARDS",
-      "name": "BEGINNER SKATEBOARD SPHERE LOGO COMPLETE",
-      "price": "₹8,499",
-      "originalPrice": "₹10,999",
-      "images": ["shop_now_2.png", "shop_now_1.png"],
-      "discount": "50% off",
-      "monthlyPayment": "₹1,166/ Month"
-    },
-    {
-      "id": "3",
-      "brand": "SPHERE SKATEBOARDS",
-      "name": "SPHERE LOVERS PRO COMPLETE",
-      "price": "₹8,499",
-      "originalPrice": "₹10,999",
-      "images": ["shop_now_2.png", "shop_now_1.png"],
-      "discount": "50% off",
-      "monthlyPayment": "₹1,166/ Month"
-    },
-    {
-      "id": "4",
-      "brand": "SPHERE SKATEBOARDS",
-      "name": "SPHERE LOVERS PRO COMPLETE",
-      "price": "₹8,499",
-      "originalPrice": "₹10,999",
-      "images": ["shop_now_1.png", "shop_now_2.png"],
-      "discount": "50% off",
-      "monthlyPayment": "₹1,166/ Month"
-    },
-    {
-      "id": "5",
-      "brand": "SPHERE SKATEBOARDS",
-      "name": "SPHERE LOVERS PRO COMPLETE",
-      "price": "₹8,499",
-      "originalPrice": "₹10,999",
-      "images": ["shop_now_1.png", "shop_now_2.png"],
-      "discount": "50% off",
-      "monthlyPayment": "₹1,166/ Month"
-    }
-  ]
+  }
 }

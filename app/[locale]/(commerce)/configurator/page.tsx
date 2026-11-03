@@ -29,7 +29,7 @@ export default async function ConfiguratorPage(props: {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
+    <div className="w-full">
       <ConfiguratorWizard products={products} locale={params.locale} />
     </div>
   );

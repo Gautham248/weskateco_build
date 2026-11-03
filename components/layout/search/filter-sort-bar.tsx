@@ -3,22 +3,23 @@
 import {
   ChevronDownIcon,
   ChevronUpIcon,
-  FunnelIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { sorting } from "lib/constants";
 import {
+  CATEGORY_GROUP,
   FilterGroup,
-  deriveFiltersForCategory,
-  getLabelForFilterValue,
+  SORT_GROUP,
   getHexForColorValue,
+  getLabelForFilterValue,
   getParentCategory,
 } from "lib/filters/category-filter-config";
-import { sorting } from "lib/constants";
+import { countMatching, deriveFilterGroups } from "lib/filters/derive";
+import { Product } from "lib/shopify/types";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
-import { Product } from "lib/shopify/types";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface CollectionItem {
   handle: string;
@@ -62,92 +63,10 @@ export function toggleFilterValue(
   return list.length > 0 ? list.join(",") : null;
 }
 
-function applyFilterMap(
-  products: Product[],
-  filters: Record<string, string>,
-): Product[] {
-  let result = [...products];
-
-  Object.entries(filters).forEach(([key, value]) => {
-    if (!value || key === "sort") return;
-    const values = value.split(",").filter(Boolean);
-    if (values.length === 0) return;
-
-    if (key === "price") {
-      result = result.filter((p) => {
-        const price = Number(p.priceRange.minVariantPrice.amount);
-        return values.some((val) => {
-          const parts = val.split("-").map(Number);
-          const min = parts[0] ?? 0;
-          const max = parts[1] ?? Infinity;
-          return price >= min && price <= max;
-        });
-      });
-    } else if (key === "color") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.options?.some(
-              (o) =>
-                o.name.toLowerCase() === "color" &&
-                o.values.some((v) => v.toLowerCase() === vl),
-            ) ||
-            p.tags?.some((t) => t.toLowerCase() === vl) ||
-            p.title.toLowerCase().includes(vl)
-          );
-        });
-      });
-    } else if (key === "level") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.tags?.some((t) => t.toLowerCase() === vl) ||
-            p.title.toLowerCase().includes(vl)
-          );
-        });
-      });
-    } else if (key === "size") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.options?.some((o) =>
-              o.values.some((v) => v.toLowerCase() === vl),
-            ) || p.tags?.some((t) => t.toLowerCase().includes(vl))
-          );
-        });
-      });
-    } else if (key === "brand") {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.vendor?.toLowerCase().replace(/\s+/g, "-") === vl ||
-            p.tags?.some((t) => t.toLowerCase() === vl) ||
-            p.title.toLowerCase().includes(vl)
-          );
-        });
-      });
-    } else {
-      result = result.filter((p) => {
-        return values.some((val) => {
-          const vl = val.toLowerCase();
-          return (
-            p.tags?.some((t) => t.toLowerCase().includes(vl)) ||
-            p.title.toLowerCase().includes(vl) ||
-            p.options?.some((o) =>
-              o.values.some((v) => v.toLowerCase().includes(vl)),
-            )
-          );
-        });
-      });
-    }
-  });
-
-  return result;
-}
+// Matching and counting live in lib/filters/derive so the drawer's per-option
+// counts and the product grid's filtering run the exact same rules. They used
+// to be separate copies of the same logic in three files, which is how they
+// drifted apart.
 
 function simulateCount(
   products: Product[],
@@ -155,9 +74,10 @@ function simulateCount(
   groupId: string,
   optionValue: string,
 ): number {
-  const testFilters = { ...activeFilters };
-  testFilters[groupId] = optionValue;
-  return applyFilterMap(products, testFilters).length;
+  return countMatching(products, {
+    ...activeFilters,
+    [groupId]: optionValue,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -208,7 +128,11 @@ export default function FilterSortBar({
     const params = new URLSearchParams(searchParams.toString());
     params.set("filter", "open");
     const searchStr = params.toString();
-    window.history.pushState(null, "", searchStr ? `${pathname}?${searchStr}` : pathname);
+    window.history.pushState(
+      null,
+      "",
+      searchStr ? `${pathname}?${searchStr}` : pathname,
+    );
     setIsFilterOpen(true);
   };
 
@@ -216,7 +140,11 @@ export default function FilterSortBar({
     const params = new URLSearchParams(searchParams.toString());
     params.delete("filter");
     const searchStr = params.toString();
-    window.history.pushState(null, "", searchStr ? `${pathname}?${searchStr}` : pathname);
+    window.history.pushState(
+      null,
+      "",
+      searchStr ? `${pathname}?${searchStr}` : pathname,
+    );
     setIsFilterOpen(false);
   };
 
@@ -252,9 +180,38 @@ export default function FilterSortBar({
     handleUpdate({}, "");
   };
 
-  const filterGroups = deriveFiltersForCategory(activeCollectionHandle);
+  // Groups are derived from the products in this collection, so an option only
+  // exists when something here actually has it. Sorting and the category jump
+  // list stay static; everything else comes from the data.
+  const filterGroups = useMemo(() => {
+    const staticGroups = [SORT_GROUP, CATEGORY_GROUP];
+
+    // Subcategory options come from the parent's collections, so keep them in
+    // step with the collection list the parent passed down.
+    if (collections && collections.length > 1) {
+      const categoryIdx = staticGroups.findIndex((g) => g.id === "category");
+      const subcategoryGroup: FilterGroup = {
+        id: "subcategory",
+        label: "Subcategory",
+        type: "category",
+        options: collections.map((c) => ({
+          label: c.title,
+          value: c.handle,
+        })),
+      };
+      if (categoryIdx !== -1) {
+        staticGroups.splice(categoryIdx + 1, 0, subcategoryGroup);
+      } else {
+        staticGroups.push(subcategoryGroup);
+      }
+    }
+
+    return deriveFilterGroups(products, staticGroups);
+  }, [products, collections]);
+  // The search term (`q`) is a text query, not a facet — keep it out of the
+  // active-filter chips and the count badge.
   const activeFilterEntries = Object.entries(activeFilters).filter(
-    ([, v]) => v,
+    ([key, v]) => v && key !== "q",
   );
   const activeFiltersCount = activeFilterEntries.length;
   const hasActiveFilters = activeFiltersCount > 0;
@@ -263,7 +220,7 @@ export default function FilterSortBar({
   const badgeCount = activeFiltersCount + (currentSort ? 1 : 0);
 
   return (
-    <div className="w-full bg-white text-black py-4 border-b border-neutral-100 dark:bg-neutral-950 dark:text-white dark:border-neutral-900">
+    <div className="w-full bg-white text-black pb-4 border-b border-neutral-100 dark:bg-neutral-950 dark:text-white dark:border-neutral-900">
       {/* Top Row */}
       <div className="flex flex-col px-0 md:px-2">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -278,39 +235,91 @@ export default function FilterSortBar({
                 products)
               </span>
             </h2>
+            <p className="block md:hidden text-xs font-medium text-neutral-500 dark:text-neutral-400 normal-case font-sans tracking-normal mt-1">
+              (Showing 1 – {totalProducts} products of {totalProducts} products)
+            </p>
           </div>
 
-          {/* Single "Filter & Sort" button — mobile */}
+          {/* Filter & Sort buttons — mobile */}
           <div className="flex items-center gap-3 text-neutral-800 dark:text-neutral-200 md:hidden ml-auto">
             <button
               onClick={openFilters}
-              aria-label="Filter and Sort"
+              aria-label="Filter"
               className="p-1 cursor-pointer hover:opacity-75 transition-opacity relative"
             >
-              <FunnelIcon className="h-6 w-6 stroke-[1.8]" />
+              <svg
+                width="21"
+                height="19"
+                viewBox="0 0 21 19"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.21735 16.4075C8.21726 16.5787 8.26552 16.7465 8.3567 16.8921C8.44788 17.0377 8.57838 17.1553 8.73355 17.2318L10.6005 18.1529C10.7428 18.223 10.901 18.2562 11.06 18.2491C11.2189 18.242 11.3734 18.1949 11.5088 18.1123C11.6441 18.0297 11.7558 17.9143 11.8332 17.7772C11.9107 17.64 11.9513 17.4856 11.9512 17.3285V10.8813C11.9514 10.4249 12.1234 9.98471 12.4338 9.64623L19.1762 2.28812C19.297 2.15601 19.3765 1.99218 19.405 1.81645C19.4334 1.64071 19.4097 1.4606 19.3366 1.2979C19.2636 1.13519 19.1443 0.996857 18.9932 0.899623C18.8422 0.802389 18.6658 0.75042 18.4854 0.75H1.68312C1.5026 0.750064 1.32597 0.801776 1.17462 0.898872C1.02328 0.995968 0.903712 1.13428 0.830412 1.29706C0.757112 1.45983 0.733222 1.64009 0.761635 1.81599C0.790048 1.99189 0.869545 2.15589 0.990496 2.28812L7.73475 9.64623C8.04516 9.98471 8.21714 10.4249 8.21735 10.8813V16.4075Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
               {badgeCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#CCFF02] text-[10px] font-black text-black shadow-sm">
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black text-white text-[10px] font-black shadow-sm">
                   {badgeCount}
                 </span>
               )}
             </button>
+            <button
+              onClick={openFilters}
+              aria-label="Sort"
+              className="p-1 cursor-pointer hover:opacity-75 transition-opacity"
+            >
+              <svg
+                width="20"
+                height="18"
+                viewBox="0 0 20 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1 3H19M1 9H13M1 15H7"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
           </div>
 
           {/* Single "Filter & Sort" button — desktop */}
-          <div className="hidden md:flex items-center gap-4 text-sm font-semibold tracking-wider uppercase">
+          <div className="hidden md:flex items-center gap-4 text-md font-medium tracking-wider uppercase">
             <button
               onClick={openFilters}
               className="flex items-center gap-2 cursor-pointer hover:opacity-75 transition-opacity py-1.5"
             >
               <div className="relative">
-                <FunnelIcon className="h-4 w-4" />
+                <svg
+                  width="21"
+                  height="19"
+                  viewBox="0 0 21 19"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8.21735 16.4075C8.21726 16.5787 8.26552 16.7465 8.3567 16.8921C8.44788 17.0377 8.57838 17.1553 8.73355 17.2318L10.6005 18.1529C10.7428 18.223 10.901 18.2562 11.06 18.2491C11.2189 18.242 11.3734 18.1949 11.5088 18.1123C11.6441 18.0297 11.7558 17.9143 11.8332 17.7772C11.9107 17.64 11.9513 17.4856 11.9512 17.3285V10.8813C11.9514 10.4249 12.1234 9.98471 12.4338 9.64623L19.1762 2.28812C19.297 2.15601 19.3765 1.99218 19.405 1.81645C19.4334 1.64071 19.4097 1.4606 19.3366 1.2979C19.2636 1.13519 19.1443 0.996857 18.9932 0.899623C18.8422 0.802389 18.6658 0.75042 18.4854 0.75H1.68312C1.5026 0.750064 1.32597 0.801776 1.17462 0.898872C1.02328 0.995968 0.903712 1.13428 0.830412 1.29706C0.757112 1.45983 0.733222 1.64009 0.761635 1.81599C0.790048 1.99189 0.869545 2.15589 0.990496 2.28812L7.73475 9.64623C8.04516 9.98471 8.21714 10.4249 8.21735 10.8813V16.4075Z"
+                    stroke="black"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
                 {badgeCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#CCFF02] text-[8px] font-black text-black shadow-sm">
+                  <span className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-black text-[8px] font-black text-white shadow-sm">
                     {badgeCount}
                   </span>
                 )}
               </div>
-              <span>Filter &amp; Sort</span>
+              <span>FILTER &amp; SORT</span>
             </button>
           </div>
         </div>
@@ -344,7 +353,7 @@ export default function FilterSortBar({
                       }
                     }}
                     className={clsx(
-                      "px-3 py-2 md:px-6 md:py-3 rounded-[6px] text-[clamp(0.813rem,2vw,1rem)] font-medium whitespace-nowrap transition-all duration-200 border",
+                      "px-2 py-1.5 md:px-3 md:py-1.5 rounded-[8px] text-[clamp(0.813rem,2vw,1rem)] font-medium whitespace-nowrap transition-all duration-200 border",
                       isActive
                         ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
                         : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800",
@@ -367,7 +376,7 @@ export default function FilterSortBar({
                   return (
                     <span
                       key={`${key}-${val}`}
-                      className="flex items-center gap-2 px-2 py-1.5 md:px-3 md:py-2 bg-neutral-100 dark:bg-neutral-900 rounded-[6px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium"
+                      className="flex items-center gap-2 px-2 py-1.5 md:px-2.5 md:py-1.5 bg-neutral-100 dark:bg-neutral-900 rounded-[8px] text-[clamp(0.75rem,1.5vw,0.875rem)] text-neutral-800 dark:text-neutral-200 font-medium"
                     >
                       {hex && (
                         <span
@@ -401,7 +410,7 @@ export default function FilterSortBar({
 
               <button
                 onClick={clearAllFilters}
-                className="text-xs font-semibold underline text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white cursor-pointer ml-1"
+                className="text-xs font-medium underline text-black hover:text-black dark:text-neutral-400 dark:hover:text-white cursor-pointer ml-1"
               >
                 Clear All
               </button>
@@ -524,24 +533,7 @@ function FilterDrawer({
     };
   }, []);
 
-  const renderedGroups = [...filterGroups];
-  if (collections && collections.length > 1) {
-    const subcategoryGroup: FilterGroup = {
-      id: "subcategory",
-      label: "Subcategory",
-      type: "category",
-      options: collections.map((c) => ({
-        label: c.title,
-        value: c.handle,
-      })),
-    };
-    const categoryIdx = renderedGroups.findIndex((g) => g.id === "category");
-    if (categoryIdx !== -1) {
-      renderedGroups.splice(categoryIdx + 1, 0, subcategoryGroup);
-    } else {
-      renderedGroups.push(subcategoryGroup);
-    }
-  }
+  const renderedGroups = filterGroups;
 
   // ALL sections collapsed by default except category and subcategory (unless persisted)
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
@@ -606,7 +598,7 @@ function FilterDrawer({
   };
 
   // Preview count: how many products would result from active filters
-  const previewCount = applyFilterMap(products, activeFilters).length;
+  const previewCount = countMatching(products, activeFilters);
 
   // Derive active tags for the drawer list
   const activeDrawerFilters: {
@@ -647,7 +639,7 @@ function FilterDrawer({
   }
 
   Object.entries(activeFilters).forEach(([key, value]) => {
-    if (value) {
+    if (value && key !== "q") {
       const values = value.split(",").filter(Boolean);
       values.forEach((val) => {
         const label = getLabelForFilterValue(key, val, filterGroups);
@@ -708,12 +700,11 @@ function FilterDrawer({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-neutral-100 dark:border-neutral-900">
           <div className="flex items-center gap-3">
-            <FunnelIcon className="h-5 w-5" />
             <h3
-              className="text-xl font-bold uppercase tracking-wider"
+              className="text-[32px] font-semibold uppercase tracking-[-1%]"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              Filter Items
+              Filters
             </h3>
           </div>
           <button
@@ -737,7 +728,7 @@ function FilterDrawer({
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <span
-                    className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                    className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
                     style={{ fontFamily: "Archivo, sans-serif" }}
                   >
                     Active Filters
@@ -749,7 +740,7 @@ function FilterDrawer({
                 <button
                   type="button"
                   onClick={clearPending}
-                  className="flex items-center gap-1 text-xs font-semibold text-neutral-500 hover:text-black dark:hover:text-white cursor-pointer"
+                  className="flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-black dark:hover:text-white cursor-pointer"
                 >
                   <span>Remove all filters</span>
                   <span className="text-[10px]">✕</span>
@@ -759,7 +750,7 @@ function FilterDrawer({
                 {activeDrawerFilters.map((tag) => (
                   <span
                     key={`${tag.type}-${tag.id}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[6px] text-xs font-medium text-neutral-800 dark:text-neutral-200"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-md text-xs font-medium text-neutral-800 dark:text-neutral-200"
                   >
                     <span>{tag.label}</span>
                     <button
@@ -814,7 +805,7 @@ function FilterDrawer({
                 <button
                   type="button"
                   onClick={() => toggleGroup(group.id)}
-                  className="flex w-full items-center justify-between px-6 py-4 text-base font-bold uppercase tracking-wider text-black dark:text-white"
+                  className="flex w-full items-center justify-between px-6 py-4 text-base font-semibold uppercase tracking-[-1%] text-black dark:text-white"
                   style={{ fontFamily: "'Clash Display', sans-serif" }}
                 >
                   <span className="flex items-center gap-2">
@@ -882,16 +873,19 @@ function FilterDrawer({
           })}
         </div>
 
+        <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 my-4">
+          &#x24D8;&nbsp;{previewCount} items were found
+        </p>
         {/* Footer */}
-        <div className="p-6 border-t border-neutral-100 dark:border-neutral-900">
-          <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 mb-4">
-            &#x24D8;&nbsp;{previewCount} items were found
-          </p>
+        <div
+          className="p-6 border-t border-neutral-200 dark:border-neutral-900"
+          style={{ boxShadow: "0px -3px 44px 0px rgba(0, 0, 0, 0.15)" }}
+        >
           <div className="flex flex-col gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-4 text-center bg-black text-white dark:bg-white dark:text-black rounded-lg text-sm font-bold uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
+              className="w-full py-4 text-center bg-black text-white dark:bg-white dark:text-black rounded-sm text-sm font-bold uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
               DONE
@@ -899,7 +893,7 @@ function FilterDrawer({
             <button
               type="button"
               onClick={clearPending}
-              className="w-full py-4 text-center border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black text-black dark:text-white rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
+              className="w-full py-4 text-center border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black text-black dark:text-white rounded-sm text-sm font-bold uppercase tracking-widest hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
               CLEAR ALL
@@ -1237,12 +1231,10 @@ function PriceSliderGroup({
       >
         <span>
           ₹{tempMin.toLocaleString()} - ₹{tempMax.toLocaleString()} (
-          {
-            applyFilterMap(products, {
-              ...activeFilters,
-              price: `${tempMin}-${tempMax}`,
-            }).length
-          }
+          {countMatching(products, {
+            ...activeFilters,
+            price: `${tempMin}-${tempMax}`,
+          })}
           )
         </span>
       </div>

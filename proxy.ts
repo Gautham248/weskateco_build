@@ -1,10 +1,85 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ADMIN_SESSION_COOKIE } from "./lib/constants";
 
 const locales = ["en", "hi"];
 const defaultLocale = "en";
 
+const ADMIN_LOGIN_PATH = "/admin/login";
+const ADMIN_API_PREFIX = "/admin/api/";
+
+// Directories served from public/ — requests must bypass the locale rewrite.
+const PUBLIC_ASSET_PREFIXES = ["/fonts", "/hero", "/icons"];
+
+const SHOPIFY_STORE_HOST = process.env.SHOPIFY_STORE_DOMAIN?.replace(
+  /^https?:\/\//,
+  "",
+);
+
+// Shopify's new Customer Accounts are hosted on the store's primary domain
+// (this app). These paths belong to Shopify, not the storefront, so they are
+// reverse-proxied through to the Shopify store.
+const SHOPIFY_ACCOUNT_PREFIXES = [
+  "/account",
+  "/services/login_with_shop",
+  "/services/logout",
+];
+
+function isShopifyAccountPath(pathname: string) {
+  return SHOPIFY_ACCOUNT_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+/**
+ * Cheap cookie-presence gate only. Signature verification happens in the admin
+ * layouts, server actions, and route handlers (Node runtime) — this exists so an
+ * unauthenticated request never even reaches a protected page, and the proxy
+ * bundle stays free of the bcrypt/jose dependency chain.
+ *
+ * Deliberately does NOT redirect away from /admin/login when a cookie is
+ * present: an invalid or expired token would then bounce between /admin/login
+ * and /admin/products forever.
+ */
+function handleAdminRequest(request: NextRequest, pathname: string) {
+  // API routes are exempt so their own auth check can answer with a 401 JSON
+  // response. Redirecting here would hand fetch() an HTML login page and a 200.
+  if (pathname.startsWith(ADMIN_API_PREFIX)) {
+    return NextResponse.next();
+  }
+
+  const hasSessionCookie = Boolean(
+    request.cookies.get(ADMIN_SESSION_COOKIE)?.value,
+  );
+
+  if (!hasSessionCookie && pathname !== ADMIN_LOGIN_PATH) {
+    const url = request.nextUrl.clone();
+    url.pathname = ADMIN_LOGIN_PATH;
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
+
+  return NextResponse.next();
+}
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Must run before the locale rewrite below, otherwise /account becomes
+  // /en/account and is swallowed by the [locale]/[page] catch-all (soft 404).
+  if (SHOPIFY_STORE_HOST && isShopifyAccountPath(pathname)) {
+    const url = request.nextUrl.clone();
+    url.protocol = "https:";
+    url.host = SHOPIFY_STORE_HOST;
+    url.port = "";
+    return NextResponse.rewrite(url);
+  }
+
+  // The admin panel lives outside the locale tree. It must be handled before
+  // the locale rewrite below, otherwise /admin becomes /en/admin and is
+  // swallowed by the [locale]/[page] catch-all.
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    return handleAdminRequest(request, pathname);
+  }
 
   // Skip static assets, API routes, and Next.js internals
   if (
@@ -13,7 +88,12 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/favicon.ico") ||
     pathname.startsWith("/robots.txt") ||
     pathname.startsWith("/sitemap.xml") ||
-    pathname.startsWith("/studio") // Sanity Studio (future)
+    pathname.startsWith("/studio") || // Sanity Studio (future)
+    // Public asset directories and any file with an extension (e.g.
+    // /icons/logo.png, /hero/banner.jpg) must never be locale-rewritten,
+    // otherwise they 404 against the [locale] catch-all.
+    PUBLIC_ASSET_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
+    /\.[a-zA-Z0-9]+$/.test(pathname)
   ) {
     return NextResponse.next();
   }
@@ -43,6 +123,6 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
+    "/((?!api|_next/static|_next/image|fonts|favicon.ico|robots.txt|sitemap.xml).*)",
   ],
 };

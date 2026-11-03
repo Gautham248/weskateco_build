@@ -1,7 +1,7 @@
 import { CartProvider } from "components/cart/cart-context";
 import { Navbar } from "components/layout/navbar";
 import { NavbarScrollWrapper } from "components/layout/navbar/navbar-scroll";
-import { WelcomeToast } from "components/welcome-toast";
+// import { WelcomeToast } from "components/welcome-toast";
 import { GeistSans } from "geist/font/sans";
 import { GoogleAnalytics, MetaPixel } from "lib/analytics";
 import { GoKwikScript } from "lib/gokwik";
@@ -11,9 +11,9 @@ import { getCart } from "lib/shopify";
 import { baseUrl } from "lib/utils";
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
-import "./globals.css";
+import "../globals.css";
 
-const { SITE_NAME } = process.env;
+const SITE_NAME = process.env.SITE_NAME || "WeSkate Co";
 
 export const metadata = {
   metadataBase: new URL(baseUrl),
@@ -41,7 +41,7 @@ export default async function RootLayout(props: {
   const dictionary = getDictionary(params.locale);
 
   return (
-    <html lang={params.locale} className={GeistSans.variable}>
+    <html lang={params.locale} className={`${GeistSans.variable}`}>
       <body className="bg-white text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
         <CartProvider cartPromise={cart}>
           <TranslationProvider locale={params.locale} dictionary={dictionary}>
@@ -50,8 +50,8 @@ export default async function RootLayout(props: {
             </NavbarScrollWrapper>
             <main className="pt-[72px]">
               {children}
-              <Toaster closeButton />
-              <WelcomeToast />
+              <Toaster position="top-center" offset={56} closeButton />
+              {/* <WelcomeToast /> */}
             </main>
           </TranslationProvider>
         </CartProvider>

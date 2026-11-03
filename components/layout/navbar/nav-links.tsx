@@ -18,22 +18,42 @@ export default function NavLinks({
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const menuRef = useRef<HTMLLIElement>(null);
 
+  const [isGuidesOpen, setIsGuidesOpen] = useState(false);
+  const guidesRef = useRef<HTMLLIElement>(null);
+
+  const [isAcademyOpen, setIsAcademyOpen] = useState(false);
+  const academyRef = useRef<HTMLLIElement>(null);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
         setActiveCategory(null);
       }
+      if (
+        guidesRef.current &&
+        !guidesRef.current.contains(event.target as Node)
+      ) {
+        setIsGuidesOpen(false);
+      }
+      if (
+        academyRef.current &&
+        !academyRef.current.contains(event.target as Node)
+      ) {
+        setIsAcademyOpen(false);
+      }
+    }
+    if (isDropdownOpen || isGuidesOpen || isAcademyOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
     if (isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
       document.body.style.overflow = "hidden";
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.body.style.overflow = "";
     };
-  }, [isDropdownOpen]);
+  }, [isDropdownOpen, isGuidesOpen, isAcademyOpen]);
 
   useEffect(() => {
     onDropdownChange?.(isDropdownOpen);
@@ -43,7 +63,7 @@ export default function NavLinks({
     <>
       {isDropdownOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-black/60 backdrop z-40"
           onClick={() => {
             setIsDropdownOpen(false);
             setActiveCategory(null);
@@ -51,13 +71,16 @@ export default function NavLinks({
         />
       )}
       <ul className="hidden items-center gap-2 lg:gap-8 text-[clamp(0.875rem,2vw,1.125rem)] font-medium tracking-wide md:flex whitespace-nowrap z-50">
-        {" "}
         {/* STORE */}
         <li ref={menuRef}>
           <button
             className="flex items-center gap-1 uppercase cursor-pointer"
             aria-expanded={isDropdownOpen}
-            onMouseEnter={() => setIsDropdownOpen(true)}
+            onMouseEnter={() => {
+              setIsDropdownOpen(true);
+              setIsGuidesOpen(false);
+              setIsAcademyOpen(false);
+            }}
           >
             STORE
             <ChevronDownIcon
@@ -66,37 +89,223 @@ export default function NavLinks({
           </button>
 
           <div
-            className={`absolute left-6 right-6 z-50 shadow-lg top-full mt-5 ${isDropdownOpen
+            className={`absolute left-6 right-6 lg:left-12 lg:right-12 z-50 shadow-lg top-full mt-5 before:absolute before:-top-5 before:left-0 before:right-0 before:h-5 ${
+              isDropdownOpen
                 ? "opacity-100 pointer-events-auto"
                 : "opacity-0 pointer-events-none"
-              } transition-opacity duration-300`}
+            } transition-opacity duration-300`}
             style={{ height: "471px" }}
+            onMouseLeave={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              // Only close if mouse exited below or to the sides (not exiting towards top/navbar)
+              if (e.clientY >= rect.top + 5) {
+                setIsDropdownOpen(false);
+                setActiveCategory(null);
+              }
+            }}
           >
             <div className="flex h-full gap-3">
               <MegaMenuLeft
                 activeCategory={activeCategory}
                 onCategoryHover={setActiveCategory}
-                onLinkClick={() => setIsDropdownOpen(false)}
+                onLinkClick={() => {
+                  setIsDropdownOpen(false);
+                  setActiveCategory(null);
+                }}
               />
               <MegaMenuRight
                 activeCategory={activeCategory}
                 onCollapse={() => setActiveCategory(null)}
+                onLinkClick={() => {
+                  setIsDropdownOpen(false);
+                  setActiveCategory(null);
+                }}
               />
             </div>
           </div>
         </li>
-        {/* GUIDES */}
-        <li className={isDropdownOpen ? "opacity-50" : ""}>
-          <Link href={getLocalizedPath("/guides", locale)}>GUIDES</Link>
+
+        {/* ABOUT US */}
+        <li
+          className={isDropdownOpen ? "opacity-50" : ""}
+          onMouseEnter={() => {
+            setIsDropdownOpen(false);
+            setIsGuidesOpen(false);
+            setIsAcademyOpen(false);
+            setActiveCategory(null);
+          }}
+        >
+          <Link href={getLocalizedPath("/about-us", locale)}>WE ARE</Link>
         </li>
-        {/* WESKATE ACADEMY */}
-        <li className={isDropdownOpen ? "opacity-50" : ""}>
-          <Link href={getLocalizedPath("/academy", locale)}>
-            WESKATE ACADEMY
-          </Link>
+
+        {/* GUIDES DROPDOWN */}
+        <li
+          ref={guidesRef}
+          className="relative py-2"
+          onMouseEnter={() => {
+            setIsGuidesOpen(true);
+            setIsDropdownOpen(false);
+            setIsAcademyOpen(false);
+            setActiveCategory(null);
+          }}
+          onMouseLeave={() => setIsGuidesOpen(false)}
+        >
+          <button
+            onClick={() => {
+              setIsGuidesOpen(!isGuidesOpen);
+              if (!isGuidesOpen) {
+                setIsDropdownOpen(false);
+                setActiveCategory(null);
+              }
+            }}
+            className="flex items-center gap-1 uppercase cursor-pointer"
+          >
+            GUIDES
+            <ChevronDownIcon
+              className={`h-2.5 w-2.5 md:h-2.5 md:w-2.5 xl:h-3 xl:w-3 transition-transform duration-200 ${
+                isGuidesOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          <div
+            className={`absolute left-0 top-full pt-1.5 w-64 z-50 transition-all duration-200 ${
+              isGuidesOpen
+                ? "opacity-100 scale-100 pointer-events-auto"
+                : "opacity-0 scale-95 pointer-events-none"
+            }`}
+          >
+            <div className="rounded-md bg-white text-black shadow-xl border border-neutral-100 py-2">
+              <Link
+                href={getLocalizedPath(
+                  "/guides/skateboard-buying-guide",
+                  locale,
+                )}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Skateboard Buying Guide
+              </Link>
+              <Link
+                href={getLocalizedPath("/guides/deck-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Deck Guide
+              </Link>
+              <Link
+                href={getLocalizedPath("/guides/truck-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Truck Guide
+              </Link>
+              <Link
+                href={getLocalizedPath("/guides/wheels-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Wheels Guide
+              </Link>
+              <Link
+                href={getLocalizedPath("/guides/bearing-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Bearing Guide
+              </Link>
+              <Link
+                href={getLocalizedPath("/guides/griptape-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Griptape Guide
+              </Link>
+              <Link
+                href={getLocalizedPath("/guides/surfskate-guide", locale)}
+                onClick={() => setIsGuidesOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                Surfskate Guide
+              </Link>
+            </div>
+          </div>
+        </li>
+
+        {/* ACADEMY DROPDOWN */}
+        <li
+          ref={academyRef}
+          className="relative py-2"
+          onMouseEnter={() => {
+            setIsAcademyOpen(true);
+            setIsDropdownOpen(false);
+            setIsGuidesOpen(false);
+            setActiveCategory(null);
+          }}
+          onMouseLeave={() => setIsAcademyOpen(false)}
+        >
+          <button
+            onClick={() => {
+              setIsAcademyOpen(!isAcademyOpen);
+              if (!isAcademyOpen) {
+                setIsDropdownOpen(false);
+                setIsGuidesOpen(false);
+              }
+            }}
+            aria-expanded={isAcademyOpen}
+            className="flex items-center gap-1 uppercase cursor-pointer"
+          >
+            ACADEMY
+            <ChevronDownIcon
+              className={`h-2.5 w-2.5 md:h-2.5 md:w-2.5 xl:h-3 xl:w-3 transition-transform duration-200 ${
+                isAcademyOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          <div
+            className={`absolute left-0 top-full pt-1.5 w-64 z-50 transition-all duration-200 ${
+              isAcademyOpen
+                ? "opacity-100 scale-100 pointer-events-auto"
+                : "opacity-0 scale-95 pointer-events-none"
+            }`}
+          >
+            <div className="rounded-md bg-white text-black shadow-xl border border-neutral-100 py-2">
+              <Link
+                href={getLocalizedPath("/academy", locale)}
+                onClick={() => setIsAcademyOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                WeSkate Academy
+              </Link>
+              <Link
+                href={getLocalizedPath("/school", locale)}
+                onClick={() => setIsAcademyOpen(false)}
+                className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
+                style={{ fontFamily: "'Clash Display', sans-serif" }}
+              >
+                WeSkate School
+              </Link>
+            </div>
+          </div>
         </li>
         {/* SKATEPARKS */}
-        <li className={isDropdownOpen ? "opacity-50" : ""}>
+        <li
+          className={isDropdownOpen ? "opacity-50" : ""}
+          onMouseEnter={() => {
+            setIsDropdownOpen(false);
+            setIsGuidesOpen(false);
+            setActiveCategory(null);
+          }}
+        >
           <Link href={getLocalizedPath("/skateparks", locale)}>SKATEPARKS</Link>
         </li>
       </ul>

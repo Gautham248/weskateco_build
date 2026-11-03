@@ -24,7 +24,7 @@ export function SnapmintEmiCartBanner({
 
   return (
     <div
-      className="bg-[#f9f9f9] dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 p-4 flex items-center justify-between gap-4 mb-4 rounded-none"
+      className="bg-[#f9f9f9] dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 p-4 flex items-center justify-between gap-4 mb-4 rounded-sm"
       style={{ fontFamily: "Archivo, sans-serif" }}
     >
       {/* Left side text column */}
@@ -36,7 +36,7 @@ export function SnapmintEmiCartBanner({
           </strong>{" "}
           Monthly Payments of{" "}
           <strong className="text-neutral-900 dark:text-white font-bold">
-            ₹{monthlyEmi.toLocaleString("en-IN")}
+            ₹{monthlyEmi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           </strong>
         </p>
         <div className="text-[10px] text-neutral-400 dark:text-neutral-500 font-normal leading-normal flex items-center gap-1 flex-wrap">

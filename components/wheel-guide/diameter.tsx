@@ -1,0 +1,193 @@
+"use client";
+
+import {
+  DIAMETERS,
+  DIAMETER_BLURBS,
+  DIAMETER_CAPTION,
+  DIAMETER_DEFAULT,
+  DIAMETER_SECTION,
+} from "lib/wheel-guide/data";
+import {
+  SectionHeader,
+  Container,
+  Section,
+  GRID_CLASS,
+} from "components/guides/ui";
+import diametersImg from "components/icons/wheel_guide/wheel-diameters.jpeg";
+import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+
+export default function DiameterSection() {
+  const { locale } = useTranslation();
+  const [activeId, setActiveId] = useState(DIAMETER_DEFAULT);
+  const active = DIAMETERS.find((d) => d.id === activeId) ?? DIAMETERS[2]!;
+
+  return (
+    <Section id="diameter" bg="muted">
+      <Container>
+        {/* Header */}
+        <SectionHeader
+          kicker={DIAMETER_SECTION.kicker}
+          title={DIAMETER_SECTION.title}
+          intro={DIAMETER_SECTION.intro}
+        />
+
+        {/* All five wheels at true relative size, so the jump from a trick
+            wheel to a cruiser is obvious in one look. The chips below double as
+            the selector, which is what the generated circles used to be. */}
+        <div className="w-full bg-white rounded-[16px] p-5 md:p-10 flex flex-col items-center gap-6">
+          <Image
+            src={diametersImg}
+            alt="Five skateboard wheels photographed side by side at true relative size, from a 51mm trick wheel up to a 66mm surfskate wheel"
+            sizes="(min-width: 1024px) 1100px, 92vw"
+            className="h-auto w-full rounded-[12px]"
+            priority={false}
+          />
+
+          <div
+            role="group"
+            aria-label="Choose a diameter"
+            className="flex flex-wrap items-end justify-center gap-2 md:gap-4"
+          >
+            {DIAMETERS.map((d) => {
+              const isActive = d.id === activeId;
+              return (
+                <button
+                  key={d.id}
+                  type="button"
+                  onClick={() => setActiveId(d.id)}
+                  aria-pressed={isActive}
+                  className={`flex flex-col items-center gap-2 px-3 py-2 rounded-4 cursor-pointer transition-colors border-b-2 ${
+                    isActive
+                      ? "border-black"
+                      : "border-transparent hover:border-neutral-300"
+                  }`}
+                >
+                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-neutral-500">
+                    {d.category === "Surfskate wheel" ? "Surfskate" : "Skate"}
+                  </span>
+                  <span
+                    className={`text-xs md:text-base font-bold uppercase tracking-wide ${
+                      isActive ? "text-black" : "text-neutral-500"
+                    }`}
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
+                    {d.size}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="text-xs md:text-sm text-neutral-600 leading-[150%] text-center max-w-4xl">
+            {DIAMETER_CAPTION}
+          </p>
+        </div>
+
+        <div className={GRID_CLASS}>
+          {/* Chips + detail */}
+          <div className="lg:col-span-7 flex flex-col gap-5">
+            <div
+              role="group"
+              aria-label="Choose a diameter"
+              className="flex flex-wrap gap-3"
+            >
+              {DIAMETERS.map((d) => {
+                const isActive = d.id === activeId;
+                return (
+                  <button
+                    key={d.id}
+                    type="button"
+                    onClick={() => setActiveId(d.id)}
+                    aria-pressed={isActive}
+                    className={`px-4 py-2.5 rounded-4 text-sm font-semibold uppercase tracking-wider cursor-pointer transition-colors border ${
+                      isActive
+                        ? "bg-black text-white border-black"
+                        : "bg-white text-black border-neutral-200 hover:border-black"
+                    }`}
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
+                    {d.size}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="bg-white rounded-[16px] p-5 md:p-8 flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
+                <span
+                  className="text-xs font-semibold uppercase tracking-wider text-neutral-500"
+                  style={{ fontFamily: "'Clash Display', sans-serif" }}
+                >
+                  {active.category}
+                </span>
+                <h3
+                  className="text-xl md:text-[32px] font-bold tracking-[-1%] uppercase leading-none"
+                  style={{ fontFamily: "'Clash Display', sans-serif" }}
+                >
+                  {active.size}
+                </h3>
+              </div>
+              <p className="text-sm md:text-lg text-black font-[400] leading-[150%]">
+                {active.text}
+              </p>
+              <dl className="flex flex-col mt-1">
+                {active.spec.map(([label, value], i) => (
+                  <div
+                    key={label}
+                    className={`flex items-baseline justify-between gap-6 py-2 ${
+                      i < active.spec.length - 1
+                        ? "border-b border-neutral-100"
+                        : ""
+                    }`}
+                  >
+                    <dt className="text-xs md:text-sm font-semibold uppercase tracking-wider text-neutral-500">
+                      {label}
+                    </dt>
+                    <dd className="text-sm md:text-base text-black text-right font-[400]">
+                      {value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+
+          {/* Supporting blurbs */}
+          <div className="lg:col-span-5 flex flex-col gap-4">
+            {DIAMETER_BLURBS.map((blurb) => (
+              <div
+                key={blurb.title}
+                className="border border-neutral-200 bg-white rounded-[16px] p-5 md:p-6 flex flex-col gap-3"
+              >
+                <h3
+                  className="text-base md:text-xl font-bold tracking-[-1%] uppercase leading-none"
+                  style={{ fontFamily: "'Clash Display', sans-serif" }}
+                >
+                  {blurb.title}
+                </h3>
+                <p className="text-sm md:text-base text-black font-[400] leading-[150%]">
+                  {blurb.text}
+                  {blurb.href && blurb.linkLabel && (
+                    <>
+                      {" "}
+                      <Link
+                        href={getLocalizedPath(blurb.href, locale)}
+                        className="underline underline-offset-2 font-medium text-black hover:text-neutral-500 transition-colors"
+                      >
+                        {blurb.linkLabel}
+                      </Link>
+                    </>
+                  )}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Container>
+    </Section>
+  );
+}

@@ -3,7 +3,23 @@
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
-const HOME_PATHS = ["/", "/en", "/hi"];
+const HERO_PATHS = [
+  "/",
+  "/en",
+  "/hi",
+  "/academy",
+  "/en/academy",
+  "/hi/academy",
+  "/school",
+  "/en/school",
+  "/hi/school",
+  "/skateparks",
+  "/en/skateparks",
+  "/hi/skateparks",
+  "/about-us",
+  "/en/about-us",
+  "/hi/about-us",
+];
 
 const NavbarScrollContext = createContext<boolean>(false);
 
@@ -17,11 +33,17 @@ export function NavbarScrollWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isHomePage = HOME_PATHS.includes(pathname);
-  const [scrolled, setScrolled] = useState(!isHomePage);
+  const isHeroPage =
+    HERO_PATHS.includes(pathname) ||
+    pathname.endsWith("/academy") ||
+    pathname.endsWith("/school") ||
+    pathname.endsWith("/skateparks") ||
+    pathname.endsWith("/about-us") ||
+    pathname.includes("/guides/");
+  const [scrolled, setScrolled] = useState(!isHeroPage);
 
   useEffect(() => {
-    if (!isHomePage) {
+    if (!isHeroPage) {
       setScrolled(true);
       return;
     }
@@ -31,7 +53,7 @@ export function NavbarScrollWrapper({
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [isHomePage]);
+  }, [isHeroPage]);
 
   return (
     <NavbarScrollContext.Provider value={scrolled}>
@@ -40,7 +62,7 @@ export function NavbarScrollWrapper({
         className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
           scrolled
             ? "bg-white border-b border-neutral-200 text-black"
-            : "bg-transparent text-white"
+            : "bg-black/60 text-white"
         }`}
       >
         {children}
