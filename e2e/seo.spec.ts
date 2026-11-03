@@ -41,6 +41,10 @@ test.describe("default locale redirect", () => {
       "/store/skateboards?sort=price-asc",
     ],
     ["/en/products/some-handle", "/products/some-handle"],
+    // Older URL forms go straight to the final URL, not through /en/...
+    ["/en/product/some-handle", "/products/some-handle"],
+    ["/en/guides/wheel-guide", "/guides/wheels-guide"],
+    ["/hi/", "/hi"],
   ]) {
     test(`${from} permanently redirects to ${to}`, async ({ request }) => {
       const res = await request.get(from!, { maxRedirects: 0 });
@@ -57,9 +61,43 @@ test.describe("default locale redirect", () => {
 });
 
 test.describe("canonical URLs", () => {
-  test("store canonical drops sort and page params", async ({ page }) => {
-    await page.goto("/store?sort=price-asc&page=2");
+  test("store canonical drops sort and filter params", async ({ page }) => {
+    await page.goto("/store?sort=price-asc&color=black");
     expect(await canonicalPath(page)).toBe("/store");
+  });
+
+  test("each page of a listing is its own canonical", async ({ page }) => {
+    // Pointing page 2 at page 1 would hide its products from search engines
+    await page.goto("/store?sort=price-asc&page=2");
+    expect(await canonicalPath(page)).toBe("/store?page=2");
+  });
+
+  test("the Hindi homepage is canonical to /hi, not the redirecting /hi/", async ({
+    page,
+  }) => {
+    await page.goto("/hi");
+    expect(await canonicalPath(page)).toBe("/hi");
+  });
+
+  test("English and Hindi versions link to each other", async ({ page }) => {
+    for (const path of ["/about-us", "/hi/about-us"]) {
+      await page.goto(path);
+      const alternates = Object.fromEntries(
+        await page
+          .locator('link[rel="alternate"][hreflang]')
+          .evaluateAll((links) =>
+            links.map((link) => [
+              link.getAttribute("hreflang"),
+              new URL(link.getAttribute("href")!).pathname,
+            ]),
+          ),
+      );
+      expect(alternates).toEqual({
+        en: "/about-us",
+        hi: "/hi/about-us",
+        "x-default": "/about-us",
+      });
+    }
   });
 
   test("Hindi store page is canonical to itself with lang=hi", async ({
@@ -160,16 +198,24 @@ test.describe("structured data and server rendering", () => {
   test("the server sends the page of products the URL asks for", async ({
     request,
   }) => {
+    // Known bug: the store grid reads the URL's query on the client, so Next
+    // renders it only in the browser and the server HTML has no products.
+    // Crawlers that don't run JavaScript see an empty listing. Remove this
+    // line once the grid is server-rendered.
+    test.fail();
+
     // Raw HTML, before any JavaScript runs: what a crawler first sees
     const productLinks = async (query: string) => {
       const html = await (await request.get(`/store${query}`)).text();
       return new Set(
-        [...html.matchAll(/href="(\/product\/[^"?]+)/g)].map((m) => m[1]),
+        [...html.matchAll(/<a [^>]*href="(\/products\/[^"?]+)/g)].map(
+          (m) => m[1],
+        ),
       );
     };
     const first = await productLinks("");
     const second = await productLinks("?page=2");
-    test.skip(second.size === 0, "The store has only one page of products");
+    expect(first.size).toBeGreaterThan(0);
     expect([...second].some((link) => !first.has(link))).toBe(true);
   });
 });
@@ -199,6 +245,18 @@ test.describe("sitemap", () => {
     }
     expect(paths.some((p) => p.startsWith("/products/"))).toBe(true);
     expect(paths.some((p) => p.startsWith("/store/"))).toBe(true);
+    // Hindi pages too, each entry linking its other-language version
+    expect(paths).toContain("/hi");
+    expect(paths).toContain("/hi/about-us");
+    expect(xml).toMatch(
+      /<xhtml:link rel="alternate" hreflang="hi" href="[^"]*\/hi\/about-us"/,
+    );
+    // Built-in pages carry no made-up lastmod
+    const contact = xml.match(
+      /<url>\s*<loc>[^<]*\/contact<\/loc>[\s\S]*?<\/url>/,
+    );
+    expect(contact?.[0]).toBeTruthy();
+    expect(contact![0]).not.toContain("<lastmod>");
     // No broken, duplicate or redirecting URLs
     expect(
       paths.filter(

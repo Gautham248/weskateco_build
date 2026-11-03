@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  localeAlternates,
   openGraph,
   openGraphLocale,
+  pageQuery,
   SITE_NAME,
   withPageMetadata,
 } from "./metadata";
@@ -51,7 +53,14 @@ describe("withPageMetadata", () => {
     expect(await generate(params("en"))).toEqual({
       title: "About Us",
       description: "Who we are.",
-      alternates: { canonical: "/about-us" },
+      alternates: {
+        canonical: "/about-us",
+        languages: {
+          en: "/about-us",
+          hi: "/hi/about-us",
+          "x-default": "/about-us",
+        },
+      },
       openGraph: {
         siteName: SITE_NAME,
         type: "website",
@@ -67,7 +76,7 @@ describe("withPageMetadata", () => {
     const metadata = await withPageMetadata("/about-us", { title: "About Us" })(
       params("hi"),
     );
-    expect(metadata.alternates).toEqual({ canonical: "/hi/about-us" });
+    expect(metadata.alternates).toMatchObject({ canonical: "/hi/about-us" });
     expect(metadata.openGraph).toMatchObject({
       url: "/hi/about-us",
       locale: "hi_IN",
@@ -92,5 +101,75 @@ describe("withPageMetadata", () => {
       type: "article",
       title: `Deck Guide | ${SITE_NAME}`,
     });
+  });
+});
+
+describe("localeAlternates", () => {
+  it("links every locale's version, with English as the default", () => {
+    expect(localeAlternates("/store", "hi")).toEqual({
+      canonical: "/hi/store",
+      languages: {
+        en: "/store",
+        hi: "/hi/store",
+        "x-default": "/store",
+      },
+    });
+  });
+
+  it("uses /hi, not the redirecting /hi/, for the Hindi homepage", () => {
+    expect(localeAlternates("/", "hi")).toMatchObject({
+      canonical: "/hi",
+      languages: { en: "/", hi: "/hi" },
+    });
+  });
+
+  it("keeps a query on every link", () => {
+    expect(localeAlternates("/store", "en", "?page=2")).toMatchObject({
+      canonical: "/store?page=2",
+      languages: { hi: "/hi/store?page=2" },
+    });
+  });
+});
+
+describe("pageQuery", () => {
+  it.each([
+    [undefined, ""],
+    ["1", ""],
+    ["0", ""],
+    ["-2", ""],
+    ["abc", ""],
+    ["2.5", ""],
+    ["2", "?page=2"],
+    [["3", "4"], ""],
+  ])("page %j -> %j", (page, expected) => {
+    expect(pageQuery(page)).toBe(expected);
+  });
+});
+
+describe("withPageMetadata on paginated listings", () => {
+  const props = (page?: string) => ({
+    params: Promise.resolve({ locale: "en" }),
+    searchParams: Promise.resolve(page ? { page, sort: "price-asc" } : {}),
+  });
+
+  it("keeps ?page= on later pages and drops other params", async () => {
+    const generate = withPageMetadata(
+      "/store",
+      { title: "Store" },
+      {
+        paginated: true,
+      },
+    );
+    const metadata = await generate(props("2"));
+    expect(metadata.alternates?.canonical).toBe("/store?page=2");
+    expect(metadata.openGraph).toMatchObject({ url: "/store?page=2" });
+    expect((await generate(props())).alternates?.canonical).toBe("/store");
+  });
+
+  it("ignores ?page= on pages that aren't listings", async () => {
+    const metadata = await withPageMetadata("/about-us", { title: "About" })(
+      props("2"),
+    );
+    expect(metadata.alternates?.canonical).toBe("/about-us");
   });
 });

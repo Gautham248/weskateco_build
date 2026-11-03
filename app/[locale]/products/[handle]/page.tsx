@@ -9,7 +9,7 @@ import { HIDDEN_PRODUCT_TAG } from "lib/constants";
 import { productReadState } from "lib/catalog/product-page";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 import { breadcrumbJsonLd, productJsonLd } from "lib/seo/json-ld";
-import { openGraph, SITE_NAME } from "lib/seo/metadata";
+import { localeAlternates, openGraph, SITE_NAME } from "lib/seo/metadata";
 import { getProductRecommendations, readProductForPage } from "lib/shopify";
 import type { Image, Product } from "lib/shopify/types";
 import { baseUrl } from "lib/utils";
@@ -52,9 +52,7 @@ export async function generateMetadata(props: {
   return {
     title,
     description,
-    alternates: {
-      canonical: getLocalizedPath(`/products/${params.handle}`, params.locale),
-    },
+    alternates: localeAlternates(`/products/${product.handle}`, params.locale),
     robots: {
       index: indexable,
       follow: indexable,
@@ -63,7 +61,7 @@ export async function generateMetadata(props: {
         follow: indexable,
       },
     },
-    openGraph: openGraph(params.locale, `/products/${params.handle}`, {
+    openGraph: openGraph(params.locale, `/products/${product.handle}`, {
       title: `${title} | ${SITE_NAME}`,
       description,
       ...(url ? { images: [{ url, width, height, alt }] } : {}),

@@ -12,7 +12,7 @@ export const SHOPIFY_SKIP_REASON =
 // A collection that should always have products
 export const COLLECTION = process.env.E2E_COLLECTION ?? "skateboards";
 
-/** Pathname of the page's canonical URL (the host comes from the deploy env, so ignore it). */
+/** Path and query of the page's canonical URL (the host comes from the deploy env, so ignore it). */
 export async function canonicalPath(page: Page): Promise<string> {
   const canonical = page.locator('link[rel="canonical"]');
   await expect(
@@ -27,7 +27,8 @@ export async function canonicalPath(page: Page): Promise<string> {
     ),
   );
   expect([...hrefs], "canonical URLs on the page should agree").toHaveLength(1);
-  return new URL([...hrefs][0]!).pathname;
+  const url = new URL([...hrefs][0]!);
+  return url.pathname + url.search;
 }
 
 /** Every JSON-LD item on the current page (a script may hold an array). */

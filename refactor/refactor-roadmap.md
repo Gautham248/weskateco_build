@@ -223,7 +223,7 @@ All verified in a sandbox against `testing/commerce-deployment` unless marked ot
 | F-10 | `test-contact-submit.ts` covers `enquiry-reference` and `rate-limit` helpers only. The route's validation and response contract are untested. | T-16, T-17, T-18. |
 | F-11 | Mutation baseline on `lib/catalog/hero.ts`: 1 of 8 killed. | T-03. |
 | F-12 | The live configurator runs on `config/mock-configurator-data.json` via `buildConfiguratorItems` (`components/configurator/wizard.tsx`). | It is production behaviour (D-10). Never delete it as "unused". |
-| F-13 | Two Shopify webhook endpoints exist with **different mappings**. `/api/webhooks/shopify` (HMAC) revalidates `products` **and** `collections` on product topics. `/[locale]/api/revalidate` (`revalidate()`, secret in query string) revalidates only `products` on product topics. | Preserve both. Alignment is Appendix H item H-3. |
+| F-13 | One Shopify webhook endpoint: `/api/webhooks/shopify` (HMAC) revalidates `products` **and** `collections` on product topics. A second, query-secret endpoint (`/[locale]/api/revalidate`, `revalidate()` in the facade) was removed before the refactor: nothing called it, the production Shopify store has no webhook pointing at it, and it answered HTTP 200 to a wrong secret. | Preserve the HMAC endpoint. |
 | F-14 | `/cart` (`app/[locale]/cart/page.tsx`, 604 lines) has no bundle grouping. Only the drawer (`modal.tsx`) groups by `_bundle_id`. | Not fixed here (I-1, H-1). |
 | F-15 | Sanity is mounted (`/studio`, 13 schemas) but no page imports `lib/sanity`. | D-03. |
 | F-16 | `getMenu` has no consumer outside `lib/shopify`. | Kept as-is; flagged in 9.4. |
@@ -287,8 +287,8 @@ Tick a row only when its evidence has passed **after the last phase that touches
 | FI-B05 | Add to cart, buy-now (single-item cart + GoKwik), quick-buy sidebar | `components/product/*`, `components/cart/actions.ts` | P4 | M-05..M-10 | [ ] |
 | FI-B06 | GoKwik: script loader, checkout hook, fallback to Shopify `checkoutUrl`; Snapmint EMI banners | `lib/gokwik/*`, `components/cart/snapmint-*`, `components/product/snapmint-*` | none (stays in `lib`) | M-10, M-11 | [ ] |
 | FI-B07 | Configurator: board type -> product selection -> review; compatibility engine; filters sidebar; build summary; progress; out-of-stock toggle; mock metafield data source | `components/configurator/*`, `lib/configurator/*`, `config/*.json` | P4 | T-01, T-02, `test-configurator`, M-12 | [ ] |
-| FI-B08 | Webhooks revalidate tags: HMAC endpoint (products and collections) and query-secret endpoint (different mapping, F-13) | `app/api/webhooks/shopify/route.ts`, `lib/shopify/index.ts` `revalidate` | P2, P3 | T-09, C, M-23 | [ ] |
-| FI-B09 | Cache tags and lifetimes for the 14 cached functions and 18 invalidation sites | see Appendix D | P2, P3, P4, P6 | C | [ ] |
+| FI-B08 | Webhooks revalidate tags: HMAC endpoint (products and collections, F-13) | `app/api/webhooks/shopify/route.ts` | P2, P3 | T-09, C, M-23 | [ ] |
+| FI-B09 | Cache tags and lifetimes for the 15 cached functions and 16 invalidation sites | see Appendix D | P2, P3, P4, P6 | C | [ ] |
 | FI-B10 | Shopify fetch: 2 retries with 500ms/1000ms backoff on connect errors only; first GraphQL error thrown; error shaping `{cause,status,message,query}` | `shopifyFetch` | P2 | T-08 | [ ] |
 | FI-B11 | Admin catalog: up to 4 pages of 250, `truncated`/`failed` flags, never throws | `getAdminProductCatalog` | P2, P3 | M-16, M-28 | [ ] |
 
@@ -434,7 +434,7 @@ Do not modify any source file.
 **Actions**
 1. Cache parity:
    `node refactor/scripts/cache-parity.mjs snapshot > refactor/cache-parity.baseline.json`
-   Expect 14 cached functions and 18 invalidation sites (Appendix D). Investigate any other number before proceeding.
+   Expect 15 cached functions and 16 invalidation sites (Appendix D). Investigate any other number before proceeding.
 2. Prettier baseline (pre-existing failures):
    ```bash
    npx prettier --check --ignore-unknown . 2>&1 | grep '^\[warn\]' | sed 's/\[warn\] //' | grep -v 'Code style' | grep -v '^refactor/' | sort > refactor/prettier-baseline.txt
@@ -822,13 +822,12 @@ after each. Report any function whose behaviour you had to think about.
 
 ### Step 2.6 Webhook verification helper
 
-**Objective:** HMAC logic is testable and shared; both endpoints and their **different** topic mappings stay as they are (F-13).
+**Objective:** HMAC logic is testable and shared; the endpoint's topic mapping stays as it is (F-13).
 
-**Before you start:** read both handlers. Facts to pin: the HMAC key is the value of `SHOPIFY_REVALIDATION_SECRET`; the computed value is Base64 of HMAC-SHA256 over the raw body; the comparison is a plain `!==` (preserve; H-6 records the timing-safe alternative); missing secret -> HTTP 500 `{message:"Not configured"}`; mismatch -> 401 `{message:"Unauthorized"}`; unhandled topic -> 200 `{message:"Unhandled topic"}`. The query-secret endpoint answers `{status: 401}` **with HTTP 200** on a bad secret (the number is in the body only); preserve.
+**Before you start:** read the handler. Facts to pin: the HMAC key is the value of `SHOPIFY_REVALIDATION_SECRET`; the computed value is Base64 of HMAC-SHA256 over the raw body; the comparison is a plain `!==` (preserve; H-6 records the timing-safe alternative); missing secret -> HTTP 500 `{message:"Not configured"}`; mismatch -> 401 `{message:"Unauthorized"}`; unhandled topic -> 200 `{message:"Unhandled topic"}`.
 
 **Actions**
 1. **Test first (T-09)**: extract `computeShopifyHmac(body, secret)` verbatim into `integrations/shopify/webhooks.ts`, test it, then call it from `app/api/webhooks/shopify/route.ts`. Topic switch and `revalidateTag` calls remain in the route.
-2. Do not touch `revalidate()` in the facade or `app/[locale]/api/revalidate/route.ts`.
 
 **Prompt**
 ```
@@ -837,11 +836,10 @@ Step 2.6. Run /generate-tests for T-09 on computeShopifyHmac. Extract it VERBATI
 app/api/webhooks/shopify/route.ts into integrations/shopify/webhooks.ts as
 computeShopifyHmac(body: string, secret: string): Promise<string> plus
 isValidShopifyHmac(body, hmac, secret). The route keeps its switch and its
-revalidateTag calls; response bodies and status codes must be byte-identical. Do not
-touch revalidate() in lib/shopify/index.ts.
+revalidateTag calls; response bodies and status codes must be byte-identical.
 ```
 
-**Tests:** T-09. **Verify:** `cache-parity check` shows invalidation counts unchanged (18 sites). **Rollback:** revert.
+**Tests:** T-09. **Verify:** `cache-parity check` shows invalidation counts unchanged (16 sites). **Rollback:** revert.
 
 ### Step 2.7 Move ImageKit
 
@@ -970,9 +968,8 @@ getOverridesForHandles UNCACHED. Update existing test import lines only.
    - `getAdminProductCatalog`: cached (products, days); calls `fetchAdminProductPages()` inside a try/catch **inside** the cached function; `failed`/`truncated` semantics unchanged.
    - `readProductForPage`: **not** cached; try/catch around `getProduct` returning `{status:"ok"|"failed"}`.
    - `getCollection`, `getCollections`, `getMenu`: cached (collections, days) with no overrides.
-2. `lib/shopify/index.ts` becomes a re-export layer for these names (temporary), then in step 3.5 importers move and the layer shrinks to cart + `revalidate` (removed in Phase 4).
-3. Move `revalidate(req)` verbatim from the facade into `modules/catalog/catalog-cache.service.ts` (same exported name) and point `app/[locale]/api/revalidate/route.ts` at it. Keep both quirks: a bad secret answers HTTP 200 with `{status: 401}` in the body, and product topics revalidate **only** `TAGS.products` (F-13). The other endpoint (`/api/webhooks/shopify`) keeps its own switch.
-4. Add `catalog-admin.service.ts`: identically-named functions delegating to the data files: `listHeroItems`, `getHeroSettings`, `listNewlyReleasedItems`, `listShopNowItems`, `listOverridesForHandles`, `getOverrideByHandle`, `saveProductOverride`, `deleteProductOverride`, `saveNewlyReleasedItems`, `saveShopNowItems`, `saveHeroConfig` plus the input/record types.
+2. `lib/shopify/index.ts` becomes a re-export layer for these names (temporary), then in step 3.5 importers move and the layer shrinks to cart (removed in Phase 4).
+3. Add `catalog-admin.service.ts`: identically-named functions delegating to the data files: `listHeroItems`, `getHeroSettings`, `listNewlyReleasedItems`, `listShopNowItems`, `listOverridesForHandles`, `getOverrideByHandle`, `saveProductOverride`, `deleteProductOverride`, `saveNewlyReleasedItems`, `saveShopNowItems`, `saveHeroConfig` plus the input/record types.
 
 **Prompt**
 ```
@@ -989,7 +986,7 @@ delegating functions. Convert one function per commit; after each run
 
 **Tests:** cache-parity per function; T-11 already covers `withOverrides`. A composition test for `getProduct` is not possible under `tsx` (cache directive is compile-time), so **manual M-05, M-16** and the snapshot `/products/<handle>` before/after are the evidence.
 
-**Verify:** `cache-parity check` identical (14 fns, 18 sites). **Rollback:** per-function revert.
+**Verify:** `cache-parity check` identical (15 fns, 16 sites). **Rollback:** per-function revert.
 
 ### Step 3.5 Move feeds and update every importer
 
@@ -1029,7 +1026,7 @@ where one old import now maps to two.
 - [ ] DoD-3.1 `verify-phase.sh 3 <base>` passes.
 - [ ] DoD-3.2 `grep -rn 'lib/catalog' app components lib modules scripts` prints nothing.
 - [ ] DoD-3.3 `git grep -nE 'from "lib/shopify"' -- app components modules` lists only cart-related importers (Phase 4 removes them).
-- [ ] DoD-3.4 Cache parity identical; `lib/shopify/index.ts` exports only the cart functions (and temporary re-exports); `revalidate` lives in `catalog-cache.service.ts`.
+- [ ] DoD-3.4 Cache parity identical; `lib/shopify/index.ts` exports only the cart functions (and temporary re-exports).
 - [ ] DoD-3.5 T-11 committed and green; the four existing catalog tests green with import-only edits.
 - [ ] DoD-3.6 `pnpm build` passes; snapshot compare identical (you).
 - [ ] DoD-3.7 Manual: M-01, M-04, M-05, M-16, M-18, M-19, M-20, M-28, M-29 (you).
@@ -1239,7 +1236,7 @@ Skip this step if you want zero new code paths in the refactor. It only adds cap
 **Before you start:** `git grep -nE 'from "lib/shopify"' -- app components lib modules scripts` shows only importers whose symbols now live elsewhere.
 
 **Actions**
-1. Move any remaining facade symbol to its owner (cart functions are in `cart.service.ts`; catalog and content in Phase 3; `revalidate` in `catalog-cache.service.ts` since Phase 3).
+1. Move any remaining facade symbol to its owner (cart functions are in `cart.service.ts`; catalog and content in Phase 3).
 2. Update remaining importers; `git rm lib/shopify/index.ts`.
 3. Remove the facade from the `lib-is-a-kernel` legacy list later (Phase 6 does the final tidy).
 
@@ -1427,7 +1424,7 @@ refactor/api/admin-actions.exports.txt with the grep in the roadmap.
 **Actions**
 1. Create `admin-action.types.ts` with the three types verbatim.
 2. For each action file: start with `"use server"`, import what the moved bodies need, paste the function bodies **verbatim**. Cross-module calls go through public surfaces: `catalog-admin.service` (`saveProductOverride`, `deleteProductOverride`, `saveNewlyReleasedItems`, `saveShopNowItems`, `saveHeroConfig`, `listHeroItems`), `products.service` (`getProduct`), `domain/hero` (`HERO_MIN_SECONDS`, `HERO_MAX_SECONDS`, `isAllowedHeroUrl`), `media-probe`.
-3. `revalidateTag` / `updateTag` calls stay in the action bodies unmoved (18-site parity, I-4). Do not centralise them yet.
+3. `revalidateTag` / `updateTag` calls stay in the action bodies unmoved (16-site parity, I-4). Do not centralise them yet.
 4. Update the 7 component importers (import lines only; where one old import maps to two files, split the import):
 
 | Component | Symbols |
@@ -1682,7 +1679,7 @@ Delivered as `refactor-kit.zip`; unzip at the repo root to get `refactor/`. Ever
 | `scripts/run-tests.mjs` | Runs the Vitest suite (every `*.test.ts(x)`); exit 1 if any test fails. | Wired as `pnpm test:all`. Optional filter, passed to Vitest. |
 | `scripts/ui-guard.mjs <base>` | Enforces I-1. For every UI file changed since `<base>`, compares the TypeScript AST **with import declarations removed**. Non-TS files (CSS, JSON, SVG, locales) must be byte-identical. Allowlist: `refactor/ui-guard.allowlist.json`. | Verified: import-path change passes, `className` change fails. Asset imports (`.png`, `.svg`, `.css`, `.json`) are compared, not stripped. `components/cart/actions.ts` is excluded because it moves. |
 | `scripts/verify-ledger.mjs --phase N --base <base>` | Proves nothing is missed. (1) Every base source file under `lib/`, `config/`, route handlers, `proxy.ts`, `drizzle.config.ts` and `components/cart/actions.ts` has a ledger entry. (2) Each entry is in the right state for phase N. (3) No unaccounted file under `lib/` or `config/`. | Ledger is `move-ledger.json` (80 entries covering 88 files). Kinds: `move`, `extract`, `new`, `delete`, `stay`. Add entries when the base gains files. |
-| `scripts/cache-parity.mjs snapshot\|check` | Extracts every function whose first statement is a `"use cache"` directive with its `cacheTag`/`cacheLife`, plus every `revalidateTag`/`updateTag`. Compares by function name to `cache-parity.baseline.json`. | Baseline: 14 cached functions, 18 invalidation sites. |
+| `scripts/cache-parity.mjs snapshot\|check` | Extracts every function whose first statement is a `"use cache"` directive with its `cacheTag`/`cacheLife`, plus every `revalidateTag`/`updateTag`. Compares by function name to `cache-parity.baseline.json`. | Baseline: 15 cached functions, 16 invalidation sites. |
 | `scripts/snapshot.mjs capture\|compare` | HTML regression without a browser (see step 0.5). | Verified offline on three routes; **unverified against live Shopify data**. |
 | `.dependency-cruiser.cjs` | Eleven architecture rules (step 1.1). | Verified with synthetic violations. |
 | `depcruise-known-violations.json` | The six UI cycles. | Baseline for `--ignore-known`. |
@@ -1898,7 +1895,7 @@ Legend: **EP** equivalence partitioning, **BVA** boundary values, **NEG** negati
 
 Checked by `cache-parity.mjs` by **function name**, so moving a function between files is fine but changing a directive, tag or life is not.
 
-### Cached functions (14)
+### Cached functions (15)
 
 | Function | Directive | Tags | Life | Today in | Final owner |
 |---|---|---|---|---|---|
@@ -1909,6 +1906,7 @@ Checked by `cache-parity.mjs` by **function name**, so moving a function between
 | `getConfiguratorProducts` | `use cache` | products | days | same | `products.service.ts` |
 | `getCollectionProducts` | `use cache` | collections, products | days | same | `products.service.ts` |
 | `getAdminProductCatalog` | `use cache` | products | days | same | `products.service.ts` |
+| `getProductSitemapEntries` | `use cache` | products | days | same | `products.service.ts` |
 | `getCollection` | `use cache` | collections | days | same | `collections.service.ts` |
 | `getCollections` | `use cache` | collections | days | same | `collections.service.ts` |
 | `getMenu` | `use cache` | collections | days | same | `modules/content/content.service.ts` |
@@ -1919,12 +1917,11 @@ Checked by `cache-parity.mjs` by **function name**, so moving a function between
 
 Deliberately **uncached**: `getOverridesForHandles`, `withOverrides`, `readProductForPage`, `getNewlyReleased`, `getShopNow`, `getHero`, `readNewlyReleasedItems`, `readShopNowItems`.
 
-### Invalidation sites (18)
+### Invalidation sites (16)
 
 | Site | Calls |
 |---|---|
 | `app/api/webhooks/shopify/route.ts` | product topics: `revalidateTag(TAGS.products,"seconds")` and `revalidateTag(TAGS.collections,"seconds")`; collection topics: `revalidateTag(TAGS.collections,"seconds")` (3 sites) |
-| `revalidate()` in `lib/shopify/index.ts` -> `catalog-cache.service.ts` | collection topics: collections; product topics: products only (2 sites) |
 | `lib/admin/actions.ts` -> `modules/admin/actions/*` | save override: products + collections; delete override: products + collections; `saveNewlyReleased`: newlyReleased; `saveShopNow`: shopNow; `saveHero`: hero (7 sites) |
 | `components/cart/actions.ts` -> `modules/cart/cart.actions.ts` | `updateTag(TAGS.cart)` x 6 |
 
@@ -2020,11 +2017,11 @@ File each as an issue (`/investigate-issue` can take it from there). The refacto
 |---|---|---|
 | H-1 | Group configurator bundles on the `/cart` page (F-14). Now a one-line call to `groupBundleLines`. | Changes the UI (I-1). |
 | H-2 | Enforce server-side bundle validation (turn shadow mode into blocking). | New behaviour; needs a decision on error copy. |
-| H-3 | Align the two webhook endpoints' topic mappings (F-13). | Changes cache invalidation behaviour. |
+| H-3 | ~~Align the two webhook endpoints' topic mappings (F-13).~~ Done: the query-secret endpoint was removed. | — |
 | H-4 | Remove dead code from `refactor/DEAD-CODE.md`. | Needs your approval per item. |
 | H-5 | Harden the `cartId` cookie (`httpOnly`, `secure`, `sameSite`, `maxAge`) (F-20). | Can break client code that reads it and changes checkout behaviour. |
 | H-6 | Timing-safe HMAC comparison in the webhook route. | Behavioural (security) change. |
-| H-7 | Move `revalidateTag` calls into the owning modules (centralise invalidation). | Would alter the 18-site parity baseline. |
+| H-7 | Move `revalidateTag` calls into the owning modules (centralise invalidation). | Would alter the 16-site parity baseline. |
 | H-8 | Share one connect-retry helper between `storefront.client.ts` and `lib/db/index.ts` (F-19). | Two behaviours, two risk surfaces. |
 | H-9 | Fix the engine oddities pinned in T-01 (OOS decks landing in `compatible`; griptape mislabel). | Changes what customers see. |
 | H-10 | Replace mock configurator metafields with real Shopify metafields (D-10). | Blocked on client product data. |

@@ -1,5 +1,14 @@
-import { HIDDEN_PRODUCT_TAG } from "lib/constants";
+import { HIDDEN_PRODUCT_TAG, TAGS } from "lib/constants";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+// "use cache" functions call cacheTag/cacheLife, which only work inside a
+// Next.js app with cacheComponents; record the calls instead
+const cache = vi.hoisted(() => ({ tag: vi.fn(), life: vi.fn() }));
+vi.mock("next/cache", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("next/cache")>()),
+  unstable_cacheTag: cache.tag,
+  unstable_cacheLife: cache.life,
+}));
 
 // lib/shopify reads its store settings when it loads, so import it fresh
 // after setting them
@@ -88,6 +97,14 @@ describe("getProductSitemapEntries", () => {
     expect((await getProductSitemapEntries()).map((e) => e.handle)).toEqual([
       "visible",
     ]);
+  });
+
+  it("is cached with the products, so product webhooks refresh it", async () => {
+    fakeShopify([[node("deck-1")]]);
+    const { getProductSitemapEntries } = await loadShopify();
+    await getProductSitemapEntries();
+    expect(cache.tag).toHaveBeenCalledWith(TAGS.products);
+    expect(cache.life).toHaveBeenCalledWith("days");
   });
 
   it("returns an empty list for an empty catalog", async () => {
