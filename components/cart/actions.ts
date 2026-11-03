@@ -138,7 +138,7 @@ export async function createSingleItemCartAction(selectedVariantId: string) {
     const cart = await createCart([
       { merchandiseId: selectedVariantId, quantity: 1 },
     ]);
-    return cart.id;
+    return cart.id ? { id: cart.id, checkoutUrl: cart.checkoutUrl } : null;
   } catch (e) {
     console.error("Error creating single item cart:", e);
     return null;

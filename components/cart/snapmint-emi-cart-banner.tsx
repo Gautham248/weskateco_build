@@ -1,6 +1,7 @@
 "use client";
 
 import snapmintLogo from "components/icons/snapmint_logo.svg";
+import { useGoKwikAvailable } from "lib/gokwik/region";
 
 interface SnapmintEmiCartBannerProps {
   /** Cart or product total price string (e.g. "15728.79") */
@@ -19,8 +20,12 @@ export function SnapmintEmiCartBanner({
   totalAmount,
   onBuyOnEmi,
 }: SnapmintEmiCartBannerProps) {
+  // Snapmint EMI runs through GoKwik, which is only offered in India
+  const gokwikAvailable = useGoKwikAvailable();
   const price = parseFloat(totalAmount);
   const monthlyEmi = Math.ceil(price / 3);
+
+  if (!gokwikAvailable) return null;
 
   return (
     <div

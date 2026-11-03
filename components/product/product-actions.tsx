@@ -9,6 +9,7 @@ import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { checkoutCart } from "lib/gokwik/checkout";
 
 export function ProductActions({
   product,
@@ -55,18 +56,14 @@ export function ProductActions({
     if (!selectedVariantId || !finalVariant || !finalVariant.availableForSale)
       return;
     startBuyNowTransition(async () => {
-      const singleCartId = await createSingleItemCartAction(selectedVariantId);
-      if (singleCartId) {
+      const singleCart = await createSingleItemCartAction(selectedVariantId);
+      if (singleCart) {
         trackBuyNow(product, finalVariant);
-        if (window.merchantInfo) {
-          window.merchantInfo.cart = { id: singleCartId };
-        }
-        if (typeof window.triggerGokwikCustomCheckout === "function") {
-          window.triggerGokwikCustomCheckout();
-        }
         if (onAddedToCart) {
           onAddedToCart();
         }
+        // GoKwik where it's offered and loaded, else Shopify's checkout
+        await checkoutCart(singleCart);
       }
     });
   };

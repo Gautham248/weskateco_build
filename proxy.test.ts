@@ -1,4 +1,5 @@
 import { ADMIN_SESSION_COOKIE } from "lib/constants";
+import { COUNTRY_COOKIE } from "lib/gokwik/country";
 import { NextRequest } from "next/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -10,9 +11,13 @@ async function loadProxy(storeDomain = "") {
   return (await import("./proxy")).proxy;
 }
 
-function request(path: string, { cookie }: { cookie?: string } = {}) {
+function request(
+  path: string,
+  { cookie, country }: { cookie?: string; country?: string } = {},
+) {
   const headers = new Headers();
   if (cookie) headers.set("cookie", cookie);
+  if (country) headers.set("x-vercel-ip-country", country);
   return new NextRequest(new URL(path, "https://weskate.co"), { headers });
 }
 
@@ -126,5 +131,55 @@ describe("Shopify customer accounts", () => {
     expect(rewriteOf(proxy(request("/accounts-help")))).toBe(
       "https://weskate.co/en/accounts-help",
     );
+  });
+});
+
+describe("shopper country cookie", () => {
+  const countryCookie = (res: Response) =>
+    res.headers
+      .getSetCookie()
+      .find((cookie) => cookie.startsWith(`${COUNTRY_COOKIE}=`));
+
+  it("stores Vercel's country so the browser can choose a checkout", async () => {
+    const proxy = await loadProxy();
+    const cookie = countryCookie(proxy(request("/cart", { country: "us" })));
+    expect(cookie).toMatch(/^country=US;/);
+    expect(cookie).toMatch(/Path=\//i);
+    expect(cookie).toMatch(/Max-Age=86400/i);
+    expect(cookie).toMatch(/SameSite=lax/i);
+    // The browser reads it, so it can't be httpOnly
+    expect(cookie).not.toMatch(/HttpOnly/i);
+  });
+
+  it("doesn't rewrite the cookie when the country hasn't changed", async () => {
+    const proxy = await loadProxy();
+    const res = proxy(
+      request("/cart", { country: "IN", cookie: `${COUNTRY_COOKIE}=IN` }),
+    );
+    expect(countryCookie(res)).toBeUndefined();
+  });
+
+  it("updates the cookie when the shopper's country changes", async () => {
+    const proxy = await loadProxy();
+    const res = proxy(
+      request("/cart", { country: "IN", cookie: `${COUNTRY_COOKIE}=US` }),
+    );
+    expect(countryCookie(res)).toMatch(/^country=IN;/);
+  });
+
+  it("leaves the cookie alone without geolocation (local development)", async () => {
+    const proxy = await loadProxy();
+    expect(countryCookie(proxy(request("/cart")))).toBeUndefined();
+  });
+
+  it("keeps routing as before while setting the cookie", async () => {
+    const proxy = await loadProxy();
+    const rewritten = proxy(request("/store", { country: "US" }));
+    expect(rewriteOf(rewritten)).toBe("https://weskate.co/en/store");
+    expect(countryCookie(rewritten)).toBeDefined();
+
+    const redirected = proxy(request("/en/store", { country: "US" }));
+    expect(redirected.status).toBe(308);
+    expect(redirected.headers.get("location")).toBe("https://weskate.co/store");
   });
 });

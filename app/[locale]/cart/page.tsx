@@ -54,10 +54,15 @@ function CartPageContent() {
   const {
     isReady: gokwikReady,
     isError: gokwikError,
+    isCheckingOut,
     triggerCheckout,
   } = useGoKwikCheckout({
     cartId: cart?.id,
   });
+
+  // Wait for GoKwik while it loads; only fall back to Shopify's checkout once
+  // it has failed or isn't offered, so a quick click doesn't skip GoKwik
+  const checkoutLoading = !gokwikReady && !gokwikError;
 
   // Fire view_cart once, after the cart has loaded
   const viewCartTracked = useRef(false);
@@ -68,10 +73,12 @@ function CartPageContent() {
   }, [cart]);
 
   const handleCheckout = () => {
+    // The Snapmint banner's button isn't disabled while GoKwik loads
+    if (checkoutLoading) return;
     trackBeginCheckout(cart);
-    if (gokwikReady && !gokwikError) {
+    if (gokwikReady) {
       triggerCheckout();
-    } else if (cart?.checkoutUrl) {
+    } else if (gokwikError && cart?.checkoutUrl) {
       window.location.href = cart.checkoutUrl;
     }
   };
@@ -425,10 +432,15 @@ function CartPageContent() {
                   <button
                     type="button"
                     onClick={handleCheckout}
-                    className="w-full mt-6 h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors"
+                    disabled={checkoutLoading || isCheckingOut}
+                    className="w-full mt-6 h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{ fontFamily: "Archivo, sans-serif" }}
                   >
-                    Proceed to Checkout
+                    {isCheckingOut
+                      ? t("cart.processing")
+                      : checkoutLoading
+                        ? t("cart.loading_checkout")
+                        : t("cart.proceed_to_checkout")}
                   </button>
 
                   {/* Secure payments indicator badge */}

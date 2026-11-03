@@ -1,6 +1,7 @@
 "use client";
 
 import snapmintLogo from "components/icons/snapmint_logo.svg";
+import { useGoKwikAvailable } from "lib/gokwik/region";
 
 interface SnapmintEmiBadgeProps {
   /** Product price string from Shopify (e.g. "10283.79") */
@@ -19,6 +20,8 @@ export function SnapmintEmiBadge({
   priceAmount,
   onClick,
 }: SnapmintEmiBadgeProps) {
+  // Snapmint EMI runs through GoKwik, which is only offered in India
+  const gokwikAvailable = useGoKwikAvailable();
   const price = parseFloat(priceAmount);
   const monthlyEmi = Math.ceil(price / 3);
 
@@ -38,6 +41,8 @@ export function SnapmintEmiBadge({
       window.triggerGokwikCustomCheckout();
     }
   };
+
+  if (!gokwikAvailable) return null;
 
   return (
     <div
