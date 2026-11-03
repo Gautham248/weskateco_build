@@ -1,7 +1,7 @@
 import type { Product } from "lib/shopify/types";
 
 // Builders for schema.org structured data (JSON-LD), which search engines use
-// for rich results such as product prices, availability and breadcrumbs.
+// for rich results such as product prices and availability.
 
 type JsonLd = Record<string, unknown>;
 
@@ -27,7 +27,7 @@ export function productJsonLd(product: Product, url: string): JsonLd {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.title,
-    description: product.description,
+    ...(product.description ? { description: product.description } : {}),
     url,
     ...(images.length ? { image: images } : {}),
     ...(product.vendor
@@ -45,21 +45,6 @@ export function productJsonLd(product: Product, url: string): JsonLd {
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
     },
-  };
-}
-
-export function breadcrumbJsonLd(
-  items: { name: string; url: string }[],
-): JsonLd {
-  return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: item.name,
-      item: item.url,
-    })),
   };
 }
 
