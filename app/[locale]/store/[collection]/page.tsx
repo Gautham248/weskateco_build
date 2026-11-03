@@ -1,10 +1,12 @@
 import { defaultSort, sorting } from "lib/constants";
 import { createTranslator } from "lib/i18n";
 import {
+  documentTitle,
   localeAlternates,
   openGraph,
   pageQuery,
   SITE_NAME,
+  socialTitle,
   summarize,
 } from "lib/seo/metadata";
 import { getCollection, getCollections, getProducts } from "lib/shopify";
@@ -29,22 +31,23 @@ export async function generateMetadata(props: {
   if (!collection) return notFound();
 
   const title = collection.seo?.title || collection.title;
-  const description = summarize(
+  // A merchant-written SEO description is used as written
+  const description =
     collection.seo?.description ||
-      collection.description ||
-      `Shop ${collection.title} at ${SITE_NAME}.`,
-  );
+    summarize(
+      collection.description || `Shop ${collection.title} at ${SITE_NAME}.`,
+    );
   const path = `/store/${collection.handle}`;
   const query = pageQuery(searchParams?.page);
 
   return {
-    title,
+    title: documentTitle(title),
     description,
     // Sort and filter params render the same collection, so they're dropped;
     // each page of results keeps its ?page=
     alternates: localeAlternates(path, params.locale, query),
     openGraph: openGraph(params.locale, path + query, {
-      title: `${title} | ${SITE_NAME}`,
+      title: socialTitle(title),
       description,
     }),
   };

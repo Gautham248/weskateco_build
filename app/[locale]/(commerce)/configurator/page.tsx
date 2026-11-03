@@ -5,7 +5,7 @@ import {
   localeAlternates,
   openGraph,
   siteShareImage,
-  SITE_NAME,
+  socialTitle,
 } from "lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +24,7 @@ export async function generateMetadata(props: {
     alternates: localeAlternates("/configurator", params.locale),
     openGraph: openGraph(params.locale, "/configurator", {
       images: siteShareImage(params.locale),
-      title: `${title} | ${SITE_NAME}`,
+      title: socialTitle(title),
       description,
     }),
   };

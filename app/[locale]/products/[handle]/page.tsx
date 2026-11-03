@@ -10,9 +10,11 @@ import { productReadState } from "lib/catalog/product-page";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 import { productJsonLd } from "lib/seo/json-ld";
 import {
+  documentTitle,
   localeAlternates,
   openGraph,
-  SITE_NAME,
+  siteShareImage,
+  socialTitle,
   summarize,
 } from "lib/seo/metadata";
 import { getProductRecommendations, readProductForPage } from "lib/shopify";
@@ -52,12 +54,13 @@ export async function generateMetadata(props: {
   const indexable = !product.tags.includes(HIDDEN_PRODUCT_TAG);
 
   const title = product.seo?.title || product.title;
-  const description = summarize(
-    product.seo?.description || product.description,
-  );
+  // A merchant-written SEO description is used as written; only the product
+  // description fallback is shortened
+  const description =
+    product.seo?.description || summarize(product.description);
 
   return {
-    title,
+    title: documentTitle(title),
     description,
     alternates: localeAlternates(`/products/${product.handle}`, params.locale),
     robots: {
@@ -69,9 +72,11 @@ export async function generateMetadata(props: {
       },
     },
     openGraph: openGraph(params.locale, `/products/${product.handle}`, {
-      title: `${title} | ${SITE_NAME}`,
+      title: socialTitle(title),
       description,
-      ...(url ? { images: [{ url, width, height, alt }] } : {}),
+      images: url
+        ? [{ url, width, height, alt }]
+        : siteShareImage(params.locale),
     }),
   };
 }
@@ -91,7 +96,6 @@ export default async function ProductPage(props: {
   const product = state.product;
 
   const t = createTranslator(params.locale);
-  const firstCollection = product.collections?.edges?.[0]?.node;
 
   const productUrl = `${baseUrl}${getLocalizedPath(`/products/${product.handle}`, params.locale)}`;
 
@@ -104,7 +108,10 @@ export default async function ProductPage(props: {
         <ViewItemTracker product={product} />
       </Suspense>
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 py-4">
-        {/* Breadcrumb */}
+        {/* Breadcrumb. If it's turned back on, add BreadcrumbList JSON-LD for
+            it too, and pick a visible category collection rather than the
+            first one (skip hidden-* handles). It needs
+            const firstCollection = product.collections?.edges?.[0]?.node; */}
         {/* <div className="mb-6 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
           <Link
             href={getLocalizedPath("/", params.locale)}
