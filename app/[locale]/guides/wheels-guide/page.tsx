@@ -18,7 +18,7 @@ import {
   WHEEL_HERO,
 } from "lib/wheel-guide/data";
 import { guideMetadata } from "lib/guides/metadata";
-import { withCanonical } from "lib/seo/canonical";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -26,7 +26,7 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withCanonical(
+export const generateMetadata = withPageMetadata(
   "/guides/wheels-guide",
   guideMetadata(
     "Wheel Guide",

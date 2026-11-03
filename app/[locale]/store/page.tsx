@@ -3,7 +3,7 @@ import { getProducts, getCollections } from "lib/shopify";
 import { createTranslator } from "lib/i18n";
 import { Suspense } from "react";
 import StoreCollectionClient from "./[collection]/store-collection-client";
-import { withCanonical } from "lib/seo/canonical";
+import { SITE_NAME, withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -11,9 +11,9 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withCanonical("/store", {
+export const generateMetadata = withPageMetadata("/store", {
   title: "Store",
-  description: "Browse products in the store.",
+  description: `Shop skateboards, surfskates, protective gear and apparel at ${SITE_NAME}.`,
 });
 
 export default async function StorePage(props: {

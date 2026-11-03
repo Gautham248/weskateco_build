@@ -20,7 +20,7 @@ import {
   FAQ_SECTION,
 } from "lib/deck-guide/data";
 import { guideMetadata } from "lib/guides/metadata";
-import { withCanonical } from "lib/seo/canonical";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -28,7 +28,7 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withCanonical(
+export const generateMetadata = withPageMetadata(
   "/guides/deck-guide",
   guideMetadata(
     "Deck Guide",

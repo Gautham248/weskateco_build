@@ -1,4 +1,5 @@
 import CategoryGrid from "components/home/category-grid";
+import { JsonLd } from "components/json-ld";
 import Footer from "components/layout/footer";
 import { Gallery } from "components/product/gallery";
 import ProductCard from "components/product/product-card";
@@ -7,8 +8,11 @@ import { ViewItemTracker } from "lib/analytics";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
 import { productReadState } from "lib/catalog/product-page";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import { breadcrumbJsonLd, productJsonLd } from "lib/seo/json-ld";
+import { openGraph, SITE_NAME } from "lib/seo/metadata";
 import { getProductRecommendations, readProductForPage } from "lib/shopify";
 import type { Image, Product } from "lib/shopify/types";
+import { baseUrl } from "lib/utils";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -42,9 +46,12 @@ export async function generateMetadata(props: {
   const { url, width, height, altText: alt } = product.featuredImage || {};
   const indexable = !product.tags.includes(HIDDEN_PRODUCT_TAG);
 
+  const title = product.seo?.title || product.title;
+  const description = product.seo?.description || product.description;
+
   return {
-    title: product.seo?.title || product.title,
-    description: product.seo?.description || product.description,
+    title,
+    description,
     alternates: {
       canonical: getLocalizedPath(`/products/${params.handle}`, params.locale),
     },
@@ -56,18 +63,11 @@ export async function generateMetadata(props: {
         follow: indexable,
       },
     },
-    openGraph: url
-      ? {
-          images: [
-            {
-              url,
-              width,
-              height,
-              alt,
-            },
-          ],
-        }
-      : null,
+    openGraph: openGraph(params.locale, `/products/${params.handle}`, {
+      title: `${title} | ${SITE_NAME}`,
+      description,
+      ...(url ? { images: [{ url, width, height, alt }] } : {}),
+    }),
   };
 }
 
@@ -85,33 +85,32 @@ export default async function ProductPage(props: {
 
   const product = state.product;
 
-  const productJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.title,
-    description: product.description,
-    image: product.featuredImage?.url,
-    offers: {
-      "@type": "AggregateOffer",
-      availability: product.availableForSale
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-      priceCurrency: product.priceRange.minVariantPrice.currencyCode,
-      highPrice: product.priceRange.maxVariantPrice.amount,
-      lowPrice: product.priceRange.minVariantPrice.amount,
-    },
-  };
-
   const t = createTranslator(params.locale);
   const firstCollection = product.collections?.edges?.[0]?.node;
 
+  const absoluteUrl = (path: string) =>
+    `${baseUrl}${getLocalizedPath(path, params.locale)}`;
+  const productUrl = absoluteUrl(`/products/${product.handle}`);
+  const breadcrumbs = [
+    { name: t("nav.home"), url: absoluteUrl("/") },
+    ...(firstCollection
+      ? [
+          {
+            name: firstCollection.title,
+            url: absoluteUrl(`/store/${firstCollection.handle}`),
+          },
+        ]
+      : []),
+    { name: product.title, url: productUrl },
+  ];
+
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(productJsonLd),
-        }}
+      <JsonLd
+        data={[
+          productJsonLd(product, productUrl),
+          breadcrumbJsonLd(breadcrumbs),
+        ]}
       />
       <Suspense fallback={null}>
         <ViewItemTracker product={product} />

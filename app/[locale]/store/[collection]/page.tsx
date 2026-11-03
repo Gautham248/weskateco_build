@@ -1,5 +1,6 @@
 import { defaultSort, sorting } from "lib/constants";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import { openGraph, SITE_NAME } from "lib/seo/metadata";
 import { getCollection, getCollections, getProducts } from "lib/shopify";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -19,16 +20,24 @@ export async function generateMetadata(props: {
 
   if (!collection) return notFound();
 
+  const title = collection.seo?.title || collection.title;
+  const description =
+    collection.seo?.description ||
+    collection.description ||
+    `Shop ${collection.title} at ${SITE_NAME}.`;
+  const path = `/store/${params.collection}`;
+
   return {
-    title: collection.seo?.title || collection.title,
-    description:
-      collection.seo?.description ||
-      collection.description ||
-      `${collection.title} products`,
+    title,
+    description,
     // Sort, filter and pagination params render the same collection — point them all here
     alternates: {
-      canonical: getLocalizedPath(`/store/${params.collection}`, params.locale),
+      canonical: getLocalizedPath(path, params.locale),
     },
+    openGraph: openGraph(params.locale, path, {
+      title: `${title} | ${SITE_NAME}`,
+      description,
+    }),
   };
 }
 

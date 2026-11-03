@@ -4,6 +4,7 @@ import accessoriesImg from "components/icons/accessories.png";
 import skateboardsImg from "components/icons/skateboards.jpg";
 import surfskatesImg from "components/icons/surfskates.jpg";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
@@ -150,10 +151,12 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                   transitionTimingFunction: "cubic-bezier(0.25, 1, 0.5, 1)",
                 }}
               >
-                <img
-                  src={category.image.src}
+                <Image
+                  src={category.image}
                   alt={category.name}
-                  className="w-full h-full object-cover pointer-events-none"
+                  fill
+                  sizes="68vw"
+                  className="object-cover pointer-events-none"
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-b from-blue-400/20 via-transparent to-black/80 flex flex-col justify-between p-6">
@@ -205,10 +208,13 @@ export default function CategoryGrid({ locale }: { locale: string }) {
               }}
             >
               <div className="relative w-full h-full bg-neutral-100">
-                <img
-                  src={category.image.src}
+                <Image
+                  src={category.image}
                   alt={category.name}
-                  className={`w-full h-full object-cover transition-transform ${isExpanded
+                  fill
+                  // The hovered card expands to about half the row
+                  sizes="55vw"
+                  className={`object-cover transition-transform ${isExpanded
                     ? category.imageExpandedClassName || "scale-100"
                     : category.imageClassName || "scale-100"
                     }`}

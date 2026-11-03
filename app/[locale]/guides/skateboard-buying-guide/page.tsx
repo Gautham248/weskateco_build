@@ -1,7 +1,7 @@
 import BoardFinderPage from "components/board-finder/board-finder-page";
 import Footer from "components/layout/footer";
 import { guideMetadata } from "lib/guides/metadata";
-import { withCanonical } from "lib/seo/canonical";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -9,7 +9,7 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withCanonical(
+export const generateMetadata = withPageMetadata(
   "/guides/skateboard-buying-guide",
   guideMetadata(
     "Skateboard Buying Guide",

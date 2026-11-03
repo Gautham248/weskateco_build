@@ -1,6 +1,7 @@
 import { getConfiguratorProducts } from "lib/shopify";
 import { ConfiguratorWizard } from "components/configurator/wizard";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import { openGraph, SITE_NAME } from "lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -9,13 +10,19 @@ export async function generateMetadata(props: {
 }) {
   const params = await props.params;
   const t = createTranslator(params.locale);
+  const title = t("configurator.title");
+  const description =
+    "Build your perfect skateboard setup with the WeSkate configurator.";
   return {
-    title: t("configurator.title"),
-    description:
-      "Build your perfect skateboard setup with the WeSkate configurator.",
+    title,
+    description,
     alternates: {
       canonical: getLocalizedPath("/configurator", params.locale),
     },
+    openGraph: openGraph(params.locale, "/configurator", {
+      title: `${title} | ${SITE_NAME}`,
+      description,
+    }),
   };
 }
 
