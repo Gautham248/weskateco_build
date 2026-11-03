@@ -3,7 +3,12 @@ import type { Metadata } from "next";
 import Prose from "components/prose";
 import { getPage } from "lib/shopify";
 import { notFound } from "next/navigation";
-import { localeAlternates, openGraph, SITE_NAME } from "lib/seo/metadata";
+import {
+  localeAlternates,
+  openGraph,
+  SITE_NAME,
+  summarize,
+} from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -20,7 +25,7 @@ export async function generateMetadata(props: {
   if (!page) return notFound();
 
   const title = page.seo?.title || page.title;
-  const description = page.seo?.description || page.bodySummary;
+  const description = summarize(page.seo?.description || page.bodySummary);
   const path = `/${page.handle}`;
 
   return {

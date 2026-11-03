@@ -147,6 +147,52 @@ test.describe("social and search metadata", () => {
     expect(await meta("twitter:card")).toBe("summary_large_image");
   });
 
+  test("shared links show an image that loads without a redirect", async ({
+    page,
+    request,
+  }) => {
+    // Next.js links collection images by their internal /en/... route; the
+    // /en redirect must not get in the way of link-preview crawlers
+    for (const path of [
+      "/",
+      "/about-us",
+      "/guides/deck-guide",
+      "/store/skateboards",
+    ]) {
+      await page.goto(path);
+      const image = await page
+        .locator('meta[property="og:image"]')
+        .first()
+        .getAttribute("content");
+      expect(image, `${path} should have og:image`).toBeTruthy();
+      const res = await request.get(
+        new URL(image!).pathname + new URL(image!).search,
+        {
+          maxRedirects: 0,
+        },
+      );
+      expect(res.status(), `${path} image ${image}`).toBe(200);
+      expect(res.headers()["content-type"]).toContain("image/");
+    }
+  });
+
+  test("descriptions are trimmed for search results and previews", async ({
+    page,
+  }) => {
+    await openFirstProduct(page);
+    for (const name of [
+      "description",
+      "og:description",
+      "twitter:description",
+    ]) {
+      const content = await page
+        .locator(`meta[name="${name}"], meta[property="${name}"]`)
+        .first()
+        .getAttribute("content");
+      expect(content?.length, name).toBeLessThanOrEqual(161);
+    }
+  });
+
   test("Hindi pages use the Hindi locale and URL", async ({ page }) => {
     await page.goto("/hi/store");
     const ogUrl = await page
@@ -168,18 +214,36 @@ test.describe("social and search metadata", () => {
       /noindex/,
     );
   });
+
+  test("the Hindi cart has a Hindi title and locale", async ({ page }) => {
+    await page.goto("/hi/cart");
+    await expect(page).toHaveTitle(/^आपकी कार्ट \|/);
+    await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute(
+      "content",
+      "hi_IN",
+    );
+  });
 });
 
 test.describe("structured data and server rendering", () => {
   test.skip(!hasShopify, SHOPIFY_SKIP_REASON);
 
-  test("homepage describes the organisation and website", async ({ page }) => {
+  test("homepage describes the organisation and website", async ({
+    page,
+    request,
+  }) => {
     await page.goto("/");
     const types = (await jsonLdItems(page)).map((item) => item["@type"]);
     expect(types).toEqual(expect.arrayContaining(["Organization", "WebSite"]));
+
+    // The logo is what Google shows for the brand; it must load
+    const organization = await jsonLdOfType(page, "Organization");
+    const logo = await request.get(new URL(organization.logo).pathname);
+    expect(logo.status()).toBe(200);
+    expect(logo.headers()["content-type"]).toContain("image/");
   });
 
-  test("product pages have brand, URL and a breadcrumb trail", async ({
+  test("product pages have brand and URL, and no hidden breadcrumb", async ({
     page,
   }) => {
     const handle = await openFirstProduct(page);
@@ -188,11 +252,10 @@ test.describe("structured data and server rendering", () => {
     expect(new URL(product.url).pathname).toBe(`/products/${handle}`);
     expect(product.offers.offerCount).toBeGreaterThan(0);
 
-    const breadcrumbs = await jsonLdOfType(page, "BreadcrumbList");
-    const trail = breadcrumbs.itemListElement;
-    expect(trail[0].position).toBe(1);
-    expect(new URL(trail[0].item).pathname).toBe("/");
-    expect(new URL(trail.at(-1).item).pathname).toBe(`/products/${handle}`);
+    // The visible breadcrumb is turned off, and structured data must match
+    // what's on the page
+    const types = (await jsonLdItems(page)).map((item) => item["@type"]);
+    expect(types).not.toContain("BreadcrumbList");
   });
 
   test("the server sends the page of products the URL asks for", async ({

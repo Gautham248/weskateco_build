@@ -4,7 +4,9 @@ import {
   openGraph,
   openGraphLocale,
   pageQuery,
+  siteShareImage,
   SITE_NAME,
+  summarize,
   withPageMetadata,
 } from "./metadata";
 
@@ -66,6 +68,7 @@ describe("withPageMetadata", () => {
         type: "website",
         locale: "en_IN",
         url: "/about-us",
+        images: ["/opengraph-image"],
         title: `About Us | ${SITE_NAME}`,
         description: "Who we are.",
       },
@@ -171,5 +174,58 @@ describe("withPageMetadata on paginated listings", () => {
       props("2"),
     );
     expect(metadata.alternates?.canonical).toBe("/about-us");
+  });
+});
+
+describe("siteShareImage", () => {
+  it("is the locale's site image route", () => {
+    expect(siteShareImage("en")).toEqual(["/opengraph-image"]);
+    expect(siteShareImage("hi")).toEqual(["/hi/opengraph-image"]);
+  });
+
+  it("is what fixed-metadata pages share with, unless they set their own", async () => {
+    const params = { params: Promise.resolve({ locale: "hi" }) };
+    expect(
+      (await withPageMetadata("/contact", { title: "Contact" })(params))
+        .openGraph,
+    ).toMatchObject({ images: ["/hi/opengraph-image"] });
+    expect(
+      (
+        await withPageMetadata("/contact", {
+          title: "Contact",
+          openGraph: { images: ["/contact.png"] },
+        })(params)
+      ).openGraph,
+    ).toMatchObject({ images: ["/contact.png"] });
+  });
+
+  it("isn't added by openGraph() itself, so pages with an image file keep it", () => {
+    expect(openGraph("en", "/store/decks")).not.toHaveProperty("images");
+  });
+});
+
+describe("summarize", () => {
+  it("leaves short text alone, tidying whitespace", () => {
+    expect(summarize("  A deck.\n\nFor   parks. ")).toBe("A deck. For parks.");
+  });
+
+  it("ends at a sentence when one fits", () => {
+    const text = `${"Seven plies of maple. ".repeat(5)}And more after that point.`;
+    const summary = summarize(text, 100);
+    expect(summary.length).toBeLessThanOrEqual(100);
+    expect(summary.endsWith("maple.")).toBe(true);
+  });
+
+  it("otherwise ends at a word, with an ellipsis", () => {
+    const text = "word ".repeat(60);
+    const summary = summarize(text, 50);
+    expect(summary.length).toBeLessThanOrEqual(50);
+    expect(summary).toMatch(/word…$/);
+  });
+
+  it("doesn't leave dangling punctuation before the ellipsis", () => {
+    expect(summarize(`${"a".repeat(30)}, ${"b".repeat(40)}`, 40)).toBe(
+      `${"a".repeat(30)}…`,
+    );
   });
 });

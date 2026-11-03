@@ -63,12 +63,17 @@ export function breadcrumbJsonLd(
   };
 }
 
-export function organizationJsonLd(name: string, url: string): JsonLd {
+export function organizationJsonLd(
+  name: string,
+  url: string,
+  logo?: string,
+): JsonLd {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     name,
     url,
+    ...(logo ? { logo } : {}),
   };
 }
 

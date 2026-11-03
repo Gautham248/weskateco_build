@@ -56,6 +56,27 @@ describe("locale routing", () => {
     expect(res.headers.get("location")).toBe(location);
   });
 
+  it.each([
+    "/en/opengraph-image",
+    "/en/store/skateboards/opengraph-image",
+    "/en/twitter-image",
+    "/en/opengraph-image-1a2b",
+  ])(
+    "serves the social image %s without redirecting (Next.js links it there)",
+    async (path) => {
+      const proxy = await loadProxy();
+      const res = proxy(request(path));
+      expect(res.status).toBe(200);
+      expect(res.headers.get("location")).toBeNull();
+    },
+  );
+
+  it("still redirects pages whose names merely contain opengraph-image", async () => {
+    const proxy = await loadProxy();
+    const res = proxy(request("/en/opengraph-image/extra"));
+    expect(res.status).toBe(308);
+  });
+
   it.each(["/api/contact/submit", "/studio", "/robots.txt", "/sitemap.xml"])(
     "passes %s through untouched",
     async (path) => {
