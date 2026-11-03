@@ -91,7 +91,9 @@ export default async function ProductPage(props: {
           __html: JSON.stringify(productJsonLd),
         }}
       />
-      <ViewItemTracker product={product} />
+      <Suspense fallback={null}>
+        <ViewItemTracker product={product} />
+      </Suspense>
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 py-4">
         {/* Breadcrumb */}
         {/* <div className="mb-6 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">

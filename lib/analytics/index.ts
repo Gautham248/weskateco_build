@@ -2,7 +2,9 @@ export {
   trackAddToCart,
   trackBeginCheckout,
   trackBuyNow,
+  trackConfiguratorAddToCart,
   trackEvent,
+  trackRemoveFromCart,
   trackSearch,
   trackViewCart,
 } from "./events";

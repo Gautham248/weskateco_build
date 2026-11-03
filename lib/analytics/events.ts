@@ -1,3 +1,4 @@
+import type { ConfiguratorItem } from "lib/configurator/types";
 import type {
   Cart,
   CartItem,
@@ -68,14 +69,18 @@ export function trackEvent(name: string, params: Record<string, unknown> = {}) {
   sendGtag(name, params);
 }
 
-// "gid://shopify/ProductVariant/123" -> "123"
-function shopifyId(gid: string): string {
-  return gid.split("/").pop() || gid;
+// "gid://shopify/ProductVariant/123" -> "123" (numeric IDs pass through)
+export function shopifyId(gid: string | number): string {
+  const id = String(gid);
+  return id.split("/").pop() || id;
 }
 
 // Same item ID format the Shopify Google channel used (target country "ZZ"),
 // so Merchant Center / dynamic remarketing keep matching products.
-function googleItemId(productGid: string, variantGid: string): string {
+export function googleItemId(
+  productGid: string | number,
+  variantGid: string | number,
+): string {
   return `shopify_ZZ_${shopifyId(productGid)}_${shopifyId(variantGid)}`;
 }
 
@@ -116,8 +121,10 @@ export function trackPageView() {
   sendGtag("page_view", {}, { ga: false });
 }
 
-export function trackViewItem(product: Product) {
-  const variant = product.variants[0];
+export function trackViewItem(
+  product: Product,
+  variant: ProductVariant | undefined = product.variants[0],
+) {
   if (!variant) return;
   const value = Number(variant.price.amount);
   const currency = variant.price.currencyCode;
@@ -147,6 +154,41 @@ export function trackAddToCart(product: Product, variant: ProductVariant) {
     content_ids: [shopifyId(variant.id)],
     content_type: "product",
     content_name: product.title,
+    currency,
+    value,
+  });
+}
+
+export function trackRemoveFromCart(line: CartItem, quantity: number) {
+  const item = { ...itemFromCartLine(line), quantity };
+  sendGtag("remove_from_cart", {
+    currency: line.cost.totalAmount.currencyCode,
+    value: (item.price ?? 0) * quantity,
+    items: [item],
+  });
+}
+
+/** The configurator adds a whole build in one server action, outside useCart. */
+export function trackConfiguratorAddToCart(items: ConfiguratorItem[]) {
+  if (items.length === 0) return;
+  const currency = items[0]!.price.currencyCode;
+  const value = items.reduce((sum, item) => sum + Number(item.price.amount), 0);
+  sendGtag("add_to_cart", {
+    currency,
+    value,
+    items: items.map((item) => ({
+      item_id: googleItemId(item.productId, item.variantId),
+      item_name: item.productTitle,
+      item_brand: item.brand,
+      item_variant: item.variantTitle,
+      price: Number(item.price.amount),
+      quantity: 1,
+      google_business_vertical: "retail",
+    })),
+  });
+  sendFbq("AddToCart", {
+    content_ids: items.map((item) => shopifyId(item.variantId)),
+    content_type: "product",
     currency,
     value,
   });
