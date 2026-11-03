@@ -1,10 +1,6 @@
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import {
-  trackPurchase,
-  type ShopifyOrderWebhook,
-} from "lib/analytics/server-purchase";
 import { TAGS } from "lib/constants";
 
 // Shopify sends webhooks as POST requests with an HMAC signature
@@ -37,16 +33,6 @@ export async function POST(req: NextRequest) {
   if (computedHmac !== hmac) {
     console.error("Invalid webhook signature");
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  if (topic === "orders/create") {
-    // Always 200: a Shopify retry would only resend the same purchase.
-    try {
-      await trackPurchase(JSON.parse(body) as ShopifyOrderWebhook);
-    } catch (e) {
-      console.error("[analytics] invalid orders/create payload:", e);
-    }
-    return NextResponse.json({ message: "Tracked", topic });
   }
 
   // Revalidate based on the webhook topic

@@ -1,6 +1,5 @@
 "use server";
 
-import { attributionFromCookies } from "lib/analytics/attribution";
 import { TAGS } from "lib/constants";
 import {
   addToCart,
@@ -8,7 +7,6 @@ import {
   getCart,
   removeFromCart,
   updateCart,
-  updateCartAttributes,
 } from "lib/shopify";
 import { updateTag } from "next/cache";
 import { cookies } from "next/headers";
@@ -114,28 +112,7 @@ export async function updateItemQuantity(
   }
 }
 
-/**
- * Copies the visitor's GA4 / Google Ads / Meta cookies onto the cart so the
- * orders/create webhook can attribute the purchase. Never throws: tracking
- * must not block checkout.
- */
-export async function syncTrackingAttributes() {
-  const cookieStore = await cookies();
-  const cartId = cookieStore.get("cartId")?.value;
-  if (!cartId) return;
-
-  const attributes = attributionFromCookies(cookieStore);
-  if (attributes.length === 0) return;
-
-  try {
-    await updateCartAttributes(cartId, attributes);
-  } catch (e) {
-    console.error("Error saving tracking attributes to cart:", e);
-  }
-}
-
 export async function redirectToCheckout() {
-  await syncTrackingAttributes();
   let cart = await getCart();
   redirect(cart!.checkoutUrl);
 }
@@ -192,7 +169,6 @@ export async function buyNowAction(selectedVariantId: string | undefined) {
     return "Error adding item to cart";
   }
 
-  await syncTrackingAttributes();
   const cart = await getCart();
   if (cart?.checkoutUrl) {
     redirect(cart.checkoutUrl);

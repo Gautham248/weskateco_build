@@ -17,9 +17,8 @@ import {
   createCartMutation,
   editCartItemsMutation,
   removeFromCartMutation,
-  updateCartAttributesMutation,
 } from "./mutations/cart";
-import { getCartAttributesQuery, getCartQuery } from "./queries/cart";
+import { getCartQuery } from "./queries/cart";
 import {
   getCollectionProductsQuery,
   getCollectionQuery,
@@ -41,10 +40,8 @@ import {
   Menu,
   Page,
   Product,
-  CartAttribute,
   ShopifyAddToCartOperation,
   ShopifyCart,
-  ShopifyCartAttributesOperation,
   ShopifyCartOperation,
   ShopifyCollection,
   ShopifyCollectionOperation,
@@ -59,7 +56,6 @@ import {
   ShopifyProductRecommendationsOperation,
   ShopifyProductsOperation,
   ShopifyRemoveFromCartOperation,
-  ShopifyUpdateCartAttributesOperation,
   ShopifyUpdateCartOperation,
 } from "./types";
 
@@ -275,33 +271,6 @@ export async function updateCart(
   });
 
   return reshapeCart(res.body.data.cartLinesUpdate.cart);
-}
-
-/**
- * Merges attributes into the cart's existing ones (cartAttributesUpdate
- * replaces the whole set). Skips the write when nothing changed.
- */
-export async function updateCartAttributes(
-  cartId: string,
-  attributes: CartAttribute[],
-): Promise<void> {
-  const res = await shopifyFetch<ShopifyCartAttributesOperation>({
-    query: getCartAttributesQuery,
-    variables: { cartId },
-  });
-  const existing = res.body.data.cart?.attributes ?? [];
-  const merged = new Map(existing.map((a) => [a.key, a.value]));
-  const changed = attributes.some((a) => merged.get(a.key) !== a.value);
-  if (!changed) return;
-  for (const a of attributes) merged.set(a.key, a.value);
-
-  await shopifyFetch<ShopifyUpdateCartAttributesOperation>({
-    query: updateCartAttributesMutation,
-    variables: {
-      cartId,
-      attributes: [...merged].map(([key, value]) => ({ key, value })),
-    },
-  });
 }
 
 export async function getCart(): Promise<Cart | undefined> {

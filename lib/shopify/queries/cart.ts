@@ -8,14 +8,3 @@ export const getCartQuery = /* GraphQL */ `
   }
   ${cartFragment}
 `;
-
-export const getCartAttributesQuery = /* GraphQL */ `
-  query getCartAttributes($cartId: ID!) {
-    cart(id: $cartId) {
-      attributes {
-        key
-        value
-      }
-    }
-  }
-`;

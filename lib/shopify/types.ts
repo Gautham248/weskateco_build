@@ -285,15 +285,3 @@ export type ShopifyProductsOperation = {
     sortKey?: string;
   };
 };
-
-export type CartAttribute = { key: string; value: string };
-
-export type ShopifyCartAttributesOperation = {
-  data: { cart: { attributes: CartAttribute[] } | null };
-  variables: { cartId: string };
-};
-
-export type ShopifyUpdateCartAttributesOperation = {
-  data: { cartAttributesUpdate: { cart: { id: string } } };
-  variables: { cartId: string; attributes: CartAttribute[] };
-};

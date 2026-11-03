@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  removeItem,
-  syncTrackingAttributes,
-  updateItemQuantity,
-} from "components/cart/actions";
+import { removeItem, updateItemQuantity } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
 import secure from "components/icons/secure.svg";
@@ -67,12 +63,10 @@ function CartPageContent() {
     if (viewCartTracked.current || !cart) return;
     viewCartTracked.current = true;
     trackViewCart(cart);
-    void syncTrackingAttributes();
   }, [cart]);
 
   const handleCheckout = () => {
     trackBeginCheckout(cart);
-    void syncTrackingAttributes();
     if (gokwikReady && !gokwikError) {
       triggerCheckout();
     } else if (cart?.checkoutUrl) {

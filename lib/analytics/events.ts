@@ -69,18 +69,14 @@ export function trackEvent(name: string, params: Record<string, unknown> = {}) {
   sendGtag(name, params);
 }
 
-// "gid://shopify/ProductVariant/123" -> "123" (numeric IDs pass through)
-export function shopifyId(gid: string | number): string {
-  const id = String(gid);
-  return id.split("/").pop() || id;
+// "gid://shopify/ProductVariant/123" -> "123"
+function shopifyId(gid: string): string {
+  return gid.split("/").pop() || gid;
 }
 
 // Same item ID format the Shopify Google channel used (target country "ZZ"),
 // so Merchant Center / dynamic remarketing keep matching products.
-export function googleItemId(
-  productGid: string | number,
-  variantGid: string | number,
-): string {
+function googleItemId(productGid: string, variantGid: string): string {
   return `shopify_ZZ_${shopifyId(productGid)}_${shopifyId(variantGid)}`;
 }
 

@@ -12,11 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
-import {
-  createCartAndSetCookie,
-  redirectToCheckout,
-  syncTrackingAttributes,
-} from "./actions";
+import { createCartAndSetCookie, redirectToCheckout } from "./actions";
 import { useCart } from "./cart-context";
 import { trackBeginCheckout, trackViewCart } from "lib/analytics";
 import { useGoKwikCheckout } from "lib/gokwik";
@@ -52,12 +48,10 @@ export default function CartModal() {
     if (pathname.endsWith("/cart")) return;
     setIsOpen(true);
     trackViewCart(cart);
-    void syncTrackingAttributes();
   };
   const closeCart = () => setIsOpen(false);
   const handleCheckout = () => {
     trackBeginCheckout(cart);
-    void syncTrackingAttributes();
     triggerCheckout();
   };
 
