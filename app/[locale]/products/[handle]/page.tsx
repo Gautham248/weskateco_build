@@ -8,8 +8,13 @@ import { ViewItemTracker } from "lib/analytics";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
 import { productReadState } from "lib/catalog/product-page";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
-import { breadcrumbJsonLd, productJsonLd } from "lib/seo/json-ld";
-import { localeAlternates, openGraph, SITE_NAME } from "lib/seo/metadata";
+import { productJsonLd } from "lib/seo/json-ld";
+import {
+  localeAlternates,
+  openGraph,
+  SITE_NAME,
+  summarize,
+} from "lib/seo/metadata";
 import { getProductRecommendations, readProductForPage } from "lib/shopify";
 import type { Image, Product } from "lib/shopify/types";
 import { baseUrl } from "lib/utils";
@@ -47,7 +52,9 @@ export async function generateMetadata(props: {
   const indexable = !product.tags.includes(HIDDEN_PRODUCT_TAG);
 
   const title = product.seo?.title || product.title;
-  const description = product.seo?.description || product.description;
+  const description = summarize(
+    product.seo?.description || product.description,
+  );
 
   return {
     title,
@@ -86,30 +93,13 @@ export default async function ProductPage(props: {
   const t = createTranslator(params.locale);
   const firstCollection = product.collections?.edges?.[0]?.node;
 
-  const absoluteUrl = (path: string) =>
-    `${baseUrl}${getLocalizedPath(path, params.locale)}`;
-  const productUrl = absoluteUrl(`/products/${product.handle}`);
-  const breadcrumbs = [
-    { name: t("nav.home"), url: absoluteUrl("/") },
-    ...(firstCollection
-      ? [
-          {
-            name: firstCollection.title,
-            url: absoluteUrl(`/store/${firstCollection.handle}`),
-          },
-        ]
-      : []),
-    { name: product.title, url: productUrl },
-  ];
+  const productUrl = `${baseUrl}${getLocalizedPath(`/products/${product.handle}`, params.locale)}`;
 
   return (
     <>
-      <JsonLd
-        data={[
-          productJsonLd(product, productUrl),
-          breadcrumbJsonLd(breadcrumbs),
-        ]}
-      />
+      {/* No BreadcrumbList: structured data must match what's on the page,
+          and the visible breadcrumb is turned off below */}
+      <JsonLd data={productJsonLd(product, productUrl)} />
       <Suspense fallback={null}>
         <ViewItemTracker product={product} />
       </Suspense>

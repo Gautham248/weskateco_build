@@ -40,7 +40,11 @@ export default async function HomePage(props: {
     <>
       <JsonLd
         data={[
-          organizationJsonLd(SITE_NAME, baseUrl),
+          organizationJsonLd(
+            SITE_NAME,
+            baseUrl,
+            `${baseUrl}/icons/weskate-logo.png`,
+          ),
           websiteJsonLd(SITE_NAME, baseUrl),
         ]}
       />
