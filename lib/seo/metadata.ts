@@ -31,6 +31,37 @@ export function openGraph(
 }
 
 /**
+ * The site's share image (app/[locale]/opengraph-image.tsx), for pages with no
+ * image of their own. Only that segment gets it automatically; nested pages
+ * would otherwise share with no image. Don't use it where a segment has its
+ * own opengraph-image file: this would replace it.
+ */
+export function siteShareImage(locale: string): OpenGraph["images"] {
+  return [getLocalizedPath("/opengraph-image", locale)];
+}
+
+/**
+ * Shortens text for meta and social descriptions, which search results and
+ * link previews cut off at roughly 160 characters. Ends at a sentence when one
+ * fits, otherwise at a word, with an ellipsis.
+ */
+export function summarize(text: string, maxLength = 160): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= maxLength) return clean;
+
+  const cut = clean.slice(0, maxLength);
+  const sentenceEnd = Math.max(
+    cut.lastIndexOf(". "),
+    cut.lastIndexOf("! "),
+    cut.lastIndexOf("? "),
+  );
+  if (sentenceEnd >= maxLength / 2) return cut.slice(0, sentenceEnd + 1);
+
+  const wordEnd = cut.lastIndexOf(" ");
+  return `${cut.slice(0, wordEnd > 0 ? wordEnd : maxLength - 1).replace(/[,;:.\s]+$/, "")}…`;
+}
+
+/**
  * Canonical and hreflang links for a page served at `path` in every locale.
  * The canonical is the page's clean URL in its own locale (/about-us, or
  * /hi/about-us for Hindi), so query strings and the redirected /en/... form
@@ -102,6 +133,7 @@ export function withPageMetadata(
       ...metadata,
       alternates: localeAlternates(path, locale, query),
       openGraph: openGraph(locale, path + query, {
+        images: siteShareImage(locale),
         ...(title ? { title } : {}),
         ...(description ? { description } : {}),
         ...(metadata.openGraph ?? {}),

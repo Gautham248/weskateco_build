@@ -1,7 +1,12 @@
 import { getConfiguratorProducts } from "lib/shopify";
 import { ConfiguratorWizard } from "components/configurator/wizard";
 import { createTranslator } from "lib/i18n";
-import { localeAlternates, openGraph, SITE_NAME } from "lib/seo/metadata";
+import {
+  localeAlternates,
+  openGraph,
+  siteShareImage,
+  SITE_NAME,
+} from "lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +23,7 @@ export async function generateMetadata(props: {
     description,
     alternates: localeAlternates("/configurator", params.locale),
     openGraph: openGraph(params.locale, "/configurator", {
+      images: siteShareImage(params.locale),
       title: `${title} | ${SITE_NAME}`,
       description,
     }),

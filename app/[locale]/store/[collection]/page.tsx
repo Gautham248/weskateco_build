@@ -5,6 +5,7 @@ import {
   openGraph,
   pageQuery,
   SITE_NAME,
+  summarize,
 } from "lib/seo/metadata";
 import { getCollection, getCollections, getProducts } from "lib/shopify";
 import { Metadata } from "next";
@@ -28,10 +29,11 @@ export async function generateMetadata(props: {
   if (!collection) return notFound();
 
   const title = collection.seo?.title || collection.title;
-  const description =
+  const description = summarize(
     collection.seo?.description ||
-    collection.description ||
-    `Shop ${collection.title} at ${SITE_NAME}.`;
+      collection.description ||
+      `Shop ${collection.title} at ${SITE_NAME}.`,
+  );
   const path = `/store/${collection.handle}`;
   const query = pageQuery(searchParams?.page);
 

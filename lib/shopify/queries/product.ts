@@ -4,6 +4,15 @@ export const getProductQuery = /* GraphQL */ `
   query getProduct($handle: String!) {
     product(handle: $handle) {
       ...product
+      # Only the product page needs SKUs (for its structured data), so they
+      # aren't in the shared fragment that listings fetch
+      variants(first: 250) {
+        edges {
+          node {
+            sku
+          }
+        }
+      }
     }
   }
   ${productFragment}

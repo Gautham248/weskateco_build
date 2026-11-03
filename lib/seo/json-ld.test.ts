@@ -153,6 +153,16 @@ describe("site-wide data", () => {
       name: "WeSkate Co",
       url: "https://weskate.co",
     });
+    expect(
+      organizationJsonLd("WeSkate Co", "https://weskate.co"),
+    ).not.toHaveProperty("logo");
+    expect(
+      organizationJsonLd(
+        "WeSkate Co",
+        "https://weskate.co",
+        "https://weskate.co/icons/weskate-logo.png",
+      ),
+    ).toMatchObject({ logo: "https://weskate.co/icons/weskate-logo.png" });
     expect(websiteJsonLd("WeSkate Co", "https://weskate.co")).toMatchObject({
       "@type": "WebSite",
       name: "WeSkate Co",
