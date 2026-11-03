@@ -11,10 +11,14 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withCanonical("/store", {
-  title: "Store",
-  description: "Browse products in the store.",
-});
+export const generateMetadata = withCanonical(
+  "/store",
+  {
+    title: "Store",
+    description: "Browse products in the store.",
+  },
+  { paginated: true },
+);
 
 export default async function StorePage(props: {
   params: Promise<{ locale: string }>;

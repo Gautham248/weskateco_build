@@ -38,9 +38,16 @@ export default {
         destination: "/guides/wheels-guide",
         permanent: true,
       },
+      // English URLs have no /en prefix (the proxy redirects /en/...), so go
+      // straight to the final URL instead of chaining two redirects
       {
-        source: "/:locale(en|hi)/guides/wheel-guide",
-        destination: "/:locale/guides/wheels-guide",
+        source: "/en/guides/wheel-guide",
+        destination: "/guides/wheels-guide",
+        permanent: true,
+      },
+      {
+        source: "/hi/guides/wheel-guide",
+        destination: "/hi/guides/wheels-guide",
         permanent: true,
       },
       // Product pages moved from the singular /product/<handle> to /products/<handle>.
@@ -53,8 +60,13 @@ export default {
         permanent: true,
       },
       {
-        source: "/:locale(en|hi)/product/:handle",
-        destination: "/:locale/products/:handle",
+        source: "/en/product/:handle",
+        destination: "/products/:handle",
+        permanent: true,
+      },
+      {
+        source: "/hi/product/:handle",
+        destination: "/hi/products/:handle",
         permanent: true,
       },
     ];

@@ -13,6 +13,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { localeAlternates } from "lib/seo/canonical";
 
 export const dynamicParams = true;
 
@@ -45,9 +46,7 @@ export async function generateMetadata(props: {
   return {
     title: product.seo?.title || product.title,
     description: product.seo?.description || product.description,
-    alternates: {
-      canonical: getLocalizedPath(`/products/${params.handle}`, params.locale),
-    },
+    alternates: localeAlternates(`/products/${product.handle}`, params.locale),
     robots: {
       index: indexable,
       follow: indexable,
