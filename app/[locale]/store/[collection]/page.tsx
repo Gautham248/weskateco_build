@@ -1,6 +1,11 @@
 import { defaultSort, sorting } from "lib/constants";
-import { createTranslator, getLocalizedPath } from "lib/i18n";
-import { openGraph, SITE_NAME } from "lib/seo/metadata";
+import { createTranslator } from "lib/i18n";
+import {
+  localeAlternates,
+  openGraph,
+  pageQuery,
+  SITE_NAME,
+} from "lib/seo/metadata";
 import { getCollection, getCollections, getProducts } from "lib/shopify";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -14,8 +19,10 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: {
   params: Promise<{ locale: string; collection: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<Metadata> {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const collection = await getCollection(params.collection);
 
   if (!collection) return notFound();
@@ -25,16 +32,16 @@ export async function generateMetadata(props: {
     collection.seo?.description ||
     collection.description ||
     `Shop ${collection.title} at ${SITE_NAME}.`;
-  const path = `/store/${params.collection}`;
+  const path = `/store/${collection.handle}`;
+  const query = pageQuery(searchParams?.page);
 
   return {
     title,
     description,
-    // Sort, filter and pagination params render the same collection — point them all here
-    alternates: {
-      canonical: getLocalizedPath(path, params.locale),
-    },
-    openGraph: openGraph(params.locale, path, {
+    // Sort and filter params render the same collection, so they're dropped;
+    // each page of results keeps its ?page=
+    alternates: localeAlternates(path, params.locale, query),
+    openGraph: openGraph(params.locale, path + query, {
       title: `${title} | ${SITE_NAME}`,
       description,
     }),

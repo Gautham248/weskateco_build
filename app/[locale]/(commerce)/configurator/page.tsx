@@ -1,7 +1,7 @@
 import { getConfiguratorProducts } from "lib/shopify";
 import { ConfiguratorWizard } from "components/configurator/wizard";
-import { createTranslator, getLocalizedPath } from "lib/i18n";
-import { openGraph, SITE_NAME } from "lib/seo/metadata";
+import { createTranslator } from "lib/i18n";
+import { localeAlternates, openGraph, SITE_NAME } from "lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +16,7 @@ export async function generateMetadata(props: {
   return {
     title,
     description,
-    alternates: {
-      canonical: getLocalizedPath("/configurator", params.locale),
-    },
+    alternates: localeAlternates("/configurator", params.locale),
     openGraph: openGraph(params.locale, "/configurator", {
       title: `${title} | ${SITE_NAME}`,
       description,

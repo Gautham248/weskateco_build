@@ -1,7 +1,8 @@
-import { getLocalizedPath } from "lib/i18n";
+import { defaultLocale, getLocalizedPath, locales } from "lib/i18n";
 import type { Metadata } from "next";
 
 type OpenGraph = NonNullable<Metadata["openGraph"]>;
+type Alternates = NonNullable<Metadata["alternates"]>;
 
 export const SITE_NAME = process.env.SITE_NAME || "WeSkate Co";
 
@@ -29,6 +30,35 @@ export function openGraph(
   } as OpenGraph;
 }
 
+/**
+ * Canonical and hreflang links for a page served at `path` in every locale.
+ * The canonical is the page's clean URL in its own locale (/about-us, or
+ * /hi/about-us for Hindi), so query strings and the redirected /en/... form
+ * don't count as separate pages. `query` is kept on every link (e.g. ?page=2).
+ */
+export function localeAlternates(
+  path: string,
+  locale: string,
+  query = "",
+): Alternates {
+  const languages: Record<string, string> = {};
+  for (const each of locales) {
+    languages[each] = getLocalizedPath(path, each) + query;
+  }
+  languages["x-default"] = getLocalizedPath(path, defaultLocale) + query;
+  return { canonical: getLocalizedPath(path, locale) + query, languages };
+}
+
+/**
+ * `?page=N` for the pages of a listing after the first. Each page of a listing
+ * shows different products, so each is its own canonical URL; pointing them
+ * all at page one would hide the later products from search engines.
+ */
+export function pageQuery(page: unknown): string {
+  const number = Number(page);
+  return Number.isInteger(number) && number > 1 ? `?page=${number}` : "";
+}
+
 /** Open Graph title for a page title: Open Graph doesn't apply the layout's "%s | site name" template. */
 function openGraphTitle(title: Metadata["title"]): string | undefined {
   if (!title) return undefined;
@@ -39,7 +69,7 @@ function openGraphTitle(title: Metadata["title"]): string | undefined {
 
 /**
  * Turns a page's fixed metadata into a generateMetadata function that also
- * sets its canonical URL and Open Graph tags. Static `metadata` exports can't
+ * sets its canonical and hreflang links and Open Graph tags. Static `metadata` exports can't
  * see the locale, which both need:
  *
  *   export const generateMetadata = withPageMetadata("/about-us", {
@@ -47,16 +77,21 @@ function openGraphTitle(title: Metadata["title"]): string | undefined {
  *     description: "…",
  *   });
  *
- * The canonical is the page's clean URL (/about-us, or /hi/about-us for
- * Hindi), so query strings and the redirected /en/... form don't count as
- * separate pages. Open Graph reuses the title and description, and any
- * openGraph fields the page sets win.
+ * See localeAlternates for the canonical. Pass `{ paginated: true }` for
+ * listings that take a ?page= param. Open Graph reuses the title and
+ * description, and any openGraph fields the page sets win.
  */
-export function withPageMetadata(path: string, metadata: Metadata) {
+export function withPageMetadata(
+  path: string,
+  metadata: Metadata,
+  { paginated = false }: { paginated?: boolean } = {},
+) {
   return async function generateMetadata(props: {
     params: Promise<{ locale: string }>;
+    searchParams?: Promise<Record<string, string | string[] | undefined>>;
   }): Promise<Metadata> {
     const { locale } = await props.params;
+    const query = paginated ? pageQuery((await props.searchParams)?.page) : "";
     const title = openGraphTitle(metadata.title);
     const description =
       typeof metadata.description === "string"
@@ -65,8 +100,8 @@ export function withPageMetadata(path: string, metadata: Metadata) {
 
     return {
       ...metadata,
-      alternates: { canonical: getLocalizedPath(path, locale) },
-      openGraph: openGraph(locale, path, {
+      alternates: localeAlternates(path, locale, query),
+      openGraph: openGraph(locale, path + query, {
         ...(title ? { title } : {}),
         ...(description ? { description } : {}),
         ...(metadata.openGraph ?? {}),
