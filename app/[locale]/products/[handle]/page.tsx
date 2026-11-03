@@ -45,6 +45,9 @@ export async function generateMetadata(props: {
   return {
     title: product.seo?.title || product.title,
     description: product.seo?.description || product.description,
+    alternates: {
+      canonical: getLocalizedPath(`/products/${params.handle}`, params.locale),
+    },
     robots: {
       index: indexable,
       follow: indexable,

@@ -9,10 +9,8 @@ import { ensureStartsWith } from "lib/utils";
 import {
   unstable_cacheLife as cacheLife,
   unstable_cacheTag as cacheTag,
-  revalidateTag,
 } from "next/cache";
-import { cookies, headers } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import {
   addToCartMutation,
   createCartMutation,
@@ -31,6 +29,7 @@ import {
   getProductQuery,
   getProductRecommendationsQuery,
   getProductsPageQuery,
+  getProductSitemapEntriesQuery,
   getProductsQuery,
 } from "./queries/product";
 import { getConfiguratorProductsQuery } from "./queries/configurator";
@@ -56,6 +55,7 @@ import {
   ShopifyProduct,
   ShopifyProductOperation,
   ShopifyProductRecommendationsOperation,
+  ShopifyProductSitemapEntriesOperation,
   ShopifyProductsOperation,
   ShopifyProductsPageOperation,
   ShopifyProductSummary,
@@ -518,6 +518,35 @@ export async function getPage(handle: string): Promise<Page> {
   return res.body.data.pageByHandle;
 }
 
+/**
+ * Every visible product's handle and last update, for the sitemap. Skips the
+ * admin override layer (it never changes a product's URL or visibility) and
+ * pages through the whole catalog rather than stopping at 100 products.
+ */
+export async function getProductSitemapEntries(): Promise<
+  { handle: string; updatedAt: string }[]
+> {
+  const entries: { handle: string; updatedAt: string }[] = [];
+  let after: string | null = null;
+
+  do {
+    const res: { body: ShopifyProductSitemapEntriesOperation } =
+      await shopifyFetch<ShopifyProductSitemapEntriesOperation>({
+        query: getProductSitemapEntriesQuery,
+        variables: { after },
+      });
+    const { pageInfo, edges } = res.body.data.products;
+    for (const { node } of edges) {
+      if (!node.tags.includes(HIDDEN_PRODUCT_TAG)) {
+        entries.push({ handle: node.handle, updatedAt: node.updatedAt });
+      }
+    }
+    after = pageInfo.hasNextPage ? pageInfo.endCursor : null;
+  } while (after);
+
+  return entries;
+}
+
 export async function getPages(): Promise<Page[]> {
   const res = await shopifyFetch<ShopifyPagesOperation>({
     query: getPagesQuery,
@@ -751,44 +780,4 @@ export async function getAdminProductCatalog(): Promise<AdminProductCatalog> {
 
     return { items: [], truncated: false, failed: true };
   }
-}
-
-// This is called from `app/api/revalidate.ts` so providers can control revalidation logic.
-export async function revalidate(req: NextRequest): Promise<NextResponse> {
-  // We always need to respond with a 200 status code to Shopify,
-  // otherwise it will continue to retry the request.
-  const collectionWebhooks = [
-    "collections/create",
-    "collections/delete",
-    "collections/update",
-  ];
-  const productWebhooks = [
-    "products/create",
-    "products/delete",
-    "products/update",
-  ];
-  const topic = (await headers()).get("x-shopify-topic") || "unknown";
-  const secret = req.nextUrl.searchParams.get("secret");
-  const isCollectionUpdate = collectionWebhooks.includes(topic);
-  const isProductUpdate = productWebhooks.includes(topic);
-
-  if (!secret || secret !== process.env.SHOPIFY_REVALIDATION_SECRET) {
-    console.error("Invalid revalidation secret.");
-    return NextResponse.json({ status: 401 });
-  }
-
-  if (!isCollectionUpdate && !isProductUpdate) {
-    // We don't need to revalidate anything for any other topics.
-    return NextResponse.json({ status: 200 });
-  }
-
-  if (isCollectionUpdate) {
-    revalidateTag(TAGS.collections, "seconds");
-  }
-
-  if (isProductUpdate) {
-    revalidateTag(TAGS.products, "seconds");
-  }
-
-  return NextResponse.json({ status: 200, revalidated: true, now: Date.now() });
 }

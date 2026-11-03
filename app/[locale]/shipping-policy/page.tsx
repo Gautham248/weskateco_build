@@ -1,13 +1,13 @@
 import Prose from "components/prose";
 import Footer from "components/layout/footer";
 import Link from "next/link";
-import type { Metadata } from "next";
+import { withCanonical } from "lib/seo/canonical";
 
-export const metadata: Metadata = {
+export const generateMetadata = withCanonical("/shipping-policy", {
   title: "Shipping Policy",
   description:
     "Shipping Policy for WeskateCo describing coverage, processing times, estimated delivery times, shipping charges, and tracking.",
-};
+});
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "hi" }];

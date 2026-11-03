@@ -1,12 +1,12 @@
 import Prose from "components/prose";
 import Footer from "components/layout/footer";
-import type { Metadata } from "next";
+import { withCanonical } from "lib/seo/canonical";
 
-export const metadata: Metadata = {
+export const generateMetadata = withCanonical("/terms-of-service", {
   title: "Terms of Service",
   description:
     "Terms of Service for Weskate Store / Toucan Distribution Private Limited.",
-};
+});
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "hi" }];

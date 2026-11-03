@@ -20,6 +20,7 @@ import {
   TRUCK_HERO,
 } from "lib/truck-guide/data";
 import { guideMetadata } from "lib/guides/metadata";
+import { withCanonical } from "lib/seo/canonical";
 
 export const dynamicParams = true;
 
@@ -27,7 +28,10 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = guideMetadata("Truck Guide", TRUCK_HERO.lede);
+export const generateMetadata = withCanonical(
+  "/guides/truck-guide",
+  guideMetadata("Truck Guide", TRUCK_HERO.lede),
+);
 
 export default async function TruckGuidePage() {
   return (

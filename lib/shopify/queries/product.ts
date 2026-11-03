@@ -87,3 +87,22 @@ export const getProductRecommendationsQuery = /* GraphQL */ `
   }
   ${productFragment}
 `;
+
+// Just what the sitemap needs, paged so catalogs over one page are complete
+export const getProductSitemapEntriesQuery = /* GraphQL */ `
+  query getProductSitemapEntries($after: String) {
+    products(first: 250, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          handle
+          updatedAt
+          tags
+        }
+      }
+    }
+  }
+`;

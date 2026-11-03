@@ -327,3 +327,19 @@ export type ShopifyProductsOperation = {
     sortKey?: string;
   };
 };
+
+export type ProductSitemapEntry = {
+  handle: string;
+  updatedAt: string;
+  tags: string[];
+};
+
+export type ShopifyProductSitemapEntriesOperation = {
+  data: {
+    products: {
+      pageInfo: { hasNextPage: boolean; endCursor: string | null };
+      edges: { node: ProductSitemapEntry }[];
+    };
+  };
+  variables: { after?: string | null };
+};

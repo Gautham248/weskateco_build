@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Prose from "components/prose";
 import { getPage } from "lib/shopify";
 import { notFound } from "next/navigation";
+import { getLocalizedPath } from "lib/i18n";
 
 export const dynamicParams = true;
 
@@ -21,6 +22,9 @@ export async function generateMetadata(props: {
   return {
     title: page.seo?.title || page.title,
     description: page.seo?.description || page.bodySummary,
+    alternates: {
+      canonical: getLocalizedPath(`/${params.page}`, params.locale),
+    },
     openGraph: {
       publishedTime: page.createdAt,
       modifiedTime: page.updatedAt,

@@ -18,6 +18,7 @@ import {
   WHEEL_HERO,
 } from "lib/wheel-guide/data";
 import { guideMetadata } from "lib/guides/metadata";
+import { withCanonical } from "lib/seo/canonical";
 
 export const dynamicParams = true;
 
@@ -25,9 +26,12 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = guideMetadata(
-  "Wheel Guide",
-  "What the two numbers printed on a skateboard wheel mean, what the shape does that the numbers cannot tell you, and how to choose for Indian roads.",
+export const generateMetadata = withCanonical(
+  "/guides/wheels-guide",
+  guideMetadata(
+    "Wheel Guide",
+    "What the two numbers printed on a skateboard wheel mean, what the shape does that the numbers cannot tell you, and how to choose for Indian roads.",
+  ),
 );
 
 export default async function WheelsGuidePage() {

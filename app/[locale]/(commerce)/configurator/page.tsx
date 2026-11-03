@@ -1,6 +1,6 @@
 import { getConfiguratorProducts } from "lib/shopify";
 import { ConfiguratorWizard } from "components/configurator/wizard";
-import { createTranslator } from "lib/i18n";
+import { createTranslator, getLocalizedPath } from "lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +13,9 @@ export async function generateMetadata(props: {
     title: t("configurator.title"),
     description:
       "Build your perfect skateboard setup with the WeSkate configurator.",
+    alternates: {
+      canonical: getLocalizedPath("/configurator", params.locale),
+    },
   };
 }
 

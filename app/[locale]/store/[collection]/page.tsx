@@ -1,5 +1,5 @@
 import { defaultSort, sorting } from "lib/constants";
-import { createTranslator } from "lib/i18n";
+import { createTranslator, getLocalizedPath } from "lib/i18n";
 import { getCollection, getCollections, getProducts } from "lib/shopify";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -25,6 +25,10 @@ export async function generateMetadata(props: {
       collection.seo?.description ||
       collection.description ||
       `${collection.title} products`,
+    // Sort, filter and pagination params render the same collection — point them all here
+    alternates: {
+      canonical: getLocalizedPath(`/store/${params.collection}`, params.locale),
+    },
   };
 }
 
