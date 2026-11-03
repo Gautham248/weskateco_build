@@ -1,5 +1,7 @@
 ADMIN_PANEL_ONBOARDING.md
 app/[locale]/cart/page.tsx
+app/[locale]/guides/deck-guide/page.tsx
+app/[locale]/guides/truck-guide/page.tsx
 app/[locale]/store/[collection]/page.tsx
 app/[locale]/store/[collection]/store-collection-client.tsx
 app/[locale]/store/layout.tsx
@@ -57,6 +59,7 @@ lib/db/migrations/meta/0005_snapshot.json
 lib/db/migrations/meta/_journal.json
 lib/utils.ts
 pnpm-lock.yaml
+refactor/move-ledger.json
 scripts/deploy.js
 scripts/test-configurator.ts
 scripts/test-filters.ts
