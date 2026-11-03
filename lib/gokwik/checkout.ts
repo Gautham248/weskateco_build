@@ -1,3 +1,4 @@
+import { rememberCheckoutCart } from "./checkout-cart";
 import { isGoKwikCountry } from "./country";
 import { GOKWIK_LOADED_EVENT } from "./use-gokwik-checkout";
 
@@ -35,12 +36,15 @@ export async function checkoutCart(cart: {
   id: string;
   checkoutUrl: string;
 }): Promise<void> {
-  if (await waitForGoKwik()) {
-    if (window.merchantInfo) {
-      window.merchantInfo.cart = { id: cart.id };
+  if ((await waitForGoKwik()) && window.merchantInfo) {
+    window.merchantInfo.cart = { id: cart.id };
+    rememberCheckoutCart(cart.id);
+    try {
+      window.triggerGokwikCustomCheckout!();
+      return;
+    } catch (error) {
+      console.error("[GoKwik] Error triggering checkout:", error);
     }
-    window.triggerGokwikCustomCheckout!();
-    return;
   }
   window.location.assign(cart.checkoutUrl);
 }

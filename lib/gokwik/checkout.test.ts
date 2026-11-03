@@ -34,6 +34,8 @@ afterEach(() => {
   assign.mockReset();
   delete window.triggerGokwikCustomCheckout;
   document.cookie = "country=; path=/; max-age=0";
+  document.cookie = "checkoutCartId=; path=/; max-age=0";
+  vi.restoreAllMocks();
 });
 
 describe("waitForGoKwik", () => {
@@ -88,6 +90,35 @@ describe("checkoutCart", () => {
     await checkoutCart(CART);
     expect(assign).toHaveBeenCalledWith(CART.checkoutUrl);
     expect(window.merchantInfo?.cart).toBeUndefined();
+  });
+
+  it("remembers the cart it hands to GoKwik, for GoKwik's /cart/checkout fallback", async () => {
+    setCountry("IN");
+    window.triggerGokwikCustomCheckout = vi.fn();
+    await checkoutCart(CART);
+    expect(document.cookie).toContain(
+      `checkoutCartId=${encodeURIComponent(CART.id)}`,
+    );
+  });
+
+  it("falls back to Shopify's checkout when GoKwik's checkout throws", async () => {
+    setCountry("IN");
+    window.triggerGokwikCustomCheckout = vi.fn(() => {
+      throw new Error("GoKwik broke");
+    });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await checkoutCart(CART);
+    expect(assign).toHaveBeenCalledWith(CART.checkoutUrl);
+  });
+
+  it("falls back to Shopify's checkout when GoKwik's config is missing", async () => {
+    setCountry("IN");
+    const trigger = vi.fn();
+    window.triggerGokwikCustomCheckout = trigger;
+    window.merchantInfo = undefined;
+    await checkoutCart(CART);
+    expect(trigger).not.toHaveBeenCalled();
+    expect(assign).toHaveBeenCalledWith(CART.checkoutUrl);
   });
 
   it("falls back to Shopify's checkout when GoKwik never loads", async () => {
