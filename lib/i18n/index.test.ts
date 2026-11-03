@@ -64,6 +64,8 @@ describe("getLocalizedPath", () => {
     ["store", "en", "/store"],
     ["/", "en", "/"],
     ["/store", "hi", "/hi/store"],
+    // /hi/ would redirect to /hi
+    ["/", "hi", "/hi"],
     ["product/deck", "hi", "/hi/product/deck"],
   ])("maps %s in %s to %s", (path, locale, expected) => {
     expect(getLocalizedPath(path, locale)).toBe(expected);

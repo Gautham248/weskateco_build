@@ -11,10 +11,14 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withPageMetadata("/store", {
-  title: "Store",
-  description: `Shop skateboards, surfskates, protective gear and apparel at ${SITE_NAME}.`,
-});
+export const generateMetadata = withPageMetadata(
+  "/store",
+  {
+    title: "Store",
+    description: `Shop skateboards, surfskates, protective gear and apparel at ${SITE_NAME}.`,
+  },
+  { paginated: true },
+);
 
 export default async function StorePage(props: {
   params: Promise<{ locale: string }>;

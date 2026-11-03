@@ -56,6 +56,7 @@ import {
   ShopifyProductOperation,
   ShopifyProductRecommendationsOperation,
   ShopifyProductSitemapEntriesOperation,
+  ProductSitemapEntry,
   ShopifyProductsOperation,
   ShopifyProductsPageOperation,
   ShopifyProductSummary,
@@ -518,15 +519,19 @@ export async function getPage(handle: string): Promise<Page> {
   return res.body.data.pageByHandle;
 }
 
+type SitemapProduct = Pick<ProductSitemapEntry, "handle" | "updatedAt">;
+
 /**
  * Every visible product's handle and last update, for the sitemap. Skips the
  * admin override layer (it never changes a product's URL or visibility) and
  * pages through the whole catalog rather than stopping at 100 products.
  */
-export async function getProductSitemapEntries(): Promise<
-  { handle: string; updatedAt: string }[]
-> {
-  const entries: { handle: string; updatedAt: string }[] = [];
+export async function getProductSitemapEntries(): Promise<SitemapProduct[]> {
+  "use cache";
+  cacheTag(TAGS.products);
+  cacheLife("days");
+
+  const entries: SitemapProduct[] = [];
   let after: string | null = null;
 
   do {
