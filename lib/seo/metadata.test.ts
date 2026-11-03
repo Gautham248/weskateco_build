@@ -3,9 +3,11 @@ import {
   localeAlternates,
   openGraph,
   openGraphLocale,
+  documentTitle,
   pageQuery,
   siteShareImage,
   SITE_NAME,
+  socialTitle,
   summarize,
   withPageMetadata,
 } from "./metadata";
@@ -227,5 +229,53 @@ describe("summarize", () => {
     expect(summarize(`${"a".repeat(30)}, ${"b".repeat(40)}`, 40)).toBe(
       `${"a".repeat(30)}…`,
     );
+  });
+});
+
+describe("summarize edge cases", () => {
+  it("never splits an emoji at the cut", () => {
+    const summary = summarize(`${"w ".repeat(79)}🛹🛹 more words`, 160);
+    expect(summary).not.toMatch(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/);
+    expect(Array.from(summary).length).toBeLessThanOrEqual(160);
+  });
+
+  it("keeps a sentence that ends right at the limit", () => {
+    const sentence = `${"x".repeat(158)}.`;
+    expect(summarize(`${sentence} ${"y".repeat(40)}`, 160)).toBe(sentence);
+  });
+
+  it("ends at a Hindi full stop", () => {
+    const summary = summarize("यह एक डेक है। ".repeat(20), 160);
+    expect(summary.endsWith("है।")).toBe(true);
+    expect(Array.from(summary).length).toBeLessThanOrEqual(160);
+  });
+
+  it("cuts text without spaces at the limit, with an ellipsis", () => {
+    expect(summarize("a".repeat(300), 160)).toBe(`${"a".repeat(159)}…`);
+  });
+});
+
+describe("titles from Shopify", () => {
+  it("adds the site name to social titles only when it's missing", () => {
+    expect(socialTitle("Toucan T-Tool")).toBe(`Toucan T-Tool | ${SITE_NAME}`);
+    expect(socialTitle(`Toucan T-Tool – ${SITE_NAME}`)).toBe(
+      `Toucan T-Tool – ${SITE_NAME}`,
+    );
+  });
+
+  it("skips the layout's suffix when the title already names the site", () => {
+    expect(documentTitle("Deck")).toBe("Deck");
+    expect(documentTitle(`Deck – ${SITE_NAME.toLowerCase()}`)).toEqual({
+      absolute: `Deck – ${SITE_NAME.toLowerCase()}`,
+    });
+  });
+});
+
+describe("withPageMetadata share images", () => {
+  it("leaves the homepage to its own opengraph-image file", async () => {
+    const metadata = await withPageMetadata("/", { title: "Home" })({
+      params: Promise.resolve({ locale: "en" }),
+    });
+    expect(metadata.openGraph).not.toHaveProperty("images");
   });
 });

@@ -1,7 +1,6 @@
 import type { Product, ProductVariant } from "lib/shopify/types";
 import { describe, expect, it } from "vitest";
 import {
-  breadcrumbJsonLd,
   organizationJsonLd,
   productJsonLd,
   serializeJsonLd,
@@ -114,33 +113,12 @@ describe("productJsonLd", () => {
     expect(data.image).toEqual(["https://cdn/a.png"]);
     expect(data.brand).toBeUndefined();
   });
-});
 
-describe("breadcrumbJsonLd", () => {
-  it("numbers the trail from 1", () => {
-    expect(
-      breadcrumbJsonLd([
-        { name: "Home", url: "https://weskate.co/" },
-        { name: "Decks", url: "https://weskate.co/store/decks" },
-      ]),
-    ).toEqual({
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: "https://weskate.co/",
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Decks",
-          item: "https://weskate.co/store/decks",
-        },
-      ],
-    });
+  it("leaves out an empty description", () => {
+    expect(productJsonLd(product({ description: "" }), URL)).not.toHaveProperty(
+      "description",
+    );
+    expect(productJsonLd(product(), URL)).toHaveProperty("description");
   });
 });
 

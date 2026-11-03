@@ -173,6 +173,10 @@ test.describe("social and search metadata", () => {
       );
       expect(res.status(), `${path} image ${image}`).toBe(200);
       expect(res.headers()["content-type"]).toContain("image/");
+      if (path === "/") {
+        // The homepage keeps Next's own, content-hashed image link
+        expect(new URL(image!).search, "homepage image version").not.toBe("");
+      }
     }
   });
 

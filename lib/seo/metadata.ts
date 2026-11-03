@@ -40,25 +40,52 @@ export function siteShareImage(locale: string): OpenGraph["images"] {
   return [getLocalizedPath("/opengraph-image", locale)];
 }
 
+/** Sentence-ending marks, including the Hindi full stop. */
+const SENTENCE_END = new Set([".", "!", "?", "\u0964"]);
+
 /**
  * Shortens text for meta and social descriptions, which search results and
  * link previews cut off at roughly 160 characters. Ends at a sentence when one
- * fits, otherwise at a word, with an ellipsis.
+ * fits, otherwise at a word, with an ellipsis. Counts characters, not UTF-16
+ * units, so an emoji is never split in half.
  */
 export function summarize(text: string, maxLength = 160): string {
   const clean = text.replace(/\s+/g, " ").trim();
-  if (clean.length <= maxLength) return clean;
+  const chars = Array.from(clean);
+  if (chars.length <= maxLength) return clean;
 
-  const cut = clean.slice(0, maxLength);
-  const sentenceEnd = Math.max(
-    cut.lastIndexOf(". "),
-    cut.lastIndexOf("! "),
-    cut.lastIndexOf("? "),
-  );
-  if (sentenceEnd >= maxLength / 2) return cut.slice(0, sentenceEnd + 1);
+  // The last sentence that ends within the limit (followed by a space, which
+  // may sit just past the limit), if it keeps at least half the length
+  for (let i = maxLength - 1; i >= maxLength / 2; i--) {
+    if (SENTENCE_END.has(chars[i]!) && chars[i + 1] === " ") {
+      return chars.slice(0, i + 1).join("");
+    }
+  }
 
-  const wordEnd = cut.lastIndexOf(" ");
-  return `${cut.slice(0, wordEnd > 0 ? wordEnd : maxLength - 1).replace(/[,;:.\s]+$/, "")}…`;
+  // Otherwise the last whole word, leaving room for the ellipsis
+  const lastSpace = chars.lastIndexOf(" ", maxLength - 1);
+  const words = chars.slice(0, lastSpace > 0 ? lastSpace : maxLength - 1);
+  return `${words.join("").replace(/[,;:.\s]+$/, "")}…`;
+}
+
+const namesSite = (title: string) =>
+  title.toLowerCase().includes(SITE_NAME.toLowerCase());
+
+/**
+ * Open Graph title for a page title. Open Graph doesn't apply the layout's
+ * "%s | site name" template, so the site name is added here, unless the title
+ * already has it (Shopify SEO titles often end with the store name).
+ */
+export function socialTitle(title: string): string {
+  return namesSite(title) ? title : `${title} | ${SITE_NAME}`;
+}
+
+/**
+ * The <title> for a title from Shopify: the layout adds "| site name", except
+ * when the title already names the site.
+ */
+export function documentTitle(title: string): Metadata["title"] {
+  return namesSite(title) ? { absolute: title } : title;
 }
 
 /**
@@ -90,10 +117,10 @@ export function pageQuery(page: unknown): string {
   return Number.isInteger(number) && number > 1 ? `?page=${number}` : "";
 }
 
-/** Open Graph title for a page title: Open Graph doesn't apply the layout's "%s | site name" template. */
+/** Open Graph title for a page's fixed title (see socialTitle). */
 function openGraphTitle(title: Metadata["title"]): string | undefined {
   if (!title) return undefined;
-  if (typeof title === "string") return `${title} | ${SITE_NAME}`;
+  if (typeof title === "string") return socialTitle(title);
   if ("absolute" in title && title.absolute) return title.absolute;
   return undefined;
 }
@@ -133,7 +160,9 @@ export function withPageMetadata(
       ...metadata,
       alternates: localeAlternates(path, locale, query),
       openGraph: openGraph(locale, path + query, {
-        images: siteShareImage(locale),
+        // The homepage's segment has its own image file, which Next links
+        // with a content hash; only nested pages need the site image
+        ...(path === "/" ? {} : { images: siteShareImage(locale) }),
         ...(title ? { title } : {}),
         ...(description ? { description } : {}),
         ...(metadata.openGraph ?? {}),
