@@ -1,9 +1,14 @@
 "use client";
 
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { trackSearch } from "lib/analytics";
 import Form from "next/form";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { FormEvent, useEffect, useRef } from "react";
+
+function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
+  trackSearch(String(new FormData(event.currentTarget).get("q") ?? ""));
+}
 
 interface SearchProps {
   isOpen?: boolean;
@@ -93,6 +98,7 @@ export default function Search({
     >
       <Form
         action="/store"
+        onSubmit={handleSearchSubmit}
         className={`flex items-center w-full rounded-xl px-4 py-2 h-10 md:h-11 transition-all gap-2.5 ${
           scrolled
             ? "bg-[#EDEDED] border border-transparent"

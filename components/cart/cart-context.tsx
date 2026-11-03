@@ -1,5 +1,6 @@
 "use client";
 
+import { trackAddToCart, trackRemoveFromCart } from "lib/analytics";
 import type {
   Cart,
   CartItem,
@@ -302,6 +303,12 @@ export function CartProvider({
   );
 
   const updateCartItem = (merchandiseId: string, updateType: UpdateType) => {
+    const line = optimisticCart?.lines.find(
+      (item) => item.merchandise.id === merchandiseId,
+    );
+    if (line && updateType !== "plus") {
+      trackRemoveFromCart(line, updateType === "delete" ? line.quantity : 1);
+    }
     updateOptimisticCart({
       type: "UPDATE_ITEM",
       payload: { merchandiseId, updateType },
@@ -310,6 +317,7 @@ export function CartProvider({
 
   const addCartItem = (variant: ProductVariant, product: Product) => {
     updateOptimisticCart({ type: "ADD_ITEM", payload: { variant, product } });
+    trackAddToCart(product, variant);
   };
 
   const updateLineVariant = (lineId: string, newVariant: ProductVariant) => {

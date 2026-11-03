@@ -4,6 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { ShoppingCartIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import LoadingDots from "components/loading-dots";
 import Price from "components/price";
+import { trackBeginCheckout, trackViewCart } from "lib/analytics";
 import { DEFAULT_OPTION } from "lib/constants";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { useModalHistory } from "lib/hooks/use-modal-history";
@@ -49,6 +50,11 @@ export default function CartModal() {
   const openCart = () => {
     if (pathname.endsWith("/cart")) return;
     setIsOpen(true);
+    trackViewCart(cart);
+  };
+  const handleCheckout = () => {
+    trackBeginCheckout(cart);
+    triggerCheckout();
   };
 
   // NOTE: do NOT create a cart here when `cart` is undefined. The client cart
@@ -522,7 +528,7 @@ export default function CartModal() {
                     {/* Snapmint EMI Banner */}
                     <SnapmintEmiCartBanner
                       totalAmount={cart.cost.totalAmount.amount}
-                      onBuyOnEmi={triggerCheckout}
+                      onBuyOnEmi={handleCheckout}
                     />
 
                     {/* Highlighted info box */}
@@ -539,12 +545,16 @@ export default function CartModal() {
                     }}
                   >
                     {useFallback ? (
-                      <form action={redirectToCheckout} className="w-full">
+                      <form
+                        action={redirectToCheckout}
+                        onSubmit={() => trackBeginCheckout(cart)}
+                        className="w-full"
+                      >
                         <CheckoutButton />
                       </form>
                     ) : (
                       <button
-                        onClick={triggerCheckout}
+                        onClick={handleCheckout}
                         disabled={!gokwikReady || isCheckingOut || !cart?.id}
                         className={`w-full h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors flex items-center justify-center ${
                           !gokwikReady || isCheckingOut || !cart?.id

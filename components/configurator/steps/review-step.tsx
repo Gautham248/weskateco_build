@@ -5,6 +5,7 @@ import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { addConfiguratorBundle } from "components/cart/actions";
+import { trackConfiguratorAddToCart } from "lib/analytics";
 import type {
   ConfiguratorItem,
   ConfiguratorState,
@@ -106,6 +107,7 @@ export function ReviewStep({ state, buildTotal }: ReviewStepProps) {
       if (result && typeof result === "string") {
         setMessage(result);
       } else {
+        trackConfiguratorAddToCart(items);
         setAdded(true);
         setMessage(null);
       }

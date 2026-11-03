@@ -3,6 +3,7 @@ import Footer from "components/layout/footer";
 import { Gallery } from "components/product/gallery";
 import ProductCard from "components/product/product-card";
 import { ProductDescription } from "components/product/product-description";
+import { ViewItemTracker } from "lib/analytics";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
 import { productReadState } from "lib/catalog/product-page";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
@@ -109,6 +110,9 @@ export default async function ProductPage(props: {
           __html: JSON.stringify(productJsonLd),
         }}
       />
+      <Suspense fallback={null}>
+        <ViewItemTracker product={product} />
+      </Suspense>
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 py-4">
         {/* Breadcrumb */}
         {/* <div className="mb-6 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
