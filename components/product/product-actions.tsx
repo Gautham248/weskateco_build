@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { addItem, createSingleItemCartAction } from "components/cart/actions";
+import { addItem } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import { trackBuyNow } from "lib/analytics";
 import { createTranslator } from "lib/i18n";
@@ -9,7 +9,7 @@ import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { checkoutCart } from "lib/gokwik/checkout";
+import { checkoutOneItem } from "lib/gokwik/checkout";
 
 export function ProductActions({
   product,
@@ -56,15 +56,12 @@ export function ProductActions({
     if (!selectedVariantId || !finalVariant || !finalVariant.availableForSale)
       return;
     startBuyNowTransition(async () => {
-      const singleCart = await createSingleItemCartAction(selectedVariantId);
-      if (singleCart) {
+      await checkoutOneItem(selectedVariantId, () => {
         trackBuyNow(product, finalVariant);
         if (onAddedToCart) {
           onAddedToCart();
         }
-        // GoKwik where it's offered and loaded, else Shopify's checkout
-        await checkoutCart(singleCart);
-      }
+      });
     });
   };
 

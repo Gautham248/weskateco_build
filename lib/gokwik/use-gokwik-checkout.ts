@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import { CHECKOUT_START_ERROR, rememberCheckoutCart } from "./checkout-cart";
 import { isGoKwikCountry } from "./country";
 
 /** Dispatched on window by GoKwikScript once GoKwik's SDK script has loaded */
@@ -9,6 +11,8 @@ export const GOKWIK_LOADED_EVENT = "gokwik:loaded";
 interface UseGoKwikCheckoutOptions {
   /** Cart ID from Shopify in format gid://shopify/Cart/<ID> */
   cartId: string | undefined;
+  /** The cart's Shopify checkout, used when GoKwik can't take the checkout */
+  checkoutUrl?: string;
   /** Timeout in ms before marking SDK as failed. Default: 15000 */
   timeout?: number;
 }
@@ -28,6 +32,7 @@ interface UseGoKwikCheckoutReturn {
 
 export function useGoKwikCheckout({
   cartId,
+  checkoutUrl,
   timeout = 15000,
 }: UseGoKwikCheckoutOptions): UseGoKwikCheckoutReturn {
   const [isReady, setIsReady] = useState(false);
@@ -85,23 +90,34 @@ export function useGoKwikCheckout({
   }, [timeout]);
 
   const triggerCheckout = useCallback(() => {
+    // Whatever stops GoKwik here, the shopper still gets a way to pay:
+    // Shopify's checkout when we have it, otherwise a message to try again
+    const fallBack = (reason: string, error?: unknown) => {
+      console.error(`[GoKwik] ${reason}`, error ?? "");
+      setIsCheckingOut(false);
+      if (checkoutUrl) {
+        // On Shopify's primary domain: see the note in ./checkout.ts
+        window.location.assign(checkoutUrl);
+      } else {
+        toast.error(CHECKOUT_START_ERROR);
+      }
+    };
+
     if (!cartId) {
-      console.error("[GoKwik] No cart ID available");
-      return;
+      return fallBack("No cart ID available");
     }
 
     if (!window.merchantInfo) {
-      console.error("[GoKwik] merchantInfo not configured");
-      return;
+      return fallBack("merchantInfo not configured");
     }
 
     if (typeof window.triggerGokwikCustomCheckout !== "function") {
-      console.error("[GoKwik] triggerGokwikCustomCheckout not available");
-      return;
+      return fallBack("triggerGokwikCustomCheckout not available");
     }
 
     // Set the cart ID on merchantInfo
     window.merchantInfo.cart = { id: cartId };
+    rememberCheckoutCart(cartId);
 
     console.log("[GoKwik] Triggering checkout with cart:", cartId);
     setIsCheckingOut(true);
@@ -109,10 +125,9 @@ export function useGoKwikCheckout({
     try {
       window.triggerGokwikCustomCheckout();
     } catch (error) {
-      console.error("[GoKwik] Error triggering checkout:", error);
-      setIsCheckingOut(false);
+      fallBack("Error triggering checkout:", error);
     }
-  }, [cartId]);
+  }, [cartId, checkoutUrl]);
 
   return {
     isReady,

@@ -1,11 +1,7 @@
 "use client";
-import { createSingleItemCartAction } from "components/cart/actions";
-import { useCart } from "components/cart/cart-context";
 import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
 import Price from "components/price";
 import { DraggableProse } from "./draggable-prose";
-import { useGoKwikCheckout } from "lib/gokwik";
-import { checkoutCart } from "lib/gokwik/checkout";
 import { createTranslator } from "lib/i18n";
 import { prepareProductDescriptionHtml } from "lib/shopify/description-html";
 import { Product } from "lib/shopify/types";
@@ -13,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { ProductActions } from "./product-actions";
 import { VariantSelector } from "./variant-selector";
+import { checkoutOneItem } from "lib/gokwik/checkout";
 
 export function ProductDescription({
   product,
@@ -22,10 +19,8 @@ export function ProductDescription({
   locale: string;
 }) {
   const t = createTranslator(locale);
-  const { cart, addCartItem } = useCart();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
-  const { triggerCheckout } = useGoKwikCheckout({ cartId: cart?.id });
 
   // The variant chosen via the URL, else the first in-stock one. variants[0]
   // may be sold out while the product is not.
@@ -42,11 +37,7 @@ export function ProductDescription({
     if (!emiVariant?.availableForSale) return;
 
     startTransition(async () => {
-      const singleCart = await createSingleItemCartAction(emiVariant.id);
-      if (singleCart) {
-        // GoKwik where it's offered and loaded, else Shopify's checkout
-        await checkoutCart(singleCart);
-      }
+      await checkoutOneItem(emiVariant.id);
     });
   };
 

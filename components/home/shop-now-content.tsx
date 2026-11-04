@@ -1,6 +1,6 @@
 "use client";
 
-import { addItem, createSingleItemCartAction } from "components/cart/actions";
+import { addItem } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
 import { QuickBuySidebar } from "components/product/quick-buy-sidebar";
@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { checkoutCart } from "lib/gokwik/checkout";
+import { checkoutOneItem } from "lib/gokwik/checkout";
 
 const TRACK_PADDING = "var(--track-padding)";
 
@@ -185,11 +185,7 @@ function ShopNowCard({
     if (!variant) return;
 
     startTransition(async () => {
-      const singleCart = await createSingleItemCartAction(variant.id);
-      if (singleCart) {
-        // GoKwik where it's offered and loaded, else Shopify's checkout
-        await checkoutCart(singleCart);
-      }
+      await checkoutOneItem(variant.id);
     });
   };
 
