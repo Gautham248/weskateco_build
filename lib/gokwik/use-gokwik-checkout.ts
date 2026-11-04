@@ -95,6 +95,7 @@ export function useGoKwikCheckout({
       console.error(`[GoKwik] ${reason}`, error ?? "");
       setIsCheckingOut(false);
       if (checkoutUrl) {
+        // On Shopify's primary domain: see the note in ./checkout.ts
         window.location.assign(checkoutUrl);
       } else {
         toast.error(CHECKOUT_START_ERROR);
