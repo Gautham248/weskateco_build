@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { addItem, createSingleItemCartAction } from "components/cart/actions";
+import { addItem } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import { trackBuyNow } from "lib/analytics";
 import { createTranslator } from "lib/i18n";
@@ -9,6 +9,7 @@ import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { checkoutOneItem } from "lib/gokwik/checkout";
 
 export function ProductActions({
   product,
@@ -55,19 +56,12 @@ export function ProductActions({
     if (!selectedVariantId || !finalVariant || !finalVariant.availableForSale)
       return;
     startBuyNowTransition(async () => {
-      const singleCartId = await createSingleItemCartAction(selectedVariantId);
-      if (singleCartId) {
+      await checkoutOneItem(selectedVariantId, () => {
         trackBuyNow(product, finalVariant);
-        if (window.merchantInfo) {
-          window.merchantInfo.cart = { id: singleCartId };
-        }
-        if (typeof window.triggerGokwikCustomCheckout === "function") {
-          window.triggerGokwikCustomCheckout();
-        }
         if (onAddedToCart) {
           onAddedToCart();
         }
-      }
+      });
     });
   };
 

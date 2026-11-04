@@ -1,6 +1,6 @@
 "use client";
 
-import accessoriesImg from "components/icons/accessories.png";
+import accessoriesImg from "components/icons/accessories.jpg";
 import skateboardsImg from "components/icons/skateboards.jpg";
 import surfskatesImg from "components/icons/surfskates.jpg";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
@@ -29,7 +29,15 @@ export default function CategoryGrid({ locale }: { locale: string }) {
   const [activeMobileIndex, setActiveMobileIndex] = useState<number>(0);
   const touchStart = useRef<number | null>(null);
 
-  const categories = [
+  interface CategoryItem {
+    name: string;
+    image: typeof surfskatesImg;
+    href: string;
+    imageClassName?: string;
+    imageExpandedClassName?: string;
+  }
+
+  const categories: CategoryItem[] = [
     {
       name: "Surfskates",
       image: surfskatesImg,
@@ -44,8 +52,6 @@ export default function CategoryGrid({ locale }: { locale: string }) {
       name: "Accessories",
       image: accessoriesImg,
       href: "/store/skateboard-accessories",
-      imageClassName: "scale-170 -translate-x-15",
-      imageExpandedClassName: "scale-180 -translate-x-15",
     },
   ];
 

@@ -17,11 +17,11 @@ export default function PeopleBehindHero() {
           </p>
 
           <div
-            className="relative aspect-[1.28] w-full"
+            className="relative aspect-[1.18] w-full"
             style={{ containerType: "inline-size" }}
           >
             {/* WE' / RE stacked at top-left with the outlined quote glyph after WE */}
-            <div className="absolute top-[2%] left-[2%] z-30 w-[32%]">
+            <div className="absolute top-[1%] left-[2%] z-30 w-[30%]">
               <div className="flex w-full items-start">
                 <svg
                   viewBox="0 0 342.591 132"
@@ -44,7 +44,7 @@ export default function PeopleBehindHero() {
                   style={{ width: "12.8%", marginLeft: "2%" }}
                 >
                   <svg
-                    viewBox="350.454 1.26 55.004 81.87"
+                    viewBox="347 -2 62 88"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-auto w-full"
@@ -52,13 +52,15 @@ export default function PeopleBehindHero() {
                     <path
                       d="M405.458 1.26465V48.3271C405.458 60.2127 401.947 68.8452 395.594 74.5264C389.217 80.2293 379.781 83.1348 367.586 83.1348H352.575V58.2969H366.173C369.049 58.2968 371.544 57.8961 373.272 56.2812C375.017 54.6494 375.671 52.0764 375.671 48.5625V44.0137H350.454V1.26465H405.458Z"
                       stroke="#0b0b0b"
-                      strokeWidth="3"
+                      strokeWidth="2.5"
+                      strokeLinejoin="round"
+                      strokeLinecap="round"
                     />
                   </svg>
                 </div>
               </div>
 
-              <div className="mt-[2%] w-full">
+              <div className="mt-[3%] w-full">
                 <svg
                   viewBox="412.719 0 162.034 83.2547"
                   fill="none"
@@ -79,18 +81,18 @@ export default function PeopleBehindHero() {
             </div>
 
             {/* THE / PEOPLE right of tile C and under tile A; BEHIND below, left-aligned with tile C */}
-            <div className="absolute top-[44%] left-[34%] z-30 text-[16cqi] leading-[0.8] font-bold tracking-[-0.02em] text-black uppercase">
+            <div className="absolute top-[41%] left-[35%] z-30 text-[15cqi] leading-[0.8] font-bold tracking-[-0.02em] text-black uppercase">
               THE
             </div>
-            <div className="absolute top-[61%] left-[34%] z-30 text-[16cqi] leading-[0.8] font-bold tracking-[-0.02em] whitespace-nowrap text-black uppercase">
+            <div className="absolute top-[56%] left-[35%] z-30 text-[15cqi] leading-[0.8] font-bold tracking-[-0.02em] whitespace-nowrap text-black uppercase">
               PEOPLE
             </div>
-            <div className="absolute top-[78%] left-[2%] z-30 text-[16cqi] leading-[0.8] font-bold tracking-[-0.02em] whitespace-nowrap text-black uppercase">
+            <div className="absolute top-[74%] left-[2%] z-30 text-[15cqi] leading-[0.8] font-bold tracking-[-0.02em] whitespace-nowrap text-black uppercase">
               BEHIND
             </div>
 
             {/* Three image tiles */}
-            <div className="absolute top-0 left-[34%] z-20 aspect-square w-[30%] overflow-hidden rounded-lg bg-[#cfd1d0] shadow-sm">
+            <div className="absolute top-[1%] left-[35%] z-20 aspect-square w-[30%] overflow-hidden rounded-lg bg-[#cfd1d0] shadow-sm">
               <Image
                 src={peopleImg1}
                 alt="WeSkateCo community member"
@@ -99,7 +101,7 @@ export default function PeopleBehindHero() {
                 className="object-cover"
               />
             </div>
-            <div className="absolute top-[15%] left-[66%] z-20 aspect-square w-[30%] overflow-hidden rounded-lg bg-[#cfd1d0] shadow-sm">
+            <div className="absolute top-[13%] left-[68%] z-20 aspect-square w-[30%] overflow-hidden rounded-lg bg-[#cfd1d0] shadow-sm">
               <Image
                 src={peopleImg2}
                 alt="Skateboarder riding a ramp at dusk"
@@ -108,7 +110,7 @@ export default function PeopleBehindHero() {
                 className="object-cover"
               />
             </div>
-            <div className="absolute top-[29%] left-[2%] z-20 aspect-square w-[30%] overflow-hidden rounded-lg bg-[#cfd1d0] shadow-sm">
+            <div className="absolute top-[34%] left-[2%] z-20 aspect-square w-[30%] overflow-hidden rounded-lg bg-[#cfd1d0] shadow-sm">
               <Image
                 src={peopleImg3}
                 alt="WeSkateCo community member holding a skateboard"
