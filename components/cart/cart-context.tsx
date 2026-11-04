@@ -9,10 +9,12 @@ import type {
 } from "lib/shopify/types";
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useOptimistic,
+  useRef,
   useState,
 } from "react";
 
@@ -37,6 +39,8 @@ type CartContextType = {
   updateCartItem: (merchandiseId: string, updateType: UpdateType) => void;
   addCartItem: (variant: ProductVariant, product: Product) => void;
   updateLineVariant: (lineId: string, newVariant: ProductVariant) => void;
+  /** Forgets the shopper's cart (after it has been ordered elsewhere). */
+  clearCart: () => void;
 };
 
 const CartContext = createContext<CartContextType>({
@@ -44,6 +48,7 @@ const CartContext = createContext<CartContextType>({
   updateCartItem: () => {},
   addCartItem: () => {},
   updateLineVariant: () => {},
+  clearCart: () => {},
 });
 
 function calculateItemCost(quantity: number, price: string): string {
@@ -274,6 +279,10 @@ export function CartProvider({
     setHydrated(true);
   }, []);
 
+  // The server cart that was current when the cart was cleared. It was
+  // fetched with the old cookie, so it must not bring the items back.
+  const clearedPromise = useRef<Promise<Cart | undefined> | null>(null);
+
   // 2) The server cart wins whenever it resolves with one. `undefined` (no
   //    cookie / stale fetch) or a failure keeps the local copy instead of
   //    blanking the cart.
@@ -281,7 +290,9 @@ export function CartProvider({
     let active = true;
     Promise.resolve(cartPromise)
       .then((cart) => {
-        if (active && cart) setResolvedCart(cart);
+        if (active && cart && clearedPromise.current !== cartPromise) {
+          setResolvedCart(cart);
+        }
       })
       .catch(() => {
         // Keep the local mirror; the server actions still mutate the real cart
@@ -327,14 +338,23 @@ export function CartProvider({
     });
   };
 
+  // The next add to cart then starts a new cart (see addItem)
+  const clearCart = useCallback(() => {
+    document.cookie = "cartId=; path=/; max-age=0";
+    writeStoredCart(undefined);
+    clearedPromise.current = cartPromise;
+    setResolvedCart(undefined);
+  }, [cartPromise]);
+
   const value = useMemo(
     () => ({
       cart: optimisticCart,
       updateCartItem,
       addCartItem,
       updateLineVariant,
+      clearCart,
     }),
-    [optimisticCart],
+    [optimisticCart, clearCart],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

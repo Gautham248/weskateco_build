@@ -1,6 +1,6 @@
 "use client";
 
-import { addItem, createSingleItemCartAction } from "components/cart/actions";
+import { addItem } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
 import { QuickBuySidebar } from "components/product/quick-buy-sidebar";
@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
+import { checkoutOneItem } from "lib/gokwik/checkout";
 
 const TRACK_PADDING = "var(--track-padding)";
 
@@ -184,15 +185,7 @@ function ShopNowCard({
     if (!variant) return;
 
     startTransition(async () => {
-      const singleCartId = await createSingleItemCartAction(variant.id);
-      if (singleCartId) {
-        if (window.merchantInfo) {
-          window.merchantInfo.cart = { id: singleCartId };
-        }
-        if (typeof window.triggerGokwikCustomCheckout === "function") {
-          window.triggerGokwikCustomCheckout();
-        }
-      }
+      await checkoutOneItem(variant.id);
     });
   };
 

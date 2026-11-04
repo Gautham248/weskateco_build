@@ -1,8 +1,5 @@
 "use client";
-import { createSingleItemCartAction } from "components/cart/actions";
-import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
-import { useGoKwikCheckout } from "lib/gokwik";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import { Product } from "lib/shopify/types";
@@ -11,6 +8,7 @@ import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 import { QuickBuySidebar } from "./quick-buy-sidebar";
 import { SnapmintEmiBadge } from "./snapmint-emi-badge";
+import { checkoutOneItem } from "lib/gokwik/checkout";
 
 interface ProductCardProps {
   product: Product;
@@ -19,9 +17,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, locale }: ProductCardProps) {
   const t = createTranslator(locale);
-  const { cart, addCartItem } = useCart();
   const [, startTransition] = useTransition();
-  const { triggerCheckout } = useGoKwikCheckout({ cartId: cart?.id });
   const { title, handle, availableForSale, priceRange, featuredImage, images } =
     product;
   const isSoldOut = !availableForSale;
@@ -51,15 +47,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
     if (!variant) return;
 
     startTransition(async () => {
-      const singleCartId = await createSingleItemCartAction(variant.id);
-      if (singleCartId) {
-        if (window.merchantInfo) {
-          window.merchantInfo.cart = { id: singleCartId };
-        }
-        if (typeof window.triggerGokwikCustomCheckout === "function") {
-          window.triggerGokwikCustomCheckout();
-        }
-      }
+      await checkoutOneItem(variant.id);
     });
   };
 

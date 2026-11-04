@@ -5,6 +5,7 @@ import { NavbarScrollWrapper } from "components/layout/navbar/navbar-scroll";
 import { GeistSans } from "geist/font/sans";
 import { GoogleAnalytics, MetaPixel } from "lib/analytics";
 import { GoKwikScript } from "lib/gokwik";
+import { GoKwikOrderWatcher } from "lib/gokwik/order-watcher";
 import { getDictionary } from "lib/i18n";
 import { TranslationProvider } from "lib/i18n/TranslationProvider";
 import { getCart } from "lib/shopify";
@@ -44,6 +45,7 @@ export default async function RootLayout(props: {
     <html lang={params.locale} className={`${GeistSans.variable}`}>
       <body className="bg-white text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
         <CartProvider cartPromise={cart}>
+          <GoKwikOrderWatcher />
           <TranslationProvider locale={params.locale} dictionary={dictionary}>
             <NavbarScrollWrapper>
               <Navbar locale={params.locale} />
