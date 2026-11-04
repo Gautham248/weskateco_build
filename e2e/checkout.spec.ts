@@ -42,6 +42,20 @@ async function stubGokwik(page: Page, { delayMs = 0 } = {}) {
   });
 }
 
+/** A GoKwik SDK that loads but whose checkout fails to open. */
+async function brokenGokwik(page: Page) {
+  await page.route(GOKWIK_SDK, (route) =>
+    route.fulfill({
+      contentType: "application/javascript",
+      headers: { "Cache-Control": "no-store" },
+      body: `${GOKWIK_STUB}
+        window.triggerGokwikCustomCheckout = function () {
+          throw new Error("GoKwik checkout failed to open");
+        };`,
+    }),
+  );
+}
+
 async function blockGokwik(page: Page) {
   await page.route(GOKWIK_SDK, (route) => route.abort());
 }
@@ -71,6 +85,31 @@ async function handoffs(page: Page): Promise<MerchantInfo[]> {
   return page.evaluate(
     () => (window as any).__gokwikStub?.calls ?? [],
   ) as Promise<MerchantInfo[]>;
+}
+
+async function cookieValue(page: Page, name: string) {
+  const cookie = (await page.context().cookies()).find((c) => c.name === name);
+  return cookie && decodeURIComponent(cookie.value);
+}
+
+/**
+ * Where /cart/checkout sends the shopper, with this page's cookies. The
+ * redirect is read rather than followed: the dev store's checkout sits
+ * behind its storefront password.
+ */
+async function cartCheckoutRedirect(page: Page): Promise<string> {
+  const res = await page.request.get("/cart/checkout", { maxRedirects: 0 });
+  expect(res.status()).toBe(303);
+  return res.headers()["location"]!;
+}
+
+/** Posts a message to the page as if from `origin` (GoKwik's checkout frame). */
+async function postMessageFrom(page: Page, origin: string, data: unknown) {
+  await page.evaluate(
+    ([origin, data]) =>
+      window.dispatchEvent(new MessageEvent("message", { origin, data })),
+    [origin, data] as const,
+  );
 }
 
 async function cartIdCookie(page: Page): Promise<string> {
@@ -333,5 +372,141 @@ test.describe("fallback to Shopify checkout when GoKwik doesn't load", () => {
     const shopifyCheckouts = await interceptShopifyCheckout(page);
     await buyNow(page);
     await expectShopifyCheckout(page, shopifyCheckouts);
+  });
+});
+
+test.describe("when checkout can't start normally", () => {
+  test("GoKwik's own fallback URL, /cart/checkout, reaches Shopify checkout", async ({
+    page,
+  }) => {
+    // GoKwik's script sends shoppers to /cart/checkout when it decides it
+    // can't run. That's a Shopify theme URL, so the site has to answer it.
+    await addToCartOrSkip(page);
+    const location = await cartCheckoutRedirect(page);
+    expect(location).toMatch(/\/cart\/c\//);
+    expect(new URL(location).host).not.toBe(
+      new URL(test.info().project.use.baseURL!).host,
+    );
+  });
+
+  test("/cart/checkout uses the one-item cart Buy Now handed to GoKwik", async ({
+    page,
+  }) => {
+    await stubGokwik(page);
+    await buyNow(page);
+    await expect.poll(async () => (await handoffs(page)).length).toBe(1);
+    const buyNowCart = (await handoffs(page))[0]!.cart!.id;
+
+    // Shopify's checkout URL carries the cart's token: gid://shopify/Cart/<token>
+    const token = buyNowCart.split("/").pop()!.split("?")[0]!;
+    expect(await cartCheckoutRedirect(page)).toContain(`/cart/c/${token}`);
+  });
+
+  test("/cart/checkout without a cart goes to the cart page", async ({
+    page,
+  }) => {
+    await page.goto("/cart/checkout");
+    await expect(page).toHaveURL(/\/cart$/);
+  });
+
+  test("the cart page uses Shopify checkout when GoKwik's checkout won't open", async ({
+    page,
+  }) => {
+    await brokenGokwik(page);
+    const shopifyCheckouts = await interceptShopifyCheckout(page);
+    await addToCartOrSkip(page);
+
+    await page.goto("/cart");
+    await checkoutButton(page, "Proceed to Checkout").click();
+    await expectShopifyCheckout(page, shopifyCheckouts);
+  });
+
+  test("Buy Now tells the shopper when it can't start checkout", async ({
+    page,
+  }) => {
+    const name = await openFirstPurchasableProduct(page);
+    test.skip(
+      !name,
+      "None of the first products in the collection can be bought",
+    );
+
+    // The server action that makes the one-item cart fails (network error)
+    await page.route("**/*", (route) =>
+      route.request().method() === "POST" &&
+      "next-action" in route.request().headers()
+        ? route.abort()
+        : route.fallback(),
+    );
+    const buyNowButton = checkoutButton(page, "Buy Now")
+      .filter({ visible: true })
+      .first();
+    // Clicks before React hydrates the page do nothing, so retry
+    await expect(async () => {
+      await buyNowButton.click({ timeout: 2_000 });
+      await expect(
+        page.getByText("We couldn't start checkout. Please try again."),
+      ).toBeVisible({ timeout: 2_000 });
+    }).toPass({ timeout: 30_000 });
+  });
+});
+
+// GoKwik creates the Shopify order itself, so the shopper's Shopify cart is
+// never completed. Its checkout frame posts { type: "orderSuccess" } once the
+// order is placed, and the site then empties its own cart.
+test.describe("after GoKwik places the order", () => {
+  const GOKWIK_ORIGIN = "https://pdp.gokwik.co";
+  const ORDER_PLACED = { type: "orderSuccess" };
+
+  /** Adds a product, checks out from the cart page, returns the cart ID. */
+  async function checkOutCart(page: Page) {
+    await stubGokwik(page);
+    await addToCartOrSkip(page);
+    const cartId = await cartIdCookie(page);
+    await page.goto("/cart");
+    await checkoutButton(page, "Proceed to Checkout").click();
+    await expect.poll(async () => (await handoffs(page)).length).toBe(1);
+    expect(await cookieValue(page, "checkoutCartId")).toBe(cartId);
+    return cartId;
+  }
+
+  test("the shopper's cart is emptied", async ({ page }) => {
+    await checkOutCart(page);
+
+    await postMessageFrom(page, GOKWIK_ORIGIN, ORDER_PLACED);
+
+    await expect.poll(() => cookieValue(page, "cartId")).toBeUndefined();
+    await expect
+      .poll(() => cookieValue(page, "checkoutCartId"))
+      .toBeUndefined();
+    // Still empty after a reload, so the server has forgotten the cart too
+    await page.reload();
+    await expect(page.getByText("Your cart is empty")).toBeVisible();
+  });
+
+  test("the same message from another site is ignored", async ({ page }) => {
+    const cartId = await checkOutCart(page);
+
+    await postMessageFrom(page, "https://example.com", ORDER_PLACED);
+
+    expect(await cookieValue(page, "cartId")).toBe(cartId);
+    await page.reload();
+    await expect(page.getByText("Your cart is empty")).toHaveCount(0);
+  });
+
+  test("a Buy Now order leaves the shopper's cart alone", async ({ page }) => {
+    await stubGokwik(page);
+    await addToCartOrSkip(page);
+    const cartId = await cartIdCookie(page);
+
+    await buyNow(page);
+    await expect.poll(async () => (await handoffs(page)).length).toBe(1);
+    expect(await cookieValue(page, "checkoutCartId")).not.toBe(cartId);
+
+    await postMessageFrom(page, GOKWIK_ORIGIN, ORDER_PLACED);
+
+    await expect
+      .poll(() => cookieValue(page, "checkoutCartId"))
+      .toBeUndefined();
+    expect(await cookieValue(page, "cartId")).toBe(cartId);
   });
 });
