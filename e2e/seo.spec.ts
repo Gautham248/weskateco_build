@@ -165,11 +165,21 @@ test.describe("social and search metadata", () => {
         .first()
         .getAttribute("content");
       expect(image, `${path} should have og:image`).toBeTruthy();
+      // The site's own images carry the deployed site's host (the same one as
+      // the canonical URL), so fetch those from the server under test. Images
+      // hosted elsewhere, such as Shopify's CDN, are fetched where they live.
+      const siteHost = new URL(
+        (await page
+          .locator('link[rel="canonical"]')
+          .first()
+          .getAttribute("href"))!,
+      ).host;
+      const imageUrl = new URL(image!);
       const res = await request.get(
-        new URL(image!).pathname + new URL(image!).search,
-        {
-          maxRedirects: 0,
-        },
+        imageUrl.host === siteHost
+          ? imageUrl.pathname + imageUrl.search
+          : imageUrl.href,
+        { maxRedirects: 0 },
       );
       expect(res.status(), `${path} image ${image}`).toBe(200);
       expect(res.headers()["content-type"]).toContain("image/");

@@ -56,7 +56,10 @@ export default defineConfig({
           ? `pnpm exec next dev --turbopack -p ${PORT}`
           : `pnpm build && pnpm exec next start -p ${PORT}`,
         url: `http://localhost:${PORT}/robots.txt`,
-        reuseExistingServer: !process.env.CI,
+        // Off by default, so a run always tests a fresh build of the current
+        // code rather than a server left over from an earlier run. Set
+        // E2E_REUSE_SERVER=1 to rerun against a server you started yourself.
+        reuseExistingServer: process.env.E2E_REUSE_SERVER === "1",
         timeout: useDevServer ? 120_000 : 600_000,
       },
 });

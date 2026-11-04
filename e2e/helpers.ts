@@ -1,9 +1,11 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Page, type Request } from "@playwright/test";
 
 // Pages backed by Shopify data only render when the store is reachable: either
 // locally with credentials, or against a deployed site that has them
 export const hasShopify = Boolean(
-  process.env.SHOPIFY_STORE_DOMAIN || process.env.PLAYWRIGHT_BASE_URL,
+  (process.env.SHOPIFY_STORE_DOMAIN &&
+    process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN) ||
+    process.env.PLAYWRIGHT_BASE_URL,
 );
 
 export const SHOPIFY_SKIP_REASON =
@@ -76,9 +78,14 @@ export async function selectFirstAvailableVariant(page: Page) {
     const name = (await group.locator("dt").textContent())!
       .trim()
       .toLowerCase();
+    const value = (await choice.textContent())!.trim();
     await choice.click();
-    // Selecting an option writes it to the URL, which drives the variant lookup
-    await expect(page).toHaveURL(new RegExp(`[?&]${name}=`, "i"));
+    // Selecting an option writes it to the URL, which drives the variant
+    // lookup. Compare the decoded parameter: names can contain spaces, and the
+    // page already writes default options to the URL before any click.
+    await expect
+      .poll(() => new URL(page.url()).searchParams.get(name))
+      .toBe(value);
   }
 }
 
@@ -132,24 +139,33 @@ export async function addFirstProductToCart(
   // variant id). The UI's "Added to Cart" state only lasts two seconds and the
   // toast appears before the server has saved anything, so neither is a
   // reliable signal on a busy dev server.
-  const saved = page.waitForResponse(
-    (res) =>
-      res.request().method() === "POST" &&
-      "next-action" in res.request().headers() &&
-      (res.request().postData() ?? "").includes("ProductVariant"),
-    { timeout: 60_000 },
-  );
+  const isAddToCart = (req: Request) =>
+    req.method() === "POST" &&
+    "next-action" in req.headers() &&
+    (req.postData() ?? "").includes("ProductVariant");
+  const saved = page.waitForResponse((res) => isAddToCart(res.request()), {
+    timeout: 60_000,
+  });
+  let sent = false;
+  const onRequest = (req: Request) => {
+    if (isAddToCart(req)) sent = true;
+  };
+  page.on("request", onRequest);
   // A click that lands before React hydrates the form does nothing, so click
-  // again until the optimistic toast shows the page handled it
+  // again until the optimistic toast shows the page handled it. Once the add
+  // has reached the server, only wait: another click would add a second one.
   await expect(async () => {
-    await page
-      .getByRole("button", { name: /^add to cart$/i })
-      .first()
-      .click({ timeout: 2_000 });
+    if (!sent) {
+      await page
+        .getByRole("button", { name: /^add to cart$/i })
+        .first()
+        .click({ timeout: 2_000 });
+    }
     await expect(page.getByText(/added to cart!/i).first()).toBeVisible({
       timeout: 2_000,
     });
   }).toPass({ timeout: 60_000 });
+  page.off("request", onRequest);
   expect((await saved).ok()).toBe(true);
   await expect(
     page.getByText(/could not add to cart|error adding item/i),
