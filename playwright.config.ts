@@ -45,8 +45,9 @@ export default defineConfig({
     {
       name: "mobile",
       use: { ...devices["Pixel 7"] },
-      // Layout-sensitive flows only; SEO checks don't depend on viewport
-      testIgnore: /seo\.spec\.ts/,
+      // Layout-sensitive flows only; SEO, page and link checks don't depend
+      // on viewport
+      testIgnore: /(seo|pages)\.spec\.ts/,
     },
   ],
   webServer: externalBaseUrl
