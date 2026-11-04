@@ -418,4 +418,10 @@ describe("checkout", () => {
     shopify.createCart.mockRejectedValue(new Error("Shopify down"));
     expect(await createSingleItemCartAction("variant-1")).toBeNull();
   });
+
+  it("createSingleItemCartAction returns null when Shopify returns a cart without an ID", async () => {
+    // Buy Now then shows its error instead of handing GoKwik an empty cart
+    shopify.createCart.mockResolvedValue(cart(""));
+    expect(await createSingleItemCartAction("variant-1")).toBeNull();
+  });
 });
