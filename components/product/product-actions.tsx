@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { addItem, createSingleItemCartAction } from "components/cart/actions";
+import { addItem } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import { trackBuyNow } from "lib/analytics";
 import { createTranslator } from "lib/i18n";
@@ -9,8 +9,7 @@ import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { checkoutCart } from "lib/gokwik/checkout";
-import { CHECKOUT_START_ERROR } from "lib/gokwik/checkout-cart";
+import { checkoutOneItem } from "lib/gokwik/checkout";
 
 export function ProductActions({
   product,
@@ -57,20 +56,12 @@ export function ProductActions({
     if (!selectedVariantId || !finalVariant || !finalVariant.availableForSale)
       return;
     startBuyNowTransition(async () => {
-      // A network failure rejects; a Shopify failure returns null
-      const singleCart = await createSingleItemCartAction(
-        selectedVariantId,
-      ).catch(() => null);
-      if (!singleCart) {
-        toast.error(CHECKOUT_START_ERROR);
-        return;
-      }
-      trackBuyNow(product, finalVariant);
-      if (onAddedToCart) {
-        onAddedToCart();
-      }
-      // GoKwik's popup when it's on the page, else Shopify's checkout
-      checkoutCart(singleCart);
+      await checkoutOneItem(selectedVariantId, () => {
+        trackBuyNow(product, finalVariant);
+        if (onAddedToCart) {
+          onAddedToCart();
+        }
+      });
     });
   };
 

@@ -1,10 +1,7 @@
 "use client";
-import { createSingleItemCartAction } from "components/cart/actions";
-import { useCart } from "components/cart/cart-context";
 import { SnapmintEmiCartBanner } from "components/cart/snapmint-emi-cart-banner";
 import Price from "components/price";
 import { DraggableProse } from "./draggable-prose";
-import { useGoKwikCheckout } from "lib/gokwik";
 import { createTranslator } from "lib/i18n";
 import { prepareProductDescriptionHtml } from "lib/shopify/description-html";
 import { Product } from "lib/shopify/types";
@@ -12,9 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { ProductActions } from "./product-actions";
 import { VariantSelector } from "./variant-selector";
-import { checkoutCart } from "lib/gokwik/checkout";
-import { CHECKOUT_START_ERROR } from "lib/gokwik/checkout-cart";
-import { toast } from "sonner";
+import { checkoutOneItem } from "lib/gokwik/checkout";
 
 export function ProductDescription({
   product,
@@ -24,10 +19,8 @@ export function ProductDescription({
   locale: string;
 }) {
   const t = createTranslator(locale);
-  const { cart, addCartItem } = useCart();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
-  const { triggerCheckout } = useGoKwikCheckout({ cartId: cart?.id });
 
   // The variant chosen via the URL, else the first in-stock one. variants[0]
   // may be sold out while the product is not.
@@ -44,16 +37,7 @@ export function ProductDescription({
     if (!emiVariant?.availableForSale) return;
 
     startTransition(async () => {
-      // A network failure rejects; a Shopify failure returns null
-      const singleCart = await createSingleItemCartAction(emiVariant.id).catch(
-        () => null,
-      );
-      if (!singleCart) {
-        toast.error(CHECKOUT_START_ERROR);
-        return;
-      }
-      // GoKwik's popup when it's on the page, else Shopify's checkout
-      checkoutCart(singleCart);
+      await checkoutOneItem(emiVariant.id);
     });
   };
 

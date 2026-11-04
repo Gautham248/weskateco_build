@@ -3,14 +3,13 @@ import { CHECKOUT_CART_COOKIE } from "./checkout-cart";
 // GoKwik creates the order in Shopify itself, so the shopper's Shopify cart is
 // never completed and still holds what they just bought. These helpers detect
 // a finished GoKwik order so the site can empty its cart. GoKwik doesn't
-// document them; they come from its live checkout script:
-// - its checkout frame posts { type: "orderSuccess" } to the page, and
-// - it stores orderType=gokwik (cookie and localStorage) once the order exists,
-//   which survives the redirect to the order page if the message was missed.
-
-/** Name and value of the marker GoKwik leaves after creating an order. */
-export const GOKWIK_ORDER_MARKER = "orderType";
-const GOKWIK_ORDER_MARKER_VALUE = "gokwik";
+// document the signal; it comes from its live checkout script, whose checkout
+// frame posts { type: "orderSuccess" } to the page while it shows the
+// "order placed" screen, before redirecting the shopper to the order page.
+//
+// GoKwik also stores an orderType marker, but its script writes it from two
+// places and the timing of one is unknown. Clearing on it could empty a cart
+// mid-payment, so it isn't used until GoKwik documents when it's written.
 
 const SHOPPERS_CART_COOKIE = "cartId";
 
@@ -58,22 +57,5 @@ export function orderedShoppersCart(cookieString: string): boolean {
   const ordered = readCookie(cookieString, CHECKOUT_CART_COOKIE);
   return Boolean(
     ordered && ordered === readCookie(cookieString, SHOPPERS_CART_COOKIE),
-  );
-}
-
-/** Whether GoKwik left its "order created" marker in this browser. */
-export function hasGoKwikOrderMarker(
-  cookieString: string,
-  storage: Pick<Storage, "getItem"> | undefined,
-): boolean {
-  let stored: string | null = null;
-  try {
-    stored = storage?.getItem(GOKWIK_ORDER_MARKER) ?? null;
-  } catch {
-    // Storage unavailable (private mode)
-  }
-  return (
-    stored === GOKWIK_ORDER_MARKER_VALUE ||
-    readCookie(cookieString, GOKWIK_ORDER_MARKER) === GOKWIK_ORDER_MARKER_VALUE
   );
 }
