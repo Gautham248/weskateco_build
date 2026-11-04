@@ -4,7 +4,13 @@ import {
   GRADES_TABLE_COLS,
   GRADES_TABLE_ROWS,
 } from "lib/griptape-guide/data";
-import { GuideTable, Note, SectionHeader, Container, Section } from "components/guides/ui";
+import {
+  GuideTable,
+  Note,
+  SectionHeader,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 export default function GradesSection() {
   return (

@@ -3,7 +3,13 @@ import {
   GRAIN_DEFS,
   GRAIN_SECTION,
 } from "lib/griptape-guide/data";
-import { DefList, ProseCols, SectionHeader, Container, Section } from "components/guides/ui";
+import {
+  DefList,
+  ProseCols,
+  SectionHeader,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 export default function GrainSection() {
   return (

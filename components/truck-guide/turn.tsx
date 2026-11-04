@@ -357,7 +357,10 @@ export default function TurnSection() {
         </div>
 
         {/* Mechanism Stages: Behind pair and Above pair */}
-        <FigCard tone="plain" className="flex flex-col gap-6 p-4 md:p-6 bg-white">
+        <FigCard
+          tone="plain"
+          className="flex flex-col gap-6 p-4 md:p-6 bg-white"
+        >
           {/* Row 1: From behind */}
           <div>
             <span className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">
@@ -400,9 +403,7 @@ export default function TurnSection() {
                       : SHOTS["level-above"].image
                   }
                   alt={
-                    leaning
-                      ? SHOTS["lean-above"].alt
-                      : SHOTS["level-above"].alt
+                    leaning ? SHOTS["lean-above"].alt : SHOTS["level-above"].alt
                   }
                   sizes="(min-width: 768px) 45vw, 90vw"
                   className="h-auto max-h-[360px] w-auto max-w-full object-contain"
@@ -416,11 +417,11 @@ export default function TurnSection() {
 
           <div className="border-t border-neutral-200 pt-4">
             <FigCaption>
-              Two views because neither shows it alone. From behind, the load going
-              into the bushings. From above, what that produces — the kingpin is
-              angled along the board, so the hanger does not just tilt, it swings,
-              and the axle stops being square to the way you are going. That is the
-              steering.
+              Two views because neither shows it alone. From behind, the load
+              going into the bushings. From above, what that produces — the
+              kingpin is angled along the board, so the hanger does not just
+              tilt, it swings, and the axle stops being square to the way you
+              are going. That is the steering.
             </FigCaption>
           </div>
         </FigCard>

@@ -31,9 +31,9 @@ export default function PhilosophySection() {
                 </p>
                 <p className="font-[400]">
                   It&apos;ll wreck your body, mess with your head, and test your
-                  grit every damn day. If you want to go all the way, you&apos;ve
-                  got to be strong, sharp, and ready to eat pavement more times
-                  than you can count.
+                  grit every damn day. If you want to go all the way,
+                  you&apos;ve got to be strong, sharp, and ready to eat pavement
+                  more times than you can count.
                 </p>
               </div>
             </div>
@@ -120,17 +120,17 @@ export default function PhilosophySection() {
                   style={{ fontFamily: "'Clash Display', sans-serif" }}
                 >
                   <div className="md:w-[470px]">
-                    <span className="font-semibold">New to the game?</span> We&apos;ve
-                    got your back. We teach you how to control your board—and how to
-                    hit the ground without wrecking yourself. Safety isn&apos;t
-                    soft. It&apos;s smart.
+                    <span className="font-semibold">New to the game?</span>{" "}
+                    We&apos;ve got your back. We teach you how to control your
+                    board—and how to hit the ground without wrecking yourself.
+                    Safety isn&apos;t soft. It&apos;s smart.
                   </div>
 
                   <div className="md:w-[470px]">
-                    <span className="font-semibold">Already ripping?</span> We go all
-                    in. Training plans that cover your diet, strength, stamina, and
-                    style—built to push limits and hit long-term goals. No fluff.
-                    Just progress.
+                    <span className="font-semibold">Already ripping?</span> We
+                    go all in. Training plans that cover your diet, strength,
+                    stamina, and style—built to push limits and hit long-term
+                    goals. No fluff. Just progress.
                   </div>
                 </div>
               </div>
@@ -241,15 +241,15 @@ export default function PhilosophySection() {
             <div>
               <span className="font-semibold">New to the game?</span> We&apos;ve
               got your back. We teach you how to control your board—and how to
-              hit the ground without wrecking yourself. Safety isn&apos;t
-              soft. It&apos;s smart.
+              hit the ground without wrecking yourself. Safety isn&apos;t soft.
+              It&apos;s smart.
             </div>
 
             <div>
               <span className="font-semibold">Already ripping?</span> We go all
               in. Training plans that cover your diet, strength, stamina, and
-              style—built to push limits and hit long-term goals. No fluff.
-              Just progress.
+              style—built to push limits and hit long-term goals. No fluff. Just
+              progress.
             </div>
           </div>
         </div>

@@ -4,7 +4,14 @@ import {
   CARE_SECTION,
   CARE_SUB,
 } from "lib/deck-guide/data";
-import { DefList, ProseCols, SectionHeader, SubHead, Container, Section } from "components/guides/ui";
+import {
+  DefList,
+  ProseCols,
+  SectionHeader,
+  SubHead,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 export default function CareSection() {
   return (

@@ -172,7 +172,11 @@ export default function ReasonPicker({
       {/* ── Mobile: bottom-sheet modal ───────────────────────────── */}
       {isMobile && (
         <Transition appear show={isOpen} as={Fragment}>
-          <Dialog as="div" className="relative z-50" onClose={() => setIsOpen(false)}>
+          <Dialog
+            as="div"
+            className="relative z-50"
+            onClose={() => setIsOpen(false)}
+          >
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
