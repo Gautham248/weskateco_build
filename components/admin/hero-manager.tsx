@@ -814,9 +814,7 @@ export function HeroManager({
                         <input
                           type="file"
                           accept={
-                            item.kind === "video"
-                              ? VIDEO_ACCEPT
-                              : IMAGE_ACCEPT
+                            item.kind === "video" ? VIDEO_ACCEPT : IMAGE_ACCEPT
                           }
                           disabled={isUploading}
                           onChange={(event) => {

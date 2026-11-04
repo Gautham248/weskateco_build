@@ -42,7 +42,8 @@ export default async function TruckGuidePage() {
           src: truckGuideBanner,
           mobileSrc: truckGuideBannerMobile,
           alt: "Skateboard truck close-up showing hanger, baseplate, and bushings",
-          mobileAlt: "Skateboard truck adapter with green wheel and graphic deck",
+          mobileAlt:
+            "Skateboard truck adapter with green wheel and graphic deck",
           objectPosition: "center",
           mobileObjectPosition: "center",
         }}

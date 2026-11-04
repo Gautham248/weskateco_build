@@ -57,7 +57,6 @@ export function SnapmintEmiCartBanner({
         </div>
       </div>
 
-
       {/* Right side CTA button */}
       <button
         onClick={onBuyOnEmi}
@@ -68,4 +67,3 @@ export function SnapmintEmiCartBanner({
     </div>
   );
 }
-

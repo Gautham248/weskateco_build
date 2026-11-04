@@ -7,7 +7,17 @@ import {
   CONCAVE_SECTION,
   CONCAVE_TOGGLES,
 } from "lib/deck-guide/data";
-import { FigCaption, FigCard, FigHint, Note, ProseCols, SectionHeader, Seg, Container, Section } from "components/guides/ui";
+import {
+  FigCaption,
+  FigCard,
+  FigHint,
+  Note,
+  ProseCols,
+  SectionHeader,
+  Seg,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 // Profile cell geometry — the source's drawing math, unchanged.
 interface Cell {

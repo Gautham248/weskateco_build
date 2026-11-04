@@ -145,10 +145,11 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                 key={`mobile-${index}`}
                 href={getLocalizedPath(category.href, locale)}
                 onClick={handleCardClick}
-                className={`absolute w-[68vw] aspect-[2/3] rounded-md overflow-hidden bg-neutral-100 shadow-xl transition-all ${isActive
-                  ? "cursor-pointer"
-                  : "cursor-pointer pointer-events-auto"
-                  }`}
+                className={`absolute w-[68vw] aspect-[2/3] rounded-md overflow-hidden bg-neutral-100 shadow-xl transition-all ${
+                  isActive
+                    ? "cursor-pointer"
+                    : "cursor-pointer pointer-events-auto"
+                }`}
                 style={{
                   transform: transformStyle,
                   zIndex: zIndex,
@@ -187,10 +188,11 @@ export default function CategoryGrid({ locale }: { locale: string }) {
             <span
               key={`dot-${index}`}
               onClick={() => setActiveMobileIndex(index)}
-              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${activeMobileIndex === index
-                ? "w-4 bg-black"
-                : "w-1.5 bg-neutral-300"
-                }`}
+              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                activeMobileIndex === index
+                  ? "w-4 bg-black"
+                  : "w-1.5 bg-neutral-300"
+              }`}
             />
           ))}
         </div>
@@ -220,10 +222,11 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                   fill
                   // The hovered card expands to about half the row
                   sizes="55vw"
-                  className={`object-cover transition-transform ${isExpanded
-                    ? category.imageExpandedClassName || "scale-100"
-                    : category.imageClassName || "scale-100"
-                    }`}
+                  className={`object-cover transition-transform ${
+                    isExpanded
+                      ? category.imageExpandedClassName || "scale-100"
+                      : category.imageClassName || "scale-100"
+                  }`}
                   style={{
                     transitionDuration: "1600ms",
                     transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",

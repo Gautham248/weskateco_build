@@ -45,7 +45,8 @@ export default async function DeckGuidePage() {
           src: deckGuideBanner,
           mobileSrc: deckGuideBannerMobile,
           alt: "Seven-ply maple skateboard decks stacked, showing plies and griptape",
-          mobileAlt: "Stacked black skateboard decks showing Sphere grip tape logo",
+          mobileAlt:
+            "Stacked black skateboard decks showing Sphere grip tape logo",
           objectPosition: "center",
           mobileObjectPosition: "center",
         }}

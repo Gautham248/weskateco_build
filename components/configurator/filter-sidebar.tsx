@@ -57,9 +57,7 @@ export function FilterSidebar({
       {/* Top Header section - fixed */}
       <div className="flex-shrink-0">
         <div className="flex items-center justify-between border-b border-neutral-100 pb-4 dark:border-neutral-900">
-          <h2
-            className="text-lg font-bold uppercase tracking-tight text-black dark:text-white font-clash"
-          >
+          <h2 className="text-lg font-bold uppercase tracking-tight text-black dark:text-white font-clash">
             Filter By
           </h2>
           {activeChipsCount > 0 && (
@@ -88,10 +86,14 @@ export function FilterSidebar({
               type="button"
               role="switch"
               aria-checked={compatibilityFilterOn}
-              onClick={() => onToggleCompatibilityFilter(!compatibilityFilterOn)}
+              onClick={() =>
+                onToggleCompatibilityFilter(!compatibilityFilterOn)
+              }
               className={clsx(
                 "relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-                compatibilityFilterOn ? "bg-rose-500" : "bg-neutral-300 dark:bg-neutral-700",
+                compatibilityFilterOn
+                  ? "bg-rose-500"
+                  : "bg-neutral-300 dark:bg-neutral-700",
               )}
             >
               <span
@@ -123,7 +125,9 @@ export function FilterSidebar({
               onClick={() => onToggleOutOfStock(!showOutOfStock)}
               className={clsx(
                 "relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-                showOutOfStock ? "bg-neutral-800 dark:bg-white" : "bg-neutral-300 dark:bg-neutral-700",
+                showOutOfStock
+                  ? "bg-neutral-800 dark:bg-white"
+                  : "bg-neutral-300 dark:bg-neutral-700",
               )}
             >
               <span
