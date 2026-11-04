@@ -553,6 +553,11 @@ export async function getProductSitemapEntries(): Promise<SitemapProduct[]> {
 }
 
 export async function getPages(): Promise<Page[]> {
+  "use cache";
+  // No tag: the Shopify webhook doesn't cover page topics, so this refreshes
+  // on a timer. Only the sitemap calls it.
+  cacheLife("hours");
+
   const res = await shopifyFetch<ShopifyPagesOperation>({
     query: getPagesQuery,
   });

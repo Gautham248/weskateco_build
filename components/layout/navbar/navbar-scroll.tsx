@@ -5,19 +5,14 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const HERO_PATHS = [
   "/",
-  "/en",
   "/hi",
   "/academy",
-  "/en/academy",
   "/hi/academy",
   "/school",
-  "/en/school",
   "/hi/school",
   "/skateparks",
-  "/en/skateparks",
   "/hi/skateparks",
   "/about-us",
-  "/en/about-us",
   "/hi/about-us",
 ];
 
