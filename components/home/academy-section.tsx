@@ -4,18 +4,19 @@ import Link from "next/link";
 
 export default function AcademySection() {
   return (
-    <section className="h-auto aspect-square md:h-screen w-full bg-white py-4">
-      <div className="relative w-full h-full">
-        <Image
-          src={academyImg}
-          alt="Academy"
-          fill
-          className="object-cover object-center"
-          priority
-        />
+    <section className="w-full bg-white py-6 md:py-10">
+      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15">
+        <div className="relative h-auto aspect-square md:aspect-[16/9] w-full rounded-[16px] overflow-hidden bg-black select-none">
+          <Image
+            src={academyImg}
+            alt="Academy"
+            fill
+            className="object-cover object-center"
+            priority
+          />
 
-        {/* Content Overlay */}
-        <div className="relative z-10 mx-auto h-full max-w-(--breakpoint-2xl) px-4 lg:px-15 h-auto md:h-full flex flex-col justify-between py-8 md:py-12">
+          {/* Content Overlay */}
+          <div className="relative z-10 w-full h-full flex flex-col justify-between p-6 md:p-10 lg:p-12">
           {/* Top Left Text Overlay */}
           <div
             className="flex flex-col items-start select-none"
@@ -64,6 +65,7 @@ export default function AcademySection() {
                 <polyline points="12 5 19 12 12 19" />
               </svg>
             </Link>
+          </div>
           </div>
         </div>
       </div>
