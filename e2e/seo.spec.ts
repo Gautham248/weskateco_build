@@ -275,13 +275,10 @@ test.describe("structured data and server rendering", () => {
   test("the server sends the page of products the URL asks for", async ({
     request,
   }) => {
-    // Known bug: the store grid reads the URL's query on the client, so Next
-    // renders it only in the browser and the server HTML has no products.
-    // Crawlers that don't run JavaScript see an empty listing. Remove this
-    // line once the grid is server-rendered.
-    test.fail();
-
-    // Raw HTML, before any JavaScript runs: what a crawler first sees
+    // Raw HTML, before any JavaScript runs: what a crawler first sees. The
+    // store layout must not call useSearchParams(): /store's shell is
+    // prerendered at build time, and that call made Next leave everything
+    // inside it to the browser, so the server HTML had no products.
     const productLinks = async (query: string) => {
       const html = await (await request.get(`/store${query}`)).text();
       return new Set(
