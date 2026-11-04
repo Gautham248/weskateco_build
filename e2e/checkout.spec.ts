@@ -206,17 +206,26 @@ test.describe("GoKwik checkout handoff", () => {
   test("cart page waits for GoKwik instead of skipping to Shopify", async ({
     page,
   }) => {
-    // A slow GoKwik script used to send quick clicks to Shopify's checkout
-    await stubGokwik(page, { delayMs: 5000 });
+    // A slow GoKwik script used to send quick clicks to Shopify's checkout.
+    // Now a click while it loads waits for it (up to 5s), like Buy Now.
+    await stubGokwik(page, { delayMs: 2500 });
     const shopifyCheckouts = await interceptShopifyCheckout(page);
     await addToCartOrSkip(page);
 
     // Don't wait for the load event: it would also wait for GoKwik's script
     await page.goto("/cart", { waitUntil: "domcontentloaded" });
-    await expect(checkoutButton(page, "Loading checkout...")).toBeDisabled();
+    const proceed = checkoutButton(page, "Proceed to Checkout");
+    await expect(proceed).toBeEnabled();
 
-    await checkoutButton(page, "Proceed to Checkout").click();
-    await expect.poll(async () => (await handoffs(page)).length).toBe(1);
+    // A click before React hydrates does nothing, so click until one lands.
+    // A click that is waiting for GoKwik relabels the button, so it isn't
+    // clicked twice.
+    await expect(async () => {
+      if ((await handoffs(page)).length === 0) {
+        await proceed.click({ timeout: 1_000 }).catch(() => {});
+      }
+      expect(await handoffs(page)).toHaveLength(1);
+    }).toPass({ timeout: 20_000 });
     expect(shopifyCheckouts).toEqual([]);
   });
 
@@ -339,7 +348,7 @@ test.describe("shoppers whose country isn't known", () => {
 });
 
 test.describe("fallback to Shopify checkout when GoKwik doesn't load", () => {
-  // The checkout hook waits 15s for GoKwik's SDK before falling back
+  // A checkout click waits up to 5s for GoKwik, then uses Shopify's checkout
   test.slow();
 
   for (const where of ["cart page", "cart drawer"] as const) {
@@ -357,10 +366,14 @@ test.describe("fallback to Shopify checkout when GoKwik doesn't load", () => {
         scope = await openCartDrawer(page);
       }
 
+      // Usable straight away, not after the 15s wait for GoKwik
       const checkout = checkoutButton(scope, "Proceed to Checkout");
-      await expect(checkout).toBeEnabled({ timeout: 25_000 });
+      await expect(checkout).toBeEnabled({ timeout: 5_000 });
       await checkout.click();
+      await expect(checkoutButton(scope, "Loading checkout...")).toBeDisabled();
 
+      // Shopify's checkout after the 5s wait, not the hook's 15s timeout
+      await expect(page).toHaveURL(/\/cart\/c\//, { timeout: 9_000 });
       await expectShopifyCheckout(page, shopifyCheckouts);
     });
   }

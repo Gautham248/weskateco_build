@@ -1,46 +1,22 @@
 import { createSingleItemCartAction } from "components/cart/actions";
 import { toast } from "sonner";
 import { CHECKOUT_START_ERROR, rememberCheckoutCart } from "./checkout-cart";
-import { isGoKwikCountry } from "./country";
-import { GOKWIK_LOADED_EVENT } from "./use-gokwik-checkout";
-
-/** How long a checkout click waits for GoKwik's SDK if it's still loading */
-export const GOKWIK_WAIT_MS = 5000;
-
-function goKwikLoaded() {
-  return typeof window.triggerGokwikCustomCheckout === "function";
-}
-
-/**
- * Whether GoKwik can take this checkout: offered in the shopper's country and
- * its SDK loaded. Waits up to `waitMs` for an SDK that is still loading.
- */
-export function waitForGoKwik(waitMs = GOKWIK_WAIT_MS): Promise<boolean> {
-  if (!isGoKwikCountry(document.cookie)) return Promise.resolve(false);
-  if (goKwikLoaded()) return Promise.resolve(true);
-
-  return new Promise((resolve) => {
-    const done = () => {
-      window.removeEventListener(GOKWIK_LOADED_EVENT, done);
-      clearTimeout(timer);
-      resolve(goKwikLoaded());
-    };
-    const timer = setTimeout(done, waitMs);
-    window.addEventListener(GOKWIK_LOADED_EVENT, done);
-  });
-}
+import { waitForGoKwik } from "./sdk";
 
 /**
  * Opens checkout for a cart made for one purchase (Buy Now, Buy on EMI):
- * GoKwik's popup where it's offered and loaded, otherwise Shopify's own
- * checkout, so the shopper always has a way to pay.
+ * GoKwik's popup where it's offered and ready, otherwise Shopify's own
+ * checkout, so the shopper always has a way to pay. `onOpening` runs just
+ * before either opens, after any wait for GoKwik.
  */
-export async function checkoutCart(cart: {
-  id: string;
-  checkoutUrl: string;
-}): Promise<void> {
-  if ((await waitForGoKwik()) && window.merchantInfo) {
-    window.merchantInfo.cart = { id: cart.id };
+export async function checkoutCart(
+  cart: { id: string; checkoutUrl: string },
+  onOpening?: () => void,
+): Promise<void> {
+  const useGoKwik = await waitForGoKwik();
+  onOpening?.();
+  if (useGoKwik) {
+    window.merchantInfo!.cart = { id: cart.id };
     rememberCheckoutCart(cart.id);
     try {
       window.triggerGokwikCustomCheckout!();
@@ -58,11 +34,12 @@ export async function checkoutCart(cart: {
 /**
  * Buy Now and Buy on EMI: makes a one-item cart for the variant and opens
  * checkout for it, or tells the shopper when the cart can't be made.
- * `onCartCreated` runs once the cart exists (tracking, closing a panel).
+ * `onCheckoutOpening` runs once the cart exists and checkout is about to
+ * open (tracking, closing a panel), so a panel stays open while GoKwik loads.
  */
 export async function checkoutOneItem(
   variantId: string,
-  onCartCreated?: () => void,
+  onCheckoutOpening?: () => void,
 ): Promise<void> {
   // A network failure rejects; a Shopify failure returns null
   const cart = await createSingleItemCartAction(variantId).catch(() => null);
@@ -70,6 +47,5 @@ export async function checkoutOneItem(
     toast.error(CHECKOUT_START_ERROR);
     return;
   }
-  onCartCreated?.();
-  await checkoutCart(cart);
+  await checkoutCart(cart, onCheckoutOpening);
 }

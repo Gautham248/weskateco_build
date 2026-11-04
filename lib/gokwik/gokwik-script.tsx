@@ -2,17 +2,13 @@
 
 import { GA_MEASUREMENT_ID } from "lib/analytics";
 import Script from "next/script";
-import { useEffect, useState } from "react";
-import { isGoKwikCountry } from "./country";
-import { GOKWIK_LOADED_EVENT } from "./use-gokwik-checkout";
+import { useGoKwikAvailable } from "./region";
+import { GOKWIK_LOADED_EVENT } from "./sdk";
 
 export function GoKwikScript() {
   // Only load GoKwik's SDK for shoppers in India; decided after mount, where
   // the country cookie can be read
-  const [loadSdk, setLoadSdk] = useState(false);
-  useEffect(() => {
-    setLoadSdk(isGoKwikCountry(document.cookie));
-  }, []);
+  const loadSdk = useGoKwikAvailable();
 
   return (
     <>

@@ -7,27 +7,14 @@ vi.mock("components/cart/actions", () => ({ createSingleItemCartAction }));
 const toast = vi.hoisted(() => ({ error: vi.fn() }));
 vi.mock("sonner", () => ({ toast }));
 
-import {
-  checkoutCart,
-  checkoutOneItem,
-  GOKWIK_WAIT_MS,
-  waitForGoKwik,
-} from "./checkout";
+import { checkoutCart, checkoutOneItem } from "./checkout";
 import { CHECKOUT_START_ERROR } from "./checkout-cart";
-import { GOKWIK_LOADED_EVENT } from "./use-gokwik-checkout";
+import { GOKWIK_WAIT_MS } from "./sdk";
 
 const CART = { id: "gid://shopify/Cart/1", checkoutUrl: "https://shop/c/1" };
 
 function setCountry(country: string) {
   document.cookie = `country=${country}; path=/`;
-}
-
-/** Simulates GoKwik's SDK arriving on the page */
-function loadGoKwik() {
-  const trigger = vi.fn();
-  window.triggerGokwikCustomCheckout = trigger;
-  window.dispatchEvent(new Event(GOKWIK_LOADED_EVENT));
-  return trigger;
 }
 
 const assign = vi.fn();
@@ -51,40 +38,6 @@ afterEach(() => {
   document.cookie = "country=; path=/; max-age=0";
   document.cookie = "checkoutCartId=; path=/; max-age=0";
   vi.restoreAllMocks();
-});
-
-describe("waitForGoKwik", () => {
-  it("is false at once outside India, even with the SDK on the page", async () => {
-    setCountry("US");
-    window.triggerGokwikCustomCheckout = vi.fn();
-    expect(await waitForGoKwik()).toBe(false);
-  });
-
-  it("is true at once in India when the SDK has loaded", async () => {
-    setCountry("IN");
-    window.triggerGokwikCustomCheckout = vi.fn();
-    expect(await waitForGoKwik()).toBe(true);
-  });
-
-  it("waits for an SDK that is still loading", async () => {
-    setCountry("IN");
-    const ready = waitForGoKwik();
-    await vi.advanceTimersByTimeAsync(GOKWIK_WAIT_MS - 1000);
-    loadGoKwik();
-    expect(await ready).toBe(true);
-  });
-
-  it("gives up when the SDK doesn't arrive in time", async () => {
-    setCountry("IN");
-    const ready = waitForGoKwik();
-    await vi.advanceTimersByTimeAsync(GOKWIK_WAIT_MS);
-    expect(await ready).toBe(false);
-  });
-
-  it("uses Shopify's checkout when the country is unknown", async () => {
-    window.triggerGokwikCustomCheckout = vi.fn();
-    expect(await waitForGoKwik()).toBe(false);
-  });
 });
 
 describe("checkoutCart", () => {
@@ -139,13 +92,32 @@ describe("checkoutCart", () => {
     const trigger = vi.fn();
     window.triggerGokwikCustomCheckout = trigger;
     window.merchantInfo = undefined;
-    await checkoutCart(CART);
+    const done = checkoutCart(CART);
+    await vi.advanceTimersByTimeAsync(GOKWIK_WAIT_MS);
+    await done;
     expect(trigger).not.toHaveBeenCalled();
     expect(assign).toHaveBeenCalledWith(CART.checkoutUrl);
   });
 });
 
 describe("checkoutOneItem (Buy Now, Buy on EMI)", () => {
+  it("runs its callback only once checkout is about to open, not while GoKwik loads", async () => {
+    setCountry("IN");
+    createSingleItemCartAction.mockResolvedValue(CART);
+    const onCheckoutOpening = vi.fn();
+
+    const done = checkoutOneItem("variant-1", onCheckoutOpening);
+    await vi.advanceTimersByTimeAsync(1000);
+    // Still waiting for GoKwik: a quick-buy panel must stay open meanwhile
+    expect(onCheckoutOpening).not.toHaveBeenCalled();
+
+    window.triggerGokwikCustomCheckout = vi.fn();
+    await vi.advanceTimersByTimeAsync(500);
+    await done;
+    expect(onCheckoutOpening).toHaveBeenCalledOnce();
+    expect(window.triggerGokwikCustomCheckout).toHaveBeenCalledOnce();
+  });
+
   it("makes a one-item cart and opens checkout for it", async () => {
     setCountry("IN");
     const trigger = vi.fn();

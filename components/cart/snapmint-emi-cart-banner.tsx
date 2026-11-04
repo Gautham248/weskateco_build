@@ -8,6 +8,8 @@ interface SnapmintEmiCartBannerProps {
   totalAmount: string;
   /** Called when the user clicks "Buy on EMI>" */
   onBuyOnEmi: () => void;
+  /** While checkout is starting, so further clicks are clearly ignored */
+  disabled?: boolean;
 }
 
 /**
@@ -19,6 +21,7 @@ interface SnapmintEmiCartBannerProps {
 export function SnapmintEmiCartBanner({
   totalAmount,
   onBuyOnEmi,
+  disabled = false,
 }: SnapmintEmiCartBannerProps) {
   // Snapmint EMI runs through GoKwik, which is only offered in India
   const gokwikAvailable = useGoKwikAvailable();
@@ -60,7 +63,8 @@ export function SnapmintEmiCartBanner({
       {/* Right side CTA button */}
       <button
         onClick={onBuyOnEmi}
-        className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-950 transition-colors cursor-pointer"
+        disabled={disabled}
+        className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-950 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Buy on EMI&gt;
       </button>

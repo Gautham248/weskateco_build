@@ -1,3 +1,5 @@
+import { readCookie } from "./cookies";
+
 // GoKwik (and Snapmint EMI, which runs through it) is only set up for India.
 // Shoppers elsewhere check out with Shopify's own checkout.
 export const GOKWIK_COUNTRIES = ["IN"];
@@ -23,11 +25,8 @@ function developmentCountry(): string {
  * works from anywhere, while GoKwik's popup opens blank outside India.
  */
 export function isGoKwikCountry(cookieString: string): boolean {
-  const match = cookieString.match(
-    new RegExp(`(?:^|;\\s*)${COUNTRY_COOKIE}=([^;]*)`),
-  );
   const country = (
-    match?.[1] ? decodeURIComponent(match[1]) : developmentCountry()
+    readCookie(cookieString, COUNTRY_COOKIE) || developmentCountry()
   ).toUpperCase();
   return GOKWIK_COUNTRIES.includes(country);
 }

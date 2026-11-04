@@ -51,19 +51,13 @@ function CartPageContent() {
   const locale = (params?.locale as string) || "en";
   const [isPending, startTransition] = useTransition();
 
-  const {
-    isReady: gokwikReady,
-    isError: gokwikError,
-    isCheckingOut,
-    triggerCheckout,
-  } = useGoKwikCheckout({
+  // triggerCheckout waits briefly for GoKwik while it loads, then falls back
+  // to Shopify's checkout, so a quick click doesn't skip GoKwik
+  const { isWaiting, isCheckingOut, triggerCheckout } = useGoKwikCheckout({
     cartId: cart?.id,
     checkoutUrl: cart?.checkoutUrl,
   });
-
-  // Wait for GoKwik while it loads; only fall back to Shopify's checkout once
-  // it has failed or isn't offered, so a quick click doesn't skip GoKwik
-  const checkoutLoading = !gokwikReady && !gokwikError;
+  const checkoutBusy = isWaiting || isCheckingOut;
 
   // Fire view_cart once, after the cart has loaded
   const viewCartTracked = useRef(false);
@@ -74,14 +68,9 @@ function CartPageContent() {
   }, [cart]);
 
   const handleCheckout = () => {
-    // The Snapmint banner's button isn't disabled while GoKwik loads
-    if (checkoutLoading) return;
+    if (checkoutBusy) return;
     trackBeginCheckout(cart);
-    if (gokwikReady) {
-      triggerCheckout();
-    } else if (gokwikError && cart?.checkoutUrl) {
-      window.location.href = cart.checkoutUrl;
-    }
+    triggerCheckout();
   };
 
   const subtotal = cart ? parseFloat(cart.cost.subtotalAmount.amount) : 0;
@@ -417,6 +406,7 @@ function CartPageContent() {
                   <SnapmintEmiCartBanner
                     totalAmount={cart.cost.totalAmount.amount}
                     onBuyOnEmi={handleCheckout}
+                    disabled={checkoutBusy}
                   />
 
                   {/* Highlighted checkout notice */}
@@ -433,13 +423,13 @@ function CartPageContent() {
                   <button
                     type="button"
                     onClick={handleCheckout}
-                    disabled={checkoutLoading || isCheckingOut}
+                    disabled={checkoutBusy}
                     className="w-full mt-6 h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{ fontFamily: "Archivo, sans-serif" }}
                   >
                     {isCheckingOut
                       ? t("cart.processing")
-                      : checkoutLoading
+                      : isWaiting
                         ? t("cart.loading_checkout")
                         : t("cart.proceed_to_checkout")}
                   </button>
