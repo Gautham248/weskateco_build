@@ -57,6 +57,7 @@ function CartPageContent() {
     triggerCheckout,
   } = useGoKwikCheckout({
     cartId: cart?.id,
+    checkoutUrl: cart?.checkoutUrl,
   });
 
   // Fire view_cart once, after the cart has loaded

@@ -29,73 +29,76 @@ export default function AboutSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-auto aspect-square md:h-screen md:aspect-auto w-full overflow-hidden bg-black select-none"
+      className="w-full bg-white py-6 md:py-10"
     >
-      {/* Background Image */}
-      <div className="absolute inset-0 w-full h-full">
-        <Image
-          src={aboutImg}
-          alt="About Background"
-          fill
-          className="object-cover object-[43.5%_center] md:object-center"
-          priority
-        />
-        {/* Dark overlay to ensure text readability against the background */}
-        <div className="absolute inset-0 bg-black/40" />
+      <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15">
+        <div className="relative h-auto aspect-square md:aspect-[16/9] w-full rounded-[16px] overflow-hidden bg-black select-none">
+          {/* Background Image */}
+          <div className="absolute inset-0 w-full h-full">
+            <Image
+              src={aboutImg}
+              alt="About Background"
+              fill
+              className="object-cover object-[43.5%_center] md:object-center"
+              priority
+            />
+            {/* Dark overlay to ensure text readability against the background */}
+            <div className="absolute inset-0 bg-black/40" />
 
-        {/* SVG Drawing Animation Overlay */}
-        <svg
-          viewBox="0 0 1082 716"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={`absolute top-0 left-[20%] right-0 w-[80%] h-[75%] overflow-visible pointer-events-none z-10 ${isInView ? "animate-path" : ""
-            }`}
-          preserveAspectRatio="none"
-        >
-          <style>{`
-            #drawing-path {
-              /* 2000 is a safe estimate above the actual path length */
-              stroke-dasharray: 2000;
-              stroke-dashoffset: 2000;
-            }
-
-            .animate-path #drawing-path {
-              animation: drawLine 2.5s ease-out forwards;
-            }
-
-            @keyframes drawLine {
-              to {
-                stroke-dashoffset: 0;
-              }
-            }
-          `}</style>
-
-          <path
-            id="drawing-path"
-            d="M1 -0.267578C1 394.54 321.055 714.596 715.863 714.596H1082"
-            stroke="#FFFFFF"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-
-          <defs>
-            <linearGradient
-              id="paint0_linear_3254_912"
-              x1="16.194"
-              y1="98.9013"
-              x2="539.496"
-              y2="715.994"
-              gradientUnits="userSpaceOnUse"
+            {/* SVG Drawing Animation Overlay */}
+            <svg
+              viewBox="0 0 1082 716"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className={`absolute top-0 left-[20%] right-0 w-[80%] h-[75%] overflow-visible pointer-events-none z-10 ${
+                isInView ? "animate-path" : ""
+              }`}
+              preserveAspectRatio="none"
             >
-              <stop stopColor="#3C3C3C" />
-              <stop offset="1" stopColor="#999999" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
+              <style>{`
+                #drawing-path {
+                  /* 2000 is a safe estimate above the actual path length */
+                  stroke-dasharray: 2000;
+                  stroke-dashoffset: 2000;
+                }
 
-      {/* Content Overlay */}
-      <div className="relative z-10 mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 h-full md:h-auto md:absolute md:bottom-0 md:left-0 md:right-0 flex flex-row items-end md:items-center justify-between pb-8 pt-12 md:py-24">
+                .animate-path #drawing-path {
+                  animation: drawLine 2.5s ease-out forwards;
+                }
+
+                @keyframes drawLine {
+                  to {
+                    stroke-dashoffset: 0;
+                  }
+                }
+              `}</style>
+
+              <path
+                id="drawing-path"
+                d="M1 -0.267578C1 394.54 321.055 714.596 715.863 714.596H1082"
+                stroke="#FFFFFF"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+
+              <defs>
+                <linearGradient
+                  id="paint0_linear_3254_912"
+                  x1="16.194"
+                  y1="98.9013"
+                  x2="539.496"
+                  y2="715.994"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="#3C3C3C" />
+                  <stop offset="1" stopColor="#999999" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          {/* Content Overlay */}
+          <div className="relative z-10 w-full h-full flex flex-row items-end justify-between p-6 md:p-10 lg:p-12">
         {/* Left Side: Description Text */}
         <div className="max-w-[45%] mb-0 md:max-w-md md:w-5/12">
           <h2
@@ -202,8 +205,10 @@ export default function AboutSection() {
               </Link>
             </div>
           </div>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
   );
 }
