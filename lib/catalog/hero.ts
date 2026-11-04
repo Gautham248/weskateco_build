@@ -234,7 +234,9 @@ export function buildHeroSlides(
     // A poster set in the admin always wins; the derived one only fills the gap
     // so an existing video row with no poster gets a frame without a backfill.
     const storedPoster =
-      item.posterUrl && isAllowedHeroUrl(item.posterUrl) ? item.posterUrl : null;
+      item.posterUrl && isAllowedHeroUrl(item.posterUrl)
+        ? item.posterUrl
+        : null;
 
     const posterUrl =
       storedPoster ?? (kind === "video" ? deriveHeroPosterUrl(item.url) : null);

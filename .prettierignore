@@ -1,0 +1,3 @@
+# Generated files: their tools rewrite them, so formatting them would be undone
+pnpm-lock.yaml
+lib/db/migrations/meta/
