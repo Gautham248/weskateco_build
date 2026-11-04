@@ -64,9 +64,9 @@ describe("waitForGoKwik", () => {
     expect(await ready).toBe(false);
   });
 
-  it("treats an unknown country as India (local development)", async () => {
+  it("uses Shopify's checkout when the country is unknown", async () => {
     window.triggerGokwikCustomCheckout = vi.fn();
-    expect(await waitForGoKwik()).toBe(true);
+    expect(await waitForGoKwik()).toBe(false);
   });
 });
 

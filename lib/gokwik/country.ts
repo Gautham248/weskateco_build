@@ -6,14 +6,28 @@ export const GOKWIK_COUNTRIES = ["IN"];
 export const COUNTRY_COOKIE = "country";
 
 /**
+ * The country to assume when it's unknown, in development only: there's no
+ * Vercel geolocation locally. Set NEXT_PUBLIC_GOKWIK_DEFAULT_COUNTRY=IN in
+ * .env.local to work on GoKwik. Production builds ignore it.
+ */
+function developmentCountry(): string {
+  return process.env.NODE_ENV === "production"
+    ? ""
+    : (process.env.NEXT_PUBLIC_GOKWIK_DEFAULT_COUNTRY ?? "");
+}
+
+/**
  * Whether GoKwik checkout applies to a shopper, from a `document.cookie`
- * string. With no country (local development, or no geolocation) it
- * defaults to available, matching the store's main market.
+ * string. Only shoppers known to be in India get GoKwik. When the country is
+ * unknown (Vercel couldn't locate the IP) they get Shopify's checkout, which
+ * works from anywhere, while GoKwik's popup opens blank outside India.
  */
 export function isGoKwikCountry(cookieString: string): boolean {
   const match = cookieString.match(
     new RegExp(`(?:^|;\\s*)${COUNTRY_COOKIE}=([^;]*)`),
   );
-  const country = match?.[1] ? decodeURIComponent(match[1]).toUpperCase() : "";
-  return !country || GOKWIK_COUNTRIES.includes(country);
+  const country = (
+    match?.[1] ? decodeURIComponent(match[1]) : developmentCountry()
+  ).toUpperCase();
+  return GOKWIK_COUNTRIES.includes(country);
 }

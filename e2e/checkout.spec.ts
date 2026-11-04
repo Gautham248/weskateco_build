@@ -136,6 +136,14 @@ async function buyNow(page: Page) {
   }).toPass({ timeout: 30_000 });
 }
 
+// GoKwik is only offered to shoppers known to be in India. In production the
+// proxy sets this cookie from Vercel's geolocation; locally there's no
+// geolocation header, so the proxy leaves a test-set cookie alone. Tests for
+// other countries override it.
+test.beforeEach(async ({ context, baseURL }) => {
+  await context.addCookies([{ name: "country", value: "IN", url: baseURL! }]);
+});
+
 test.describe("GoKwik checkout handoff", () => {
   test("cart page hands the Shopify cart to GoKwik", async ({ page }) => {
     await stubGokwik(page);
@@ -261,6 +269,33 @@ test.describe("shoppers outside India", () => {
     await page.goto("/cart");
     await expect(page.getByRole("heading", { name: /my cart/i })).toBeVisible();
     await expect(page.getByText(/Buy on EMI/i)).toHaveCount(0);
+  });
+});
+
+test.describe("shoppers whose country isn't known", () => {
+  // Vercel couldn't locate them: Shopify's checkout works from anywhere,
+  // while GoKwik's popup opens blank outside India
+  test.beforeEach(async ({ context }) => {
+    await context.clearCookies({ name: "country" });
+  });
+
+  test("go straight to Shopify checkout without loading GoKwik", async ({
+    page,
+  }) => {
+    const gokwikRequests = recordGokwikRequests(page);
+    const shopifyCheckouts = await interceptShopifyCheckout(page);
+    await addToCartOrSkip(page);
+
+    await page.goto("/cart");
+    const checkout = checkoutButton(page, "Proceed to Checkout");
+    await expect(checkout).toBeEnabled({ timeout: 5_000 });
+    await checkout.click();
+
+    await expectShopifyCheckout(page, shopifyCheckouts);
+    expect(gokwikRequests).toEqual([]);
+    expect(
+      (await page.context().cookies()).some((c) => c.name === "country"),
+    ).toBe(false);
   });
 });
 
