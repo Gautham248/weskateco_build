@@ -21,6 +21,8 @@ export default defineConfig({
         "lib/**/*.{ts,tsx}",
         "components/**/*.{ts,tsx}",
         "app/**/route.ts",
+        // Metadata routes such as sitemap.ts and robots.ts
+        "app/*.ts",
         "proxy.ts",
       ],
       exclude: ["**/*.d.ts", "**/*.test.{ts,tsx}", "lib/**/types.ts"],

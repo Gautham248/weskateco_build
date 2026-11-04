@@ -10,6 +10,7 @@
     "prettier:baseline": "git ls-files | grep -vxFf refactor/prettier-baseline.txt | xargs prettier --check --ignore-unknown",
     "test": "pnpm test:unit && pnpm prettier:baseline",
     "test:unit": "vitest run",
+    "test:all": "node refactor/scripts/run-tests.mjs",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",

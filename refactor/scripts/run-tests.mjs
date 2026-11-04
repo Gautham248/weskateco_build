@@ -11,7 +11,12 @@ const only = process.argv[2]; // optional substring filter
 const r = spawnSync("npx", ["vitest", "run", ...(only ? [only] : [])], {
   encoding: "utf8",
 });
-const output = r.stdout + r.stderr;
+// Vitest couldn't start at all (e.g. npx not found): say so plainly
+if (r.error) {
+  console.error(`Could not run Vitest: ${r.error.message}`);
+  process.exit(1);
+}
+const output = `${r.stdout ?? ""}${r.stderr ?? ""}`;
 const summary = output
   .split("\n")
   .filter((line) => /Test Files|Tests /.test(line));
