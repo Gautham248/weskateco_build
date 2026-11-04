@@ -551,6 +551,16 @@
  },
  {
   "kind": "stay",
+  "from": "lib/*.test.ts",
+  "note": "Vitest tests live next to the code they test; move each with its module"
+ },
+ {
+  "kind": "stay",
+  "from": "lib/**/*.test.ts",
+  "note": "Vitest tests live next to the code they test; move each with its module"
+ },
+ {
+  "kind": "stay",
   "from": "lib/seo/*",
   "note": "SEO metadata and JSON-LD helpers, added after the ledger was written"
  }

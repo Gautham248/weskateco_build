@@ -8,7 +8,7 @@ import StarterKit from "@tiptap/starter-kit";
  * links, so the schema has to understand both. TipTap silently drops anything
  * the schema does not know about when a description is re-serialized, which is
  * how tables used to disappear the moment an admin edited any other part of a
- * description. The regression test in `scripts/test-admin-editor-tables.ts`
+ * description. The regression test in `lib/admin/editor-extensions.test.ts`
  * builds an editor from this same list so the two can never drift.
  */
 export function createEditorExtensions() {

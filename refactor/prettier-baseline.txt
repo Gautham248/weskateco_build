@@ -73,8 +73,5 @@ pnpm-lock.yaml
 refactor/move-ledger.json
 refactor/refactor-roadmap.md
 scripts/deploy.js
-scripts/test-configurator.ts
-scripts/test-filters.ts
-scripts/test-image-url.ts
 tsconfig.json
 weskateco_build.code-workspace
