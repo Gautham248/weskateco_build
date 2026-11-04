@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { addItem, createSingleItemCartAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
+import { createTranslator } from "lib/i18n";
 import { Product, ProductVariant } from "lib/shopify/types";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -10,13 +11,16 @@ import { toast } from "sonner";
 
 export function ProductActions({
   product,
+  locale,
   selectedVariantId: customSelectedVariantId,
   onAddedToCart,
 }: {
   product: Product;
+  locale: string;
   selectedVariantId?: string;
   onAddedToCart?: () => void;
 }) {
+  const t = createTranslator(locale);
   const { variants, availableForSale } = product;
   const { addCartItem } = useCart();
   const searchParams = useSearchParams();
@@ -40,7 +44,7 @@ export function ProductActions({
   const finalVariant = variants.find((v) => v.id === selectedVariantId);
 
   // A product is available for sale when at least one variant is in stock, so
-  // the product-level check above is not enough: the variant actually selected
+  // the product-level check below is not enough: the variant actually selected
   // here (from the URL params, the quick-buy panel, or a single-variant
   // product) can still be sold out while the product itself is not.
   const isSelectedVariantSoldOut =
@@ -78,7 +82,7 @@ export function ProductActions({
             "bg-neutral-200 text-neutral-400 border-transparent cursor-not-allowed",
           )}
         >
-          Out Of Stock
+          {t("product.out_of_stock")}
         </button>
       </div>
     );
@@ -156,7 +160,7 @@ export function ProductActions({
           {!selectedVariantId
             ? "Select Option"
             : isSelectedVariantSoldOut
-              ? "Out Of Stock"
+              ? t("product.out_of_stock")
               : isAdding
                 ? "Adding to Cart..."
                 : isAdded

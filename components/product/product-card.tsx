@@ -46,7 +46,8 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    const variant = product.variants[0];
+    // First in-stock variant: variants[0] may be sold out while the product is not.
+    const variant = product.variants.find((v) => v.availableForSale);
     if (!variant) return;
 
     startTransition(async () => {
@@ -209,43 +210,38 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
           </div>
         )}
 
-        {/* Add to Cart Hover Button (single element) */}
-        <div
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            // Sold out: stay a dead end instead of opening quick buy, matching
-            // the disabled Add To Cart button on the product page.
-            if (isSoldOut) return;
-            setIsSidebarOpen(true);
-          }}
-          aria-disabled={isSoldOut}
-          className={`group/btn absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 md:hover:w-[120px] items-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white transition-all duration-300 overflow-hidden ${
-            isSoldOut
-              ? "cursor-not-allowed opacity-40"
-              : "cursor-pointer active:scale-95"
-          }`}
-        >
-          <div className="flex items-center justify-start gap-2 px-2 md:px-3 w-full h-full">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="flex-shrink-0"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            <span className="text-sm font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
-              {isSoldOut ? t("product.sold_out") : "Add to Cart"}
-            </span>
+        {/* Add to Cart Hover Button (single element). Hidden when sold out:
+            the Sold Out badge below already says so. */}
+        {!isSoldOut && (
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsSidebarOpen(true);
+            }}
+            className="cursor-pointer group/btn absolute bottom-3 right-3 z-20 flex h-8 w-8 md:h-10 md:w-10 md:hover:w-[120px] items-center rounded-full bg-black/30 dark:bg-white/20 backdrop-blur-md text-white transition-all duration-300 active:scale-95 overflow-hidden"
+          >
+            <div className="flex items-center justify-start gap-2 px-2 md:px-3 w-full h-full">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="flex-shrink-0"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              <span className="text-sm font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
+                Add to Cart
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         {isSoldOut && (
           <div className="absolute top-3 left-3 z-10 rounded-full bg-neutral-900/90 px-3 py-1 text-xs font-semibold tracking-wider text-white backdrop-blur-xs dark:bg-neutral-100 dark:text-neutral-900">
@@ -282,10 +278,12 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
             />
           )}
         </div>
-        <SnapmintEmiBadge
-          priceAmount={priceRange.minVariantPrice.amount}
-          onClick={handleEmiCheckout}
-        />
+        {!isSoldOut && (
+          <SnapmintEmiBadge
+            priceAmount={priceRange.minVariantPrice.amount}
+            onClick={handleEmiCheckout}
+          />
+        )}
       </div>
       <QuickBuySidebar
         isOpen={isSidebarOpen}
