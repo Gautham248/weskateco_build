@@ -402,7 +402,10 @@ describe("checkout", () => {
   it("createSingleItemCartAction creates a separate one-item cart", async () => {
     shopify.createCart.mockResolvedValue(cart("cart-single"));
 
-    expect(await createSingleItemCartAction("variant-1")).toBe("cart-single");
+    expect(await createSingleItemCartAction("variant-1")).toEqual({
+      id: "cart-single",
+      checkoutUrl: CHECKOUT_URL,
+    });
     expect(shopify.createCart).toHaveBeenCalledWith([
       { merchandiseId: "variant-1", quantity: 1 },
     ]);
