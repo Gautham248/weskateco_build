@@ -1,7 +1,6 @@
 import { defaultSort, sorting } from "lib/constants";
 import { getProducts, getCollections } from "lib/shopify";
 import { createTranslator } from "lib/i18n";
-import { Suspense } from "react";
 import StoreCollectionClient from "./[collection]/store-collection-client";
 import { SITE_NAME, withPageMetadata } from "lib/seo/metadata";
 
@@ -52,17 +51,15 @@ export default async function StorePage(props: {
   const t = createTranslator(locale);
 
   return (
-    <Suspense fallback={null}>
-      <StoreCollectionClient
-        initialCollectionHandle=""
-        allProducts={allProducts}
-        allCollections={allCollections}
-        locale={locale}
-        noProductsText={t("collection.no_products")}
-        initialFilters={initialFilters}
-        initialSort={sort || ""}
-        initialPage={page}
-      />
-    </Suspense>
+    <StoreCollectionClient
+      initialCollectionHandle=""
+      allProducts={allProducts}
+      allCollections={allCollections}
+      locale={locale}
+      noProductsText={t("collection.no_products")}
+      initialFilters={initialFilters}
+      initialSort={sort || ""}
+      initialPage={page}
+    />
   );
 }
