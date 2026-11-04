@@ -10,6 +10,18 @@ This template uses React Server Components, Server Actions, `Suspense`, `useOpti
 
 > Note: Looking for Next.js Commerce v1? View the [code](https://github.com/vercel/commerce/tree/v1), [demo](https://commerce-v1.vercel.store), and [release notes](https://github.com/vercel/commerce/releases/tag/v1).
 
+## Domains and checkout (WeSkate Co)
+
+| Domain               | Serves                                                                                                  |
+| -------------------- | ------------------------------------------------------------------------------------------------------- |
+| `weskateco.com`      | This site (Vercel)                                                                                      |
+| `shop.weskateco.com` | Shopify: checkout, order status, customer accounts. CNAME `shop` → `gumfkb-x7.myshopify.com` at GoDaddy |
+
+- **Keep `shop.weskateco.com` as Shopify's primary domain** (Shopify admin → Settings → Domains). Shopify builds its checkout, thank-you and order-status links from the primary domain, including the "View your order" links in emails and GoKwik's redirect after payment. If it's set to `weskateco.com`, all of those land on this site and 404, and so do the Shopify-checkout fallbacks in `lib/gokwik/checkout.ts` and `lib/gokwik/use-gokwik-checkout.ts`. Nothing in the code or tests would catch it.
+- **Shopify's online store runs a redirect theme** ([Hydrogen redirect theme](https://github.com/Shopify/hydrogen-redirect-theme), storefront hostname `weskateco.com`). It sends visits to the old Liquid store on `shop.weskateco.com` to the same page here.
+- **Checkout:** shoppers in India pay through GoKwik's popup. Shopify's own checkout is the fallback when GoKwik can't open. Once #90 lands, it's also the checkout for shoppers outside India (outside India, GoKwik's popup opens blank). It takes international cards through Easebuzz, in INR, for the international market.
+- **`/cart/checkout`:** GoKwik's script sends shoppers to this Shopify theme URL when it can't run. `app/[locale]/cart/checkout/route.ts` answers it by redirecting to the Shopify checkout of the right cart.
+
 ## Providers
 
 Vercel will only be actively maintaining a Shopify version [as outlined in our vision and strategy for Next.js Commerce](https://github.com/vercel/commerce/pull/966).
