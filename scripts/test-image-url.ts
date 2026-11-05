@@ -103,17 +103,9 @@ function main() {
     SHOPIFY,
   );
 
-  equal(
-    "a zero width is ignored",
-    shopifyImageUrl(SHOPIFY, 0),
-    SHOPIFY,
-  );
+  equal("a zero width is ignored", shopifyImageUrl(SHOPIFY, 0), SHOPIFY);
 
-  equal(
-    "a negative width is ignored",
-    shopifyImageUrl(SHOPIFY, -800),
-    SHOPIFY,
-  );
+  equal("a negative width is ignored", shopifyImageUrl(SHOPIFY, -800), SHOPIFY);
 
   equal(
     "a fractional width is rounded to a whole pixel",
@@ -123,8 +115,7 @@ function main() {
 
   check(
     "the three buckets increase in size",
-    SHOPIFY_IMAGE_WIDTH.thumb <
-      SHOPIFY_IMAGE_WIDTH.card &&
+    SHOPIFY_IMAGE_WIDTH.thumb < SHOPIFY_IMAGE_WIDTH.card &&
       SHOPIFY_IMAGE_WIDTH.card < SHOPIFY_IMAGE_WIDTH.hero,
     "a thumb being larger than a hero would mean the buckets were mis-ordered",
   );

@@ -36,9 +36,7 @@ export function ConfiguratorHeader({
       </Link>
 
       {/* Title */}
-      <h1
-        className="text-center text-xl font-bold uppercase tracking-wide md:text-2xl font-clash"
-      >
+      <h1 className="text-center text-xl font-bold uppercase tracking-wide md:text-2xl font-clash">
         {title}
       </h1>
 

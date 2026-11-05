@@ -9,7 +9,16 @@ import {
   EPOXY_TABLE_ROWS,
 } from "lib/deck-guide/data";
 import DeckCrosslink from "components/guides/callout";
-import { DefList, GuideTable, Note, ProseCols, SectionHeader, SubHead, Container, Section } from "components/guides/ui";
+import {
+  DefList,
+  GuideTable,
+  Note,
+  ProseCols,
+  SectionHeader,
+  SubHead,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 export default function EpoxySection() {
   return (

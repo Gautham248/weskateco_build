@@ -44,7 +44,9 @@ function mergeImages(product: Product, override: ProductOverride): Image[] {
       : (product.images || []).filter((image) => !removed.has(image.url));
 
   const seen = new Set(base.map((image) => image.url));
-  const appended = (override.images || []).filter((image) => !seen.has(image.url));
+  const appended = (override.images || []).filter(
+    (image) => !seen.has(image.url),
+  );
 
   return base.length === 0 && appended.length === 0
     ? []

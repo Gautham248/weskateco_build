@@ -6,11 +6,11 @@ it, so the wording stays consistent across the site.
 
 ## Where Hindi text lives
 
-| Text | Where it's stored | Notes |
-|---|---|---|
-| Product and collection titles, descriptions, SEO fields | Shopify translations (locale `hi`) | Edit in Shopify's Translate & Adapt app, or with the Admin API's `translationsRegister`. The storefront requests them with `@inContext(language: HI)`. |
-| Interface text (menus, buttons, labels, footer) | `locales/hi.json`, mirrored by `locales/en.json` | Every key must exist in both files. A missing key shows the raw key name on the page. |
-| Admin-managed content (hero, Newly Released, Shop Now, social posts) | Database | English only for now. |
+| Text                                                                 | Where it's stored                                | Notes                                                                                                                                                  |
+| -------------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Product and collection titles, descriptions, SEO fields              | Shopify translations (locale `hi`)               | Edit in Shopify's Translate & Adapt app, or with the Admin API's `translationsRegister`. The storefront requests them with `@inContext(language: HI)`. |
+| Interface text (menus, buttons, labels, footer)                      | `locales/hi.json`, mirrored by `locales/en.json` | Every key must exist in both files. A missing key shows the raw key name on the page.                                                                  |
+| Admin-managed content (hero, Newly Released, Shop Now, social posts) | Database                                         | English only for now.                                                                                                                                  |
 
 ## Tone
 
@@ -34,61 +34,61 @@ Interface labels are short and natural.
 
 ## Terms
 
-| English | Hindi |
-|---|---|
-| deck / decks | डेक / डेक्स |
-| complete / completes | कम्प्लीट / कम्प्लीट्स |
-| beginner / pro | बिगिनर / प्रो |
-| skateboard(s) / surfskate(s) | स्केटबोर्ड(्स) / सर्फ़स्केट(्स) |
-| trucks / wheels / bearings | ट्रक्स / व्हील्स / बेयरिंग्स |
-| griptape / grip | ग्रिपटेप / ग्रिप |
-| hardware / bushings | हार्डवेयर / बुशिंग्स |
-| accessories / apparel | एक्सेसरीज़ / अपैरल |
-| concave (Mellow / Medium) | कॉन्केव (मेलो / मीडियम) |
-| popsicle / double kick / old school | पॉप्सिकल / डबल किक / ओल्ड स्कूल |
-| rounded / squared end | राउंडेड / स्क्वेयर्ड एंड |
-| nose / tail / wheelbase | नोज़ / टेल / व्हीलबेस |
-| ply / plies / Canadian maple | प्लाई / कैनेडियन मेपल |
-| cold-pressed / epoxy | कोल्ड-प्रेस्ड / एपॉक्सी |
-| stain / graphic / artwork | स्टेन / ग्राफ़िक / आर्टवर्क |
-| graffiti artist | ग्रैफ़िटी आर्टिस्ट |
-| tech deck / carbon-fibre / fibreglass | टेक डेक / कार्बन-फ़ाइबर / फ़ाइबरग्लास |
-| ollie / push / turn | ओली / पुश / टर्न |
-| carve / carving / pump | कार्व / कार्विंग / पंप |
-| ledges / ramps | लेजेस / रैम्प्स |
+| English                                                  | Hindi                                                  |
+| -------------------------------------------------------- | ------------------------------------------------------ |
+| deck / decks                                             | डेक / डेक्स                                            |
+| complete / completes                                     | कम्प्लीट / कम्प्लीट्स                                  |
+| beginner / pro                                           | बिगिनर / प्रो                                          |
+| skateboard(s) / surfskate(s)                             | स्केटबोर्ड(्स) / सर्फ़स्केट(्स)                        |
+| trucks / wheels / bearings                               | ट्रक्स / व्हील्स / बेयरिंग्स                           |
+| griptape / grip                                          | ग्रिपटेप / ग्रिप                                       |
+| hardware / bushings                                      | हार्डवेयर / बुशिंग्स                                   |
+| accessories / apparel                                    | एक्सेसरीज़ / अपैरल                                     |
+| concave (Mellow / Medium)                                | कॉन्केव (मेलो / मीडियम)                                |
+| popsicle / double kick / old school                      | पॉप्सिकल / डबल किक / ओल्ड स्कूल                        |
+| rounded / squared end                                    | राउंडेड / स्क्वेयर्ड एंड                               |
+| nose / tail / wheelbase                                  | नोज़ / टेल / व्हीलबेस                                  |
+| ply / plies / Canadian maple                             | प्लाई / कैनेडियन मेपल                                  |
+| cold-pressed / epoxy                                     | कोल्ड-प्रेस्ड / एपॉक्सी                                |
+| stain / graphic / artwork                                | स्टेन / ग्राफ़िक / आर्टवर्क                            |
+| graffiti artist                                          | ग्रैफ़िटी आर्टिस्ट                                     |
+| tech deck / carbon-fibre / fibreglass                    | टेक डेक / कार्बन-फ़ाइबर / फ़ाइबरग्लास                  |
+| ollie / push / turn                                      | ओली / पुश / टर्न                                       |
+| carve / carving / pump                                   | कार्व / कार्विंग / पंप                                 |
+| ledges / ramps                                           | लेजेस / रैम्प्स                                        |
 | quarter pipe / kicker / flat rail / ledge / lip / coping | क्वार्टर पाइप / किकर / फ़्लैट रेल / लेज / लिप / कोपिंग |
-| marine plywood / laminate | मरीन प्लाईवुड / लैमिनेट |
-| fishtail / riser | फ़िशटेल / राइज़र |
-| kingpin / hollow / solid / baseplate | किंगपिन / हॉलो / सॉलिड / बेसप्लेट |
-| axle / hanger | एक्सल / हैंगर |
-| spring-loaded / pivot / swivel / tension | स्प्रिंग-लोडेड / पिवट / स्विवल / टेंशन |
-| speed washers / axle nuts / mounting hardware | स्पीड वॉशर्स / एक्सल नट्स / माउंटिंग हार्डवेयर |
-| sold as a pair | जोड़ी में बिकते हैं |
-| races / cage / shield / seal / spacers | रेसेज़ / केज / शील्ड / सील / स्पेसर्स |
-| ceramic / chrome steel / silicon nitride | सिरेमिक / क्रोम स्टील / सिलिकॉन नाइट्राइड |
-| urethane / durometer / high rebound | यूरेथेन / ड्यूरोमीटर / हाई-रिबाउंड |
-| grit / grain | ग्रिट / ग्रेन |
-| perforated / abrasive / adhesive | पर्फ़ोरेटेड / एब्रेसिव / एडहेसिव |
-| assembled / set up with | असेंबल किया हुआ / के साथ सेट-अप |
-| tee / T-shirts | टी-शर्ट / टी-शर्ट्स |
-| T-tool | T-टूल |
-| colours (in titles) | phonetic: पिंक, ब्लैक, ब्लू, रेड, येलो, कोरल |
+| marine plywood / laminate                                | मरीन प्लाईवुड / लैमिनेट                                |
+| fishtail / riser                                         | फ़िशटेल / राइज़र                                       |
+| kingpin / hollow / solid / baseplate                     | किंगपिन / हॉलो / सॉलिड / बेसप्लेट                      |
+| axle / hanger                                            | एक्सल / हैंगर                                          |
+| spring-loaded / pivot / swivel / tension                 | स्प्रिंग-लोडेड / पिवट / स्विवल / टेंशन                 |
+| speed washers / axle nuts / mounting hardware            | स्पीड वॉशर्स / एक्सल नट्स / माउंटिंग हार्डवेयर         |
+| sold as a pair                                           | जोड़ी में बिकते हैं                                    |
+| races / cage / shield / seal / spacers                   | रेसेज़ / केज / शील्ड / सील / स्पेसर्स                  |
+| ceramic / chrome steel / silicon nitride                 | सिरेमिक / क्रोम स्टील / सिलिकॉन नाइट्राइड              |
+| urethane / durometer / high rebound                      | यूरेथेन / ड्यूरोमीटर / हाई-रिबाउंड                     |
+| grit / grain                                             | ग्रिट / ग्रेन                                          |
+| perforated / abrasive / adhesive                         | पर्फ़ोरेटेड / एब्रेसिव / एडहेसिव                       |
+| assembled / set up with                                  | असेंबल किया हुआ / के साथ सेट-अप                        |
+| tee / T-shirts                                           | टी-शर्ट / टी-शर्ट्स                                    |
+| T-tool                                                   | T-टूल                                                  |
+| colours (in titles)                                      | phonetic: पिंक, ब्लैक, ब्लू, रेड, येलो, कोरल           |
 
 ## Recurring phrases
 
-| English | Hindi |
-|---|---|
-| Specs / Notes / Dimensions (inches) | स्पेसिफ़िकेशन / नोट्स / माप (इंच) |
-| width / length / height / depth | चौड़ाई / लंबाई / ऊँचाई / गहराई |
-| In the box | बॉक्स में क्या है |
-| Good to know | ध्यान रखें |
-| Best for | किसके लिए बेस्ट है |
+| English                                                 | Hindi                                                         |
+| ------------------------------------------------------- | ------------------------------------------------------------- |
+| Specs / Notes / Dimensions (inches)                     | स्पेसिफ़िकेशन / नोट्स / माप (इंच)                             |
+| width / length / height / depth                         | चौड़ाई / लंबाई / ऊँचाई / गहराई                                |
+| In the box                                              | बॉक्स में क्या है                                             |
+| Good to know                                            | ध्यान रखें                                                    |
+| Best for                                                | किसके लिए बेस्ट है                                            |
 | Made by X. Distributed in India by Toucan Distribution. | X द्वारा निर्मित। भारत में Toucan Distribution द्वारा वितरित। |
-| Buy at WeSkate Co | WeSkate Co पर खरीदें |
-| fast India shipping | भारत में फ़ास्ट शिपिंग |
-| Add to Cart / Buy Now | कार्ट में जोड़ें / अभी खरीदें |
-| Shop / View All / Contact Us | शॉप / सब देखें / संपर्क करें |
-| Language | भाषा |
+| Buy at WeSkate Co                                       | WeSkate Co पर खरीदें                                          |
+| fast India shipping                                     | भारत में फ़ास्ट शिपिंग                                        |
+| Add to Cart / Buy Now                                   | कार्ट में जोड़ें / अभी खरीदें                                 |
+| Shop / View All / Contact Us                            | शॉप / सब देखें / संपर्क करें                                  |
+| Language                                                | भाषा                                                          |
 
 ## Formatting
 

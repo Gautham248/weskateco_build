@@ -3,7 +3,10 @@
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
 import clsx from "clsx";
-import type { ConfiguratorState, ConfiguratorItem } from "lib/configurator/types";
+import type {
+  ConfiguratorState,
+  ConfiguratorItem,
+} from "lib/configurator/types";
 
 interface StepSlot {
   id: number;
@@ -30,7 +33,12 @@ function SlotIcon({ category }: { category: keyof ConfiguratorState }) {
   switch (category) {
     case "deck":
       return (
-        <svg className="h-10 w-10 text-neutral-400" viewBox="0 0 48 48" fill="none" stroke="currentColor">
+        <svg
+          className="h-10 w-10 text-neutral-400"
+          viewBox="0 0 48 48"
+          fill="none"
+          stroke="currentColor"
+        >
           <rect x="16" y="6" width="16" height="36" rx="8" strokeWidth="2" />
           <circle cx="20" cy="12" r="1.5" fill="currentColor" />
           <circle cx="28" cy="12" r="1.5" fill="currentColor" />
@@ -40,7 +48,12 @@ function SlotIcon({ category }: { category: keyof ConfiguratorState }) {
       );
     case "trucks":
       return (
-        <svg className="h-10 w-10 text-neutral-400" viewBox="0 0 48 48" fill="none" stroke="currentColor">
+        <svg
+          className="h-10 w-10 text-neutral-400"
+          viewBox="0 0 48 48"
+          fill="none"
+          stroke="currentColor"
+        >
           <path d="M6 24H42" strokeWidth="2.5" strokeLinecap="round" />
           <rect x="18" y="16" width="12" height="16" rx="2" strokeWidth="2" />
           <circle cx="6" cy="24" r="3" strokeWidth="2" />
@@ -49,14 +62,24 @@ function SlotIcon({ category }: { category: keyof ConfiguratorState }) {
       );
     case "wheels":
       return (
-        <svg className="h-10 w-10 text-neutral-400" viewBox="0 0 48 48" fill="none" stroke="currentColor">
+        <svg
+          className="h-10 w-10 text-neutral-400"
+          viewBox="0 0 48 48"
+          fill="none"
+          stroke="currentColor"
+        >
           <circle cx="24" cy="24" r="18" strokeWidth="2.5" />
           <circle cx="24" cy="24" r="8" strokeWidth="2" />
         </svg>
       );
     case "bearings":
       return (
-        <svg className="h-10 w-10 text-neutral-400" viewBox="0 0 48 48" fill="none" stroke="currentColor">
+        <svg
+          className="h-10 w-10 text-neutral-400"
+          viewBox="0 0 48 48"
+          fill="none"
+          stroke="currentColor"
+        >
           <circle cx="24" cy="24" r="18" strokeWidth="2" />
           <circle cx="24" cy="24" r="10" strokeWidth="2" />
           <circle cx="24" cy="10" r="2.5" fill="currentColor" />
@@ -67,13 +90,31 @@ function SlotIcon({ category }: { category: keyof ConfiguratorState }) {
       );
     case "griptape":
       return (
-        <svg className="h-10 w-10 text-neutral-400" viewBox="0 0 48 48" fill="none" stroke="currentColor">
-          <rect x="12" y="6" width="24" height="36" rx="3" strokeWidth="2" strokeDasharray="3 3" />
+        <svg
+          className="h-10 w-10 text-neutral-400"
+          viewBox="0 0 48 48"
+          fill="none"
+          stroke="currentColor"
+        >
+          <rect
+            x="12"
+            y="6"
+            width="24"
+            height="36"
+            rx="3"
+            strokeWidth="2"
+            strokeDasharray="3 3"
+          />
         </svg>
       );
     default:
       return (
-        <svg className="h-10 w-10 text-neutral-400" viewBox="0 0 48 48" fill="none" stroke="currentColor">
+        <svg
+          className="h-10 w-10 text-neutral-400"
+          viewBox="0 0 48 48"
+          fill="none"
+          stroke="currentColor"
+        >
           <path d="M12 24H36M24 12V36" strokeWidth="2" strokeLinecap="round" />
         </svg>
       );
@@ -90,11 +131,41 @@ export function BuildSummarySidebar({
   onNeedsBoardType,
 }: BuildSummarySidebarProps) {
   const slots: StepSlot[] = [
-    { id: 2, category: "deck", title: "DECKS", item: state.deck, isRequired: true },
-    { id: 3, category: "trucks", title: "TRUCKS", item: state.trucks, isRequired: true },
-    { id: 4, category: "wheels", title: "WHEELS", item: state.wheels, isRequired: true },
-    { id: 5, category: "bearings", title: "BEARINGS", item: state.bearings, isRequired: true },
-    { id: 6, category: "griptape", title: "GRIPTAPE", item: state.griptape, isRequired: true },
+    {
+      id: 2,
+      category: "deck",
+      title: "DECKS",
+      item: state.deck,
+      isRequired: true,
+    },
+    {
+      id: 3,
+      category: "trucks",
+      title: "TRUCKS",
+      item: state.trucks,
+      isRequired: true,
+    },
+    {
+      id: 4,
+      category: "wheels",
+      title: "WHEELS",
+      item: state.wheels,
+      isRequired: true,
+    },
+    {
+      id: 5,
+      category: "bearings",
+      title: "BEARINGS",
+      item: state.bearings,
+      isRequired: true,
+    },
+    {
+      id: 6,
+      category: "griptape",
+      title: "GRIPTAPE",
+      item: state.griptape,
+      isRequired: true,
+    },
   ];
 
   // Complete if all required components are chosen

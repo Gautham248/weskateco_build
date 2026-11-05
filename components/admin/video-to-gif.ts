@@ -54,7 +54,9 @@ function seekTo(video: HTMLVideoElement, time: number): Promise<void> {
     };
     const onError = () => {
       cleanup();
-      reject(new Error("The browser could not decode a frame from this video."));
+      reject(
+        new Error("The browser could not decode a frame from this video."),
+      );
     };
     const cleanup = () => {
       video.removeEventListener("seeked", onSeeked);
@@ -89,7 +91,8 @@ export async function videoToGif(
 
   // Some browsers will not decode a detached media element, so it is attached
   // (invisibly) rather than left floating.
-  video.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0;pointer-events:none";
+  video.style.cssText =
+    "position:fixed;left:-9999px;top:0;opacity:0;pointer-events:none";
   document.body.appendChild(video);
 
   const cleanup = () => {
@@ -174,7 +177,7 @@ export async function videoToGif(
       // Landing just before the frame's nominal time avoids landing on a keyframe
       // boundary that a decoder may skip past.
       const time = Math.min(
-        Math.max(0, (index / fps) - 0.001),
+        Math.max(0, index / fps - 0.001),
         Math.max(0, duration - 0.001),
       );
 
@@ -182,12 +185,7 @@ export async function videoToGif(
 
       context.drawImage(video, 0, 0, targetWidth, targetHeight);
 
-      const pixels = context.getImageData(
-        0,
-        0,
-        targetWidth,
-        targetHeight,
-      ).data;
+      const pixels = context.getImageData(0, 0, targetWidth, targetHeight).data;
 
       const palette = quantize(pixels, maxColors);
       const indexed = applyPalette(pixels, palette);

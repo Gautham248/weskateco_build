@@ -1,5 +1,10 @@
 import { FINISH_PROSE, FINISH_SECTION } from "lib/deck-guide/data";
-import { ProseCols, SectionHeader, Container, Section } from "components/guides/ui";
+import {
+  ProseCols,
+  SectionHeader,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 export default function FinishSection() {
   return (
