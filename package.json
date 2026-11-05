@@ -1,14 +1,16 @@
 {
   "name": "weskateco",
   "private": true,
+  "engines": {
+    "node": ">=20.12"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
-    "prettier:baseline": "git ls-files | grep -vxFf refactor/prettier-baseline.txt | xargs prettier --check --ignore-unknown",
-    "test": "pnpm test:unit && pnpm prettier:baseline",
+    "test": "pnpm test:unit && pnpm prettier:check",
     "test:unit": "vitest run",
     "test:all": "node refactor/scripts/run-tests.mjs",
     "test:watch": "vitest",

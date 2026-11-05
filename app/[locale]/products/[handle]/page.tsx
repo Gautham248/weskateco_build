@@ -55,13 +55,14 @@ export async function generateMetadata(props: {
 
   const title = product.seo?.title || product.title;
   // A merchant-written SEO description is used as written; only the product
-  // description fallback is shortened
+  // description fallback is shortened. Undefined rather than "" when a product
+  // has neither, so the tags are left out instead of being emitted empty.
   const description =
-    product.seo?.description || summarize(product.description);
+    product.seo?.description || summarize(product.description) || undefined;
 
   return {
     title: documentTitle(title),
-    description,
+    ...(description ? { description } : {}),
     alternates: localeAlternates(`/products/${product.handle}`, params.locale),
     robots: {
       index: indexable,
@@ -73,7 +74,7 @@ export async function generateMetadata(props: {
     },
     openGraph: openGraph(params.locale, `/products/${product.handle}`, {
       title: socialTitle(title),
-      description,
+      ...(description ? { description } : {}),
       images: url
         ? [{ url, width, height, alt }]
         : siteShareImage(params.locale),
