@@ -60,7 +60,6 @@ export default async function RootLayout(props: {
   return (
     <html lang={params.locale} className={`${GeistSans.variable}`}>
       <body className="bg-white text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
-        <UnsupportedBrowserMessage locale={params.locale} />
         <div className="site-root">
           <CartProvider cartPromise={cart}>
             <GoKwikOrderWatcher />
@@ -76,6 +75,10 @@ export default async function RootLayout(props: {
             </TranslationProvider>
           </CartProvider>
         </div>
+        {/* After the site in the document, so a reader that doesn't apply CSS
+            sees the page's own content first; which of the two is shown is
+            decided in globals.css, not by order */}
+        <UnsupportedBrowserMessage locale={params.locale} />
         <GoKwikScript />
         <GoogleAnalytics />
         <MetaPixel />
