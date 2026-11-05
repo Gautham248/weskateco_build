@@ -92,7 +92,7 @@ Interface labels are short and natural.
 
 ## Artist credits
 
-Write a deck's artist credit in a Hindi description as `डेक आर्टवर्क: <artist>` on its own line (the English is `Deck Artwork by <artist>`). The product page turns either form into the artist badge; any other wording shows as plain text.
+Write a deck's artist credit in a Hindi description as `डेक आर्टवर्क: <artist>` on its own line (the English is `Deck Artwork by <artist>`), with the artist's name in Latin script. The product page turns either form into the artist badge. It also reads `डेक कलाकृति: <artist>` and drops a trailing `द्वारा`, since the store's existing Hindi uses both; any other wording shows as plain text.
 
 ## Collection titles
 

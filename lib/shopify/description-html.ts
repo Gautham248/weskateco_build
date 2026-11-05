@@ -25,11 +25,12 @@ function wrapTables(html: string, locale: string): string {
 /**
  * A deck's artist credit, written in the description as "Deck Artwork by
  * <artist>" or, in Hindi translations, "डेक आर्टवर्क: <artist>" (see
- * locales/hindi-glossary.md). The artist may be wrapped in inline tags and
- * runs to the end of the line or paragraph.
+ * locales/hindi-glossary.md). The store's Hindi also has "डेक कलाकृति:" and
+ * a trailing "द्वारा" ("by"), as in "डेक आर्टवर्क: अनुषा द्वारा". The artist
+ * may be wrapped in inline tags and runs to the end of the line or paragraph.
  */
 const ARTWORK_CREDIT =
-  /(?:Deck\s+Artwork\s+by|डेक\s+आर्टवर्क\s*:)[\s\u00a0&nbsp;]*((?:<[^>]+>|[^<>\n\r])+?)(?:<br\s*\/?>|<\/p>|\n|(?=<span[^>]*><br)|$)/gi;
+  /(?:Deck\s+Artwork\s+by|डेक\s+(?:आर्टवर्क|कलाकृति)\s*:)[\s\u00a0&nbsp;]*((?:<[^>]+>|[^<>\n\r])+?)(?:<br\s*\/?>|<\/p>|\n|(?=<span[^>]*><br)|$)/gi;
 
 /** Turn the artist credit into the artist badge, labelled in `locale`. */
 function formatArtworkBadge(html: string, locale: string): string {
@@ -37,7 +38,8 @@ function formatArtworkBadge(html: string, locale: string): string {
     const artist = rawArtist
       .replace(/<[^>]+>/g, "")
       .replace(/&nbsp;|\u00a0/g, " ")
-      .trim();
+      .trim()
+      .replace(/\s*द्वारा$/, "");
     if (!artist) return match;
     const label = getTranslation(locale, "product.deck_artwork_by").replace(
       "{artist}",

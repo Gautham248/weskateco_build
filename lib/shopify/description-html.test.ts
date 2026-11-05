@@ -137,6 +137,28 @@ describe("product description HTML", () => {
       expect(html).not.toContain("<strong>MIA</strong>");
     });
 
+    it("reads the credits as the store's Hindi writes them", () => {
+      for (const credit of [
+        '<p dir="ltr">डेक आर्टवर्क: <b><i>Anusha</i></b> द्वारा</p>',
+        '<p dir="ltr">डेक कलाकृति: <b><i>Anusha</i></b> द्वारा</p>',
+      ]) {
+        const html = prepareProductDescriptionHtml(credit, "hi");
+
+        expect(html).toContain("bg-[#F4FFCD]");
+        expect(html).toMatch(/डेक आर्टवर्क: Anusha\s*<\/span>/);
+        expect(html).not.toContain("द्वारा");
+      }
+    });
+
+    it("keeps द्वारा inside an artist's name", () => {
+      const html = prepareProductDescriptionHtml(
+        "<p>Deck Artwork by द्वारा Studio</p>",
+        "hi",
+      );
+
+      expect(html).toContain("डेक आर्टवर्क: द्वारा Studio");
+    });
+
     it("leaves other mentions of artwork alone", () => {
       const plain = "<p>The artwork sits under a clear coat.</p>";
 
