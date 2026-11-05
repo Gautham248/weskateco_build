@@ -1,6 +1,9 @@
 {
   "name": "weskateco",
   "private": true,
+  "engines": {
+    "node": ">=20.12"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

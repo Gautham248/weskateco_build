@@ -1,11 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// Load the same env files Next.js reads so tests know whether Shopify is configured
+// Load the same env files Next.js reads so tests know whether Shopify is
+// configured. Only a missing file is ignored: swallowing everything would hide
+// process.loadEnvFile being absent (added in Node 20.12), and the suite would
+// then skip every Shopify test instead of saying why.
 for (const file of [".env.local", ".env"]) {
   try {
     process.loadEnvFile(file);
-  } catch {
-    // File is optional
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException)?.code !== "ENOENT") throw error;
   }
 }
 
