@@ -151,13 +151,16 @@ export function withPageMetadata(
     const { locale } = await props.params;
     const query = paginated ? pageQuery((await props.searchParams)?.page) : "";
     const title = openGraphTitle(metadata.title);
+    // Shortened here too: a page's own description is hand-written and can run
+    // past what search results and link previews show
     const description =
       typeof metadata.description === "string"
-        ? metadata.description
+        ? summarize(metadata.description)
         : undefined;
 
     return {
       ...metadata,
+      ...(description ? { description } : {}),
       alternates: localeAlternates(path, locale, query),
       openGraph: openGraph(locale, path + query, {
         // The homepage's segment has its own image file, which Next links
