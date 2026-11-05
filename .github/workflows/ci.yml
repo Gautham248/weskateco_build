@@ -117,13 +117,12 @@ jobs:
         env:
           SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
           SHOPIFY_STOREFRONT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
-          # Nothing else is passed on purpose. An unset secret or variable
-          # expands to an empty string rather than being absent, and
-          # e2e/helpers.ts reads the collection with ??, which only falls back
-          # on null -- so forwarding an undefined E2E_COLLECTION here would set
-          # it to "" and send every test to /store/ instead of the default
-          # collection. The app builds and serves without the admin variables,
-          # and the suite never opens an admin page.
+          # Optional: an unset repository variable arrives as an empty
+          # string rather than being absent, which e2e/helpers.ts now falls
+          # back on, so leaving it undefined selects the default collection.
+          E2E_COLLECTION: ${{ vars.E2E_COLLECTION }}
+          # No admin variables: the app builds and serves without them, and
+          # the suite never opens an admin page.
         run: pnpm exec playwright test
 
       - name: Upload the report
