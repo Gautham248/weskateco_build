@@ -131,8 +131,17 @@ body .guides-monochrome ::selection {
   cursor: grab !important;
 }
 
+/* A plain click on a link still follows it (the drag only starts after the
+   pointer moves), so links keep the pointer until a drag is under way. */
+.cursor-grab a[href],
+.cursor-grab a[href] * {
+  cursor: pointer !important;
+}
+
 .cursor-grabbing,
-.cursor-grabbing * {
+.cursor-grabbing *,
+.cursor-grabbing a[href],
+.cursor-grabbing a[href] * {
   cursor: grabbing !important;
 }
 
