@@ -29,8 +29,13 @@ export default defineConfig({
   globalSetup: "./e2e/global-setup.ts",
   fullyParallel: true,
   // A local dev server compiles pages on demand; more parallel tests than
-  // this overload it and pages time out
-  workers: useDevServer && !externalBaseUrl ? 2 : undefined,
+  // this overload it and pages time out. In CI, Playwright's default (half
+  // the cores) is 1 worker on a 2-core runner, which made the suite take ~10
+  // minutes. The tests spend most of their time waiting on Shopify and
+  // GoKwik timeouts rather than on CPU, so 3 workers share the cores well.
+  // Locally the default stays (4 workers on a typical laptop).
+  workers:
+    useDevServer && !externalBaseUrl ? 2 : process.env.CI ? 3 : undefined,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
