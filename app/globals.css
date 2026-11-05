@@ -251,6 +251,52 @@ body .guides-monochrome ::selection {
 @plugin "@tailwindcss/container-queries";
 @plugin "@tailwindcss/typography";
 
+/*
+ * Unsupported-browser fallback. Our floor is cascade layers (Chrome 99,
+ * Safari 15.4, Firefox 97, matching "browserslist" in package.json): every
+ * Tailwind utility lives in an @layer, and older browsers skip those blocks
+ * entirely, leaving a broken page. So the unlayered rules below show the
+ * message and hide the site, and the @layer rules, which only supporting
+ * browsers apply, flip that back. They need !important because unlayered
+ * styles otherwise beat layered ones. Keep this plain, old-browser-safe CSS.
+ */
+.unsupported-browser {
+  display: block;
+  max-width: 28rem;
+  margin: 20vh auto 0;
+  padding: 0 1.5rem;
+  font-family: "Archivo", Arial, sans-serif;
+  color: #000;
+  text-align: center;
+}
+
+.unsupported-browser h1 {
+  margin: 0 0 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.unsupported-browser p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #525252;
+}
+
+.site-root {
+  display: none;
+}
+
+@layer base {
+  .unsupported-browser {
+    display: none !important;
+  }
+
+  .site-root {
+    display: block !important;
+  }
+}
+
 @layer base {
   *,
   ::after,
