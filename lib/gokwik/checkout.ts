@@ -1,21 +1,25 @@
 import { createSingleItemCartAction } from "components/cart/actions";
 import { toast } from "sonner";
 import { CHECKOUT_START_ERROR, rememberCheckoutCart } from "./checkout-cart";
+import { waitForGoKwik } from "./sdk";
 
 /**
  * Opens checkout for a cart made for one purchase (Buy Now, Buy on EMI):
- * GoKwik's popup when its SDK is on the page, otherwise Shopify's own
- * checkout, so the shopper always has a way to pay.
+ * GoKwik's popup where it's offered and ready, otherwise Shopify's own
+ * checkout, so the shopper always has a way to pay. `onOpening` runs just
+ * before either opens, after any wait for GoKwik.
  */
-export function checkoutCart(cart: { id: string; checkoutUrl: string }) {
-  if (
-    window.merchantInfo &&
-    typeof window.triggerGokwikCustomCheckout === "function"
-  ) {
-    window.merchantInfo.cart = { id: cart.id };
+export async function checkoutCart(
+  cart: { id: string; checkoutUrl: string },
+  onOpening?: () => void,
+): Promise<void> {
+  const useGoKwik = await waitForGoKwik();
+  onOpening?.();
+  if (useGoKwik) {
+    window.merchantInfo!.cart = { id: cart.id };
     rememberCheckoutCart(cart.id);
     try {
-      window.triggerGokwikCustomCheckout();
+      window.triggerGokwikCustomCheckout!();
       return;
     } catch (error) {
       console.error("[GoKwik] Error triggering checkout:", error);
@@ -30,11 +34,12 @@ export function checkoutCart(cart: { id: string; checkoutUrl: string }) {
 /**
  * Buy Now and Buy on EMI: makes a one-item cart for the variant and opens
  * checkout for it, or tells the shopper when the cart can't be made.
- * `onCartCreated` runs once the cart exists (tracking, closing a panel).
+ * `onCheckoutOpening` runs once the cart exists and checkout is about to
+ * open (tracking, closing a panel), so a panel stays open while GoKwik loads.
  */
 export async function checkoutOneItem(
   variantId: string,
-  onCartCreated?: () => void,
+  onCheckoutOpening?: () => void,
 ): Promise<void> {
   // A network failure rejects; a Shopify failure returns null
   const cart = await createSingleItemCartAction(variantId).catch(() => null);
@@ -42,6 +47,5 @@ export async function checkoutOneItem(
     toast.error(CHECKOUT_START_ERROR);
     return;
   }
-  onCartCreated?.();
-  checkoutCart(cart);
+  await checkoutCart(cart, onCheckoutOpening);
 }

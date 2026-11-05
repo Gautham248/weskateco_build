@@ -7,7 +7,7 @@ import {
 } from "./helpers";
 
 // Checkout hands the Shopify cart to GoKwik's popup, which runs on GoKwik's
-// domain. These tests cover our side of that handoff: GoKwik's SDK is
+// domain. These tests cover our side of that handoff: GoKwik's SDK script is
 // replaced with a stand-in that records calls, so nothing reaches GoKwik and
 // no payment is attempted.
 
@@ -29,23 +29,31 @@ const GOKWIK_STUB = `
 
 type MerchantInfo = { cart?: { id: string }; environment?: string };
 
-async function stubGokwik(page: Page) {
-  // Install the stand-in before any page script runs, so the checkout hook
-  // sees GoKwik as ready on mount instead of polling for it every 500ms
-  await page.addInitScript(GOKWIK_STUB);
-  await page.route(GOKWIK_SDK, (route) =>
-    route.fulfill({ contentType: "application/javascript", body: "" }),
-  );
+/** Serves the stand-in in place of GoKwik's SDK, optionally slowly. */
+async function stubGokwik(page: Page, { delayMs = 0 } = {}) {
+  await page.route(GOKWIK_SDK, async (route) => {
+    if (delayMs) await new Promise((resolve) => setTimeout(resolve, delayMs));
+    await route.fulfill({
+      contentType: "application/javascript",
+      // Stop the browser reusing it from cache, so every page load waits
+      headers: { "Cache-Control": "no-store" },
+      body: GOKWIK_STUB,
+    });
+  });
 }
 
 /** A GoKwik SDK that loads but whose checkout fails to open. */
 async function brokenGokwik(page: Page) {
-  await stubGokwik(page);
-  await page.addInitScript(() => {
-    window.triggerGokwikCustomCheckout = () => {
-      throw new Error("GoKwik checkout failed to open");
-    };
-  });
+  await page.route(GOKWIK_SDK, (route) =>
+    route.fulfill({
+      contentType: "application/javascript",
+      headers: { "Cache-Control": "no-store" },
+      body: `${GOKWIK_STUB}
+        window.triggerGokwikCustomCheckout = function () {
+          throw new Error("GoKwik checkout failed to open");
+        };`,
+    }),
+  );
 }
 
 async function blockGokwik(page: Page) {
@@ -132,6 +140,15 @@ async function addToCartOrSkip(page: Page) {
 const checkoutButton = (scope: Page | Locator, name: string) =>
   scope.getByRole("button", { name, exact: true });
 
+/** Records every request to GoKwik's servers. */
+function recordGokwikRequests(page: Page) {
+  const requests: string[] = [];
+  page.on("request", (req) => {
+    if (new URL(req.url()).host === "pdp.gokwik.co") requests.push(req.url());
+  });
+  return requests;
+}
+
 /**
  * Opens a product that can be bought and clicks Buy Now, which makes a
  * one-item cart on the server and then opens checkout for it.
@@ -142,6 +159,7 @@ async function buyNow(page: Page) {
     !name,
     "None of the first products in the collection can be bought",
   );
+
   // A click before React hydrates the page does nothing, so click until the
   // server action that makes the cart is sent
   const buyNowButton = checkoutButton(page, "Buy Now")
@@ -157,6 +175,14 @@ async function buyNow(page: Page) {
   }).toPass({ timeout: 30_000 });
 }
 
+// GoKwik is only offered to shoppers known to be in India. In production the
+// proxy sets this cookie from Vercel's geolocation; locally there's no
+// geolocation header, so the proxy leaves a test-set cookie alone. Tests for
+// other countries override it.
+test.beforeEach(async ({ context, baseURL }) => {
+  await context.addCookies([{ name: "country", value: "IN", url: baseURL! }]);
+});
+
 test.describe("GoKwik checkout handoff", () => {
   test("cart page hands the Shopify cart to GoKwik", async ({ page }) => {
     await stubGokwik(page);
@@ -164,14 +190,43 @@ test.describe("GoKwik checkout handoff", () => {
     const cartId = await cartIdCookie(page);
 
     await page.goto("/cart");
-    await page
-      .getByRole("button", { name: "Proceed to Checkout", exact: true })
-      .click();
+    await checkoutButton(page, "Proceed to Checkout").click();
 
     await expect.poll(async () => (await handoffs(page)).length).toBe(1);
     const [merchantInfo] = await handoffs(page);
     expect(merchantInfo!.cart).toEqual({ id: cartId });
     expect(merchantInfo!.environment).toBeTruthy();
+    await expect(checkoutButton(page, "Processing...")).toBeDisabled();
+    // Shoppers in India are offered Snapmint EMI
+    await expect(
+      page.getByRole("button", { name: /Buy on EMI/i }).first(),
+    ).toBeVisible();
+  });
+
+  test("cart page waits for GoKwik instead of skipping to Shopify", async ({
+    page,
+  }) => {
+    // A slow GoKwik script used to send quick clicks to Shopify's checkout.
+    // Now a click while it loads waits for it (up to 5s), like Buy Now.
+    await stubGokwik(page, { delayMs: 2500 });
+    const shopifyCheckouts = await interceptShopifyCheckout(page);
+    await addToCartOrSkip(page);
+
+    // Don't wait for the load event: it would also wait for GoKwik's script
+    await page.goto("/cart", { waitUntil: "domcontentloaded" });
+    const proceed = checkoutButton(page, "Proceed to Checkout");
+    await expect(proceed).toBeEnabled();
+
+    // A click before React hydrates does nothing, so click until one lands.
+    // A click that is waiting for GoKwik relabels the button, so it isn't
+    // clicked twice.
+    await expect(async () => {
+      if ((await handoffs(page)).length === 0) {
+        await proceed.click({ timeout: 1_000 }).catch(() => {});
+      }
+      expect(await handoffs(page)).toHaveLength(1);
+    }).toPass({ timeout: 20_000 });
+    expect(shopifyCheckouts).toEqual([]);
   });
 
   test("cart drawer hands off and resets when GoKwik's popup closes", async ({
@@ -182,16 +237,11 @@ test.describe("GoKwik checkout handoff", () => {
     const cartId = await cartIdCookie(page);
 
     const drawer = await openCartDrawer(page);
-    const checkout = drawer.getByRole("button", {
-      name: "Proceed to Checkout",
-      exact: true,
-    });
+    const checkout = checkoutButton(drawer, "Proceed to Checkout");
     await expect(checkout).toBeEnabled();
     await checkout.click();
 
-    await expect(
-      drawer.getByRole("button", { name: "Processing...", exact: true }),
-    ).toBeDisabled();
+    await expect(checkoutButton(drawer, "Processing...")).toBeDisabled();
     await expect.poll(async () => (await handoffs(page)).length).toBe(1);
     expect((await handoffs(page))[0]!.cart).toEqual({ id: cartId });
 
@@ -203,10 +253,8 @@ test.describe("GoKwik checkout handoff", () => {
     );
     await expect(checkout).toBeEnabled();
   });
-});
 
-test.describe("Buy Now", () => {
-  test("hands a new one-item cart to GoKwik", async ({ page }) => {
+  test("Buy Now hands a new one-item cart to GoKwik", async ({ page }) => {
     await stubGokwik(page);
     const shopifyCheckouts = await interceptShopifyCheckout(page);
     await buyNow(page);
@@ -216,74 +264,126 @@ test.describe("Buy Now", () => {
     expect(merchantInfo!.cart?.id).toMatch(/^gid:\/\/shopify\/Cart\//);
     expect(shopifyCheckouts).toEqual([]);
   });
+});
 
-  test("goes to Shopify checkout when GoKwik doesn't load", async ({
+test.describe("shoppers outside India", () => {
+  // GoKwik is only set up for India. In production the proxy sets this
+  // cookie from Vercel's geolocation; locally there's no geolocation header,
+  // so the proxy leaves a test-set cookie alone.
+  test.beforeEach(async ({ context, baseURL }) => {
+    await context.addCookies([{ name: "country", value: "US", url: baseURL! }]);
+  });
+
+  for (const where of ["cart page", "cart drawer"] as const) {
+    test(`${where} goes straight to Shopify checkout without loading GoKwik`, async ({
+      page,
+    }) => {
+      const gokwikRequests = recordGokwikRequests(page);
+      const shopifyCheckouts = await interceptShopifyCheckout(page);
+      await addToCartOrSkip(page);
+
+      let scope: Page | Locator = page;
+      if (where === "cart page") {
+        await page.goto("/cart");
+      } else {
+        scope = await openCartDrawer(page);
+      }
+
+      // Ready at once, not after the 15s wait for GoKwik
+      const checkout = checkoutButton(scope, "Proceed to Checkout");
+      await expect(checkout).toBeEnabled({ timeout: 5_000 });
+      await checkout.click();
+
+      await expectShopifyCheckout(page, shopifyCheckouts);
+      expect(gokwikRequests).toEqual([]);
+    });
+  }
+
+  test("Buy Now goes straight to Shopify checkout", async ({ page }) => {
+    const gokwikRequests = recordGokwikRequests(page);
+    const shopifyCheckouts = await interceptShopifyCheckout(page);
+    await buyNow(page);
+
+    // Without waiting for GoKwik (that wait is 5s)
+    await expect(page).toHaveURL(/\/cart\/c\//, { timeout: 4_000 });
+    await expectShopifyCheckout(page, shopifyCheckouts);
+    expect(gokwikRequests).toEqual([]);
+  });
+
+  test("Snapmint EMI offers are hidden", async ({ page }) => {
+    await addToCartOrSkip(page);
+    await expect(page.getByText(/Buy on EMI/i)).toHaveCount(0);
+
+    await page.goto("/cart");
+    await expect(page.getByRole("heading", { name: /my cart/i })).toBeVisible();
+    await expect(page.getByText(/Buy on EMI/i)).toHaveCount(0);
+  });
+});
+
+test.describe("shoppers whose country isn't known", () => {
+  // Vercel couldn't locate them: Shopify's checkout works from anywhere,
+  // while GoKwik's popup opens blank outside India
+  test.beforeEach(async ({ context }) => {
+    await context.clearCookies({ name: "country" });
+  });
+
+  test("go straight to Shopify checkout without loading GoKwik", async ({
+    page,
+  }) => {
+    const gokwikRequests = recordGokwikRequests(page);
+    const shopifyCheckouts = await interceptShopifyCheckout(page);
+    await addToCartOrSkip(page);
+
+    await page.goto("/cart");
+    const checkout = checkoutButton(page, "Proceed to Checkout");
+    await expect(checkout).toBeEnabled({ timeout: 5_000 });
+    await checkout.click();
+
+    await expectShopifyCheckout(page, shopifyCheckouts);
+    expect(gokwikRequests).toEqual([]);
+    expect(
+      (await page.context().cookies()).some((c) => c.name === "country"),
+    ).toBe(false);
+  });
+});
+
+test.describe("fallback to Shopify checkout when GoKwik doesn't load", () => {
+  // A checkout click waits up to 5s for GoKwik, then uses Shopify's checkout
+  test.slow();
+
+  for (const where of ["cart page", "cart drawer"] as const) {
+    test(`${where} switches to Shopify checkout after GoKwik times out`, async ({
+      page,
+    }) => {
+      await blockGokwik(page);
+      const shopifyCheckouts = await interceptShopifyCheckout(page);
+      await addToCartOrSkip(page);
+
+      let scope: Page | Locator = page;
+      if (where === "cart page") {
+        await page.goto("/cart");
+      } else {
+        scope = await openCartDrawer(page);
+      }
+
+      // Usable straight away, not after the 15s wait for GoKwik
+      const checkout = checkoutButton(scope, "Proceed to Checkout");
+      await expect(checkout).toBeEnabled({ timeout: 5_000 });
+      await checkout.click();
+      await expect(checkoutButton(scope, "Loading checkout...")).toBeDisabled();
+
+      // Shopify's checkout after the 5s wait, not the hook's 15s timeout
+      await expect(page).toHaveURL(/\/cart\/c\//, { timeout: 9_000 });
+      await expectShopifyCheckout(page, shopifyCheckouts);
+    });
+  }
+
+  test("Buy Now switches to Shopify checkout after GoKwik times out", async ({
     page,
   }) => {
     await blockGokwik(page);
     const shopifyCheckouts = await interceptShopifyCheckout(page);
     await buyNow(page);
-    await expectShopifyCheckout(page, shopifyCheckouts);
-  });
-
-  test("tells the shopper when it can't start checkout", async ({ page }) => {
-    const name = await openFirstPurchasableProduct(page);
-    test.skip(
-      !name,
-      "None of the first products in the collection can be bought",
-    );
-
-    // The server action that makes the one-item cart fails (network error)
-    await page.route("**/*", (route) =>
-      route.request().method() === "POST" &&
-      "next-action" in route.request().headers()
-        ? route.abort()
-        : route.fallback(),
-    );
-    const buyNowButton = checkoutButton(page, "Buy Now")
-      .filter({ visible: true })
-      .first();
-    // Clicks before React hydrates the page do nothing, so retry
-    await expect(async () => {
-      await buyNowButton.click({ timeout: 2_000 });
-      await expect(
-        page.getByText("We couldn't start checkout. Please try again."),
-      ).toBeVisible({ timeout: 2_000 });
-    }).toPass({ timeout: 30_000 });
-  });
-});
-
-test.describe("fallback to Shopify checkout when GoKwik doesn't load", () => {
-  test("cart page sends the shopper to Shopify checkout", async ({ page }) => {
-    await blockGokwik(page);
-    const shopifyCheckouts = await interceptShopifyCheckout(page);
-    await addToCartOrSkip(page);
-
-    await page.goto("/cart");
-    await page
-      .getByRole("button", { name: "Proceed to Checkout", exact: true })
-      .click();
-
-    await expectShopifyCheckout(page, shopifyCheckouts);
-  });
-
-  test("cart drawer switches to Shopify checkout after GoKwik times out", async ({
-    page,
-  }) => {
-    // The checkout hook waits 15s for GoKwik's SDK before falling back
-    test.slow();
-    await blockGokwik(page);
-    const shopifyCheckouts = await interceptShopifyCheckout(page);
-    await addToCartOrSkip(page);
-
-    const drawer = await openCartDrawer(page);
-    const checkout = drawer.getByRole("button", {
-      name: "Proceed to Checkout",
-      exact: true,
-    });
-    await expect(checkout).toBeEnabled({ timeout: 25_000 });
-    await checkout.click();
-
     await expectShopifyCheckout(page, shopifyCheckouts);
   });
 });
@@ -332,6 +432,34 @@ test.describe("when checkout can't start normally", () => {
     await page.goto("/cart");
     await checkoutButton(page, "Proceed to Checkout").click();
     await expectShopifyCheckout(page, shopifyCheckouts);
+  });
+
+  test("Buy Now tells the shopper when it can't start checkout", async ({
+    page,
+  }) => {
+    const name = await openFirstPurchasableProduct(page);
+    test.skip(
+      !name,
+      "None of the first products in the collection can be bought",
+    );
+
+    // The server action that makes the one-item cart fails (network error)
+    await page.route("**/*", (route) =>
+      route.request().method() === "POST" &&
+      "next-action" in route.request().headers()
+        ? route.abort()
+        : route.fallback(),
+    );
+    const buyNowButton = checkoutButton(page, "Buy Now")
+      .filter({ visible: true })
+      .first();
+    // Clicks before React hydrates the page do nothing, so retry
+    await expect(async () => {
+      await buyNowButton.click({ timeout: 2_000 });
+      await expect(
+        page.getByText("We couldn't start checkout. Please try again."),
+      ).toBeVisible({ timeout: 2_000 });
+    }).toPass({ timeout: 30_000 });
   });
 });
 

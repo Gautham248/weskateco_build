@@ -34,16 +34,13 @@ export default function CartModal() {
   const { t, locale } = useTranslation();
   const pathname = usePathname();
   const { cart, updateCartItem } = useCart();
-  const {
-    isReady: gokwikReady,
-    isError: gokwikError,
-    isCheckingOut,
-    triggerCheckout,
-    useFallback,
-  } = useGoKwikCheckout({
-    cartId: cart?.id,
-    checkoutUrl: cart?.checkoutUrl,
-  });
+  // triggerCheckout waits briefly for GoKwik while it loads, then falls back
+  // to Shopify's checkout
+  const { isWaiting, isCheckingOut, triggerCheckout, useFallback } =
+    useGoKwikCheckout({
+      cartId: cart?.id,
+      checkoutUrl: cart?.checkoutUrl,
+    });
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<CartItem | null>(null);
   const rawClose = useCallback(() => setIsOpen(false), []);
@@ -556,9 +553,9 @@ export default function CartModal() {
                     ) : (
                       <button
                         onClick={handleCheckout}
-                        disabled={!gokwikReady || isCheckingOut || !cart?.id}
+                        disabled={isWaiting || isCheckingOut || !cart?.id}
                         className={`w-full h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors flex items-center justify-center ${
-                          !gokwikReady || isCheckingOut || !cart?.id
+                          isWaiting || isCheckingOut || !cart?.id
                             ? "opacity-50 cursor-not-allowed"
                             : ""
                         }`}
@@ -566,7 +563,7 @@ export default function CartModal() {
                       >
                         {isCheckingOut
                           ? t("cart.processing")
-                          : !gokwikReady
+                          : isWaiting
                             ? t("cart.loading_checkout")
                             : t("cart.proceed_to_checkout")}
                       </button>
