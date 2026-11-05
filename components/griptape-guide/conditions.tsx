@@ -4,7 +4,12 @@ import {
   CONDITIONS_SECTION,
 } from "lib/griptape-guide/data";
 import GripCrosslink from "components/guides/callout";
-import { ProseCols, SectionHeader, Container, Section } from "components/guides/ui";
+import {
+  ProseCols,
+  SectionHeader,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 export default function ConditionsSection() {
   return (

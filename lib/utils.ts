@@ -77,17 +77,25 @@ export const formatArtworkBadgeHtml = (html: string): string => {
           </span>
         </div>
       `;
-    }
+    },
   );
 };
 
 /**
  * Extract artist name from product description HTML or text.
  */
-export const getArtistName = (html: string = "", text: string = ""): string | null => {
-  const htmlMatch = html.match(/Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*((?:<[^>]+>|[^<>\n\r])+?)(?:<br\s*\/?>|<\/p>|\n|$)/i);
+export const getArtistName = (
+  html: string = "",
+  text: string = "",
+): string | null => {
+  const htmlMatch = html.match(
+    /Deck\s+Artwork\s+by[\s\u00a0&nbsp;]*((?:<[^>]+>|[^<>\n\r])+?)(?:<br\s*\/?>|<\/p>|\n|$)/i,
+  );
   if (htmlMatch && htmlMatch[1]) {
-    const extracted = htmlMatch[1].replace(/<[^>]+>/g, "").replace(/&nbsp;|\u00a0/g, " ").trim();
+    const extracted = htmlMatch[1]
+      .replace(/<[^>]+>/g, "")
+      .replace(/&nbsp;|\u00a0/g, " ")
+      .trim();
     if (extracted) return extracted;
   }
   const textMatch = text.match(/Deck\s+Artwork\s+by\s+(.+)/i);
@@ -96,4 +104,3 @@ export const getArtistName = (html: string = "", text: string = ""): string | nu
   }
   return null;
 };
-

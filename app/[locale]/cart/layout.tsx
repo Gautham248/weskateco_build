@@ -1,5 +1,5 @@
 import { createTranslator } from "lib/i18n";
-import { openGraph, siteShareImage } from "lib/seo/metadata";
+import { openGraph, siteShareImage, socialTitle } from "lib/seo/metadata";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
@@ -15,7 +15,7 @@ export async function generateMetadata(props: {
     title,
     robots: { index: false, follow: true },
     openGraph: openGraph(locale, "/cart", {
-      title,
+      title: socialTitle(title),
       images: siteShareImage(locale),
     }),
   };

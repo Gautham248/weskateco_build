@@ -6,7 +6,15 @@ import {
   HEIGHT_TABLE_ROWS,
   WHEELBITE_SUB,
 } from "lib/truck-guide/data";
-import { GuideTable, Note, ProseCols, SectionHeader, SubHead, Container, Section } from "components/guides/ui";
+import {
+  GuideTable,
+  Note,
+  ProseCols,
+  SectionHeader,
+  SubHead,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 export default function HeightSection() {
   return (

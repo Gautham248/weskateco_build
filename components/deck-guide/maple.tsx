@@ -13,7 +13,15 @@ import {
   MOISTURE_PROSE,
   MOISTURE_SUB,
 } from "lib/deck-guide/data";
-import { GuideTable, Note, ProseCols, SectionHeader, SubHead, Container, Section } from "components/guides/ui";
+import {
+  GuideTable,
+  Note,
+  ProseCols,
+  SectionHeader,
+  SubHead,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 export default function MapleSection() {
   return (

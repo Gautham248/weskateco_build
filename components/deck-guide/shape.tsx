@@ -11,7 +11,18 @@ import {
   SHAPE_TOGGLES,
 } from "lib/deck-guide/data";
 import DeckCrosslink from "components/guides/callout";
-import { DefList, FigCaption, FigCard, FigHint, ProseCols, SectionHeader, Seg, SubHead, Container, Section } from "components/guides/ui";
+import {
+  DefList,
+  FigCaption,
+  FigCard,
+  FigHint,
+  ProseCols,
+  SectionHeader,
+  Seg,
+  SubHead,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 // Dimension drawing math — the source's numbers, unchanged:
 // drawn at 600 units for 31.875 inches.
