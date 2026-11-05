@@ -28,14 +28,14 @@ export async function loadShopNowItems(): Promise<ShopNowItemRow[]> {
  * hides the section for a single render instead of poisoning a cached empty
  * section for days.
  */
-export async function getShopNow(): Promise<ShopNowSlide[]> {
+export async function getShopNow(locale?: string): Promise<ShopNowSlide[]> {
   const items = await loadShopNowItems();
 
   if (items.length === 0) {
     return [];
   }
 
-  const { products, failures, firstError } = await loadProducts(items);
+  const { products, failures, firstError } = await loadProducts(items, locale);
 
   if (failures.length > 0) {
     console.error(
@@ -59,7 +59,10 @@ export async function getShopNow(): Promise<ShopNowSlide[]> {
  * costs the section. Nothing here is cached, so an outage is never remembered as
  * an empty section once Shopify recovers.
  */
-async function loadProducts(items: ShopNowItemRow[]): Promise<{
+async function loadProducts(
+  items: ShopNowItemRow[],
+  locale?: string,
+): Promise<{
   products: (Product | undefined)[];
   failures: string[];
   firstError: unknown;
@@ -70,7 +73,7 @@ async function loadProducts(items: ShopNowItemRow[]): Promise<{
   const products = await Promise.all(
     items.map(async (item) => {
       try {
-        return await getProduct(item.productHandle);
+        return await getProduct(item.productHandle, locale);
       } catch (error) {
         firstError ??= error;
         failures.push(item.productHandle);

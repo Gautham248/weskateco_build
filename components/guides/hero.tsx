@@ -3,7 +3,7 @@
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image, { type StaticImageData } from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 
 export interface GuideHeroData {
   eyebrow: string;

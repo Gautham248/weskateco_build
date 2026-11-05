@@ -1,6 +1,7 @@
 "use client";
 
 import snapmintLogo from "components/icons/snapmint_logo.svg";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 
 interface SnapmintEmiCartBannerProps {
   /** Cart or product total price string (e.g. "15728.79") */
@@ -19,6 +20,7 @@ export function SnapmintEmiCartBanner({
   totalAmount,
   onBuyOnEmi,
 }: SnapmintEmiCartBannerProps) {
+  const { t } = useTranslation();
   const price = parseFloat(totalAmount);
   const monthlyEmi = Math.ceil(price / 3);
 
@@ -30,22 +32,22 @@ export function SnapmintEmiCartBanner({
       {/* Left side text column */}
       <div className="flex flex-col gap-0.5">
         <p className="text-[12px] text-neutral-600 dark:text-neutral-400 font-normal leading-normal">
-          or{" "}
+          {t("cart.emi_or")}{" "}
           <strong className="text-neutral-900 dark:text-white font-semibold">
             3
           </strong>{" "}
-          Monthly Payments of{" "}
+          {t("cart.emi_monthly_payments_of")}{" "}
           <strong className="text-neutral-900 dark:text-white font-bold">
             ₹{monthlyEmi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           </strong>
         </p>
         <div className="text-[10px] text-neutral-400 dark:text-neutral-500 font-normal leading-normal flex items-center gap-1 flex-wrap">
-          <span>0% EMI on UPI ·</span>
+          <span>{t("cart.emi_upi_zero")}</span>
           <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center bg-[#013542] shrink-0">
             <img
               src={snapmintLogo.src || snapmintLogo}
               className="w-2 h-2 object-contain"
-              alt="Snapmint Logo"
+              alt={t("cart.snapmint_logo_alt")}
             />
           </div>
           <span className="italic font-medium">snapmint</span>
@@ -58,7 +60,7 @@ export function SnapmintEmiCartBanner({
         onClick={onBuyOnEmi}
         className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-950 transition-colors cursor-pointer"
       >
-        Buy on EMI&gt;
+        {t("product.buy_on_emi")}&gt;
       </button>
     </div>
   );

@@ -1,20 +1,29 @@
 import Prose from "components/prose";
 import Footer from "components/layout/footer";
-import Link from "next/link";
+import Link from "components/localized-link";
+import { EnglishVersionNotice } from "components/legal/english-version-notice";
+import { createTranslator } from "lib/i18n";
 import type { Metadata } from "next";
+import { shippingPolicyHtmlHi } from "./content.hi";
 
-export const metadata: Metadata = {
-  title: "Shipping Policy",
-  description:
-    "Shipping Policy for WeskateCo describing coverage, processing times, estimated delivery times, shipping charges, and tracking.",
-};
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await props.params;
+  const t = createTranslator(locale);
+
+  return {
+    title: t("legal.shipping_title"),
+    description: t("legal.shipping_description"),
+  };
+}
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "hi" }];
 }
 
 const shippingPolicyHtml = `
-<p><strong>Effective Date:</strong> June 5, 2025</p>
+<p><strong>Effective Date:</strong> November 5, 2026</p>
 <p>Thank you for shopping at WeskateCo! We’re committed to delivering your gear as quickly and safely as possible. Please read our shipping policy below:</p>
 
 <h3>Shipping Coverage</h3>
@@ -45,7 +54,7 @@ const shippingPolicyHtml = `
       </tr>
       <tr>
         <td class="p-3 border border-neutral-700">International</td>
-        <td class="p-3 border border-neutral-700">N/A</td>
+        <td class="p-3 border border-neutral-700">7–14 business days</td>
       </tr>
     </tbody>
   </table>
@@ -76,10 +85,17 @@ const shippingPolicyHtml = `
 <p>Have questions about your order or delivery? Reach out to our support team at <a href="mailto:info@weskateco.com">info@weskateco.com</a>.</p>
 `;
 
+// The English text is the binding version; other languages are translations.
+const shippingPolicyHtmlByLocale: Record<string, string> = {
+  en: shippingPolicyHtml,
+  hi: shippingPolicyHtmlHi,
+};
+
 export default async function ShippingPolicyPage(props: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await props.params;
+  const t = createTranslator(locale);
 
   return (
     <>
@@ -87,14 +103,14 @@ export default async function ShippingPolicyPage(props: {
       <section className="w-full pt-12 pb-8 md:pt-20 md:pb-12 px-4 lg:px-15">
         <div className="mx-auto max-w-(--breakpoint-2xl)">
           {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="mb-6">
+          <nav aria-label={t("store.breadcrumb_aria")} className="mb-6">
             <ol className="flex items-center gap-1.5 text-xs text-neutral-500">
               <li>
                 <Link
                   href={locale === "en" ? "/" : `/${locale}`}
                   className="hover:text-black transition-colors"
                 >
-                  Home
+                  {t("nav.home")}
                 </Link>
               </li>
               <li aria-hidden="true">
@@ -112,7 +128,7 @@ export default async function ShippingPolicyPage(props: {
                 </svg>
               </li>
               <li aria-current="page" className="text-black font-medium">
-                Shipping Policy
+                {t("legal.shipping_title")}
               </li>
             </ol>
           </nav>
@@ -121,7 +137,7 @@ export default async function ShippingPolicyPage(props: {
             className="fluid-text-4xl font-bold tracking-tight"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
-            Shipping Policy
+            {t("legal.shipping_title")}
           </h1>
         </div>
       </section>
@@ -129,7 +145,13 @@ export default async function ShippingPolicyPage(props: {
       {/* ── Policy body ─────────────────────────────────────────────── */}
       <section className="w-full pb-12 md:pb-20 px-4 lg:px-15">
         <div className="mx-auto max-w-(--breakpoint-2xl)">
-          <Prose html={shippingPolicyHtml} />
+          <EnglishVersionNotice
+            locale={locale}
+            englishPath="/shipping-policy"
+          />
+          <Prose
+            html={shippingPolicyHtmlByLocale[locale] ?? shippingPolicyHtml}
+          />
         </div>
       </section>
       <Footer />

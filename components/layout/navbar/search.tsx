@@ -2,6 +2,7 @@
 
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { trackSearch } from "lib/analytics";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import Form from "next/form";
 import { useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useRef } from "react";
@@ -21,6 +22,7 @@ export default function Search({
   onOpenChange,
   scrolled = false,
 }: SearchProps) {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -79,7 +81,7 @@ export default function Search({
     return (
       <button
         onClick={() => onOpenChange?.(true)}
-        aria-label="Search"
+        aria-label={t("nav.search")}
         data-search-container
         className={`flex items-center justify-center rounded-md transition-colors h-5 w-5 md:h-7 md:w-7 cursor-pointer hover:opacity-75 flex-shrink-0 ${iconColorClass}`}
       >
@@ -107,7 +109,7 @@ export default function Search({
       >
         <button
           type="submit"
-          aria-label="Submit search"
+          aria-label={t("search.submit")}
           className={`hover:opacity-70 transition-opacity cursor-pointer flex items-center justify-center flex-shrink-0 ${iconColorClass}`}
         >
           <MagnifyingGlassIcon className={`h-5 w-5 ${iconColorClass}`} />
@@ -118,7 +120,7 @@ export default function Search({
           ref={inputRef}
           type="text"
           name="q"
-          placeholder="Type to search"
+          placeholder={t("search.type_to_search")}
           autoComplete="off"
           defaultValue={searchParams?.get("q") || ""}
           className={`flex-1 !bg-transparent border-none outline-none text-sm md:text-base font-normal min-w-0 ${
@@ -131,7 +133,7 @@ export default function Search({
         <button
           type="button"
           onClick={handleClose}
-          aria-label="Close search"
+          aria-label={t("search.close")}
           className={`hover:opacity-70 transition-opacity cursor-pointer flex items-center justify-center flex-shrink-0 ${iconColorClass}`}
         >
           <XMarkIcon className={`h-5 w-5 ${iconColorClass}`} />

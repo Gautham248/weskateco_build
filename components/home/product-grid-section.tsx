@@ -1,6 +1,6 @@
 import ProductCard from "components/product/product-card";
 import { Product } from "lib/shopify/types";
-import Link from "next/link";
+import Link from "components/localized-link";
 
 interface ProductGridSectionProps {
   title: string;

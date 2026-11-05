@@ -9,6 +9,7 @@ import {
   SOCIAL_PLATFORM_LABELS,
   type SocialPostCard,
 } from "lib/catalog/social-posts";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import { useEffect, useRef, useState } from "react";
 
 /**
@@ -25,6 +26,17 @@ const PLATFORM_GLYPHS: Partial<
   instagram: { src: instaGlyph },
   facebook: { src: fbGlyph },
   youtube: { src: ytGlyph },
+};
+
+/**
+ * socialPostActionLabel returns fixed English strings; translate them at render
+ * time by that English text, falling back to it for anything unmapped.
+ */
+const ACTION_LABEL_KEYS: Record<string, string> = {
+  Watch: "home.social_watch",
+  "Watch Reel": "home.social_watch_reel",
+  "View Reel": "home.social_view_reel",
+  "View Post": "home.social_view_post",
 };
 
 /**
@@ -75,6 +87,14 @@ export default function TipsCarousel({
   posts: SocialPostCard[];
   variant?: "default" | "page";
 }) {
+  const { t } = useTranslation();
+
+  const actionLabel = (post: SocialPostCard) => {
+    const label = socialPostActionLabel(post);
+    const key = ACTION_LABEL_KEYS[label];
+    return key ? t(key) : label;
+  };
+
   // Default to the middle card, but clamp rather than assume five: a strip with
   // one or two posts must still start on a card that exists.
   const [activeIndex, setActiveIndex] = useState(() =>
@@ -155,9 +175,9 @@ export default function TipsCarousel({
                 letterSpacing: "-0.01em",
               }}
             >
-              stay connected
+              {t("home.stay_connected_line1")}
               <br />
-              anywhere!
+              {t("home.stay_connected_line2")}
             </h2>
           ) : (
             <h2
@@ -167,14 +187,14 @@ export default function TipsCarousel({
                 letterSpacing: "-0.01em",
               }}
             >
-              Tips to stay connected
+              {t("home.tips_title_line1")}
               <br />
-              Anywhere!
+              {t("home.tips_title_line2")}
             </h2>
           )}
           <div className="flex gap-3 pb-2 hidden md:flex">
             <button
-              aria-label="Previous post"
+              aria-label={t("home.previous_post")}
               onClick={handlePrev}
               disabled={activeIndex === 0}
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
@@ -203,7 +223,7 @@ export default function TipsCarousel({
               </svg>
             </button>
             <button
-              aria-label="Next post"
+              aria-label={t("home.next_post")}
               onClick={handleNext}
               disabled={activeIndex === posts.length - 1}
               className="w-[36px] md:w-full p-3 border border-neutral-200 rounded-full hover:bg-[#CCFF02] transition-colors cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent"
@@ -280,13 +300,19 @@ export default function TipsCarousel({
                         <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                       </svg>
                       <span className="text-[10px] font-semibold tracking-wider uppercase">
-                        Image unavailable
+                        {t("home.image_unavailable")}
                       </span>
                     </div>
                   ) : (
                     <PostImage
                       src={post.imageUrl}
-                      alt={post.altText ?? `Social post ${index + 1}`}
+                      alt={
+                        post.altText ??
+                        t("home.social_post_alt").replace(
+                          "{number}",
+                          String(index + 1),
+                        )
+                      }
                       onError={() =>
                         setBrokenImages((previous) =>
                           new Set(previous).add(post.id),
@@ -344,7 +370,7 @@ export default function TipsCarousel({
                       rel="noopener noreferrer"
                       className={`w-full h-full bg-black text-white font-bold text-xs uppercase tracking-wide flex items-center justify-between px-4 hover:bg-neutral-900 transition-colors rounded-md`}
                     >
-                      <span>{socialPostActionLabel(post)}</span>
+                      <span>{actionLabel(post)}</span>
                       <div className="bg-white text-black rounded-full p-1">
                         <img
                           src={arrow.src || arrow}
@@ -359,7 +385,7 @@ export default function TipsCarousel({
                       aria-disabled="true"
                       className={`w-full h-full bg-black text-white font-bold text-xs uppercase tracking-wide flex items-center justify-between px-4 rounded-md opacity-60`}
                     >
-                      <span>{socialPostActionLabel(post)}</span>
+                      <span>{actionLabel(post)}</span>
                       <div className="bg-white text-black rounded-full p-1">
                         <img
                           src={arrow.src || arrow}

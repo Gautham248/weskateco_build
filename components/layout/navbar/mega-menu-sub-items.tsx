@@ -1,7 +1,8 @@
 "use client";
 
 import { getLocalizedPath } from "lib/i18n";
-import Link from "next/link";
+import { useTranslation } from "lib/i18n/TranslationProvider";
+import Link from "components/localized-link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import catalog from "scripts/product-catalog-dump.json";
@@ -58,6 +59,16 @@ if (navigation) {
   }
 }
 
+// Display labels for the catalog's sub-item names. The raw name still drives
+// the href and React key; names without an entry render as-is.
+const SUB_ITEM_LABEL_KEYS: Record<string, string> = {
+  COMPLETES: "nav.completes_upper",
+  DECKS: "nav.decks_upper",
+  TRUCKS: "nav.trucks_upper",
+  WHEELS: "nav.wheels_upper",
+  ACCESSORIES: "nav.accessories_upper",
+};
+
 export function hasSubItems(category: string | null): boolean {
   return !!category && category in subItemsMap;
 }
@@ -91,6 +102,7 @@ export default function MegaMenuSubItems({
   category: string | null;
   onLinkClick?: () => void;
 }) {
+  const { t } = useTranslation();
   const params = useParams();
   const locale = (params?.locale as string) || "en";
 
@@ -161,7 +173,9 @@ export default function MegaMenuSubItems({
               <span
                 className={`relative z-10 pl-4 transition-colors duration-150 ${isHovered ? "text-white dark:text-black" : "text-black dark:text-white"}`}
               >
-                {item}
+                {SUB_ITEM_LABEL_KEYS[item]
+                  ? t(SUB_ITEM_LABEL_KEYS[item])
+                  : item}
               </span>
 
               <div

@@ -2,10 +2,12 @@
 
 import aboutImg from "components/icons/about.png";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import { useEffect, useRef, useState } from "react";
 
 export default function AboutSection() {
+  const { t } = useTranslation();
   const sectionRef = useRef<HTMLElement>(null);
   const [isInView, setIsInView] = useState(false);
 
@@ -37,7 +39,7 @@ export default function AboutSection() {
           <div className="absolute inset-0 w-full h-full">
             <Image
               src={aboutImg}
-              alt="About Background"
+              alt={t("home.about_image_alt")}
               fill
               className="object-cover object-[43.5%_center] md:object-center"
               priority
@@ -105,15 +107,13 @@ export default function AboutSection() {
             className="md:hidden font-normal leading-tight tracking-tight text-[#d4ff00] text-xs sm:text-xs text-balance"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
-            We are a community driven by grit, built on persistence, and united
-            by skateboarding.
+            {t("home.about_tagline")}
           </h2>
           <h2
             className="hidden md:block font-bold leading-[40px] tracking-tight text-[#d4ff00] lg:fluid-text-3xl text-4xl"
             style={{ fontFamily: "'Clash Display', sans-serif" }}
           >
-            We are a community driven by grit, built on persistence, and united
-            by skateboarding.
+            {t("home.about_tagline")}
           </h2>
         </div>
 

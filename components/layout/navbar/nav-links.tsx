@@ -3,7 +3,7 @@
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { useEffect, useRef, useState } from "react";
 import MegaMenuLeft from "./mega-menu-left";
 import MegaMenuRight from "./mega-menu-right";
@@ -82,7 +82,7 @@ export default function NavLinks({
               setIsAcademyOpen(false);
             }}
           >
-            STORE
+            {t("nav.store")}
             <ChevronDownIcon
               className={`h-2.5 w-2.5 md:h-2.5 md:w-2.5 xl:h-3 xl:w-3 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
             />
@@ -135,7 +135,9 @@ export default function NavLinks({
             setActiveCategory(null);
           }}
         >
-          <Link href={getLocalizedPath("/about-us", locale)}>WE ARE</Link>
+          <Link href={getLocalizedPath("/about-us", locale)}>
+            {t("nav.we_are")}
+          </Link>
         </li>
 
         {/* GUIDES DROPDOWN */}
@@ -160,7 +162,7 @@ export default function NavLinks({
             }}
             className="flex items-center gap-1 uppercase cursor-pointer"
           >
-            GUIDES
+            {t("nav.guides")}
             <ChevronDownIcon
               className={`h-2.5 w-2.5 md:h-2.5 md:w-2.5 xl:h-3 xl:w-3 transition-transform duration-200 ${
                 isGuidesOpen ? "rotate-180" : ""
@@ -185,7 +187,7 @@ export default function NavLinks({
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                Skateboard Buying Guide
+                {t("nav.skateboard_buying_guide")}
               </Link>
               <Link
                 href={getLocalizedPath("/guides/deck-guide", locale)}
@@ -193,7 +195,7 @@ export default function NavLinks({
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                Deck Guide
+                {t("nav.deck_guide")}
               </Link>
               <Link
                 href={getLocalizedPath("/guides/truck-guide", locale)}
@@ -201,7 +203,7 @@ export default function NavLinks({
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                Truck Guide
+                {t("nav.truck_guide")}
               </Link>
               <Link
                 href={getLocalizedPath("/guides/wheels-guide", locale)}
@@ -209,7 +211,7 @@ export default function NavLinks({
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                Wheels Guide
+                {t("nav.wheels_guide")}
               </Link>
               <Link
                 href={getLocalizedPath("/guides/bearing-guide", locale)}
@@ -217,7 +219,7 @@ export default function NavLinks({
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                Bearing Guide
+                {t("nav.bearing_guide")}
               </Link>
               <Link
                 href={getLocalizedPath("/guides/griptape-guide", locale)}
@@ -225,7 +227,7 @@ export default function NavLinks({
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                Griptape Guide
+                {t("nav.griptape_guide")}
               </Link>
               <Link
                 href={getLocalizedPath("/guides/surfskate-guide", locale)}
@@ -233,7 +235,7 @@ export default function NavLinks({
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                Surfskate Guide
+                {t("nav.surfskate_guide")}
               </Link>
             </div>
           </div>
@@ -262,7 +264,7 @@ export default function NavLinks({
             aria-expanded={isAcademyOpen}
             className="flex items-center gap-1 uppercase cursor-pointer"
           >
-            ACADEMY
+            {t("nav.academy_upper")}
             <ChevronDownIcon
               className={`h-2.5 w-2.5 md:h-2.5 md:w-2.5 xl:h-3 xl:w-3 transition-transform duration-200 ${
                 isAcademyOpen ? "rotate-180" : ""
@@ -284,7 +286,7 @@ export default function NavLinks({
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                WeSkate Academy
+                {t("academy.title")}
               </Link>
               <Link
                 href={getLocalizedPath("/school", locale)}
@@ -292,7 +294,7 @@ export default function NavLinks({
                 className="block px-4 py-2.5 text-xs lg:text-sm font-semibold !text-black hover:bg-neutral-100 hover:text-black transition-colors uppercase"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                WeSkate School
+                {t("nav.weskate_school")}
               </Link>
             </div>
           </div>
@@ -306,7 +308,9 @@ export default function NavLinks({
             setActiveCategory(null);
           }}
         >
-          <Link href={getLocalizedPath("/skateparks", locale)}>SKATEPARKS</Link>
+          <Link href={getLocalizedPath("/skateparks", locale)}>
+            {t("nav.skateparks_upper")}
+          </Link>
         </li>
       </ul>
     </>

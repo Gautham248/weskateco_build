@@ -17,7 +17,7 @@ import diametersImg from "components/icons/wheel_guide/wheel-diameters.jpeg";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { useState } from "react";
 
 export default function DiameterSection() {

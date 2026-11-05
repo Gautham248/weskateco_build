@@ -1,6 +1,7 @@
 "use client";
 
 import snapmintLogo from "components/icons/snapmint_logo.svg";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 
 interface SnapmintEmiBadgeProps {
   /** Product price string from Shopify (e.g. "10283.79") */
@@ -19,6 +20,7 @@ export function SnapmintEmiBadge({
   priceAmount,
   onClick,
 }: SnapmintEmiBadgeProps) {
+  const { t } = useTranslation();
   const price = parseFloat(priceAmount);
   const monthlyEmi = Math.ceil(price / 3);
 
@@ -45,7 +47,10 @@ export function SnapmintEmiBadge({
       style={{ fontFamily: "Archivo, sans-serif" }}
     >
       <span className="text-[12px] font-medium text-neutral-900 dark:text-neutral-100">
-        or ₹{monthlyEmi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}/Month
+        {t("product.emi_per_month").replace(
+          "{amount}",
+          monthlyEmi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+        )}
       </span>
       <div className="w-4 h-4 rounded-full flex items-center justify-center bg-[#013542] shrink-0">
         <img
@@ -58,7 +63,7 @@ export function SnapmintEmiBadge({
         onClick={handleBuyOnEmi}
         className="text-[12px] font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 transition-colors cursor-pointer flex items-center"
       >
-        Buy on EMI&gt;
+        {t("product.buy_on_emi")}&gt;
       </button>
     </div>
   );

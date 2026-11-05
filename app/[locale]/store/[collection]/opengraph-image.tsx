@@ -5,7 +5,7 @@ export default async function Image(props: {
   params: Promise<{ locale: string; collection: string }>;
 }) {
   const params = await props.params;
-  const collection = await getCollection(params.collection);
+  const collection = await getCollection(params.collection, params.locale);
   const title = collection?.seo?.title || collection?.title;
 
   return await OpengraphImage({ title });

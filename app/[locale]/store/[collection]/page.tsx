@@ -15,16 +15,21 @@ export async function generateMetadata(props: {
   params: Promise<{ locale: string; collection: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const collection = await getCollection(params.collection);
+  const collection = await getCollection(params.collection, params.locale);
 
   if (!collection) return notFound();
+
+  const t = createTranslator(params.locale);
 
   return {
     title: collection.seo?.title || collection.title,
     description:
       collection.seo?.description ||
       collection.description ||
-      `${collection.title} products`,
+      t("store.meta_collection_description").replace(
+        "{title}",
+        collection.title,
+      ),
   };
 }
 
@@ -55,9 +60,11 @@ export default async function CategoryPage(props: {
   }
 
   const [collection, allCollections, allProducts] = await Promise.all([
-    getCollection(params.collection),
+    getCollection(params.collection, params.locale),
+    // English on purpose: the collection pills and filter labels group
+    // collections by their English titles (see CATEGORY_PREFIXES).
     getCollections(),
-    getProducts({}),
+    getProducts({ locale: params.locale }),
   ]);
 
   if (!collection) return notFound();

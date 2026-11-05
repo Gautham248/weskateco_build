@@ -20,7 +20,8 @@ const collectionFragment = /* GraphQL */ `
 `;
 
 export const getCollectionQuery = /* GraphQL */ `
-  query getCollection($handle: String!) {
+  query getCollection($handle: String!, $language: LanguageCode = EN)
+  @inContext(language: $language) {
     collection(handle: $handle) {
       ...collection
     }
@@ -29,7 +30,8 @@ export const getCollectionQuery = /* GraphQL */ `
 `;
 
 export const getCollectionsQuery = /* GraphQL */ `
-  query getCollections {
+  query getCollections($language: LanguageCode = EN)
+  @inContext(language: $language) {
     collections(first: 100, sortKey: TITLE) {
       edges {
         node {
@@ -46,7 +48,8 @@ export const getCollectionProductsQuery = /* GraphQL */ `
     $handle: String!
     $sortKey: ProductCollectionSortKeys
     $reverse: Boolean
-  ) {
+    $language: LanguageCode = EN
+  ) @inContext(language: $language) {
     collection(handle: $handle) {
       products(sortKey: $sortKey, reverse: $reverse, first: 100) {
         edges {

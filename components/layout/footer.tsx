@@ -3,10 +3,12 @@
 import fb from "components/icons/fb.svg";
 import insta from "components/icons/insta.svg";
 import yt from "components/icons/yt.svg";
-import Link from "next/link";
+import Link from "components/localized-link";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import { useState } from "react";
 
 export default function Footer() {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const [shopOpen, setShopOpen] = useState(true);
 
@@ -21,7 +23,7 @@ export default function Footer() {
               className="font-bold text-[clamp(0.75rem,2vw,1rem)] tracking-widest text-white mb-4 uppercase"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              Shop
+              {t("nav.shop")}
             </h3>
             <ul
               className="space-y-3 text-neutral-400 text-[clamp(0.75rem,2vw,1rem)] font-normal"
@@ -32,7 +34,7 @@ export default function Footer() {
                   href="/store/skateboards"
                   className="hover:text-white transition-colors"
                 >
-                  Skateboards
+                  {t("nav.skateboards")}
                 </Link>
               </li>
               <li>
@@ -40,7 +42,7 @@ export default function Footer() {
                   href="/store/surfskates"
                   className="hover:text-white transition-colors"
                 >
-                  Surfskates
+                  {t("nav.surfskates")}
                 </Link>
               </li>
               <li>
@@ -48,7 +50,7 @@ export default function Footer() {
                   href="/store/portable-ramps"
                   className="hover:text-white transition-colors"
                 >
-                  Portable Ramps
+                  {t("nav.portable_ramps")}
                 </Link>
               </li>
               <li>
@@ -56,7 +58,7 @@ export default function Footer() {
                   href="/store/apparel"
                   className="hover:text-white transition-colors"
                 >
-                  Apparel
+                  {t("nav.apparel")}
                 </Link>
               </li>
               <li>
@@ -64,7 +66,7 @@ export default function Footer() {
                   href="/store/protection-gears"
                   className="hover:text-white transition-colors"
                 >
-                  Protective Gear
+                  {t("nav.protective_gear")}
                 </Link>
               </li>
             </ul>
@@ -79,19 +81,19 @@ export default function Footer() {
               href="/academy"
               className="hover:text-neutral-300 transition-colors"
             >
-              ACADEMY
+              {t("nav.academy_upper")}
             </Link>
             <Link
               href="/about-us"
               className="hover:text-neutral-300 transition-colors"
             >
-              ABOUT US
+              {t("nav.about_us")}
             </Link>
             <Link
               href="/guides"
               className="hover:text-neutral-300 transition-colors"
             >
-              BUYING GUIDES
+              {t("footer.buying_guides")}
             </Link>
             {/* Hidden: /blogs and /stores 404 — no such page exists.
                 Restore by uncommenting. */}
@@ -120,19 +122,19 @@ export default function Footer() {
               href="/contact"
               className="hover:text-neutral-300 transition-colors"
             >
-              CONTACT US
+              {t("footer.contact_us")}
             </Link>
             <Link
               href="/shipping-policy"
               className="hover:text-neutral-300 transition-colors"
             >
-              SHIPPING POLICY
+              {t("footer.shipping_policy")}
             </Link>
             <Link
               href="/privacy-policy"
               className="hover:text-neutral-300 transition-colors"
             >
-              PRIVACY POLICY
+              {t("footer.privacy_policy")}
             </Link>
           </div>
         </div>
@@ -148,7 +150,7 @@ export default function Footer() {
               onClick={() => setShopOpen(!shopOpen)}
               className="w-full flex justify-between items-center py-4 font-bold text-base tracking-wider text-white text-left uppercase focus:outline-none"
             >
-              <span>Shop</span>
+              <span>{t("nav.shop")}</span>
               <span className="text-white text-xs">
                 {shopOpen ? (
                   // Up arrow caret
@@ -193,7 +195,7 @@ export default function Footer() {
                     href="/store/skateboards"
                     className="hover:text-white transition-colors block"
                   >
-                    Skateboards
+                    {t("nav.skateboards")}
                   </Link>
                 </li>
                 <li>
@@ -201,7 +203,7 @@ export default function Footer() {
                     href="/store/surfskates"
                     className="hover:text-white transition-colors block"
                   >
-                    Surfskates
+                    {t("nav.surfskates")}
                   </Link>
                 </li>
                 <li>
@@ -209,7 +211,7 @@ export default function Footer() {
                     href="/store/portable-ramps"
                     className="hover:text-white transition-colors block"
                   >
-                    Portable Ramps
+                    {t("nav.portable_ramps")}
                   </Link>
                 </li>
                 <li>
@@ -217,7 +219,7 @@ export default function Footer() {
                     href="/store/apparel"
                     className="hover:text-white transition-colors block"
                   >
-                    Apparel
+                    {t("nav.apparel")}
                   </Link>
                 </li>
                 <li>
@@ -225,7 +227,7 @@ export default function Footer() {
                     href="/store/protection-gears"
                     className="hover:text-white transition-colors block"
                   >
-                    Protective Gear
+                    {t("nav.protective_gear")}
                   </Link>
                 </li>
               </ul>
@@ -238,7 +240,7 @@ export default function Footer() {
               href="/academy"
               className="block py-4 font-bold text-base tracking-wider text-white uppercase"
             >
-              ACADEMY
+              {t("nav.academy_upper")}
             </Link>
           </div>
 
@@ -248,7 +250,7 @@ export default function Footer() {
               href="/about-us"
               className="block py-4 font-bold text-base tracking-wider text-white uppercase"
             >
-              ABOUT US
+              {t("nav.about_us")}
             </Link>
           </div>
 
@@ -258,7 +260,7 @@ export default function Footer() {
               href="/guides"
               className="block py-4 font-bold text-base tracking-wider text-white uppercase"
             >
-              BUYING GUIDES
+              {t("footer.buying_guides")}
             </Link>
           </div>
 
@@ -418,14 +420,14 @@ export default function Footer() {
               href="/refund-policy"
               className="hover:text-white transition-colors"
             >
-              Refund Policy
+              {t("footer.refund")}
             </Link>
             <span className="text-neutral-600 font-light">|</span>
             <Link
               href="/terms-of-service"
               className="hover:text-white transition-colors"
             >
-              Terms of Service
+              {t("footer.terms")}
             </Link>
           </div>
         </div>
@@ -441,32 +443,32 @@ export default function Footer() {
             href="/privacy-policy"
             className="hover:text-white transition-colors"
           >
-            Privacy Policy
+            {t("footer.privacy")}
           </Link>
           <span className="text-neutral-600 font-light">|</span>
           <Link
             href="/refund-policy"
             className="hover:text-white transition-colors"
           >
-            Refund Policy
+            {t("footer.refund")}
           </Link>
           <span className="text-neutral-600 font-light">|</span>
           <Link
             href="/terms-of-service"
             className="hover:text-white transition-colors"
           >
-            Terms of Service
+            {t("footer.terms")}
           </Link>
           <span className="text-neutral-600 font-light">|</span>
           <Link
             href="/shipping-policy"
             className="hover:text-white transition-colors"
           >
-            Shipping Policy
+            {t("footer.shipping")}
           </Link>
           <span className="text-neutral-600 font-light">|</span>
           <Link href="/contact" className="hover:text-white transition-colors">
-            Contact Us
+            {t("footer.contact")}
           </Link>
         </div>
 

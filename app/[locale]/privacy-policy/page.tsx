@@ -1,21 +1,30 @@
 import Prose from "components/prose";
 import Footer from "components/layout/footer";
+import { EnglishVersionNotice } from "components/legal/english-version-notice";
+import { createTranslator } from "lib/i18n";
 import type { Metadata } from "next";
+import { privacyPolicyHtmlHi } from "./content.hi";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description:
-    "Privacy Policy for Weskateco / Toucan Distribution Pvt Ltd describing how we collect, use, and disclose your personal information.",
-};
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await props.params;
+  const t = createTranslator(locale);
+
+  return {
+    title: t("legal.privacy_title"),
+    description: t("legal.privacy_description"),
+  };
+}
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "hi" }];
 }
 
 const privacyPolicyHtml = `
-<p><strong>Last updated: July 6, 2026</strong></p>
+<p><strong>Last updated: November 5, 2026</strong></p>
 
-<p>This Privacy Policy describes how Toucan Distribution Pvt Ltd (the "Site", "we", "us", or "our") collects, uses, and discloses your personal information when you visit, use our services, or make a purchase from weskateco.com (the "Site") or otherwise communicate with us regarding the Site (collectively, the "Services"). For purposes of this Privacy Policy, "you" and "your" means you as the user of the Services, whether you are a customer, website visitor, or another individual whose information we have collected pursuant to this Privacy Policy.</p>
+<p>This Privacy Policy describes how Toucan Distribution Pvt Ltd ("we", "us", or "our") collects, uses, and discloses your personal information when you visit, use our services, or make a purchase from weskateco.com (the "Site") or otherwise communicate with us regarding the Site (collectively, the "Services"). For purposes of this Privacy Policy, "you" and "your" means you as the user of the Services, whether you are a customer, website visitor, or another individual whose information we have collected pursuant to this Privacy Policy.</p>
 
 <p>Please read this Privacy Policy carefully.</p>
 
@@ -112,7 +121,7 @@ const privacyPolicyHtml = `
 </div>
 
 <p>We do not use or disclose sensitive personal information without your consent or for the purposes of inferring characteristics about you.</p>
-<p>With your consent we share personal information for the purpose of engaging in advertising and marketing activities, as follows.</p>
+<p>With your consent we share personal information for the purpose of engaging in advertising and marketing activities.</p>
 
 <p>We have “sold” and “shared” (as those terms are defined in applicable law) personal information over the preceding 12 months for the purpose of engaging in advertising and marketing activities, as follows.</p>
 
@@ -179,18 +188,33 @@ const privacyPolicyHtml = `
 <p>If we transfer your personal information out of Europe, we will rely on recognized transfer mechanisms like the European Commission's Standard Contractual Clauses, or any equivalent contracts issued by the relevant competent authority of the UK, as relevant, unless the data transfer is to a country that has been determined to provide an adequate level of protection.</p>
 
 <h2>Contact</h2>
-<p>Should you have any questions about our privacy practices or this Privacy Policy, or if you would like to exercise any of the rights available to you, please call or email us at <a href="mailto:info@weskateco.com">info@weskateco.com</a> or contact us at Toucan Distribution Private Limited, No 149/3, 5th Main Road, Malleshpalya Kaggadasapura, Behind DS Upahara, 560075 Bengaluru KA, India.</p>
+<p>Should you have any questions about our privacy practices or this Privacy Policy, or if you would like to exercise any of the rights available to you, please email us at <a href="mailto:info@weskateco.com">info@weskateco.com</a> or contact us at Toucan Distribution Private Limited, No 149/3, 5th Main Road, Malleshpalya Kaggadasapura, Behind DS Upahara, 560075 Bengaluru KA, India.</p>
 <p>For the purpose of applicable data protection laws and if not explicitly stated otherwise, we are the data controller of your personal information.</p>
 `;
 
-export default function PrivacyPolicyPage() {
+// The English text is the binding version; other languages are translations.
+const privacyPolicyHtmlByLocale: Record<string, string> = {
+  en: privacyPolicyHtml,
+  hi: privacyPolicyHtmlHi,
+};
+
+export default async function PrivacyPolicyPage(props: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await props.params;
+  const t = createTranslator(locale);
+
   return (
     <>
       <div className="mx-auto max-w-[1200px] px-4 py-12 md:py-16">
         <h1 className="mb-8 text-4xl font-extrabold tracking-tight md:text-5xl">
-          Privacy Policy
+          {t("legal.privacy_title")}
         </h1>
-        <Prose className="mb-8" html={privacyPolicyHtml} />
+        <EnglishVersionNotice locale={locale} englishPath="/privacy-policy" />
+        <Prose
+          className="mb-8"
+          html={privacyPolicyHtmlByLocale[locale] ?? privacyPolicyHtml}
+        />
       </div>
       <Footer />
     </>

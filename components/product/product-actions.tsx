@@ -96,16 +96,19 @@ export function ProductActions({
       addCartItem(finalVariant, product);
     }
 
-    toast.success(`${product.title} added to cart!`, {
-      position: "top-right",
-      style: {
-        backgroundColor: "#ffffff",
-        color: "#10b981",
-        borderColor: "#10b981",
-        position: "relative",
-        top: "60px",
+    toast.success(
+      t("product.added_to_cart_toast").replace("{title}", product.title),
+      {
+        position: "top-right",
+        style: {
+          backgroundColor: "#ffffff",
+          color: "#10b981",
+          borderColor: "#10b981",
+          position: "relative",
+          top: "60px",
+        },
       },
-    });
+    );
 
     try {
       const error = await addItem(null, selectedVariantId);
@@ -124,8 +127,8 @@ export function ProductActions({
       onAddedToCart?.();
     } catch (e) {
       console.error(e);
-      setMessage("Could not add to cart. Please try again.");
-      toast.error("Could not add to cart. Please try again.");
+      setMessage(t("product.add_to_cart_error"));
+      toast.error(t("product.add_to_cart_error"));
     } finally {
       setIsAdding(false);
     }
@@ -154,14 +157,14 @@ export function ProductActions({
           style={{ fontFamily: "Archivo, sans-serif" }}
         >
           {!selectedVariantId
-            ? "Select Option"
+            ? t("product.select_option_button")
             : isSelectedVariantSoldOut
               ? t("product.out_of_stock")
               : isAdding
-                ? "Adding to Cart..."
+                ? t("product.adding_to_cart")
                 : isAdded
-                  ? "Added to Cart ✓"
-                  : "Add To Cart"}
+                  ? t("product.added_to_cart")
+                  : t("product.add_to_cart")}
         </button>
         {message ? (
           <p
@@ -187,14 +190,14 @@ export function ProductActions({
         )}
         style={{ fontFamily: "Archivo, sans-serif" }}
       >
-        {isBuyNowPending ? "Processing..." : "Buy Now"}
+        {isBuyNowPending ? t("cart.processing") : t("product.buy_now")}
       </button>
       <div className="text-left">
         <span
           className="text-[clamp(0.625rem,1.5vw,0.75rem)] text-black font-normal"
           style={{ fontFamily: "Archivo, sans-serif" }}
         >
-          Free Shipping Within India
+          {t("product.free_shipping_india")}
         </span>
       </div>
     </div>

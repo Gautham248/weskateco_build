@@ -10,10 +10,17 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = {
-  title: "Store",
-  description: "Browse products in the store.",
-};
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await props.params;
+  const t = createTranslator(locale);
+
+  return {
+    title: t("store.store"),
+    description: t("store.meta_description"),
+  };
+}
 
 export default async function StorePage(props: {
   params: Promise<{ locale: string }>;
@@ -40,7 +47,9 @@ export default async function StorePage(props: {
   }
 
   const [allProducts, allCollections] = await Promise.all([
-    getProducts({}),
+    getProducts({ locale }),
+    // English on purpose: the collection pills and filter labels group
+    // collections by their English titles (see CATEGORY_PREFIXES).
     getCollections(),
   ]);
 

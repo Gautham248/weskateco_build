@@ -16,8 +16,9 @@ import {
   getParentCategory,
 } from "lib/filters/category-filter-config";
 import { countMatching, deriveFilterGroups } from "lib/filters/derive";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import { Product } from "lib/shopify/types";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -81,6 +82,91 @@ function simulateCount(
 }
 
 // ---------------------------------------------------------------------------
+// Display-time translation of static filter labels.
+// Group ids and option values drive URL params and matching, so they are never
+// touched: labels are looked up by id/value and fall back to the English label
+// when no key exists. Labels derived from product data are left as they are.
+// ---------------------------------------------------------------------------
+
+type Translate = (key: string) => string;
+
+const GROUP_LABEL_KEYS: Record<string, string> = {
+  sort: "filters.group_sorting",
+  category: "filters.group_category",
+  subcategory: "filters.group_subcategory",
+  size: "filters.group_size",
+  concave: "filters.group_concave",
+  shape: "filters.group_shape",
+  wheel_size: "filters.group_wheel_size",
+  color: "filters.group_color",
+  brand: "filters.group_brands",
+  price: "filters.group_price",
+};
+
+/** SORT_GROUP options (lib/filters/category-filter-config), by value. */
+const SORT_OPTION_KEYS: Record<string, string> = {
+  "": "filters.sort_relevance",
+  "trending-desc": "filters.sort_trending",
+  "latest-desc": "filters.sort_latest_arrivals",
+  "price-asc": "collection.price_low_high",
+  "price-desc": "collection.price_high_low",
+};
+
+/** `sorting` titles (lib/constants), by slug — shown on the drawer's sort tag. */
+const SORT_TAG_KEYS: Record<string, string> = {
+  "trending-desc": "filters.sort_trending",
+  "latest-desc": "filters.sort_tag_latest_arrivals",
+  "price-asc": "filters.sort_tag_price_low_high",
+  "price-desc": "filters.sort_tag_price_high_low",
+};
+
+/** CATEGORY_GROUP options (lib/filters/category-filter-config), by value. */
+const CATEGORY_OPTION_KEYS: Record<string, string> = {
+  "": "collection.all_products",
+  skateboards: "nav.skateboards",
+  surfskates: "nav.surfskates",
+  "portable-ramps": "nav.portable_ramps",
+  "apparel-1": "nav.apparel",
+  "protection-gears": "filters.category_protection_gear",
+};
+
+/** The pill the store client labels "All" (English title grouping, on purpose). */
+const ALL_PILL_TITLE = "All";
+
+function translateOr(t: Translate, key: string | undefined, fallback: string) {
+  if (!key) return fallback;
+  const value = t(key);
+  return value && value !== key ? value : fallback;
+}
+
+function groupLabel(t: Translate, group: FilterGroup) {
+  return translateOr(t, GROUP_LABEL_KEYS[group.id], group.label);
+}
+
+function optionLabel(
+  t: Translate,
+  groupId: string,
+  option: { label: string; value: string },
+) {
+  if (groupId === "sort") {
+    return translateOr(t, SORT_OPTION_KEYS[option.value], option.label);
+  }
+  if (groupId === "category") {
+    return translateOr(t, CATEGORY_OPTION_KEYS[option.value], option.label);
+  }
+  if (groupId === "subcategory" && option.label === ALL_PILL_TITLE) {
+    return translateOr(t, "store.all_pill", option.label);
+  }
+  return option.label;
+}
+
+function pillTitle(t: Translate, title: string) {
+  return title === ALL_PILL_TITLE
+    ? translateOr(t, "store.all_pill", title)
+    : title;
+}
+
+// ---------------------------------------------------------------------------
 // Main FilterSortBar
 // ---------------------------------------------------------------------------
 
@@ -99,6 +185,7 @@ export default function FilterSortBar({
   onApplyAll,
   onCategoryChange,
 }: FilterSortBarProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -219,6 +306,10 @@ export default function FilterSortBar({
   // Count badge: active filters + non-default sort
   const badgeCount = activeFiltersCount + (currentSort ? 1 : 0);
 
+  const showingText = t("store.showing_count")
+    .replace("{shown}", String(totalProducts))
+    .replace("{total}", String(totalProducts));
+
   return (
     <div className="w-full bg-white text-black pb-4 border-b border-neutral-100 dark:bg-neutral-950 dark:text-white dark:border-neutral-900">
       {/* Top Row */}
@@ -231,12 +322,11 @@ export default function FilterSortBar({
             >
               {title}
               <span className="hidden md:inline-block ml-2 text-xs md:text-sm font-medium text-neutral-500 dark:text-neutral-400 whitespace-nowrap normal-case font-sans tracking-normal align-middle">
-                (Showing 1 – {totalProducts} products of {totalProducts}{" "}
-                products)
+                {showingText}
               </span>
             </h2>
             <p className="block md:hidden text-xs font-medium text-neutral-500 dark:text-neutral-400 normal-case font-sans tracking-normal mt-1">
-              (Showing 1 – {totalProducts} products of {totalProducts} products)
+              {showingText}
             </p>
           </div>
 
@@ -244,7 +334,7 @@ export default function FilterSortBar({
           <div className="flex items-center gap-3 text-neutral-800 dark:text-neutral-200 md:hidden ml-auto">
             <button
               onClick={openFilters}
-              aria-label="Filter"
+              aria-label={t("collection.filter")}
               className="p-1 cursor-pointer hover:opacity-75 transition-opacity relative"
             >
               <svg
@@ -270,7 +360,7 @@ export default function FilterSortBar({
             </button>
             <button
               onClick={openFilters}
-              aria-label="Sort"
+              aria-label={t("filters.sort_aria")}
               className="p-1 cursor-pointer hover:opacity-75 transition-opacity"
             >
               <svg
@@ -319,7 +409,7 @@ export default function FilterSortBar({
                   </span>
                 )}
               </div>
-              <span>FILTER &amp; SORT</span>
+              <span>{t("filters.filter_and_sort")}</span>
             </button>
           </div>
         </div>
@@ -327,7 +417,7 @@ export default function FilterSortBar({
         {/* Mobile showing count */}
         <div className="mt-1 md:hidden">
           <span className="text-xs md:text-sm font-medium text-neutral-600 dark:text-neutral-400">
-            (Showing 1 – {totalProducts} products of {totalProducts} products)
+            {showingText}
           </span>
         </div>
       </div>
@@ -359,7 +449,7 @@ export default function FilterSortBar({
                         : "bg-neutral-100 text-neutral-800 border-transparent hover:bg-neutral-200 dark:bg-neutral-900/35 dark:text-neutral-200 dark:hover:bg-neutral-800",
                     )}
                   >
-                    {coll.title}
+                    {pillTitle(t, coll.title)}
                   </Link>
                 );
               })}
@@ -412,7 +502,7 @@ export default function FilterSortBar({
                 onClick={clearAllFilters}
                 className="text-xs font-medium underline text-black hover:text-black dark:text-neutral-400 dark:hover:text-white cursor-pointer ml-1"
               >
-                Clear All
+                {t("filters.clear_all")}
               </button>
             </div>
           )}
@@ -506,6 +596,7 @@ function FilterDrawer({
   onCategoryChange?: (handle: string) => void;
   collections: CollectionItem[];
 }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -615,7 +706,7 @@ function FilterDrawer({
     if (catOpt) {
       activeDrawerFilters.push({
         id: "category",
-        label: catOpt.label,
+        label: optionLabel(t, "category", catOpt),
         type: "category",
       });
     } else {
@@ -657,7 +748,7 @@ function FilterDrawer({
     if (sortObj) {
       activeDrawerFilters.push({
         id: "sort",
-        label: sortObj.title,
+        label: translateOr(t, SORT_TAG_KEYS[currentSort], sortObj.title),
         type: "sort",
       });
     }
@@ -704,7 +795,7 @@ function FilterDrawer({
               className="text-[32px] font-semibold uppercase tracking-[-1%]"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              Filters
+              {t("filters.title")}
             </h3>
           </div>
           <button
@@ -731,7 +822,7 @@ function FilterDrawer({
                     className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
                     style={{ fontFamily: "Archivo, sans-serif" }}
                   >
-                    Active Filters
+                    {t("filters.active_filters")}
                   </span>
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black text-[10px] font-bold">
                     {activeDrawerFilters.length}
@@ -742,7 +833,7 @@ function FilterDrawer({
                   onClick={clearPending}
                   className="flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-black dark:hover:text-white cursor-pointer"
                 >
-                  <span>Remove all filters</span>
+                  <span>{t("filters.remove_all_filters")}</span>
                   <span className="text-[10px]">✕</span>
                 </button>
               </div>
@@ -815,7 +906,7 @@ function FilterDrawer({
                           "text-rose-600 dark:text-rose-400 font-bold",
                       )}
                     >
-                      {group.label}
+                      {groupLabel(t, group)}
                     </span>
                     {activeCount > 0 && (
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black text-[10px] font-black">
@@ -874,7 +965,8 @@ function FilterDrawer({
         </div>
 
         <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 my-4">
-          &#x24D8;&nbsp;{previewCount} items were found
+          &#x24D8;&nbsp;
+          {t("filters.items_found").replace("{count}", String(previewCount))}
         </p>
         {/* Footer */}
         <div
@@ -888,7 +980,7 @@ function FilterDrawer({
               className="w-full py-4 text-center bg-black text-white dark:bg-white dark:text-black rounded-sm text-sm font-bold uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
-              DONE
+              {t("filters.done")}
             </button>
             <button
               type="button"
@@ -896,7 +988,7 @@ function FilterDrawer({
               className="w-full py-4 text-center border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black text-black dark:text-white rounded-sm text-sm font-bold uppercase tracking-widest hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
-              CLEAR ALL
+              {t("filters.clear_all_caps")}
             </button>
           </div>
         </div>
@@ -918,6 +1010,7 @@ function SortGroup({
   currentSort: string;
   onUpdateSort: (s: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4 pl-1">
       {group.options.map((opt) => {
@@ -931,7 +1024,7 @@ function SortGroup({
             style={{ fontFamily: "Archivo, sans-serif" }}
           >
             <Checkbox checked={isSelected} />
-            <span>{opt.label}</span>
+            <span>{optionLabel(t, group.id, opt)}</span>
           </button>
         );
       })}
@@ -1251,6 +1344,7 @@ function CategoryGroup({
   activeCollectionHandle: string;
   onCategorySelect: (handle: string) => void;
 }) {
+  const { t } = useTranslation();
   const activeParent = getParentCategory(activeCollectionHandle);
   return (
     <div className="flex flex-col gap-4 pl-1">
@@ -1269,7 +1363,7 @@ function CategoryGroup({
             style={{ fontFamily: "Archivo, sans-serif" }}
           >
             <Checkbox checked={isActive} />
-            <span>{opt.label}</span>
+            <span>{optionLabel(t, group.id, opt)}</span>
           </button>
         );
       })}

@@ -51,7 +51,7 @@
 }
 
 @theme {
-  --font-clash: "Clash Display", sans-serif;
+  --font-clash: "Clash Display", var(--font-devanagari), sans-serif;
 
   /* Guides-scope design tokens: the brand lime previously hand-copied as
      arbitrary #CCFF02 values (plus its one dark hover shade) and the shared
@@ -245,7 +245,7 @@ body .guides-monochrome ::selection {
 
 [style*="Clash Display"],
 .font-clash {
-  font-family: "Clash Display", sans-serif !important;
+  font-family: "Clash Display", var(--font-devanagari), sans-serif !important;
 }
 
 @plugin "@tailwindcss/container-queries";
@@ -265,7 +265,7 @@ body .guides-monochrome ::selection {
   button,
   select,
   textarea {
-    font-family: "Archivo", sans-serif;
+    font-family: "Archivo", var(--font-devanagari), sans-serif;
   }
 }
 

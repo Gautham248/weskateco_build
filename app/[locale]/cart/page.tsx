@@ -14,7 +14,7 @@ import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { useParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState, useTransition } from "react";
 
@@ -90,7 +90,7 @@ function CartPageContent() {
               className="text-[32px] font-semibold font-black tracking-tighter uppercase mb-8 flex items-baseline gap-2"
               style={{ fontFamily: "'Clash Display', sans-serif" }}
             >
-              My Cart
+              {t("cart.my_cart")}
             </h1>
           ))}
 
@@ -109,17 +109,16 @@ function CartPageContent() {
                 d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
               />
             </svg>
-            <h2 className="text-xl font-bold mb-2">Your cart is empty</h2>
+            <h2 className="text-xl font-bold mb-2">{t("cart.empty")}</h2>
             <p className="text-neutral-500 mb-6 max-w-sm text-sm">
-              Looks like you haven't added anything to your cart yet. Let's find
-              some setups!
+              {t("cart.empty_message")}
             </p>
             <Link
               href={getLocalizedPath("/store/skateboards", locale)}
               className="rounded-xs bg-black text-white px-6 py-3 uppercase text-xs font-semibold tracking-wider hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 transition-colors"
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
-              Shop Now
+              {t("cart.shop_now")}
             </Link>
           </div>
         ) : (
@@ -129,7 +128,7 @@ function CartPageContent() {
                 className="text-[32px] font-semibold font-black tracking-tighter uppercase flex items-baseline gap-2"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                My Cart
+                {t("cart.my_cart")}
               </h1>
             </div>
 
@@ -164,7 +163,7 @@ function CartPageContent() {
                                 />
                               ) : (
                                 <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
-                                  No image
+                                  {t("cart.no_image")}
                                 </div>
                               )}
                             </div>
@@ -222,9 +221,9 @@ function CartPageContent() {
 
                             {/* Delivery by Today */}
                             <div className="mt-4 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-                              Delivery by{" "}
+                              {t("cart.delivery_by")}{" "}
                               <span className="text-[#3f6212] dark:text-[#84cc16] font-bold">
-                                Today
+                                {t("cart.delivery_today")}
                               </span>
                             </div>
 
@@ -242,7 +241,7 @@ function CartPageContent() {
                                 className="text-[13px] font-semibold uppercase underline hover:text-neutral-500 transition-colors cursor-pointer"
                                 style={{ fontFamily: "Archivo, sans-serif" }}
                               >
-                                Edit
+                                {t("cart.edit")}
                               </button>
                             </div>
                           </div>
@@ -268,7 +267,7 @@ function CartPageContent() {
                               />
                             ) : (
                               <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
-                                No image
+                                {t("cart.no_image")}
                               </div>
                             )}
                           </div>
@@ -336,7 +335,7 @@ function CartPageContent() {
                                   className="text-xs font-normal uppercase underline hover:text-neutral-500 transition-colors cursor-pointer"
                                   style={{ fontFamily: "Archivo, sans-serif" }}
                                 >
-                                  Edit
+                                  {t("cart.edit")}
                                 </button>
                               </div>
 
@@ -363,7 +362,12 @@ function CartPageContent() {
                     className="flex justify-between items-center w-full text-[14px] text-neutral-500 dark:text-neutral-400 md:justify-end md:gap-4"
                     style={{ fontFamily: "Archivo, sans-serif" }}
                   >
-                    <span>Subtotal ({cart.totalQuantity} items):</span>
+                    <span>
+                      {t("cart.subtotal_items").replace(
+                        "{count}",
+                        String(cart.totalQuantity),
+                      )}
+                    </span>
                     <Price
                       amount={cart.cost.subtotalAmount.amount}
                       currencyCode={cart.cost.subtotalAmount.currencyCode}
@@ -382,7 +386,7 @@ function CartPageContent() {
                     className="text-[20px] font-semibold font-black uppercase tracking-tight mb-6"
                     style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
-                    Order Summary
+                    {t("cart.order_summary")}
                   </h2>
 
                   {/* Price Details breakdown */}
@@ -395,7 +399,7 @@ function CartPageContent() {
                         className="text-[14px] font-bold uppercase text-neutral-900 dark:text-white"
                         style={{ fontFamily: "'Clash Display', sans-serif" }}
                       >
-                        Subtotal
+                        {t("cart.subtotal")}
                       </span>
                       <Price
                         amount={cart.cost.totalAmount.amount}
@@ -429,7 +433,7 @@ function CartPageContent() {
                     className="w-full mt-6 h-14 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 uppercase text-[13px] font-semibold tracking-wider rounded-sm cursor-pointer transition-colors"
                     style={{ fontFamily: "Archivo, sans-serif" }}
                   >
-                    Proceed to Checkout
+                    {t("cart.proceed_to_checkout")}
                   </button>
 
                   {/* Secure payments indicator badge */}
@@ -440,11 +444,9 @@ function CartPageContent() {
                     <img
                       src={secure.src || secure}
                       className="bg-green-50 dark:bg-green-950/10 p-2 w-9 h-9 rounded-md flex-shrink-0"
-                      alt="secure"
+                      alt={t("cart.secure_alt")}
                     />
-                    <span>
-                      Secure Encrypted Payments | Genuine Weskateco Products
-                    </span>
+                    <span>{t("cart.secure_payments_note")}</span>
                   </div>
                 </div>
               </div>
@@ -484,6 +486,7 @@ function CartPageQuantitySelector({
   updateCartItem: any;
   isMobile: boolean;
 }) {
+  const { t } = useTranslation();
   const [isPending, startTransition] = useTransition();
 
   const handleDecrease = () => {
@@ -535,7 +538,7 @@ function CartPageQuantitySelector({
         onClick={handleDecrease}
         disabled={isPending}
         className={btnClass}
-        aria-label="Decrease item quantity"
+        aria-label={t("cart.decrease_item_quantity")}
       >
         <MinusIcon className={iconClass} />
       </button>
@@ -547,7 +550,7 @@ function CartPageQuantitySelector({
         onClick={handleIncrease}
         disabled={isPending}
         className={btnClass}
-        aria-label="Increase item quantity"
+        aria-label={t("cart.increase_item_quantity")}
       >
         <PlusIcon className={iconClass} />
       </button>
@@ -564,6 +567,7 @@ function CartPageRemoveButton({
   updateCartItem: any;
   isMobile: boolean;
 }) {
+  const { t } = useTranslation();
   const [isPending, startTransition] = useTransition();
 
   const handleRemove = () => {
@@ -584,7 +588,7 @@ function CartPageRemoveButton({
       disabled={isPending}
       className={btnClass}
     >
-      REMOVE
+      {t("cart.remove_button")}
     </button>
   );
 }

@@ -2,6 +2,7 @@ import {
   listOverridesForHandles,
   type ProductOverrideWithImages,
 } from "lib/admin/queries";
+import { defaultLocale } from "lib/i18n";
 import type { Image, Product } from "lib/shopify/types";
 
 export type GalleryMode = "append" | "replace";
@@ -53,10 +54,15 @@ function mergeImages(product: Product, override: ProductOverride): Image[] {
 /**
  * Returns a product with the override applied. Pure and synchronous — the
  * database read happens in `withOverrides` so this stays trivially testable.
+ *
+ * Title and description overrides are English copy. Pass `includeText: false`
+ * for other locales so the translated Shopify text shows instead; photo
+ * overrides still apply in every language.
  */
 export function applyOverride(
   product: Product,
   override?: ProductOverride,
+  { includeText = true }: { includeText?: boolean } = {},
 ): Product {
   if (!override) {
     return product;
@@ -64,7 +70,7 @@ export function applyOverride(
 
   const next: Product = { ...product };
 
-  if (override.title) {
+  if (includeText && override.title) {
     next.title = override.title;
 
     // Keep the <title>/OpenGraph metadata in step with the visible heading, but
@@ -75,7 +81,7 @@ export function applyOverride(
     }
   }
 
-  if (override.descriptionHtml) {
+  if (includeText && override.descriptionHtml) {
     next.descriptionHtml = override.descriptionHtml;
     next.description = htmlToPlainText(override.descriptionHtml);
   }
@@ -147,7 +153,10 @@ export async function getOverridesForHandles(
   return overrides;
 }
 
-export async function withOverrides(products: Product[]): Promise<Product[]> {
+export async function withOverrides(
+  products: Product[],
+  locale: string = defaultLocale,
+): Promise<Product[]> {
   if (products.length === 0) {
     return products;
   }
@@ -160,7 +169,9 @@ export async function withOverrides(products: Product[]): Promise<Product[]> {
     return products;
   }
 
+  const includeText = locale === defaultLocale;
+
   return products.map((product) =>
-    applyOverride(product, overrides.get(product.handle)),
+    applyOverride(product, overrides.get(product.handle), { includeText }),
   );
 }

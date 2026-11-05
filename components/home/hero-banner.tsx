@@ -2,7 +2,7 @@ import { HeroMedia } from "components/home/hero-media";
 import { HERO_FALLBACK_SLIDE, type HeroSlide } from "lib/catalog/hero";
 import { getHero } from "lib/catalog/hero-feed";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
-import Link from "next/link";
+import Link from "components/localized-link";
 
 export default async function HeroBanner({ locale }: { locale: string }) {
   const t = createTranslator(locale);

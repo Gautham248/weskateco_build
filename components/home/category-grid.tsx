@@ -4,7 +4,7 @@ import accessoriesImg from "components/icons/accessories.jpg";
 import skateboardsImg from "components/icons/skateboards.jpg";
 import surfskatesImg from "components/icons/surfskates.jpg";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { useRef, useState } from "react";
 
 function CategoryTitle({ name }: { name: string }) {
@@ -38,17 +38,17 @@ export default function CategoryGrid({ locale }: { locale: string }) {
 
   const categories: CategoryItem[] = [
     {
-      name: "Surfskates",
+      name: t("home.surfskates"),
       image: surfskatesImg,
       href: "/store/surfskates",
     },
     {
-      name: "Skateboards",
+      name: t("home.skateboards"),
       image: skateboardsImg,
       href: "/store/skateboards",
     },
     {
-      name: "Accessories",
+      name: t("home.accessories"),
       image: accessoriesImg,
       href: "/store/skateboard-accessories",
     },
@@ -91,7 +91,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
             letterSpacing: "-0.01em",
           }}
         >
-          CATEGORIES
+          {t("home.categories_title")}
         </h2>
       </div>
 
@@ -170,7 +170,7 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                   </div>
 
                   <div className="w-full bg-black text-white text-center py-2.5 rounded-md font-normal tracking-wide uppercase border border-neutral-800 text-sm">
-                    View More
+                    {t("home.view_more")}
                   </div>
                 </div>
               </Link>

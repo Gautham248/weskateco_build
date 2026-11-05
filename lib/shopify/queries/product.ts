@@ -1,7 +1,8 @@
 import productFragment from "../fragments/product";
 
 export const getProductQuery = /* GraphQL */ `
-  query getProduct($handle: String!) {
+  query getProduct($handle: String!, $language: LanguageCode = EN)
+  @inContext(language: $language) {
     product(handle: $handle) {
       ...product
     }
@@ -14,7 +15,8 @@ export const getProductsQuery = /* GraphQL */ `
     $sortKey: ProductSortKeys
     $reverse: Boolean
     $query: String
-  ) {
+    $language: LanguageCode = EN
+  ) @inContext(language: $language) {
     products(sortKey: $sortKey, reverse: $reverse, query: $query, first: 100) {
       edges {
         node {
@@ -80,7 +82,8 @@ export const getProductsPageQuery = /* GraphQL */ `
 `;
 
 export const getProductRecommendationsQuery = /* GraphQL */ `
-  query getProductRecommendations($productId: ID!) {
+  query getProductRecommendations($productId: ID!, $language: LanguageCode = EN)
+  @inContext(language: $language) {
     productRecommendations(productId: $productId) {
       ...product
     }

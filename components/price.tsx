@@ -12,7 +12,10 @@ const Price = ({
   currencyCodeClassName?: string;
 } & React.ComponentProps<"p">) => (
   <p suppressHydrationWarning={true} className={className}>
-    {`${new Intl.NumberFormat(undefined, {
+    {/* en-IN, not the visitor's browser locale: Indian digit grouping
+        (₹1,23,456) in every language, and the server and client render the
+        same string. hi-IN would group the same way. */}
+    {`${new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: currencyCode,
       currencyDisplay: "narrowSymbol",

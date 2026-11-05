@@ -10,7 +10,7 @@ import { createTranslator, getLocalizedPath } from "lib/i18n";
 import { getProductRecommendations, readProductForPage } from "lib/shopify";
 import type { Image, Product } from "lib/shopify/types";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -24,7 +24,9 @@ export async function generateMetadata(props: {
   params: Promise<{ locale: string; handle: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const state = productReadState(await readProductForPage(params.handle));
+  const state = productReadState(
+    await readProductForPage(params.handle, params.locale),
+  );
 
   if (state.kind === "missing") return notFound();
 
@@ -72,7 +74,9 @@ export default async function ProductPage(props: {
   params: Promise<{ locale: string; handle: string }>;
 }) {
   const params = await props.params;
-  const state = productReadState(await readProductForPage(params.handle));
+  const state = productReadState(
+    await readProductForPage(params.handle, params.locale),
+  );
 
   if (state.kind === "missing") return notFound();
 
@@ -175,7 +179,7 @@ async function RelatedProducts({ id, locale }: { id: string; locale: string }) {
   let relatedProducts: Product[] = [];
 
   try {
-    relatedProducts = await getProductRecommendations(id);
+    relatedProducts = await getProductRecommendations(id, locale);
   } catch (error) {
     // A secondary section must never take the page down with it — the product itself is
     // the content, and it has already rendered by this point.

@@ -4,9 +4,9 @@ import skateboardsBanner from "components/icons/skateboards_banner.png";
 import skateboardsBannerMobile from "components/icons/skateboards_banner_mobile.jpg";
 import surfskatesBanner from "components/icons/surfskates_banner.png";
 import surfskatesBannerMobile from "components/icons/surfskates_banner_mobile.jpg";
-import { getLocalizedPath } from "lib/i18n";
+import { createTranslator, getLocalizedPath } from "lib/i18n";
 import Image, { StaticImageData } from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 
 interface StoreBannerProps {
   title: string;
@@ -21,6 +21,7 @@ export default function StoreBanner({
   handle,
   locale = "en",
 }: StoreBannerProps) {
+  const t = createTranslator(locale);
   const key = (handle || title || "").toLowerCase();
   let desktopImg: StaticImageData = skateboardsBanner;
   let mobileImg: StaticImageData = skateboardsBannerMobile;
@@ -41,14 +42,14 @@ export default function StoreBanner({
       <div className="mx-auto max-w-(--breakpoint-2xl) px-0 pt-2 pb-6 md:py-8 lg:py-12">
         {/* Breadcrumb */}
         <nav
-          aria-label="Breadcrumb"
+          aria-label={t("store.breadcrumb_aria")}
           className="mb-3 flex items-center gap-1.5 text-xs md:text-sm text-neutral-500 dark:text-neutral-400"
         >
           <Link
             href={getLocalizedPath("/", locale)}
             className="transition-colors hover:text-black dark:hover:text-white"
           >
-            Home
+            {t("nav.home")}
           </Link>
           <svg
             width="10"
@@ -68,7 +69,7 @@ export default function StoreBanner({
             href={getLocalizedPath("/store", locale)}
             className={`transition-colors hover:text-black dark:hover:text-white ${!handle ? "font-medium text-neutral-900 dark:text-neutral-100" : ""}`}
           >
-            Store
+            {t("store.store")}
           </Link>
           {handle && (
             <>
@@ -97,14 +98,14 @@ export default function StoreBanner({
         <div className="relative w-full aspect-[5/4] md:aspect-[4/1] lg:aspect-[5/1] overflow-hidden rounded-2xl">
           <Image
             src={desktopImg}
-            alt={`${title} banner`}
+            alt={t("store.banner_alt").replace("{title}", title)}
             fill
             className="hidden md:block object-cover object-center"
             priority
           />
           <Image
             src={mobileImg}
-            alt={`${title} banner`}
+            alt={t("store.banner_alt").replace("{title}", title)}
             fill
             className="block md:hidden object-cover object-center"
             priority

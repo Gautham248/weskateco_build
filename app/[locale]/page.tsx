@@ -17,13 +17,19 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = {
-  description:
-    "High-performance storefront for WeSkate Co, India's Home for Skateboards & Surfskates.",
-  openGraph: {
-    type: "website",
-  },
-};
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await props.params;
+  const t = createTranslator(locale);
+
+  return {
+    description: t("home.meta_description"),
+    openGraph: {
+      type: "website" as const,
+    },
+  };
+}
 
 export default async function HomePage(props: {
   params: Promise<{ locale: string }>;
@@ -50,7 +56,7 @@ export default async function HomePage(props: {
         locale={locale}
       /> */}
       <ShopNow locale={locale} />
-      <AcademySection />
+      <AcademySection locale={locale} />
       <TipsSection variant="page" />
       {/* <ConfiguratorCTA locale={locale} />
       <BrandsSection locale={locale} /> */}

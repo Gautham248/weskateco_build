@@ -1,7 +1,9 @@
 "use client";
 
 import CartModal from "components/cart/modal";
-import Link from "next/link";
+import { LanguageSwitcher } from "components/layout/language-switcher";
+import Link from "components/localized-link";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import { Suspense, useState } from "react";
 import MobileMenu from "./mobile-menu";
 import NavLinks from "./nav-links";
@@ -11,6 +13,7 @@ import Search, { SearchSkeleton } from "./search";
 const { SITE_NAME } = process.env;
 
 export function Navbar({ locale }: { locale?: string }) {
+  const { t } = useTranslation();
   const scrolled = useNavbarScroll();
   const [isStoreOpen, setIsStoreOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -55,10 +58,17 @@ export function Navbar({ locale }: { locale?: string }) {
           </div>
         )}
 
-        {/* Right: Search trigger, Cart, User */}
+        {/* Right: Language, Search trigger, Cart, User */}
         <div
           className={`flex-1 md:flex-initial flex items-center justify-end gap-3 md:gap-6 xl:gap-11 z-50 transition-opacity duration-300 ${isStoreOpen ? "opacity-50" : "opacity-100"}`}
         >
+          {/* Phones switch language from the hamburger menu instead, where
+              there is room for both names. */}
+          <div className="hidden md:block">
+            <Suspense fallback={null}>
+              <LanguageSwitcher scrolled={scrolled} />
+            </Suspense>
+          </div>
           <div className={isSearchOpen ? "hidden" : "block"}>
             <Suspense fallback={<SearchSkeleton />}>
               <Search
@@ -73,7 +83,7 @@ export function Navbar({ locale }: { locale?: string }) {
           </Suspense>
           <Link
             href="/account"
-            aria-label="Account"
+            aria-label={t("nav.account")}
             className="h-7 w-7 flex items-center justify-center rounded-md transition-colors flex-shrink-0"
           >
             <svg

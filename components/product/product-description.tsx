@@ -83,7 +83,7 @@ export function ProductDescription({
               ${initial}
             </div>
             <span class="text-[14px] font-medium text-[#55631F] dark:text-lime-400">
-              Deck Artwork by ${trimmedArtist}
+              ${t("product.deck_artwork_by").replace("{artist}", () => trimmedArtist)}
             </span>
           </div>
         `;
@@ -141,7 +141,7 @@ export function ProductDescription({
               className="text-[clamp(1.25rem,3vw,1.75rem)] font-semibold text-neutral-900 dark:text-neutral-50"
             />
             <span className="text-[clamp(0.563rem,1.5vw,0.688rem)] font-semibold text-neutral-600 dark:text-neutral-400">
-              MRP
+              {t("product.mrp")}
             </span>
           </div>
           <p
@@ -156,7 +156,7 @@ export function ProductDescription({
                 )}
               </span>
             )}
-            inclusive of taxes
+            {t("product.inclusive_of_taxes")}
           </p>
         </div>
       </div>
@@ -188,7 +188,7 @@ export function ProductDescription({
           className="cursor-pointer flex w-full items-center justify-between py-2 text-left font-bold text-black dark:text-white uppercase tracking-wider text-[clamp(1rem,2.5vw,1.25rem)]"
           style={{ fontFamily: "'Clash Display', sans-serif" }}
         >
-          <span>Product Description</span>
+          <span>{t("product.product_description")}</span>
         </button>
 
         <div className="pt-4 pb-6 animate-fadeIn">

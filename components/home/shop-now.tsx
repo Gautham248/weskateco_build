@@ -1,10 +1,11 @@
 import { getShopNow } from "lib/catalog/shop-now-feed";
-import { getLocalizedPath } from "lib/i18n";
-import Link from "next/link";
+import { createTranslator, getLocalizedPath } from "lib/i18n";
+import Link from "components/localized-link";
 import ShopNowContent from "./shop-now-content";
 
 export default async function ShopNow({ locale }: { locale: string }) {
-  const slides = await getShopNow();
+  const slides = await getShopNow(locale);
+  const t = createTranslator(locale);
 
   if (slides.length === 0) {
     return null;
@@ -27,14 +28,14 @@ export default async function ShopNow({ locale }: { locale: string }) {
             letterSpacing: "-0.01em",
           }}
         >
-          SHOP NOW
+          {t("home.shop_now_title")}
         </h2>
         <Link
           href={getLocalizedPath("/store", locale)}
           className="text-[14px] md:text-[18px] lg:text-[24px] font-bold tracking-[-0.01em] text-black hover:opacity-70 dark:text-white uppercase underline decoration-solid underline-offset-1 skip-ink-auto"
           style={{ fontFamily: "'Clash Display', sans-serif" }}
         >
-          VIEW MORE
+          {t("home.view_more_caps")}
         </Link>
       </div>
 

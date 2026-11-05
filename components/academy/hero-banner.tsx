@@ -1,7 +1,7 @@
 import academyHero from "components/icons/academy/hero.png";
 import academyHeroMobile from "components/icons/academy/hero-mobile.png";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 
 export default function AcademyHeroBanner() {
   return (
