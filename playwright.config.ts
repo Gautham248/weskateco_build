@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { LOCAL_TEST_DATABASE_URL } from "./lib/db/local";
 
 // Load the same env files Next.js reads so tests know whether Shopify is
 // configured. Only a missing file is ignored: swallowing everything would hide
@@ -56,9 +57,15 @@ export default defineConfig({
   webServer: externalBaseUrl
     ? undefined
     : {
+        // Reset the test database (migrated, every table empty) before the
+        // app builds, because prerendering already reads it. Needs the local
+        // containers running: `pnpm db:up`.
         command: useDevServer
-          ? `pnpm exec next dev --turbopack -p ${PORT}`
-          : `pnpm build && pnpm exec next start -p ${PORT}`,
+          ? `pnpm db:test:prepare && pnpm exec next dev --turbopack -p ${PORT}`
+          : `pnpm db:test:prepare && pnpm build && pnpm exec next start -p ${PORT}`,
+        // The suite's own database, never the dev one .env.local points at,
+        // so local runs see exactly what CI sees and can't touch your data
+        env: { DATABASE_URL: LOCAL_TEST_DATABASE_URL },
         url: `http://localhost:${PORT}/robots.txt`,
         // Off by default, so a run always tests a fresh build of the current
         // code rather than a server left over from an earlier run. Set

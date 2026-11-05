@@ -136,14 +136,72 @@ pnpm db:generate
 # ...then commit the generated .sql + meta snapshot, and migrate.
 ```
 
+`db:migrate` is the only one of these that writes to the database; `db:generate`
+only writes a migration file.
+
 > **Shared-database warning.** If you point `DATABASE_URL` at the production
 > database (which is what the team's `.env` files do today), your local admin edits
-> write to **production data**. For safe local development, create a **Neon branch**
-> of production and put its connection string in `DATABASE_URL` / `DATABASE_URL_UNPOOLED`
-> instead. The admin panel has no "staging" notion, so this is on you.
+> write to **production data**. Use the local database below instead. The admin
+> panel has no "staging" notion, so this is on you.
 
-`db:migrate` is the only step that writes to the database; `db:generate` only writes
-a migration file.
+### 5.1 Local databases (dev and test)
+
+`docker-compose.yml` runs Postgres 16 behind a local Neon HTTP proxy, so the app's
+Neon driver works against it unchanged. You need Docker running. The one server
+holds two separate databases (defined in `lib/db/local.ts`):
+
+| Database | Used by                     | Contents                                        |
+| -------- | --------------------------- | ----------------------------------------------- |
+| `dev`    | `pnpm dev`, the admin panel | Seed data, plus whatever you change in `/admin` |
+| `test`   | `pnpm test:e2e` (and CI)    | Empty and migrated, reset before every run      |
+
+**Set up the dev database:**
+
+1. Put this in `.env.local`:
+
+   ```bash
+   DATABASE_URL=postgres://postgres:postgres@db.localtest.me:5432/dev
+   ```
+
+   `db.localtest.me` resolves to `127.0.0.1` through public DNS, and
+   `lib/db/index.ts` sends that one host to the proxy on port 4444. To work
+   offline, add `127.0.0.1 db.localtest.me` to `/etc/hosts`.
+
+2. Start the containers, then create, migrate and seed the dev database:
+
+   ```bash
+   pnpm db:reset
+   ```
+
+**Run the end-to-end tests:** with the containers up (`pnpm db:up`), run
+`pnpm test:e2e`. Before it builds the app, `playwright.config.ts` runs
+`pnpm db:test:prepare`, which creates the test database if needed, migrates it
+and empties every table. It then starts the app with `DATABASE_URL` set to the
+test database, whatever `.env.local` says. So tests never see your dev data, and
+local runs match CI.
+
+| Command                 | What it does                                                         |
+| ----------------------- | -------------------------------------------------------------------- |
+| `pnpm db:up`            | Start the containers (data persists in the `db_data` volume)         |
+| `pnpm db:down`          | Stop them, keeping the data                                          |
+| `pnpm db:migrate:local` | Apply `lib/db/migrations` to the dev database                        |
+| `pnpm db:seed`          | Empty the dev database and load the seed (`scripts/seed-dev.ts`)     |
+| `pnpm db:reset`         | Delete the volume (both databases), then start, migrate and seed dev |
+| `pnpm db:test:prepare`  | Migrate and empty the test database (Playwright runs this for you)   |
+
+The seed adds an admin login (its username and password are at the top of
+`scripts/seed-dev.ts`), two hero slides, the Newly Released and Shop Now rows,
+four social posts and one product description override. It is offline and
+deterministic: products are referenced by handle and read live from Shopify.
+
+Guard rails: `db:migrate:local` and `db:seed` refuse to run unless `DATABASE_URL`
+is the local dev database, so they can't touch Neon or the test database.
+`db:test:prepare` always targets the local test database and ignores
+`DATABASE_URL`. `pnpm db:migrate` (drizzle-kit) is still how Neon is migrated.
+Postgres is also on host port `54320` for `psql` or a GUI client.
+
+CI's end-to-end job starts the same containers, and Playwright prepares the test
+database the same way, so CI also runs against an empty database.
 
 ---
 

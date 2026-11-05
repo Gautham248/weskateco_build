@@ -134,6 +134,15 @@ jobs:
       - run: pnpm exec playwright install chromium --only-shell
         if: steps.guard.outputs.configured == 'true'
 
+      # The same docker-compose containers developers run locally. Playwright
+      # then migrates and empties the test database before it builds the app
+      # (playwright.config.ts), so the suite runs unseeded, as locally.
+      # Without any database every admin-managed read failed and logged a
+      # "DATABASE_URL is not set" stack trace instead.
+      - name: Start the database
+        if: steps.guard.outputs.configured == 'true'
+        run: docker compose up -d --wait
+
       # playwright.config.ts builds and starts the app itself. CI is set by the
       # runner, which turns on forbidOnly, two retries and the GitHub reporter.
       - name: Run Playwright
@@ -145,8 +154,9 @@ jobs:
           # string rather than being absent, which e2e/helpers.ts now falls
           # back on, so leaving it undefined selects the default collection.
           E2E_COLLECTION: ${{ vars.E2E_COLLECTION }}
-          # No admin variables: the app builds and serves without them, and
-          # the suite never opens an admin page.
+          # DATABASE_URL comes from playwright.config.ts (the local test
+          # database). No other admin variables: the app builds and serves
+          # without them, and the suite never opens an admin page.
         run: pnpm exec playwright test
 
       - name: Upload the report

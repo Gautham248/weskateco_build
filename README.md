@@ -72,6 +72,41 @@ pnpm dev
 
 Your app should now be running on [localhost:3000](http://localhost:3000/).
 
+### Local databases
+
+The admin panel and the admin-managed storefront sections (hero, Newly Released,
+Shop Now, social posts, product overrides) read from Postgres. Docker runs it
+locally with two separate databases:
+
+- **`dev`**: yours, with seed data, used by `pnpm dev`
+- **`test`**: the end-to-end suite's, emptied and migrated on every run
+
+To set up the dev database with seed data (needs Docker):
+
+1. Add the dev connection string to `.env.local`:
+
+   ```bash
+   DATABASE_URL=postgres://postgres:postgres@db.localtest.me:5432/dev
+   ```
+
+2. Start the containers, then create, migrate and seed the dev database:
+
+   ```bash
+   pnpm db:reset
+   ```
+
+3. Run `pnpm dev`. The admin panel is at `/admin`, and the seeded login is at the
+   top of `scripts/seed-dev.ts`.
+
+`pnpm db:seed` reloads the seed data at any time, and `pnpm db:down` stops the
+containers.
+
+To run the end-to-end tests, the containers must be running (`pnpm db:up`).
+`pnpm test:e2e` then resets the test database and points the app at it, so your
+dev data never affects a test. See section 5.1 of
+[ADMIN_PANEL_ONBOARDING.md](ADMIN_PANEL_ONBOARDING.md) for every command and how
+it works.
+
 <details>
   <summary>Expand if you work at Vercel and want to run locally and / or contribute</summary>
 
