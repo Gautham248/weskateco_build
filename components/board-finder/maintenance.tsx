@@ -37,7 +37,12 @@ function loadChecked(): boolean[] {
     return DEFAULT_STATE;
   }
 }
-import { Container, Section, GRID_CLASS, SectionHeader } from "components/guides/ui";
+import {
+  Container,
+  Section,
+  GRID_CLASS,
+  SectionHeader,
+} from "components/guides/ui";
 import { MAINTENANCE_SECTION } from "lib/board-finder/data";
 
 export default function MaintenanceSection() {

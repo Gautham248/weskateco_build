@@ -1,0 +1,152 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [testing/commerce-deployment, main]
+  push:
+    branches: [testing/commerce-deployment, main]
+
+# A newer push to the same branch makes an in-flight run redundant
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The lockfile is pnpm 12; package.json sets engines.node >= 20.12
+  PNPM_VERSION: "12"
+  NODE_VERSION: "22"
+
+jobs:
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # tsconfig pulls in next-env.d.ts and .next/types, which only exist once
+      # Next has generated them. typegen does that without a build and without
+      # any application environment variables.
+      - run: pnpm exec next typegen
+      - run: pnpm exec tsc --noEmit
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Vitest runs offline against pure functions: no store, no database, so
+      # unlike the end-to-end job this needs no secrets and always runs.
+      - run: pnpm test:unit
+
+  format:
+    name: Prettier
+    # Pull requests only: this checks the files a change touches, which needs a
+    # base to diff against. Repo-wide formatting is not clean yet, so checking
+    # everything here would fail on files this change never looked at.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Check formatting of changed files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          changed=$(git diff --name-only --diff-filter=d "$BASE_SHA" "$HEAD_SHA")
+          if [ -z "$changed" ]; then
+            echo "No files changed."
+            exit 0
+          fi
+          echo "$changed"
+          # NUL-separated so a path with a space survives, and portable: xargs
+          # -0 works everywhere, unlike mapfile, which needs bash 4+
+          echo "$changed" | tr '\n' '\0' \
+            | xargs -0 pnpm exec prettier --check --ignore-unknown
+
+  e2e:
+    name: End-to-end
+    runs-on: ubuntu-latest
+    # The suite builds the app and starts it before the first test
+    timeout-minutes: 45
+    steps:
+      - name: Check whether Shopify is configured
+        id: guard
+        env:
+          STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          STOREFRONT_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$STORE_DOMAIN" ] || [ -z "$STOREFRONT_TOKEN" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=End-to-end tests skipped::Set repository secrets SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN to run them. Without a reachable store the suite fails rather than skipping, so the job stops here."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v7
+        if: steps.guard.outputs.configured == 'true'
+      - uses: pnpm/action-setup@v6
+        if: steps.guard.outputs.configured == 'true'
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v7
+        if: steps.guard.outputs.configured == 'true'
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        if: steps.guard.outputs.configured == 'true'
+
+      # Both projects are Chromium (Desktop Chrome and Pixel 7)
+      - run: pnpm exec playwright install --with-deps chromium
+        if: steps.guard.outputs.configured == 'true'
+
+      # playwright.config.ts builds and starts the app itself. CI is set by the
+      # runner, which turns on forbidOnly, two retries and the GitHub reporter.
+      - name: Run Playwright
+        if: steps.guard.outputs.configured == 'true'
+        env:
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_STOREFRONT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
+          # Optional: an unset repository variable arrives as an empty
+          # string rather than being absent, which e2e/helpers.ts now falls
+          # back on, so leaving it undefined selects the default collection.
+          E2E_COLLECTION: ${{ vars.E2E_COLLECTION }}
+          # No admin variables: the app builds and serves without them, and
+          # the suite never opens an admin page.
+        run: pnpm exec playwright test
+
+      - name: Upload the report
+        if: ${{ failure() && steps.guard.outputs.configured == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

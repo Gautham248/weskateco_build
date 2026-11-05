@@ -10,6 +10,10 @@ import ConfiguratorCTA from "components/home/configurator-cta";
 import BrandsSection from "components/home/brands-section";
 import Footer from "components/layout/footer";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import { JsonLd } from "components/json-ld";
+import { organizationJsonLd, websiteJsonLd } from "lib/seo/json-ld";
+import { SITE_NAME, withPageMetadata } from "lib/seo/metadata";
+import { baseUrl } from "lib/utils";
 
 export const dynamicParams = true;
 
@@ -17,13 +21,14 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = {
-  description:
-    "High-performance storefront for WeSkate Co, India's Home for Skateboards & Surfskates.",
-  openGraph: {
-    type: "website",
+export const generateMetadata = withPageMetadata("/", {
+  // Leads with what shoppers search for; brand searches find the site anyway.
+  // absolute: skip the layout's "%s | site name" template, already included.
+  title: {
+    absolute: `Buy Skateboards & Surfskates Online in India | ${SITE_NAME}`,
   },
-};
+  description: `Born from busted decks and scraped knees. Shop skateboards, surfskates, protective gear and apparel at ${SITE_NAME}, with free shipping across India.`,
+});
 
 export default async function HomePage(props: {
   params: Promise<{ locale: string }>;
@@ -33,6 +38,19 @@ export default async function HomePage(props: {
 
   return (
     <>
+      <JsonLd
+        data={[
+          organizationJsonLd(
+            SITE_NAME,
+            baseUrl,
+            `${baseUrl}/icons/weskate-logo.png`,
+          ),
+          websiteJsonLd(SITE_NAME, baseUrl),
+        ]}
+      />
+      {/* The page's main heading, for search engines and screen readers. The
+          hero is visual only, so the heading isn't shown. */}
+      <h1 className="sr-only">{t("home.hero_title")}</h1>
       <HeroBanner locale={locale} />
       <NewlyRelease locale={locale} />
       <AboutSection />

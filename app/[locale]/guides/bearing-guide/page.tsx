@@ -20,6 +20,7 @@ import {
   WearSection,
 } from "components/bearing-guide/sections";
 import { RelatedColumnsAndNote } from "components/bearing-guide/bits";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -27,7 +28,10 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = guideMetadata("Bearing Guide", BEARING_HERO.lede);
+export const generateMetadata = withPageMetadata(
+  "/guides/bearing-guide",
+  guideMetadata("Bearing Guide", BEARING_HERO.lede),
+);
 
 export default async function BearingGuidePage() {
   const partsSec = BEARING_SECTIONS.find((s) => s.id === "parts")!;

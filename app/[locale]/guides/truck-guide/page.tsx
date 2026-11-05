@@ -20,6 +20,7 @@ import {
   TRUCK_HERO,
 } from "lib/truck-guide/data";
 import { guideMetadata } from "lib/guides/metadata";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -27,7 +28,10 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = guideMetadata("Truck Guide", TRUCK_HERO.lede);
+export const generateMetadata = withPageMetadata(
+  "/guides/truck-guide",
+  guideMetadata("Truck Guide", TRUCK_HERO.lede),
+);
 
 export default async function TruckGuidePage() {
   return (
@@ -38,7 +42,8 @@ export default async function TruckGuidePage() {
           src: truckGuideBanner,
           mobileSrc: truckGuideBannerMobile,
           alt: "Skateboard truck close-up showing hanger, baseplate, and bushings",
-          mobileAlt: "Skateboard truck adapter with green wheel and graphic deck",
+          mobileAlt:
+            "Skateboard truck adapter with green wheel and graphic deck",
           objectPosition: "center",
           mobileObjectPosition: "center",
         }}

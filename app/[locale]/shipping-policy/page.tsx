@@ -1,13 +1,13 @@
 import Prose from "components/prose";
 import Footer from "components/layout/footer";
 import Link from "next/link";
-import type { Metadata } from "next";
+import { withPageMetadata } from "lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const generateMetadata = withPageMetadata("/shipping-policy", {
   title: "Shipping Policy",
   description:
     "Shipping Policy for WeskateCo describing coverage, processing times, estimated delivery times, shipping charges, and tracking.",
-};
+});
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "hi" }];

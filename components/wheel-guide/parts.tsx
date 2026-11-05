@@ -462,10 +462,10 @@ export default function PartsSection() {
               })}
             </div>
             <FigCaption>
-              A 66&thinsp;&times;&thinsp;50&#8239;mm surfskate wheel sawn through
-              the axle. White is urethane, blue is the core, and the three blue
-              bands are the two bearing seats with the axle passage between
-              them.
+              A 66&thinsp;&times;&thinsp;50&#8239;mm surfskate wheel sawn
+              through the axle. White is urethane, blue is the core, and the
+              three blue bands are the two bearing seats with the axle passage
+              between them.
             </FigCaption>
           </FigCard>
 
@@ -519,10 +519,10 @@ export default function PartsSection() {
             <p className="text-sm md:text-base text-black font-[400] leading-[150%]">
               Overall width is the whole wheel, edge to edge — the 33mm in
               53&nbsp;×&nbsp;33mm. The contact patch is only the strip of
-              urethane actually on the road at any one moment, and it is
-              always narrower: about 18–21mm of that 33. Grip, slide and wear
-              all happen inside the contact patch, which is why the second
-              number printed on the box is the one that decides nothing.
+              urethane actually on the road at any one moment, and it is always
+              narrower: about 18–21mm of that 33. Grip, slide and wear all
+              happen inside the contact patch, which is why the second number
+              printed on the box is the one that decides nothing.
             </p>
           </div>
         </div>

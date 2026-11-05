@@ -1,8 +1,6 @@
 import CategoryGrid from "components/home/category-grid";
 import TipsSection from "components/home/tips-section";
 import Footer from "components/layout/footer";
-import { Suspense } from "react";
-import ChildrenWrapper from "./children-wrapper";
 
 export default async function SearchLayout(props: {
   children: React.ReactNode;
@@ -15,9 +13,7 @@ export default async function SearchLayout(props: {
   return (
     <>
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 pb-4 text-black dark:text-white min-h-screen w-full">
-        <Suspense fallback={null}>
-          <ChildrenWrapper>{children}</ChildrenWrapper>
-        </Suspense>
+        {children}
       </div>
       <CategoryGrid locale={locale} />
       <TipsSection />

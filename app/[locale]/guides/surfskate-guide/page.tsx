@@ -16,6 +16,7 @@ import {
   SURF_FAQ,
   SURFSKATE_HERO,
 } from "lib/surfskate-guide/data";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -23,7 +24,10 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = guideMetadata("Surfskate Guide", SURFSKATE_HERO.lede);
+export const generateMetadata = withPageMetadata(
+  "/guides/surfskate-guide",
+  guideMetadata("Surfskate Guide", SURFSKATE_HERO.lede),
+);
 
 export default function SurfskateGuidePage() {
   return (

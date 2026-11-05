@@ -1,12 +1,12 @@
 import Prose from "components/prose";
 import Footer from "components/layout/footer";
-import type { Metadata } from "next";
+import { withPageMetadata } from "lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const generateMetadata = withPageMetadata("/privacy-policy", {
   title: "Privacy Policy",
   description:
     "Privacy Policy for Weskateco / Toucan Distribution Pvt Ltd describing how we collect, use, and disclose your personal information.",
-};
+});
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "hi" }];

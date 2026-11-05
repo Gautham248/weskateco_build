@@ -3,7 +3,18 @@
 import { Fragment } from "react";
 import { PLIES, PLIES_PROSE, PLIES_SECTION } from "lib/deck-guide/data";
 import { useState } from "react";
-import { FigCaption, FigCard, FigHint, PanelKicker, ProseCols, SectionHeader, SpecList, Container, Section, GRID_CLASS } from "components/guides/ui";
+import {
+  FigCaption,
+  FigCard,
+  FigHint,
+  PanelKicker,
+  ProseCols,
+  SectionHeader,
+  SpecList,
+  Container,
+  Section,
+  GRID_CLASS,
+} from "components/guides/ui";
 
 // Ply stack geometry — the source's drawing math, unchanged.
 const PLY_TOP = 24;

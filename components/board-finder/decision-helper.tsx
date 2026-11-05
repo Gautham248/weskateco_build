@@ -13,7 +13,12 @@ import {
 } from "lib/board-finder/data";
 
 type Selection = Record<"width" | "parts" | "first", number>;
-import { Container, Section, GRID_CLASS, SectionHeader } from "components/guides/ui";
+import {
+  Container,
+  Section,
+  GRID_CLASS,
+  SectionHeader,
+} from "components/guides/ui";
 
 export default function DecisionHelperSection() {
   const { locale } = useTranslation();

@@ -273,7 +273,7 @@ function TruckAnatSvg({
           height="26"
           rx="8"
           fill="currentColor"
-          fillOpacity={selected === 4 ? 0.45 : 0.20}
+          fillOpacity={selected === 4 ? 0.45 : 0.2}
           stroke="currentColor"
           strokeWidth={selected === 4 ? 2.6 : 1.5}
         />
@@ -301,7 +301,7 @@ function TruckAnatSvg({
           height="26"
           rx="8"
           fill="currentColor"
-          fillOpacity={selected === 5 ? 0.45 : 0.20}
+          fillOpacity={selected === 5 ? 0.45 : 0.2}
           stroke="currentColor"
           strokeWidth={selected === 5 ? 2.6 : 1.5}
         />
@@ -410,14 +410,14 @@ function TruckAnatSvg({
         <polygon
           points="96,97 104,101 104,109 96,113 88,109 88,101"
           fill="currentColor"
-          fillOpacity={selected === 9 ? 0.65 : 0.40}
+          fillOpacity={selected === 9 ? 0.65 : 0.4}
           stroke="currentColor"
           strokeWidth={selected === 9 ? 2.2 : 1.2}
         />
         <polygon
           points="504,97 512,101 512,109 504,113 496,109 496,101"
           fill="currentColor"
-          fillOpacity={selected === 9 ? 0.65 : 0.40}
+          fillOpacity={selected === 9 ? 0.65 : 0.4}
           stroke="currentColor"
           strokeWidth={selected === 9 ? 2.2 : 1.2}
         />
@@ -518,7 +518,10 @@ export default function PartsSection() {
         {assembled ? (
           /* Assembled view: End-on Photo and SVG Drawing side by side */
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start">
-            <FigCard tone="muted" className="flex flex-col gap-3 border border-neutral-200/80">
+            <FigCard
+              tone="muted"
+              className="flex flex-col gap-3 border border-neutral-200/80"
+            >
               <div className="relative block w-full">
                 <Image
                   src={assembledImg}
@@ -586,7 +589,10 @@ export default function PartsSection() {
               </FigCaption>
             </FigCard>
 
-            <FigCard tone="muted" className="flex flex-col gap-3 border border-neutral-200/80">
+            <FigCard
+              tone="muted"
+              className="flex flex-col gap-3 border border-neutral-200/80"
+            >
               <div className="w-full overflow-hidden rounded-[3px] bg-white flex items-center justify-center p-4 border border-neutral-200">
                 <TruckAnatSvg selected={selected} onSelect={setSelected} />
               </div>
@@ -662,12 +668,13 @@ export default function PartsSection() {
                 })}
               </div>
               <figcaption className="text-base md:text-[17px] lg:text-[18px] text-neutral-600 font-[400] leading-[165%] w-full">
-                The same truck apart, in the order it goes together. Left to right:
-                the baseplate, with its hollow kingpin at one end and the pivot cup
-                lifted out of its socket at the other, then a washer and the
-                boardside bushing, the hanger, the roadside bushing, the second
-                washer, and the kingpin nut at the far right. Crossing it: the
-                axle, with a speed washer and an axle nut laid out at each end.{" "}
+                The same truck apart, in the order it goes together. Left to
+                right: the baseplate, with its hollow kingpin at one end and the
+                pivot cup lifted out of its socket at the other, then a washer
+                and the boardside bushing, the hanger, the roadside bushing, the
+                second washer, and the kingpin nut at the far right. Crossing
+                it: the axle, with a speed washer and an axle nut laid out at
+                each end.{" "}
                 <strong className="text-black font-semibold">
                   This is the only figure that shows all nine.
                 </strong>
@@ -702,7 +709,9 @@ export default function PartsSection() {
                   <div
                     key={label}
                     className={`flex items-baseline justify-between gap-6 py-2.5 ${
-                      i < part.spec.length - 1 ? "border-b border-neutral-200" : ""
+                      i < part.spec.length - 1
+                        ? "border-b border-neutral-200"
+                        : ""
                     }`}
                   >
                     <dt className="text-xs md:text-sm font-semibold uppercase tracking-wider text-neutral-500">

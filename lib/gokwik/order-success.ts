@@ -1,4 +1,5 @@
 import { CHECKOUT_CART_COOKIE } from "./checkout-cart";
+import { readCookie } from "./cookies";
 
 // GoKwik creates the order in Shopify itself, so the shopper's Shopify cart is
 // never completed and still holds what they just bought. These helpers detect
@@ -37,16 +38,6 @@ export function isGoKwikOrderSuccess(event: {
     event.data !== null &&
     (event.data as { type?: unknown }).type === "orderSuccess"
   );
-}
-
-function readCookie(cookieString: string, name: string): string | undefined {
-  const match = cookieString.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
-  if (!match?.[1]) return undefined;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
 }
 
 /**

@@ -31,13 +31,13 @@ export default function LovedByCommunity() {
 
   const handlePrev = () => {
     setCurrentIndex((prev) =>
-      prev === 0 ? TESTIMONIALS.length - 1 : prev - 1
+      prev === 0 ? TESTIMONIALS.length - 1 : prev - 1,
     );
   };
 
   const handleNext = () => {
     setCurrentIndex((prev) =>
-      prev === TESTIMONIALS.length - 1 ? 0 : prev + 1
+      prev === TESTIMONIALS.length - 1 ? 0 : prev + 1,
     );
   };
 
@@ -53,14 +53,16 @@ export default function LovedByCommunity() {
                 className="text-2xl md:text-[45px] font-bold tracking-[-1%] text-black uppercase leading-[110%]"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                LOVED BY OUR<br />COMMUNITY
+                LOVED BY OUR
+                <br />
+                COMMUNITY
               </h2>
               <p
                 className="text-sm md:text-lg text-black leading-[110%] font-[400]"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                Hear what our skaters and parents have to say about their WeSkate
-                journey.
+                Hear what our skaters and parents have to say about their
+                WeSkate journey.
               </p>
             </div>
 
@@ -71,9 +73,27 @@ export default function LovedByCommunity() {
                 aria-label="Previous slide"
                 className="w-12 h-12 border border-neutral-200 rounded-full flex items-center justify-center bg-white hover:bg-[#CCFF02] transition-colors cursor-pointer"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18.0942 12H5.90576" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M12 5.90625L5.90576 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18.0942 12H5.90576"
+                    stroke="#1D6A2B"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 5.90625L5.90576 12.0005L12 18.0947"
+                    stroke="#1D6A2B"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
 
@@ -82,9 +102,27 @@ export default function LovedByCommunity() {
                 aria-label="Next slide"
                 className="w-12 h-12 border border-neutral-200 rounded-full flex items-center justify-center bg-white hover:bg-[#CCFF02] transition-colors cursor-pointer"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5.90576 12H18.0942" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M12 5.90625L18.0942 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5.90576 12H18.0942"
+                    stroke="#1D6A2B"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 5.90625L18.0942 12.0005L12 18.0947"
+                    stroke="#1D6A2B"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
             </div>
@@ -121,18 +159,41 @@ export default function LovedByCommunity() {
                         >
                           {item.name}
                         </span>
-                        <span
-                          className="text-xs text-white"
-                        >
-                          {item.role}
-                        </span>
+                        <span className="text-xs text-white">{item.role}</span>
                       </div>
 
                       {/* Instagram Icon */}
-                      <svg width="28" height="28" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="1" y="1" width="32.2466" height="32.2466" rx="7" stroke="white" strokeWidth="2" />
-                        <circle cx="17.1204" cy="17.1229" r="5.14388" stroke="white" strokeWidth="2" />
-                        <circle cx="26.1262" cy="8.23215" r="1" fill="white" stroke="white" strokeWidth="1.1977" />
+                      <svg
+                        width="28"
+                        height="28"
+                        viewBox="0 0 35 35"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <rect
+                          x="1"
+                          y="1"
+                          width="32.2466"
+                          height="32.2466"
+                          rx="7"
+                          stroke="white"
+                          strokeWidth="2"
+                        />
+                        <circle
+                          cx="17.1204"
+                          cy="17.1229"
+                          r="5.14388"
+                          stroke="white"
+                          strokeWidth="2"
+                        />
+                        <circle
+                          cx="26.1262"
+                          cy="8.23215"
+                          r="1"
+                          fill="white"
+                          stroke="white"
+                          strokeWidth="1.1977"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -152,9 +213,7 @@ export default function LovedByCommunity() {
                         />
                       </svg>
                     </div>
-                    <p
-                      className="text-sm md:text-lg text-[#4F4F4F] leading-[140%] font-[400]"
-                    >
+                    <p className="text-sm md:text-lg text-[#4F4F4F] leading-[140%] font-[400]">
                       {item.quote}
                     </p>
 
@@ -178,9 +237,27 @@ export default function LovedByCommunity() {
               aria-label="Previous slide"
               className="w-10 h-10 border border-neutral-200 rounded-full flex items-center justify-center bg-white hover:bg-[#CCFF02] transition-colors cursor-pointer"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18.0942 12H5.90576" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 5.90625L5.90576 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18.0942 12H5.90576"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 5.90625L5.90576 12.0005L12 18.0947"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
 
@@ -189,9 +266,27 @@ export default function LovedByCommunity() {
               aria-label="Next slide"
               className="w-10 h-10 border border-neutral-200 rounded-full flex items-center justify-center bg-white hover:bg-[#CCFF02] transition-colors cursor-pointer"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5.90576 12H18.0942" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 5.90625L18.0942 12.0005L12 18.0947" stroke="#1D6A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5.90576 12H18.0942"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 5.90625L18.0942 12.0005L12 18.0947"
+                  stroke="#1D6A2B"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           </div>

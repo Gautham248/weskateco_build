@@ -66,5 +66,6 @@ export function getLocalizedPath(path: string, locale: string): string {
   if (locale === "en") {
     return cleanPath;
   }
-  return `/${locale}${cleanPath}`;
+  // The locale's home page is /hi, not /hi/ (which redirects to /hi)
+  return cleanPath === "/" ? `/${locale}` : `/${locale}${cleanPath}`;
 }

@@ -4,6 +4,7 @@ import accessoriesImg from "components/icons/accessories.jpg";
 import skateboardsImg from "components/icons/skateboards.jpg";
 import surfskatesImg from "components/icons/surfskates.jpg";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
@@ -144,10 +145,11 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                 key={`mobile-${index}`}
                 href={getLocalizedPath(category.href, locale)}
                 onClick={handleCardClick}
-                className={`absolute w-[68vw] aspect-[2/3] rounded-md overflow-hidden bg-neutral-100 shadow-xl transition-all ${isActive
-                  ? "cursor-pointer"
-                  : "cursor-pointer pointer-events-auto"
-                  }`}
+                className={`absolute w-[68vw] aspect-[2/3] rounded-md overflow-hidden bg-neutral-100 shadow-xl transition-all ${
+                  isActive
+                    ? "cursor-pointer"
+                    : "cursor-pointer pointer-events-auto"
+                }`}
                 style={{
                   transform: transformStyle,
                   zIndex: zIndex,
@@ -156,10 +158,12 @@ export default function CategoryGrid({ locale }: { locale: string }) {
                   transitionTimingFunction: "cubic-bezier(0.25, 1, 0.5, 1)",
                 }}
               >
-                <img
-                  src={category.image.src}
+                <Image
+                  src={category.image}
                   alt={category.name}
-                  className="w-full h-full object-cover pointer-events-none"
+                  fill
+                  sizes="68vw"
+                  className="object-cover pointer-events-none"
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-b from-blue-400/20 via-transparent to-black/80 flex flex-col justify-between p-6">
@@ -184,10 +188,11 @@ export default function CategoryGrid({ locale }: { locale: string }) {
             <span
               key={`dot-${index}`}
               onClick={() => setActiveMobileIndex(index)}
-              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${activeMobileIndex === index
-                ? "w-4 bg-black"
-                : "w-1.5 bg-neutral-300"
-                }`}
+              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                activeMobileIndex === index
+                  ? "w-4 bg-black"
+                  : "w-1.5 bg-neutral-300"
+              }`}
             />
           ))}
         </div>
@@ -211,13 +216,17 @@ export default function CategoryGrid({ locale }: { locale: string }) {
               }}
             >
               <div className="relative w-full h-full bg-neutral-100">
-                <img
-                  src={category.image.src}
+                <Image
+                  src={category.image}
                   alt={category.name}
-                  className={`w-full h-full object-cover transition-transform ${isExpanded
-                    ? category.imageExpandedClassName || "scale-100"
-                    : category.imageClassName || "scale-100"
-                    }`}
+                  fill
+                  // The hovered card expands to about half the row
+                  sizes="55vw"
+                  className={`object-cover transition-transform ${
+                    isExpanded
+                      ? category.imageExpandedClassName || "scale-100"
+                      : category.imageClassName || "scale-100"
+                  }`}
                   style={{
                     transitionDuration: "1600ms",
                     transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",

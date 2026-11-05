@@ -1,11 +1,11 @@
 import ContactPage from "components/contact/contact-page";
-import type { Metadata } from "next";
+import { withPageMetadata } from "lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const generateMetadata = withPageMetadata("/contact", {
   title: "Contact Us",
   description:
     "Contact WeSkate Co — skateparks, products, coaching, trade, orders and general enquiries. Every message is routed to the team that owns it.",
-};
+});
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "hi" }];

@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ADMIN_SESSION_COOKIE } from "./lib/constants";
+import { COUNTRY_COOKIE } from "./lib/gokwik/country";
 
 const locales = ["en", "hi"];
 const defaultLocale = "en";
 
 const ADMIN_LOGIN_PATH = "/admin/login";
 const ADMIN_API_PREFIX = "/admin/api/";
+
+// File-based Open Graph / Twitter images (app/**/opengraph-image.tsx).
+const SOCIAL_IMAGE_ROUTE = /\/(opengraph|twitter)-image(-[\w-]+)?$/;
 
 // Directories served from public/ — requests must bypass the locale rewrite.
 const PUBLIC_ASSET_PREFIXES = ["/fonts", "/hero", "/icons"];
@@ -62,6 +66,27 @@ function handleAdminRequest(request: NextRequest, pathname: string) {
 }
 
 export function proxy(request: NextRequest) {
+  return withCountryCookie(request, route(request));
+}
+
+/**
+ * Stores the shopper's country (from Vercel's IP geolocation) in a cookie the
+ * browser can read, to decide between GoKwik and Shopify checkout. Without
+ * the header (e.g. local development) any existing cookie is left alone.
+ */
+function withCountryCookie(request: NextRequest, response: NextResponse) {
+  const country = request.headers.get("x-vercel-ip-country")?.toUpperCase();
+  if (country && request.cookies.get(COUNTRY_COOKIE)?.value !== country) {
+    response.cookies.set(COUNTRY_COOKIE, country, {
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24,
+    });
+  }
+  return response;
+}
+
+function route(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
 
   // Must run before the locale rewrite below, otherwise /account becomes
@@ -96,6 +121,20 @@ export function proxy(request: NextRequest) {
     /\.[a-zA-Z0-9]+$/.test(pathname)
   ) {
     return NextResponse.next();
+  }
+
+  // The default locale is served without a prefix, so /en/... is a duplicate
+  // of the clean URL — permanently redirect it to keep one indexable URL.
+  // Social images are the exception: Next.js links them by their internal
+  // /en/... route, and link-preview crawlers may not follow a redirect.
+  if (
+    (pathname === `/${defaultLocale}` ||
+      pathname.startsWith(`/${defaultLocale}/`)) &&
+    !SOCIAL_IMAGE_ROUTE.test(pathname)
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname.slice(defaultLocale.length + 1) || "/";
+    return NextResponse.redirect(url, 308);
   }
 
   // Check if pathname already has a locale prefix

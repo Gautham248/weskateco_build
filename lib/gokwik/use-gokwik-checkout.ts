@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { CHECKOUT_START_ERROR, rememberCheckoutCart } from "./checkout-cart";
+import { isGoKwikCountry } from "./country";
+import { goKwikReady, GOKWIK_WAIT_MS, waitForGoKwikSdk } from "./sdk";
 
 interface UseGoKwikCheckoutOptions {
   /** Cart ID from Shopify in format gid://shopify/Cart/<ID> */
@@ -14,13 +16,18 @@ interface UseGoKwikCheckoutOptions {
 }
 
 interface UseGoKwikCheckoutReturn {
-  /** Whether the GoKwik SDK is loaded and ready */
+  /** Whether GoKwik's checkout can be opened now */
   isReady: boolean;
-  /** Whether the SDK failed to load */
+  /** Whether GoKwik can't be used: its SDK failed to load, or it isn't offered in the shopper's country */
   isError: boolean;
+  /** Whether a checkout click is waiting (up to 5s) for GoKwik to load */
+  isWaiting: boolean;
   /** Whether checkout is currently in progress */
   isCheckingOut: boolean;
-  /** Trigger the GoKwik checkout popup */
+  /**
+   * Opens GoKwik's checkout popup. If GoKwik is still loading, waits for it
+   * (up to 5s, like Buy Now); otherwise uses Shopify's checkout.
+   */
   triggerCheckout: () => void;
   /** Fallback: get the Shopify native checkout URL */
   useFallback: boolean;
@@ -33,62 +40,45 @@ export function useGoKwikCheckout({
 }: UseGoKwikCheckoutOptions): UseGoKwikCheckoutReturn {
   const [isReady, setIsReady] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Ignores further clicks while one is waiting for GoKwik
+  const waitingRef = useRef(false);
 
   useEffect(() => {
-    // Check if SDK is already loaded
-    if (typeof window !== "undefined" && window.gokwikSdk) {
+    // Outside India GoKwik isn't offered and its SDK isn't loaded: go straight
+    // to the fallback (Shopify's checkout) instead of waiting for it
+    if (!isGoKwikCountry(document.cookie)) {
+      setIsError(true);
+      return;
+    }
+
+    const loading = new AbortController();
+    waitForGoKwikSdk(timeout, loading.signal).then((ready) => {
+      if (loading.signal.aborted) return;
+      if (!ready) {
+        setIsError(true);
+        console.warn(
+          "[GoKwik] SDK did not load within timeout. Fallback available.",
+        );
+        return;
+      }
       setIsReady(true);
 
       // Listen for GoKwik popup close to reset checkout state
-      if (typeof window.gokwikSdk.on === "function") {
+      if (typeof window.gokwikSdk?.on === "function") {
         window.gokwikSdk.on("modal_closed", () => {
           setIsCheckingOut(false);
           console.log("[GoKwik] Checkout modal closed");
         });
       }
+    });
+    return () => loading.abort();
+  }, [timeout]);
 
-      return;
-    }
+  const triggerCheckout = useCallback(async () => {
+    if (waitingRef.current) return;
 
-    // Poll for SDK readiness
-    checkIntervalRef.current = setInterval(() => {
-      if (typeof window !== "undefined" && window.gokwikSdk) {
-        setIsReady(true);
-
-        // Listen for GoKwik popup close to reset checkout state
-        if (typeof window.gokwikSdk.on === "function") {
-          window.gokwikSdk.on("modal_closed", () => {
-            setIsCheckingOut(false);
-            console.log("[GoKwik] Checkout modal closed");
-          });
-        }
-
-        if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      }
-    }, 500);
-
-    // Timeout — mark as error if SDK doesn't load
-    timeoutRef.current = setTimeout(() => {
-      if (!isReady) {
-        setIsError(true);
-        if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
-        console.warn(
-          "[GoKwik] SDK did not load within timeout. Fallback available.",
-        );
-      }
-    }, timeout);
-
-    return () => {
-      if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, [timeout, isReady]);
-
-  const triggerCheckout = useCallback(() => {
     // Whatever stops GoKwik here, the shopper still gets a way to pay:
     // Shopify's checkout when we have it, otherwise a message to try again
     const fallBack = (reason: string, error?: unknown) => {
@@ -106,31 +96,38 @@ export function useGoKwikCheckout({
       return fallBack("No cart ID available");
     }
 
-    if (!window.merchantInfo) {
-      return fallBack("merchantInfo not configured");
-    }
-
-    if (typeof window.triggerGokwikCustomCheckout !== "function") {
-      return fallBack("triggerGokwikCustomCheckout not available");
+    if (!goKwikReady()) {
+      if (isError || !isGoKwikCountry(document.cookie)) {
+        return fallBack("GoKwik isn't available");
+      }
+      // Still loading: wait for it as Buy Now does, rather than skipping
+      // straight to Shopify's checkout
+      waitingRef.current = true;
+      setIsWaiting(true);
+      const ready = await waitForGoKwikSdk(GOKWIK_WAIT_MS);
+      waitingRef.current = false;
+      setIsWaiting(false);
+      if (!ready) return fallBack("GoKwik didn't load in time");
     }
 
     // Set the cart ID on merchantInfo
-    window.merchantInfo.cart = { id: cartId };
+    window.merchantInfo!.cart = { id: cartId };
     rememberCheckoutCart(cartId);
 
     console.log("[GoKwik] Triggering checkout with cart:", cartId);
     setIsCheckingOut(true);
 
     try {
-      window.triggerGokwikCustomCheckout();
+      window.triggerGokwikCustomCheckout!();
     } catch (error) {
       fallBack("Error triggering checkout:", error);
     }
-  }, [cartId, checkoutUrl]);
+  }, [cartId, checkoutUrl, isError]);
 
   return {
     isReady,
     isError,
+    isWaiting,
     isCheckingOut,
     triggerCheckout,
     useFallback: isError,

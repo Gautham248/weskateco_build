@@ -1,5 +1,14 @@
 import { defaultSort, sorting } from "lib/constants";
 import { createTranslator } from "lib/i18n";
+import {
+  documentTitle,
+  localeAlternates,
+  openGraph,
+  pageQuery,
+  SITE_NAME,
+  socialTitle,
+  summarize,
+} from "lib/seo/metadata";
 import { getCollection, getCollections, getProducts } from "lib/shopify";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -13,18 +22,34 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: {
   params: Promise<{ locale: string; collection: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<Metadata> {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const collection = await getCollection(params.collection);
 
   if (!collection) return notFound();
 
+  const title = collection.seo?.title || collection.title;
+  // A merchant-written SEO description is used as written
+  const description =
+    collection.seo?.description ||
+    summarize(
+      collection.description || `Shop ${collection.title} at ${SITE_NAME}.`,
+    );
+  const path = `/store/${collection.handle}`;
+  const query = pageQuery(searchParams?.page);
+
   return {
-    title: collection.seo?.title || collection.title,
-    description:
-      collection.seo?.description ||
-      collection.description ||
-      `${collection.title} products`,
+    title: documentTitle(title),
+    description,
+    // Sort and filter params render the same collection, so they're dropped;
+    // each page of results keeps its ?page=
+    alternates: localeAlternates(path, params.locale, query),
+    openGraph: openGraph(params.locale, path + query, {
+      title: socialTitle(title),
+      description,
+    }),
   };
 }
 

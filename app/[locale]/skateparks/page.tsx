@@ -4,6 +4,7 @@ import OurMissionSection from "components/skatepark/our-mission";
 import OurServicesSection from "components/skatepark/our-services";
 import SkateparkGallerySection from "components/skatepark/skatepark-gallery";
 import WhyChooseUsSection from "components/skatepark/why-choose-us";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -11,14 +12,14 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = {
+export const generateMetadata = withPageMetadata("/skateparks", {
   title: "WB Skateparks",
   description:
     "From Bangalore and Kerala, WB Skateparks brings together riders and builders to create raw, purpose-built concrete skateparks.",
   openGraph: {
     type: "website",
   },
-};
+});
 
 export default async function SkateparksPage(props: {
   params: Promise<{ locale: string }>;

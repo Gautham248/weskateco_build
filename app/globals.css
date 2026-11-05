@@ -699,7 +699,10 @@ button {
 .truck-figs .tpart path,
 .truck-figs .tpart line,
 .truck-figs .tpart polygon {
-  transition: fill-opacity 0.15s, stroke-width 0.15s, opacity 0.15s;
+  transition:
+    fill-opacity 0.15s,
+    stroke-width 0.15s,
+    opacity 0.15s;
 }
 .wheel-figs .badge,
 .truck-figs .badge {
@@ -710,7 +713,9 @@ button {
   fill: #ffffff;
   stroke: currentColor;
   stroke-width: 1.6;
-  transition: fill 0.15s, stroke 0.15s;
+  transition:
+    fill 0.15s,
+    stroke 0.15s;
 }
 .wheel-figs .badge text,
 .truck-figs .badge text {
@@ -741,4 +746,3 @@ button {
     r: 13;
   }
 }
-
