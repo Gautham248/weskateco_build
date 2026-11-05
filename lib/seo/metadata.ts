@@ -68,8 +68,18 @@ export function summarize(text: string, maxLength = 160): string {
   return `${words.join("").replace(/[,;:.\s]+$/, "")}…`;
 }
 
-const namesSite = (title: string) =>
-  title.toLowerCase().includes(SITE_NAME.toLowerCase());
+/**
+ * The site name as a whole token. A plain substring test would read
+ * "WeSkate Complete 8.0" as already naming "WeSkate Co" (the store sells
+ * completes), and the title would silently lose its "| WeSkate Co" suffix.
+ * The lookahead is what rejects that; \W keeps "Wheels | WeSkate Co" a match.
+ */
+const SITE_NAME_TOKEN = new RegExp(
+  `(^|\\W)${SITE_NAME.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?!\\w)`,
+  "i",
+);
+
+const namesSite = (title: string) => SITE_NAME_TOKEN.test(title);
 
 /**
  * Open Graph title for a page title. Open Graph doesn't apply the layout's
