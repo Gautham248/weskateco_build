@@ -43,15 +43,26 @@ export function siteShareImage(locale: string): OpenGraph["images"] {
 /** Sentence-ending marks, including the Hindi full stop. */
 const SENTENCE_END = new Set([".", "!", "?", "\u0964"]);
 
+const GRAPHEMES = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+
+/**
+ * Splits into user-perceived characters. Array.from would split by code point,
+ * which cuts a ZWJ emoji sequence into pieces (a family loses a member), halves
+ * a flag into a stray regional indicator, and can strip a Devanagari vowel sign
+ * from its consonant.
+ */
+const toChars = (text: string): string[] =>
+  Array.from(GRAPHEMES.segment(text), (each) => each.segment);
+
 /**
  * Shortens text for meta and social descriptions, which search results and
  * link previews cut off at roughly 160 characters. Ends at a sentence when one
- * fits, otherwise at a word, with an ellipsis. Counts characters, not UTF-16
- * units, so an emoji is never split in half.
+ * fits, otherwise at a word, with an ellipsis. Counts user-perceived
+ * characters, so an emoji or a Devanagari cluster is never split in half.
  */
 export function summarize(text: string, maxLength = 160): string {
   const clean = text.replace(/\s+/g, " ").trim();
-  const chars = Array.from(clean);
+  const chars = toChars(clean);
   if (chars.length <= maxLength) return clean;
 
   // The last sentence that ends within the limit (followed by a space, which
