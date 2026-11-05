@@ -2,20 +2,20 @@ import Prose from "components/prose";
 import Footer from "components/layout/footer";
 import { EnglishVersionNotice } from "components/legal/english-version-notice";
 import { createTranslator } from "lib/i18n";
-import type { Metadata } from "next";
+import { withPageMetadata } from "lib/seo/metadata";
 import { termsOfServiceHtmlHi } from "./content.hi";
 
-export async function generateMetadata(props: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await props.params;
-  const t = createTranslator(locale);
+export const generateMetadata = withPageMetadata(
+  "/terms-of-service",
+  (locale) => {
+    const t = createTranslator(locale);
 
-  return {
-    title: t("legal.terms_title"),
-    description: t("legal.terms_description"),
-  };
-}
+    return {
+      title: t("legal.terms_title"),
+      description: t("legal.terms_description"),
+    };
+  },
+);
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "hi" }];

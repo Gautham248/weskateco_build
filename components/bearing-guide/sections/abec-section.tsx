@@ -33,10 +33,6 @@ export function AbecSection({
     text: it.paragraphs.join("\n\n"),
   }));
 
-  // Route verification: /guides/wheel-guide does not exist in repo (repo has /guides/wheels-guide)
-  // Per hard rule: "If a route does not exist, do not create it and do not render a dead link: omit that link and list it in your report."
-  const hasValidRoute = crosslinkBlock.cta.href !== "/guides/wheel-guide";
-
   return (
     <Section id="abec" bg="muted">
       <Container>
@@ -64,19 +60,11 @@ export function AbecSection({
         <StockedCallout label={stockedBlock.label} text={stockedBlock.text} />
 
         {/* Crosslink - omit dead link if route does not exist */}
-        {hasValidRoute ? (
-          <GuideCrosslink
-            text={crosslinkBlock.text}
-            cta={crosslinkBlock.cta.label}
-            href={crosslinkBlock.cta.href}
-          />
-        ) : (
-          <div className="w-full bg-white border border-neutral-300 rounded-[8px] p-5 md:py-6 md:px-8">
-            <p className="text-base md:text-lg font-normal text-black max-w-3xl">
-              {renderRich(crosslinkBlock.text)}
-            </p>
-          </div>
-        )}
+        <GuideCrosslink
+          text={crosslinkBlock.text}
+          cta={crosslinkBlock.cta.label}
+          href={crosslinkBlock.cta.href}
+        />
       </Container>
     </Section>
   );

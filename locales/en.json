@@ -231,7 +231,8 @@
   "footer.shipping_policy": "SHIPPING POLICY",
   "footer.privacy_policy": "PRIVACY POLICY",
 
-  "home.meta_description": "High-performance storefront for WeSkate Co, India's Home for Skateboards & Surfskates.",
+  "home.meta_title": "Buy Skateboards & Surfskates Online in India | {site}",
+  "home.meta_description": "Born from busted decks and scraped knees. Shop skateboards, surfskates, protective gear and apparel at {site}, with free shipping across India.",
   "home.about_image_alt": "About Background",
   "home.about_tagline": "We are a community driven by grit, built on persistence, and united by skateboarding.",
   "home.know_more": "KNOW MORE",
@@ -330,8 +331,8 @@
   "search.close": "Close search",
 
   "store.store": "Store",
-  "store.meta_description": "Browse products in the store.",
-  "store.meta_collection_description": "{title} products",
+  "store.meta_description": "Shop skateboards, surfskates, protective gear and apparel at {site}.",
+  "store.meta_collection_description": "Shop {title} at {site}.",
   "store.breadcrumb_aria": "Breadcrumb",
   "store.banner_alt": "{title} banner",
   "store.pagination_previous": "< Previous",

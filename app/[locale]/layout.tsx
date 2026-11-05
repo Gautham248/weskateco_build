@@ -9,13 +9,12 @@ import { GoKwikScript } from "lib/gokwik";
 import { GoKwikOrderWatcher } from "lib/gokwik/order-watcher";
 import { getDictionary } from "lib/i18n";
 import { TranslationProvider } from "lib/i18n/TranslationProvider";
+import { SITE_NAME } from "lib/seo/metadata";
 import { getCart } from "lib/shopify";
-import { baseUrl } from "lib/utils";
+import { baseUrl, ensureStartsWith } from "lib/utils";
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
 import "../globals.css";
-
-const SITE_NAME = process.env.SITE_NAME || "WeSkate Co";
 
 // Archivo and Clash Display have no Devanagari glyphs, so Hindi text falls
 // through to this face (see the font stacks in globals.css). Not preloaded:
@@ -30,8 +29,24 @@ const devanagari = Noto_Sans_Devanagari({
 export const metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: SITE_NAME!,
+    default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
+  },
+  // Pages replace openGraph with their own (see lib/seo/metadata); these
+  // apply to any page that doesn't set it
+  openGraph: {
+    siteName: SITE_NAME,
+    type: "website",
+    locale: "en_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    ...(process.env.TWITTER_SITE
+      ? { site: ensureStartsWith(process.env.TWITTER_SITE, "@") }
+      : {}),
+    ...(process.env.TWITTER_CREATOR
+      ? { creator: ensureStartsWith(process.env.TWITTER_CREATOR, "@") }
+      : {}),
   },
   robots: {
     follow: true,

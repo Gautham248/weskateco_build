@@ -3,6 +3,7 @@ import { getProducts, getCollections } from "lib/shopify";
 import { createTranslator } from "lib/i18n";
 import { Suspense } from "react";
 import StoreCollectionClient from "./[collection]/store-collection-client";
+import { SITE_NAME, withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -10,17 +11,18 @@ export async function generateStaticParams() {
   return [];
 }
 
-export async function generateMetadata(props: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await props.params;
-  const t = createTranslator(locale);
+export const generateMetadata = withPageMetadata(
+  "/store",
+  (locale) => {
+    const t = createTranslator(locale);
 
-  return {
-    title: t("store.store"),
-    description: t("store.meta_description"),
-  };
-}
+    return {
+      title: t("store.store"),
+      description: t("store.meta_description").replace("{site}", SITE_NAME),
+    };
+  },
+  { paginated: true },
+);
 
 export default async function StorePage(props: {
   params: Promise<{ locale: string }>;

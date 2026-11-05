@@ -119,7 +119,6 @@
   "to": [
    "modules/catalog/products.service.ts",
    "modules/catalog/collections.service.ts",
-   "modules/catalog/catalog-cache.service.ts",
    "modules/content/content.service.ts"
   ],
   "phase": 3,
@@ -545,8 +544,14 @@
   "note": ""
  },
  {
-  "kind": "stay",
+  "kind": "delete",
   "from": "app/[locale]/api/revalidate/route.ts",
-  "note": ""
+  "phase": 0,
+  "note": "removed before the refactor: no callers, and the production Shopify store has no webhook pointing at it; /api/webhooks/shopify handles webhooks (F-13)"
+ },
+ {
+  "kind": "stay",
+  "from": "lib/seo/*",
+  "note": "SEO metadata and JSON-LD helpers, added after the ledger was written"
  }
 ]

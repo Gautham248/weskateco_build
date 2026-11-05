@@ -248,7 +248,8 @@
   "footer.shipping_policy": "शिपिंग नीति",
   "footer.privacy_policy": "गोपनीयता नीति",
 
-  "home.meta_description": "WeSkate Co का तेज़ ऑनलाइन स्टोर — भारत में स्केटबोर्ड और सर्फ़स्केट का घर।",
+  "home.meta_title": "भारत में स्केटबोर्ड और सर्फ़स्केट ऑनलाइन खरीदें | {site}",
+  "home.meta_description": "टूटे डेक्स और छिले घुटनों से जन्मा। {site} पर स्केटबोर्ड, सर्फ़स्केट, प्रोटेक्टिव गियर और अपैरल शॉप करें, पूरे भारत में फ़्री शिपिंग के साथ।",
   "home.about_image_alt": "हमारे बारे में — बैकग्राउंड",
   "home.about_tagline": "हम एक कम्युनिटी हैं — जज़्बे से चलती, लगन पर टिकी, और स्केटबोर्डिंग से जुड़ी।",
   "home.know_more": "और जानें",
@@ -347,8 +348,8 @@
   "search.close": "खोज बंद करें",
 
   "store.store": "स्टोर",
-  "store.meta_description": "स्टोर में सारे प्रोडक्ट देखें।",
-  "store.meta_collection_description": "{title} प्रोडक्ट",
+  "store.meta_description": "{site} पर स्केटबोर्ड, सर्फ़स्केट, प्रोटेक्टिव गियर और अपैरल शॉप करें।",
+  "store.meta_collection_description": "{site} पर {title} शॉप करें।",
   "store.breadcrumb_aria": "पेज का रास्ता",
   "store.banner_alt": "{title} बैनर",
   "store.pagination_previous": "< पिछला",

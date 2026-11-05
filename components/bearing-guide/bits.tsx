@@ -129,13 +129,6 @@ export function RelatedColumnsAndNote({
               <ul className="flex flex-col gap-2.5">
                 {col.links.map((link) => {
                   const isInternal = link.href.startsWith("/");
-                  // Don't render dead link for /guides/wheel-guide (repo route is wheels-guide)
-                  // If link is /guides/wheel-guide, we omit or point to /guides/wheels-guide
-                  // Per instructions: "If a route does not exist, do not create it and do not render a dead link: omit that link and list it in your report"
-                  if (link.href === "/guides/wheel-guide") {
-                    return null;
-                  }
-
                   const targetHref = isInternal
                     ? getLocalizedPath(link.href, locale)
                     : link.href;

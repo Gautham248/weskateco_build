@@ -87,6 +87,7 @@ export type ProductOption = {
 export type ProductVariant = {
   id: string;
   title: string;
+  sku?: string | null;
   availableForSale: boolean;
   selectedOptions: {
     name: string;
@@ -326,4 +327,20 @@ export type ShopifyProductsOperation = {
     reverse?: boolean;
     sortKey?: string;
   };
+};
+
+export type ProductSitemapEntry = {
+  handle: string;
+  updatedAt: string;
+  tags: string[];
+};
+
+export type ShopifyProductSitemapEntriesOperation = {
+  data: {
+    products: {
+      pageInfo: { hasNextPage: boolean; endCursor: string | null };
+      edges: { node: ProductSitemapEntry }[];
+    };
+  };
+  variables: { after?: string | null };
 };

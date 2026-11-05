@@ -3,20 +3,20 @@ import Footer from "components/layout/footer";
 import Link from "components/localized-link";
 import { EnglishVersionNotice } from "components/legal/english-version-notice";
 import { createTranslator } from "lib/i18n";
-import type { Metadata } from "next";
+import { withPageMetadata } from "lib/seo/metadata";
 import { shippingPolicyHtmlHi } from "./content.hi";
 
-export async function generateMetadata(props: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await props.params;
-  const t = createTranslator(locale);
+export const generateMetadata = withPageMetadata(
+  "/shipping-policy",
+  (locale) => {
+    const t = createTranslator(locale);
 
-  return {
-    title: t("legal.shipping_title"),
-    description: t("legal.shipping_description"),
-  };
-}
+    return {
+      title: t("legal.shipping_title"),
+      description: t("legal.shipping_description"),
+    };
+  },
+);
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "hi" }];

@@ -341,7 +341,7 @@ export default function Footer() {
         <div className="flex md:hidden items-center gap-6 text-white mb-8">
           {/* YouTube */}
           <a
-            href="https://youtube.com/@weskateco"
+            href="https://www.youtube.com/@weskateco2020"
             target="_blank"
             rel="noreferrer"
             aria-label="YouTube"

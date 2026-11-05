@@ -1,4 +1,5 @@
 import CategoryGrid from "components/home/category-grid";
+import { JsonLd } from "components/json-ld";
 import Footer from "components/layout/footer";
 import { Gallery } from "components/product/gallery";
 import ProductCard from "components/product/product-card";
@@ -7,8 +8,18 @@ import { ViewItemTracker } from "lib/analytics";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
 import { productReadState } from "lib/catalog/product-page";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import { productJsonLd } from "lib/seo/json-ld";
+import {
+  documentTitle,
+  localeAlternates,
+  openGraph,
+  siteShareImage,
+  socialTitle,
+  summarize,
+} from "lib/seo/metadata";
 import { getProductRecommendations, readProductForPage } from "lib/shopify";
 import type { Image, Product } from "lib/shopify/types";
+import { baseUrl } from "lib/utils";
 import type { Metadata } from "next";
 import Link from "components/localized-link";
 import { notFound } from "next/navigation";
@@ -44,9 +55,17 @@ export async function generateMetadata(props: {
   const { url, width, height, altText: alt } = product.featuredImage || {};
   const indexable = !product.tags.includes(HIDDEN_PRODUCT_TAG);
 
+  const title = product.seo?.title || product.title;
+  // A merchant-written SEO description is used as written; only the product
+  // description fallback is shortened. Undefined rather than "" when a product
+  // has neither, so the tags are left out instead of being emitted empty.
+  const description =
+    product.seo?.description || summarize(product.description) || undefined;
+
   return {
-    title: product.seo?.title || product.title,
-    description: product.seo?.description || product.description,
+    title: documentTitle(title),
+    ...(description ? { description } : {}),
+    alternates: localeAlternates(`/products/${product.handle}`, params.locale),
     robots: {
       index: indexable,
       follow: indexable,
@@ -55,18 +74,13 @@ export async function generateMetadata(props: {
         follow: indexable,
       },
     },
-    openGraph: url
-      ? {
-          images: [
-            {
-              url,
-              width,
-              height,
-              alt,
-            },
-          ],
-        }
-      : null,
+    openGraph: openGraph(params.locale, `/products/${product.handle}`, {
+      title: socialTitle(title),
+      ...(description ? { description } : {}),
+      images: url
+        ? [{ url, width, height, alt }]
+        : siteShareImage(params.locale),
+    }),
   };
 }
 
@@ -86,39 +100,23 @@ export default async function ProductPage(props: {
 
   const product = state.product;
 
-  const productJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.title,
-    description: product.description,
-    image: product.featuredImage?.url,
-    offers: {
-      "@type": "AggregateOffer",
-      availability: product.availableForSale
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-      priceCurrency: product.priceRange.minVariantPrice.currencyCode,
-      highPrice: product.priceRange.maxVariantPrice.amount,
-      lowPrice: product.priceRange.minVariantPrice.amount,
-    },
-  };
-
   const t = createTranslator(params.locale);
-  const firstCollection = product.collections?.edges?.[0]?.node;
+
+  const productUrl = `${baseUrl}${getLocalizedPath(`/products/${product.handle}`, params.locale)}`;
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(productJsonLd),
-        }}
-      />
+      {/* No BreadcrumbList: structured data must match what's on the page,
+          and the visible breadcrumb is turned off below */}
+      <JsonLd data={productJsonLd(product, productUrl)} />
       <Suspense fallback={null}>
         <ViewItemTracker product={product} />
       </Suspense>
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15 py-4">
-        {/* Breadcrumb */}
+        {/* Breadcrumb. If it's turned back on, add BreadcrumbList JSON-LD for
+            it too, and pick a visible category collection rather than the
+            first one (skip hidden-* handles). It needs
+            const firstCollection = product.collections?.edges?.[0]?.node; */}
         {/* <div className="mb-6 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
           <Link
             href={getLocalizedPath("/", params.locale)}

@@ -2,20 +2,17 @@ import Prose from "components/prose";
 import Footer from "components/layout/footer";
 import { EnglishVersionNotice } from "components/legal/english-version-notice";
 import { createTranslator } from "lib/i18n";
-import type { Metadata } from "next";
+import { withPageMetadata } from "lib/seo/metadata";
 import { refundPolicyHtmlHi } from "./content.hi";
 
-export async function generateMetadata(props: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await props.params;
+export const generateMetadata = withPageMetadata("/refund-policy", (locale) => {
   const t = createTranslator(locale);
 
   return {
     title: t("legal.refund_title"),
     description: t("legal.refund_description"),
   };
-}
+});
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "hi" }];

@@ -1,47 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ADMIN_SESSION_COOKIE, LOCALE_COOKIE } from "./lib/constants";
-import { baseUrl } from "./lib/utils";
 
 const locales = ["en", "hi"];
 const defaultLocale = "en";
 
 const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
-/** Public URL of `path` in `locale`: English is unprefixed, others under /<locale>. */
-function localizedUrl(path: string, locale: string) {
-  if (locale === defaultLocale) {
-    return `${baseUrl}${path}`;
-  }
-  return `${baseUrl}/${locale}${path === "/" ? "" : path}`;
-}
-
 /**
- * Stamps a storefront page response with its language:
- *
- * - A `Link` header carrying the canonical URL and the hreflang alternates
- *   (Google reads both from HTTP headers), so every page under app/[locale]
- *   gets them without each one declaring its own metadata. The query string is
- *   left out, so filtered and sorted store URLs canonicalise to the plain page.
- * - The locale cookie, so server actions such as cart creation know which
- *   language the shopper is browsing in.
+ * Records the shopper's locale on a storefront page response. Server actions
+ * never see the page URL, so cart creation reads this cookie to open checkout
+ * in the language the shopper is browsing. Set only when it changes.
  */
-function withLocaleHeaders(
+function withLocaleCookie(
   request: NextRequest,
   response: NextResponse,
-  path: string,
   locale: string,
 ) {
-  const links = [
-    `<${localizedUrl(path, locale)}>; rel="canonical"`,
-    ...locales.map(
-      (alternate) =>
-        `<${localizedUrl(path, alternate)}>; rel="alternate"; hreflang="${alternate}"`,
-    ),
-    `<${localizedUrl(path, defaultLocale)}>; rel="alternate"; hreflang="x-default"`,
-  ];
-
-  response.headers.set("Link", links.join(", "));
-  response.headers.set("x-locale", locale);
   if (request.cookies.get(LOCALE_COOKIE)?.value !== locale) {
     response.cookies.set(LOCALE_COOKIE, locale, {
       path: "/",
@@ -54,6 +28,9 @@ function withLocaleHeaders(
 
 const ADMIN_LOGIN_PATH = "/admin/login";
 const ADMIN_API_PREFIX = "/admin/api/";
+
+// File-based Open Graph / Twitter images (app/**/opengraph-image.tsx).
+const SOCIAL_IMAGE_ROUTE = /\/(opengraph|twitter)-image(-[\w-]+)?$/;
 
 // Directories served from public/ — requests must bypass the locale rewrite.
 const PUBLIC_ASSET_PREFIXES = ["/fonts", "/hero", "/icons"];
@@ -146,24 +123,31 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // The default locale is served without a prefix, so /en/... is a duplicate
+  // of the clean URL — permanently redirect it to keep one indexable URL.
+  // Social images are the exception: Next.js links them by their internal
+  // /en/... route, and link-preview crawlers may not follow a redirect.
+  if (
+    (pathname === `/${defaultLocale}` ||
+      pathname.startsWith(`/${defaultLocale}/`)) &&
+    !SOCIAL_IMAGE_ROUTE.test(pathname)
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname.slice(defaultLocale.length + 1) || "/";
+    return NextResponse.redirect(url, 308);
+  }
+
   // Check if pathname already has a locale prefix
   const pathnameHasLocale = locales.some(
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`,
   );
 
   if (pathnameHasLocale) {
-    const locale = pathname.split("/")[1]!;
-    const path = pathname.slice(locale.length + 1) || "/";
-
-    // English lives at the unprefixed URL. /en/... would otherwise serve the
-    // same page at a second address, so send it home permanently.
-    if (locale === defaultLocale) {
-      const url = request.nextUrl.clone();
-      url.pathname = path;
-      return NextResponse.redirect(url, 308);
-    }
-
-    return withLocaleHeaders(request, NextResponse.next(), path, locale);
+    // Extract locale and set header for downstream use
+    const locale = pathname.split("/")[1];
+    const response = NextResponse.next();
+    response.headers.set("x-locale", locale!);
+    return withLocaleCookie(request, response, locale!);
   }
 
   // No locale in path — rewrite (not redirect) to default locale
@@ -171,12 +155,9 @@ export function proxy(request: NextRequest) {
   // but internally routes to /en/products/deck
   const url = request.nextUrl.clone();
   url.pathname = `/${defaultLocale}${pathname}`;
-  return withLocaleHeaders(
-    request,
-    NextResponse.rewrite(url),
-    pathname,
-    defaultLocale,
-  );
+  const response = NextResponse.rewrite(url);
+  response.headers.set("x-locale", defaultLocale);
+  return withLocaleCookie(request, response, defaultLocale);
 }
 
 export const config = {

@@ -10,6 +10,10 @@ import ConfiguratorCTA from "components/home/configurator-cta";
 import BrandsSection from "components/home/brands-section";
 import Footer from "components/layout/footer";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import { JsonLd } from "components/json-ld";
+import { organizationJsonLd, websiteJsonLd } from "lib/seo/json-ld";
+import { SITE_NAME, withPageMetadata } from "lib/seo/metadata";
+import { baseUrl } from "lib/utils";
 
 export const dynamicParams = true;
 
@@ -17,19 +21,16 @@ export async function generateStaticParams() {
   return [];
 }
 
-export async function generateMetadata(props: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await props.params;
+export const generateMetadata = withPageMetadata("/", (locale) => {
   const t = createTranslator(locale);
 
   return {
-    description: t("home.meta_description"),
-    openGraph: {
-      type: "website" as const,
-    },
+    // Leads with what shoppers search for; brand searches find the site anyway.
+    // absolute: skip the layout's "%s | site name" template, already included.
+    title: { absolute: t("home.meta_title").replace("{site}", SITE_NAME) },
+    description: t("home.meta_description").replace("{site}", SITE_NAME),
   };
-}
+});
 
 export default async function HomePage(props: {
   params: Promise<{ locale: string }>;
@@ -39,6 +40,19 @@ export default async function HomePage(props: {
 
   return (
     <>
+      <JsonLd
+        data={[
+          organizationJsonLd(
+            SITE_NAME,
+            baseUrl,
+            `${baseUrl}/icons/weskate-logo.png`,
+          ),
+          websiteJsonLd(SITE_NAME, baseUrl),
+        ]}
+      />
+      {/* The page's main heading, for search engines and screen readers. The
+          hero is visual only, so the heading isn't shown. */}
+      <h1 className="sr-only">{t("home.hero_title")}</h1>
       <HeroBanner locale={locale} />
       <NewlyRelease locale={locale} />
       <AboutSection />
