@@ -3,6 +3,7 @@ import { createTranslator } from "lib/i18n";
 import { getCollection, getCollections, getProducts } from "lib/shopify";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { localeAlternates, pageQuery } from "lib/seo/canonical";
 import StoreCollectionClient from "./store-collection-client";
 
 export const dynamicParams = true;
@@ -13,8 +14,10 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: {
   params: Promise<{ locale: string; collection: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<Metadata> {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const collection = await getCollection(params.collection);
 
   if (!collection) return notFound();
@@ -25,6 +28,13 @@ export async function generateMetadata(props: {
       collection.seo?.description ||
       collection.description ||
       `${collection.title} products`,
+    // Sort and filter params render the same collection, so they're dropped;
+    // each page of results keeps its ?page=
+    alternates: localeAlternates(
+      `/store/${collection.handle}`,
+      params.locale,
+      pageQuery(searchParams?.page),
+    ),
   };
 }
 

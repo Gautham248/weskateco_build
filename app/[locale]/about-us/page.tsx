@@ -6,13 +6,13 @@ import PeopleBehindHero from "components/about-us/people-behind-hero";
 import PeopleBehindStory from "components/about-us/people-behind-story";
 import ValuesSection from "components/about-us/values-section";
 import Footer from "components/layout/footer";
-import type { Metadata } from "next";
+import { withCanonical } from "lib/seo/canonical";
 
-export const metadata: Metadata = {
+export const generateMetadata = withCanonical("/about-us", {
   title: "About Us",
   description:
     "We are a community driven by grit, built on persistence, and united by skateboarding.",
-};
+});
 
 export default function AboutUsPage() {
   return (

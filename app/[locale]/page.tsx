@@ -10,6 +10,7 @@ import ConfiguratorCTA from "components/home/configurator-cta";
 import BrandsSection from "components/home/brands-section";
 import Footer from "components/layout/footer";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
+import { withCanonical } from "lib/seo/canonical";
 
 export const dynamicParams = true;
 
@@ -17,13 +18,13 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = {
+export const generateMetadata = withCanonical("/", {
   description:
     "High-performance storefront for WeSkate Co, India's Home for Skateboards & Surfskates.",
   openGraph: {
     type: "website",
   },
-};
+});
 
 export default async function HomePage(props: {
   params: Promise<{ locale: string }>;

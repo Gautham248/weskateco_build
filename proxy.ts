@@ -98,6 +98,17 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // The default locale is served without a prefix, so /en/... is a duplicate
+  // of the clean URL — permanently redirect it to keep one indexable URL
+  if (
+    pathname === `/${defaultLocale}` ||
+    pathname.startsWith(`/${defaultLocale}/`)
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname.slice(defaultLocale.length + 1) || "/";
+    return NextResponse.redirect(url, 308);
+  }
+
   // Check if pathname already has a locale prefix
   const pathnameHasLocale = locales.some(
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`,

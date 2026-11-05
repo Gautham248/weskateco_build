@@ -17,6 +17,7 @@ import {
   GRIP_HERO,
 } from "lib/griptape-guide/data";
 import { guideMetadata } from "lib/guides/metadata";
+import { withCanonical } from "lib/seo/canonical";
 
 export const dynamicParams = true;
 
@@ -24,7 +25,10 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = guideMetadata("Griptape Guide", GRIP_HERO.lede);
+export const generateMetadata = withCanonical(
+  "/guides/griptape-guide",
+  guideMetadata("Griptape Guide", GRIP_HERO.lede),
+);
 
 export default async function GriptapeGuidePage() {
   return (

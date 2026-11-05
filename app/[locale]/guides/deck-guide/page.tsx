@@ -20,6 +20,7 @@ import {
   FAQ_SECTION,
 } from "lib/deck-guide/data";
 import { guideMetadata } from "lib/guides/metadata";
+import { withCanonical } from "lib/seo/canonical";
 
 export const dynamicParams = true;
 
@@ -27,9 +28,12 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = guideMetadata(
-  "Deck Guide",
-  "The buying guide gets you to a width. This one is about the plank itself — what seven plies of maple actually do, why it is maple and not something else, what moisture does to it, what the glue is holding together in Indian heat, where a deck's numbers are measured from, what concave is in cross-section, and the four ways a deck dies.",
+export const generateMetadata = withCanonical(
+  "/guides/deck-guide",
+  guideMetadata(
+    "Deck Guide",
+    "The buying guide gets you to a width. This one is about the plank itself — what seven plies of maple actually do, why it is maple and not something else, what moisture does to it, what the glue is holding together in Indian heat, where a deck's numbers are measured from, what concave is in cross-section, and the four ways a deck dies.",
+  ),
 );
 
 export default async function DeckGuidePage() {

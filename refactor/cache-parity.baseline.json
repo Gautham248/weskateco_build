@@ -40,6 +40,11 @@
       "tags": ["TAGS.products"],
       "life": ["\"days\""]
     },
+    "getProductSitemapEntries": {
+      "directive": "use cache",
+      "tags": ["TAGS.products"],
+      "life": ["\"days\""]
+    },
     "getProductRecommendations": {
       "directive": "use cache",
       "tags": ["TAGS.products"],
@@ -76,10 +81,8 @@
     "revalidateTag(TAGS.collections, \"seconds\")",
     "revalidateTag(TAGS.collections, \"seconds\")",
     "revalidateTag(TAGS.collections, \"seconds\")",
-    "revalidateTag(TAGS.collections, \"seconds\")",
     "revalidateTag(TAGS.hero, \"seconds\")",
     "revalidateTag(TAGS.newlyReleased, \"seconds\")",
-    "revalidateTag(TAGS.products, \"seconds\")",
     "revalidateTag(TAGS.products, \"seconds\")",
     "revalidateTag(TAGS.products, \"seconds\")",
     "revalidateTag(TAGS.products, \"seconds\")",

@@ -3,6 +3,7 @@ import { getProducts, getCollections } from "lib/shopify";
 import { createTranslator } from "lib/i18n";
 import { Suspense } from "react";
 import StoreCollectionClient from "./[collection]/store-collection-client";
+import { withCanonical } from "lib/seo/canonical";
 
 export const dynamicParams = true;
 
@@ -10,10 +11,14 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const metadata = {
-  title: "Store",
-  description: "Browse products in the store.",
-};
+export const generateMetadata = withCanonical(
+  "/store",
+  {
+    title: "Store",
+    description: "Browse products in the store.",
+  },
+  { paginated: true },
+);
 
 export default async function StorePage(props: {
   params: Promise<{ locale: string }>;
