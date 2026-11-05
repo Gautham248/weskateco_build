@@ -8,6 +8,7 @@ import ProductCard, {
 import {
   CATEGORY_PREFIXES,
   getParentCategory,
+  stripCategoryPrefix,
 } from "lib/filters/category-filter-config";
 import { productMatches } from "lib/filters/derive";
 import { createTranslator } from "lib/i18n";
@@ -25,7 +26,10 @@ interface CollectionItem {
 interface StoreCollectionClientProps {
   initialCollectionHandle: string;
   allProducts: Product[];
+  /** English: the pills group collections by their English titles. */
   allCollections: Collection[];
+  /** The same collections in `locale`, for the titles the shopper reads. */
+  localizedCollections?: Collection[];
   locale: string;
   noProductsText: string;
   initialFilters?: Record<string, string>;
@@ -37,6 +41,7 @@ export default function StoreCollectionClient({
   initialCollectionHandle,
   allProducts,
   allCollections,
+  localizedCollections,
   locale,
   noProductsText,
   initialFilters = {},
@@ -101,15 +106,21 @@ export default function StoreCollectionClient({
 
   const t = useMemo(() => createTranslator(locale), [locale]);
 
+  const localizedByHandle = useMemo(
+    () => new Map((localizedCollections ?? []).map((c) => [c.handle, c])),
+    [localizedCollections],
+  );
+
   // Build collectionsMeta dynamically
   const collectionsMeta = useMemo(() => {
     const meta: Record<string, { title: string; description?: string }> = {};
 
     allCollections.forEach((c) => {
       if (c.handle !== "") {
+        const shown = localizedByHandle.get(c.handle) ?? c;
         meta[c.handle] = {
-          title: c.title,
-          description: c.description,
+          title: shown.title,
+          description: shown.description,
         };
       }
     });
@@ -121,7 +132,7 @@ export default function StoreCollectionClient({
     };
 
     return meta;
-  }, [allCollections, t]);
+  }, [allCollections, localizedByHandle, t]);
 
   // Store initial index map for stable sort order
   const initialIndexMap = useMemo(() => {
@@ -180,16 +191,19 @@ export default function StoreCollectionClient({
         return true;
       })
       .map((c) => {
-        let displayTitle = c.title;
+        const englishTitle = c.title.toLowerCase();
         const isSameAsNav =
-          displayTitle.toLowerCase() === activeHandle.toLowerCase() ||
-          (prefix && displayTitle.toLowerCase() === prefix + "s");
+          englishTitle === activeHandle.toLowerCase() ||
+          (prefix && englishTitle === prefix + "s");
+        // Untranslated collections come back with their English title
+        const localized = localizedByHandle.get(c.handle);
+        const isTranslated = !!localized && localized.title !== c.title;
 
-        if (isSameAsNav) {
-          displayTitle = "All";
-        } else if (prefix) {
-          const regex = new RegExp(`^(${prefix}s?)\\s+`, "i");
-          displayTitle = displayTitle.replace(regex, "");
+        let displayTitle = "All";
+        if (!isSameAsNav) {
+          displayTitle = isTranslated
+            ? stripCategoryPrefix(localized.title, activeParent, locale)
+            : stripCategoryPrefix(c.title, activeParent, "en");
         }
         return {
           handle: c.handle,
@@ -202,7 +216,7 @@ export default function StoreCollectionClient({
         if (b.title === "All") return 1;
         return 0;
       });
-  }, [allCollections, activeHandle, activeParent]);
+  }, [allCollections, localizedByHandle, activeHandle, activeParent, locale]);
 
   // Sync all state and push to URL history (no router navigation — no remount)
   const updateParams = (

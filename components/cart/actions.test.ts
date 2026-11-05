@@ -187,6 +187,23 @@ describe("removeItem", () => {
   });
 });
 
+describe("error messages", () => {
+  it("answer in the language the shopper is browsing in", async () => {
+    cookieJar.set("locale", "hi");
+    expect(await addItem(null, undefined)).toBe(
+      "आइटम कार्ट में नहीं जुड़ पाया",
+    );
+
+    shopify.getCart.mockResolvedValue(undefined);
+    expect(await removeItem(null, "variant-1")).toBe("कार्ट लोड नहीं हो पाया");
+  });
+
+  it("fall back to English for a locale without a dictionary", async () => {
+    cookieJar.set("locale", "fr");
+    expect(await addItem(null, undefined)).toBe("Error adding item to cart");
+  });
+});
+
 describe("updateItemQuantity", () => {
   beforeEach(() => {
     shopify.getCart.mockResolvedValue(

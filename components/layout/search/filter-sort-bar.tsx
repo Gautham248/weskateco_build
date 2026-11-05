@@ -16,6 +16,7 @@ import {
   getParentCategory,
 } from "lib/filters/category-filter-config";
 import { countMatching, deriveFilterGroups } from "lib/filters/derive";
+import { translateProductOption } from "lib/i18n/product-options";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { Product } from "lib/shopify/types";
 import Link from "components/localized-link";
@@ -143,8 +144,18 @@ function groupLabel(t: Translate, group: FilterGroup) {
   return translateOr(t, GROUP_LABEL_KEYS[group.id], group.label);
 }
 
+/** Groups whose options are Shopify option values (see lib/filters/derive). */
+const PRODUCT_OPTION_GROUPS = new Set([
+  "size",
+  "concave",
+  "shape",
+  "wheel_size",
+  "color",
+]);
+
 function optionLabel(
   t: Translate,
+  locale: string,
   groupId: string,
   option: { label: string; value: string },
 ) {
@@ -156,6 +167,9 @@ function optionLabel(
   }
   if (groupId === "subcategory" && option.label === ALL_PILL_TITLE) {
     return translateOr(t, "store.all_pill", option.label);
+  }
+  if (PRODUCT_OPTION_GROUPS.has(groupId)) {
+    return translateProductOption(t, locale, option.label);
   }
   return option.label;
 }
@@ -461,7 +475,13 @@ export default function FilterSortBar({
               {activeFilterEntries.flatMap(([key, value]) => {
                 const values = value.split(",").filter(Boolean);
                 return values.map((val) => {
-                  const label = getLabelForFilterValue(key, val, filterGroups);
+                  const label = PRODUCT_OPTION_GROUPS.has(key)
+                    ? translateProductOption(
+                        t,
+                        locale,
+                        getLabelForFilterValue(key, val, filterGroups),
+                      )
+                    : getLabelForFilterValue(key, val, filterGroups);
                   const hex = getHexForColorValue(val, filterGroups);
                   return (
                     <span
@@ -596,7 +616,7 @@ function FilterDrawer({
   onCategoryChange?: (handle: string) => void;
   collections: CollectionItem[];
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -706,7 +726,7 @@ function FilterDrawer({
     if (catOpt) {
       activeDrawerFilters.push({
         id: "category",
-        label: optionLabel(t, "category", catOpt),
+        label: optionLabel(t, locale, "category", catOpt),
         type: "category",
       });
     } else {
@@ -733,7 +753,13 @@ function FilterDrawer({
     if (value && key !== "q") {
       const values = value.split(",").filter(Boolean);
       values.forEach((val) => {
-        const label = getLabelForFilterValue(key, val, filterGroups);
+        const label = PRODUCT_OPTION_GROUPS.has(key)
+          ? translateProductOption(
+              t,
+              locale,
+              getLabelForFilterValue(key, val, filterGroups),
+            )
+          : getLabelForFilterValue(key, val, filterGroups);
         activeDrawerFilters.push({
           id: `${key}:${val}`,
           label,
@@ -1010,7 +1036,7 @@ function SortGroup({
   currentSort: string;
   onUpdateSort: (s: string) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   return (
     <div className="flex flex-col gap-4 pl-1">
       {group.options.map((opt) => {
@@ -1024,7 +1050,7 @@ function SortGroup({
             style={{ fontFamily: "Archivo, sans-serif" }}
           >
             <Checkbox checked={isSelected} />
-            <span>{optionLabel(t, group.id, opt)}</span>
+            <span>{optionLabel(t, locale, group.id, opt)}</span>
           </button>
         );
       })}
@@ -1043,6 +1069,7 @@ function CheckboxGroup({
   setFilterValue: (id: string, value: string | null) => void;
   products: Product[];
 }) {
+  const { t, locale } = useTranslation();
   return (
     <div className="flex flex-col gap-4 pl-1">
       {group.options.map((opt) => {
@@ -1070,7 +1097,9 @@ function CheckboxGroup({
             style={{ fontFamily: "Archivo, sans-serif" }}
           >
             <Checkbox checked={isSelected} disabled={isDisabled} />
-            <span className="flex-1">{opt.label}</span>
+            <span className="flex-1">
+              {optionLabel(t, locale, group.id, opt)}
+            </span>
             {!isDisabled && (
               <span className="text-xs text-neutral-400 dark:text-neutral-600">
                 {count}
@@ -1094,6 +1123,7 @@ function ColorSwatchGroup({
   setFilterValue: (id: string, value: string | null) => void;
   products: Product[];
 }) {
+  const { t, locale } = useTranslation();
   return (
     <div className="flex flex-col gap-4 pl-1">
       {group.options.map((opt) => {
@@ -1127,7 +1157,9 @@ function ColorSwatchGroup({
                 style={{ backgroundColor: opt.hex }}
               />
             )}
-            <span className="flex-1">{opt.label}</span>
+            <span className="flex-1">
+              {optionLabel(t, locale, group.id, opt)}
+            </span>
             {!isDisabled && (
               <span className="text-xs text-neutral-400 dark:text-neutral-600">
                 {count}
@@ -1344,7 +1376,7 @@ function CategoryGroup({
   activeCollectionHandle: string;
   onCategorySelect: (handle: string) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const activeParent = getParentCategory(activeCollectionHandle);
   return (
     <div className="flex flex-col gap-4 pl-1">
@@ -1363,7 +1395,7 @@ function CategoryGroup({
             style={{ fontFamily: "Archivo, sans-serif" }}
           >
             <Checkbox checked={isActive} />
-            <span>{optionLabel(t, group.id, opt)}</span>
+            <span>{optionLabel(t, locale, group.id, opt)}</span>
           </button>
         );
       })}

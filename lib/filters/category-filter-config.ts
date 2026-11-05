@@ -133,6 +133,47 @@ export const CATEGORY_PREFIXES: Record<string, string> = {
 };
 
 /**
+ * How each CATEGORY_PREFIXES word is written at the start of a translated
+ * collection title, longest first. Grouping always uses the English titles;
+ * these only shorten the translated pill label the way the English one is
+ * shortened ("Skateboard Decks" → "Decks").
+ */
+const LOCALIZED_CATEGORY_PREFIXES: Record<string, Record<string, string[]>> = {
+  hi: {
+    skateboards: ["स्केटबोर्ड्स", "स्केटबोर्ड"],
+    surfskates: ["सर्फ़स्केट्स", "सर्फस्केट्स", "सर्फ़स्केट", "सर्फस्केट"],
+    "portable-ramps": ["पोर्टेबल"],
+    "apparel-1": ["अपैरल"],
+    "protection-gears": ["प्रोटेक्शन", "प्रोटेक्टिव"],
+  },
+};
+
+/**
+ * A subcategory pill's label: the collection title without its parent
+ * category's leading word. `title` is in `locale`; a translated title that
+ * doesn't start with a known form of the word is shown whole.
+ */
+export function stripCategoryPrefix(
+  title: string,
+  parent: string,
+  locale: string,
+): string {
+  const forms =
+    LOCALIZED_CATEGORY_PREFIXES[locale]?.[parent] ??
+    (CATEGORY_PREFIXES[parent]
+      ? [`${CATEGORY_PREFIXES[parent]}s`, CATEGORY_PREFIXES[parent]]
+      : []);
+  const lower = title.toLowerCase();
+  for (const form of forms) {
+    if (lower.startsWith(`${form} `)) {
+      const rest = title.slice(form.length).trim();
+      if (rest) return rest;
+    }
+  }
+  return title;
+}
+
+/**
  * Derives a human-readable label for a filter option value from a given group.
  * Used for rendering active filter chips.
  */

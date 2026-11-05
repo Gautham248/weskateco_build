@@ -1,5 +1,5 @@
 import { defaultSort, sorting } from "lib/constants";
-import { createTranslator } from "lib/i18n";
+import { createTranslator, defaultLocale } from "lib/i18n";
 import {
   documentTitle,
   localeAlternates,
@@ -83,13 +83,18 @@ export default async function CategoryPage(props: {
     });
   }
 
-  const [collection, allCollections, allProducts] = await Promise.all([
-    getCollection(params.collection, params.locale),
-    // English on purpose: the collection pills and filter labels group
-    // collections by their English titles (see CATEGORY_PREFIXES).
-    getCollections(),
-    getProducts({ locale: params.locale }),
-  ]);
+  const [collection, allCollections, localizedCollections, allProducts] =
+    await Promise.all([
+      getCollection(params.collection, params.locale),
+      // English on purpose: the collection pills and filter labels group
+      // collections by their English titles (see CATEGORY_PREFIXES).
+      getCollections(),
+      // …and these are the titles the shopper reads
+      params.locale === defaultLocale
+        ? undefined
+        : getCollections(params.locale),
+      getProducts({ locale: params.locale }),
+    ]);
 
   if (!collection) return notFound();
 
@@ -100,6 +105,7 @@ export default async function CategoryPage(props: {
       initialCollectionHandle={params.collection}
       allProducts={allProducts}
       allCollections={allCollections}
+      localizedCollections={localizedCollections}
       locale={params.locale}
       noProductsText={t("collection.no_products")}
       initialFilters={initialFilters}

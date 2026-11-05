@@ -27,9 +27,9 @@ Interface labels are short and natural.
 - Email addresses, links, and all HTML tags and attributes.
 - Titles that are only a brand ("Girl Skateboards") or a brand plus codes ("TOUCAN JUNGLE CLASSIC 100A 53mm / 55mm"). Leave these untranslated.
 
-## Never translate
+## Never translate in Shopify
 
-- Product option names and values (Size, Concave, Mellow, Medium). The variant selector matches on them and puts them in URLs.
+- Product option names and values (Size, Concave, Mellow, Medium). The variant selector matches on them, puts them in URLs and adds to the cart by them. Their on-screen Hindi comes from the `option.*` keys in `locales/hi.json` instead: the key is the English text in lower case with spaces as underscores ("Wheel Size" → `option.wheel_size`). A new option name or value with no key is shown in English.
 - Handles and URLs. Hindi pages live at `/hi/<same path>`.
 
 ## Terms
@@ -89,6 +89,14 @@ Interface labels are short and natural.
 | Add to Cart / Buy Now                                   | कार्ट में जोड़ें / अभी खरीदें                                 |
 | Shop / View All / Contact Us                            | शॉप / सब देखें / संपर्क करें                                  |
 | Language                                                | भाषा                                                          |
+
+## Artist credits
+
+Write a deck's artist credit in a Hindi description as `डेक आर्टवर्क: <artist>` on its own line (the English is `Deck Artwork by <artist>`). The product page turns either form into the artist badge; any other wording shows as plain text.
+
+## Collection titles
+
+On the store page, a subcategory pill drops its parent's leading word, so "Skateboard Decks" shows as "Decks". In Hindi this works when the title starts with the word as written in the terms table (स्केटबोर्ड, सर्फ़स्केट, अपैरल…); other titles are shown whole.
 
 ## Formatting
 
