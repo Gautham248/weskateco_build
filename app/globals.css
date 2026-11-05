@@ -1,7 +1,6 @@
 @import "@fontsource/archivo";
 @import "@fontsource/archivo/900.css";
 @import "tailwindcss";
-@import "./color-fallbacks.css";
 
 @font-face {
   font-family: "Clash Display";
