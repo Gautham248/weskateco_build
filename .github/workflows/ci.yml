@@ -37,6 +37,24 @@ jobs:
       - run: pnpm exec next typegen
       - run: pnpm exec tsc --noEmit
 
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Vitest runs offline against pure functions: no store, no database, so
+      # unlike the end-to-end job this needs no secrets and always runs.
+      - run: pnpm test:unit
+
   format:
     name: Prettier
     # Pull requests only: this checks the files a change touches, which needs a
