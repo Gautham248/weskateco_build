@@ -38,7 +38,9 @@ export default defineConfig({
     useDevServer && !externalBaseUrl ? 2 : process.env.CI ? 3 : undefined,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
+  // CI runs the suite in shards; each writes a blob report, and the
+  // e2e-report job merges them into one HTML report (see ci.yml)
+  reporter: process.env.CI ? [["github"], ["blob"]] : "list",
   // The dev server compiles routes on first hit, which can be slow
   timeout: 60_000,
   expect: { timeout: 15_000 },
