@@ -2,6 +2,7 @@
 
 import snapmintLogo from "components/icons/snapmint_logo.svg";
 import { useTranslation } from "lib/i18n/TranslationProvider";
+import { useGoKwikAvailable } from "lib/gokwik/region";
 
 interface SnapmintEmiBadgeProps {
   /** Product price string from Shopify (e.g. "10283.79") */
@@ -21,6 +22,8 @@ export function SnapmintEmiBadge({
   onClick,
 }: SnapmintEmiBadgeProps) {
   const { t } = useTranslation();
+  // Snapmint EMI runs through GoKwik, which is only offered in India
+  const gokwikAvailable = useGoKwikAvailable();
   const price = parseFloat(priceAmount);
   const monthlyEmi = Math.ceil(price / 3);
 
@@ -40,6 +43,8 @@ export function SnapmintEmiBadge({
       window.triggerGokwikCustomCheckout();
     }
   };
+
+  if (!gokwikAvailable) return null;
 
   return (
     <div

@@ -2,12 +2,15 @@
 
 import snapmintLogo from "components/icons/snapmint_logo.svg";
 import { useTranslation } from "lib/i18n/TranslationProvider";
+import { useGoKwikAvailable } from "lib/gokwik/region";
 
 interface SnapmintEmiCartBannerProps {
   /** Cart or product total price string (e.g. "15728.79") */
   totalAmount: string;
   /** Called when the user clicks "Buy on EMI>" */
   onBuyOnEmi: () => void;
+  /** While checkout is starting, so further clicks are clearly ignored */
+  disabled?: boolean;
 }
 
 /**
@@ -19,10 +22,15 @@ interface SnapmintEmiCartBannerProps {
 export function SnapmintEmiCartBanner({
   totalAmount,
   onBuyOnEmi,
+  disabled = false,
 }: SnapmintEmiCartBannerProps) {
   const { t } = useTranslation();
+  // Snapmint EMI runs through GoKwik, which is only offered in India
+  const gokwikAvailable = useGoKwikAvailable();
   const price = parseFloat(totalAmount);
   const monthlyEmi = Math.ceil(price / 3);
+
+  if (!gokwikAvailable) return null;
 
   return (
     <div
@@ -57,7 +65,8 @@ export function SnapmintEmiCartBanner({
       {/* Right side CTA button */}
       <button
         onClick={onBuyOnEmi}
-        className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-950 transition-colors cursor-pointer"
+        disabled={disabled}
+        className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-950 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {t("product.buy_on_emi")}&gt;
       </button>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ADMIN_SESSION_COOKIE, LOCALE_COOKIE } from "./lib/constants";
+import { COUNTRY_COOKIE } from "./lib/gokwik/country";
 
 const locales = ["en", "hi"];
 const defaultLocale = "en";
@@ -87,6 +88,27 @@ function handleAdminRequest(request: NextRequest, pathname: string) {
 }
 
 export function proxy(request: NextRequest) {
+  return withCountryCookie(request, route(request));
+}
+
+/**
+ * Stores the shopper's country (from Vercel's IP geolocation) in a cookie the
+ * browser can read, to decide between GoKwik and Shopify checkout. Without
+ * the header (e.g. local development) any existing cookie is left alone.
+ */
+function withCountryCookie(request: NextRequest, response: NextResponse) {
+  const country = request.headers.get("x-vercel-ip-country")?.toUpperCase();
+  if (country && request.cookies.get(COUNTRY_COOKIE)?.value !== country) {
+    response.cookies.set(COUNTRY_COOKIE, country, {
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24,
+    });
+  }
+  return response;
+}
+
+function route(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
 
   // Must run before the locale rewrite below, otherwise /account becomes

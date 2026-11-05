@@ -8,7 +8,11 @@
 //   2. STATE: for phase N, every ledger entry is in the state it should be in
 //      after phase N (moved files gone from the old path and present at the new
 //      one; not-yet-due entries untouched).
-//   3. LEFTOVERS: no file under lib/ at HEAD is unaccounted for.
+//   3. LEFTOVERS: no file under lib/ at HEAD is unaccounted for. Test files
+//      are left to check 4 instead.
+//   4. TESTS: every *.test.ts(x) outside e2e/ sits next to the module it
+//      tests (foo.test.ts next to foo.ts or foo.tsx; foo.topic.test.ts next to
+//      foo), so a move that leaves its test behind is caught wherever it is.
 //
 //   node refactor/scripts/verify-ledger.mjs --phase <N> --base <ref>
 //
@@ -105,8 +109,12 @@ for (const e of ledger) {
   }
 }
 
-// 3. leftovers under lib/ and config/ at HEAD
-for (const f of headFiles.filter((p) => /^(lib|config)\//.test(p))) {
+const isTest = (p) => /\.test\.tsx?$/.test(p);
+
+// 3. leftovers under lib/ and config/ at HEAD (tests: see 4)
+for (const f of headFiles.filter(
+  (p) => /^(lib|config)\//.test(p) && !isTest(p),
+)) {
   const known =
     ledger.some(
       (e) =>
@@ -117,6 +125,21 @@ for (const f of headFiles.filter((p) => /^(lib|config)\//.test(p))) {
           e.kind === "extract"),
     ) || ledger.some((e) => e.to && [].concat(e.to).includes(f));
   if (!known) problems.push(`UNACCOUNTED at HEAD: ${f}`);
+}
+
+// 4. every unit test still sits next to its module
+for (const t of headFiles.filter((p) => isTest(p) && !p.startsWith("e2e/"))) {
+  const stem = t.replace(/\.test\.tsx?$/, "");
+  const dir = stem.slice(0, stem.lastIndexOf("/") + 1);
+  const name = stem.slice(dir.length);
+  const modules = [name, name.split(".")[0]].flatMap((m) => [
+    `${dir}${m}.ts`,
+    `${dir}${m}.tsx`,
+  ]);
+  if (!modules.some((m) => headSet.has(m)))
+    problems.push(
+      `ORPHANED TEST: ${t} (its module moved or was renamed; move the test with it)`,
+    );
 }
 
 if (problems.length) {
