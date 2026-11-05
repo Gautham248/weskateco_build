@@ -11,7 +11,15 @@ import {
   TYPES_TABLE_COLS,
   TYPES_TABLE_ROWS,
 } from "lib/truck-guide/data";
-import { GuideTable, Note, ProseCols, SectionHeader, SubHead, Container, Section } from "components/guides/ui";
+import {
+  GuideTable,
+  Note,
+  ProseCols,
+  SectionHeader,
+  SubHead,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 export default function TypesSection() {
   return (

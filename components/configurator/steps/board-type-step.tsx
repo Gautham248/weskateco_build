@@ -44,14 +44,12 @@ export function BoardTypeStep({
         <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500">
           Step 1
         </p>
-        <h1
-          className="text-4xl font-black uppercase tracking-tight text-black dark:text-white font-clash"
-        >
+        <h1 className="text-4xl font-black uppercase tracking-tight text-black dark:text-white font-clash">
           What are you riding?
         </h1>
         <p className="mt-3 max-w-md text-sm text-neutral-500 dark:text-neutral-400">
-          Choose your riding style to get started. We'll show you the
-          components that are perfectly matched to your build.
+          Choose your riding style to get started. We'll show you the components
+          that are perfectly matched to your build.
         </p>
       </div>
 
@@ -113,11 +111,15 @@ export function BoardTypeStep({
               <h3
                 className={clsx(
                   "mb-2 text-lg font-black uppercase tracking-tight",
-                  isSelected ? "text-white dark:text-black" : "text-black dark:text-white",
+                  isSelected
+                    ? "text-white dark:text-black"
+                    : "text-black dark:text-white",
                   "font-clash",
                 )}
               >
-                {t(translationKey) !== translationKey ? t(translationKey) : boardType}
+                {t(translationKey) !== translationKey
+                  ? t(translationKey)
+                  : boardType}
               </h3>
 
               {/* Description */}

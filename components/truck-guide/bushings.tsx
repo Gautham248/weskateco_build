@@ -3,7 +3,13 @@ import {
   BUSHINGS_NOTE,
   BUSHINGS_SECTION,
 } from "lib/truck-guide/data";
-import { DefList, Note, SectionHeader, Container, Section } from "components/guides/ui";
+import {
+  DefList,
+  Note,
+  SectionHeader,
+  Container,
+  Section,
+} from "components/guides/ui";
 
 export default function BushingsSection() {
   return (

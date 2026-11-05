@@ -50,9 +50,8 @@ export default function ContactDetails() {
             Toucan Distribution Pvt Ltd · WB Skatepark Constructions LLP
           </p>
           <address className="not-italic text-neutral-500 text-sm md:text-base leading-relaxed">
-           <br />
-           No 149/3, 5th Main Rd, Malleshpalya
-           Behind DS Upahara, Kaggadasapura
+            <br />
+            No 149/3, 5th Main Rd, Malleshpalya Behind DS Upahara, Kaggadasapura
             <br />
             Bangalore, Karnataka 560075
           </address>
