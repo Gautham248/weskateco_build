@@ -43,33 +43,67 @@ export function siteShareImage(locale: string): OpenGraph["images"] {
 /** Sentence-ending marks, including the Hindi full stop. */
 const SENTENCE_END = new Set([".", "!", "?", "\u0964"]);
 
+const GRAPHEMES = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+
+/**
+ * Splits into user-perceived characters. Array.from would split by code point,
+ * which cuts a ZWJ emoji sequence into pieces (a family loses a member), halves
+ * a flag into a stray regional indicator, and can strip a Devanagari vowel sign
+ * from its consonant.
+ */
+const toChars = (text: string): string[] =>
+  Array.from(GRAPHEMES.segment(text), (each) => each.segment);
+
 /**
  * Shortens text for meta and social descriptions, which search results and
  * link previews cut off at roughly 160 characters. Ends at a sentence when one
- * fits, otherwise at a word, with an ellipsis. Counts characters, not UTF-16
- * units, so an emoji is never split in half.
+ * fits, otherwise at a word, with an ellipsis. Counts user-perceived
+ * characters, so an emoji or a Devanagari cluster is never split in half.
  */
 export function summarize(text: string, maxLength = 160): string {
   const clean = text.replace(/\s+/g, " ").trim();
-  const chars = Array.from(clean);
-  if (chars.length <= maxLength) return clean;
+  if (Array.from(clean).length <= maxLength) return clean;
+
+  const chars = toChars(clean);
+  // The budget is characters, but the cut has to land between graphemes, and a
+  // Devanagari cluster or a ZWJ emoji is several characters wide. Count how
+  // many whole graphemes fit, so the result stays within the budget instead of
+  // overrunning it by the width of the clusters it contains.
+  let limit = 0;
+  let used = 0;
+  for (const grapheme of chars) {
+    const width = Array.from(grapheme).length;
+    if (used + width > maxLength) break;
+    used += width;
+    limit++;
+  }
 
   // The last sentence that ends within the limit (followed by a space, which
   // may sit just past the limit), if it keeps at least half the length
-  for (let i = maxLength - 1; i >= maxLength / 2; i--) {
+  for (let i = limit - 1; i >= limit / 2; i--) {
     if (SENTENCE_END.has(chars[i]!) && chars[i + 1] === " ") {
       return chars.slice(0, i + 1).join("");
     }
   }
 
   // Otherwise the last whole word, leaving room for the ellipsis
-  const lastSpace = chars.lastIndexOf(" ", maxLength - 1);
-  const words = chars.slice(0, lastSpace > 0 ? lastSpace : maxLength - 1);
+  const lastSpace = chars.lastIndexOf(" ", limit - 1);
+  const words = chars.slice(0, lastSpace > 0 ? lastSpace : limit - 1);
   return `${words.join("").replace(/[,;:.\s]+$/, "")}…`;
 }
 
-const namesSite = (title: string) =>
-  title.toLowerCase().includes(SITE_NAME.toLowerCase());
+/**
+ * The site name as a whole token. A plain substring test would read
+ * "WeSkate Complete 8.0" as already naming "WeSkate Co" (the store sells
+ * completes), and the title would silently lose its "| WeSkate Co" suffix.
+ * The lookahead is what rejects that; \W keeps "Wheels | WeSkate Co" a match.
+ */
+const SITE_NAME_TOKEN = new RegExp(
+  `(^|\\W)${SITE_NAME.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?!\\w)`,
+  "i",
+);
+
+const namesSite = (title: string) => SITE_NAME_TOKEN.test(title);
 
 /**
  * Open Graph title for a page title. Open Graph doesn't apply the layout's
@@ -151,13 +185,16 @@ export function withPageMetadata(
     const { locale } = await props.params;
     const query = paginated ? pageQuery((await props.searchParams)?.page) : "";
     const title = openGraphTitle(metadata.title);
+    // Shortened here too: a page's own description is hand-written and can run
+    // past what search results and link previews show
     const description =
       typeof metadata.description === "string"
-        ? metadata.description
+        ? summarize(metadata.description)
         : undefined;
 
     return {
       ...metadata,
+      ...(description ? { description } : {}),
       alternates: localeAlternates(path, locale, query),
       openGraph: openGraph(locale, path + query, {
         // The homepage's segment has its own image file, which Next links

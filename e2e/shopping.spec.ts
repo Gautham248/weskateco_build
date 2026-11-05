@@ -5,11 +5,28 @@ import {
   hasShopify,
   addFirstProductToCart,
   openFirstProduct,
+  openFirstPurchasableProduct,
   productJsonLd,
   SHOPIFY_SKIP_REASON,
 } from "./helpers";
 
 test.skip(!hasShopify, SHOPIFY_SKIP_REASON);
+
+/**
+ * Everything that buys something skips itself when the test collection has
+ * nothing purchasable in it, which is the right call for one test but means a
+ * sold-out, renamed or empty collection turns the whole checkout suite into
+ * skips and still reports a green run. This fails instead, so the cause is
+ * named once rather than inferred from a skip count nobody reads.
+ */
+test(`the ${COLLECTION} collection has something to buy`, async ({ page }) => {
+  expect(
+    await openFirstPurchasableProduct(page),
+    `No purchasable product in /store/${COLLECTION}. Every add-to-cart and ` +
+      `checkout test will skip. Check the collection still exists and has ` +
+      `stock, or point E2E_COLLECTION at one that does.`,
+  ).not.toBeNull();
+});
 
 test("homepage renders", async ({ page }) => {
   const res = await page.goto("/");
