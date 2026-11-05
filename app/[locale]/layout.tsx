@@ -1,6 +1,7 @@
 import { CartProvider } from "components/cart/cart-context";
 import { Navbar } from "components/layout/navbar";
 import { NavbarScrollWrapper } from "components/layout/navbar/navbar-scroll";
+import { UnsupportedBrowserMessage } from "components/unsupported-browser";
 // import { WelcomeToast } from "components/welcome-toast";
 import { GeistSans } from "geist/font/sans";
 import { Noto_Sans_Devanagari } from "next/font/google";
@@ -73,19 +74,25 @@ export default async function RootLayout(props: {
       className={`${GeistSans.variable} ${devanagari.variable}`}
     >
       <body className="bg-white text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
-        <CartProvider cartPromise={cart}>
-          <GoKwikOrderWatcher />
-          <TranslationProvider locale={params.locale} dictionary={dictionary}>
-            <NavbarScrollWrapper>
-              <Navbar locale={params.locale} />
-            </NavbarScrollWrapper>
-            <main className="pt-[72px]">
-              {children}
-              <Toaster position="top-center" offset={56} closeButton />
-              {/* <WelcomeToast /> */}
-            </main>
-          </TranslationProvider>
-        </CartProvider>
+        <div className="site-root">
+          <CartProvider cartPromise={cart}>
+            <GoKwikOrderWatcher />
+            <TranslationProvider locale={params.locale} dictionary={dictionary}>
+              <NavbarScrollWrapper>
+                <Navbar locale={params.locale} />
+              </NavbarScrollWrapper>
+              <main className="pt-[72px]">
+                {children}
+                <Toaster position="top-center" offset={56} closeButton />
+                {/* <WelcomeToast /> */}
+              </main>
+            </TranslationProvider>
+          </CartProvider>
+        </div>
+        {/* After the site in the document, so a reader that doesn't apply CSS
+            sees the page's own content first; which of the two is shown is
+            decided in globals.css, not by order */}
+        <UnsupportedBrowserMessage locale={params.locale} />
         <GoKwikScript />
         <GoogleAnalytics />
         <MetaPixel />

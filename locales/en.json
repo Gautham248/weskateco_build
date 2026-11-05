@@ -171,7 +171,6 @@
   "footer.refund": "Refund Policy",
   "footer.shipping": "Shipping Policy",
   "footer.contact": "Contact Us",
-
   "cart.remove_item_aria": "Remove cart item",
   "cart.increase_item_quantity": "Increase item quantity",
   "cart.reduce_item_quantity": "Reduce item quantity",
@@ -194,11 +193,9 @@
   "cart.secure_alt": "secure",
   "cart.secure_payments_note": "Secure Encrypted Payments | Genuine Weskateco Products",
   "cart.remove_button": "REMOVE",
-
   "error.title": "Oh no!",
   "error.message": "There was an issue with our storefront. This could be a temporary issue, please try your action again.",
   "error.try_again": "Try Again",
-
   "filters.sort_aria": "Sort",
   "filters.filter_and_sort": "FILTER & SORT",
   "filters.clear_all": "Clear All",
@@ -225,12 +222,10 @@
   "filters.sort_tag_price_low_high": "Price: Low to high",
   "filters.sort_tag_price_high_low": "Price: High to low",
   "filters.category_protection_gear": "Protection Gear",
-
   "footer.buying_guides": "BUYING GUIDES",
   "footer.contact_us": "CONTACT US",
   "footer.shipping_policy": "SHIPPING POLICY",
   "footer.privacy_policy": "PRIVACY POLICY",
-
   "home.meta_title": "Buy Skateboards & Surfskates Online in India | {site}",
   "home.meta_description": "Born from busted decks and scraped knees. Shop skateboards, surfskates, protective gear and apparel at {site}, with free shipping across India.",
   "home.about_image_alt": "About Background",
@@ -266,7 +261,6 @@
   "home.social_watch_reel": "Watch Reel",
   "home.social_view_reel": "View Reel",
   "home.social_view_post": "View Post",
-
   "nav.account": "Account",
   "nav.store": "STORE",
   "nav.we_are": "WE ARE",
@@ -299,7 +293,6 @@
   "nav.open_mobile_menu": "Open mobile menu",
   "nav.close_mobile_menu": "Close mobile menu",
   "nav.toggle_section": "Toggle Section",
-
   "product.added_to_cart_toast": "{title} added to cart!",
   "product.add_to_cart_error": "Could not add to cart. Please try again.",
   "product.select_option_button": "Select Option",
@@ -325,11 +318,9 @@
   "product.image_unavailable": "Image unavailable",
   "product.image_alt_fallback": "Product image",
   "product.collections_meta_description": "Browse skateboards, surfskates, completes, apparel, protection gear, portable ramps, and collections from the brands we carry.",
-
   "search.submit": "Submit search",
   "search.type_to_search": "Type to search",
   "search.close": "Close search",
-
   "store.store": "Store",
   "store.meta_description": "Shop skateboards, surfskates, protective gear and apparel at {site}.",
   "store.meta_collection_description": "Shop {title} at {site}.",
@@ -339,7 +330,6 @@
   "store.pagination_next": "Next >",
   "store.showing_count": "(Showing 1 – {shown} products of {total} products)",
   "store.all_pill": "All",
-
   "legal.privacy_title": "Privacy Policy",
   "legal.privacy_description": "Privacy Policy for Weskateco / Toucan Distribution Pvt Ltd describing how we collect, use, and disclose your personal information.",
   "legal.terms_title": "Terms of Service",
@@ -349,5 +339,7 @@
   "legal.shipping_title": "Shipping Policy",
   "legal.shipping_description": "Shipping Policy for WeskateCo describing coverage, processing times, estimated delivery times, shipping charges, and tracking.",
   "legal.translation_notice": "This Hindi translation is provided for your convenience. If there is any difference between the two, the English version applies.",
-  "legal.read_english": "Read the English version"
+  "legal.read_english": "Read the English version",
+  "unsupported_browser.title": "Your browser is out of date",
+  "unsupported_browser.body": "This site needs a newer browser to work properly. Please update Chrome, Safari or Firefox, or open this page on a newer device."
 }
