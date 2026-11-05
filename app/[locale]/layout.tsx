@@ -1,6 +1,7 @@
 import { CartProvider } from "components/cart/cart-context";
 import { Navbar } from "components/layout/navbar";
 import { NavbarScrollWrapper } from "components/layout/navbar/navbar-scroll";
+import { UnsupportedBrowserMessage } from "components/unsupported-browser";
 // import { WelcomeToast } from "components/welcome-toast";
 import { GeistSans } from "geist/font/sans";
 import { GoogleAnalytics, MetaPixel } from "lib/analytics";
@@ -44,19 +45,22 @@ export default async function RootLayout(props: {
   return (
     <html lang={params.locale} className={`${GeistSans.variable}`}>
       <body className="bg-white text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
-        <CartProvider cartPromise={cart}>
-          <GoKwikOrderWatcher />
-          <TranslationProvider locale={params.locale} dictionary={dictionary}>
-            <NavbarScrollWrapper>
-              <Navbar locale={params.locale} />
-            </NavbarScrollWrapper>
-            <main className="pt-[72px]">
-              {children}
-              <Toaster position="top-center" offset={56} closeButton />
-              {/* <WelcomeToast /> */}
-            </main>
-          </TranslationProvider>
-        </CartProvider>
+        <UnsupportedBrowserMessage locale={params.locale} />
+        <div className="site-root">
+          <CartProvider cartPromise={cart}>
+            <GoKwikOrderWatcher />
+            <TranslationProvider locale={params.locale} dictionary={dictionary}>
+              <NavbarScrollWrapper>
+                <Navbar locale={params.locale} />
+              </NavbarScrollWrapper>
+              <main className="pt-[72px]">
+                {children}
+                <Toaster position="top-center" offset={56} closeButton />
+                {/* <WelcomeToast /> */}
+              </main>
+            </TranslationProvider>
+          </CartProvider>
+        </div>
         <GoKwikScript />
         <GoogleAnalytics />
         <MetaPixel />

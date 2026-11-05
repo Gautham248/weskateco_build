@@ -217,9 +217,9 @@ function ShopNowCard({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Pill Badges Stack */}
+        {/* Pill Badges Stack (always visible on touch devices, revealed on hover elsewhere) */}
         {slide.discountPercent ? (
-          <div className="absolute right-3 top-3 z-20 flex items-center gap-1.5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
+          <div className="absolute right-3 top-3 z-20 flex items-center gap-1.5 [@media(hover:hover)]:opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
             <span className="rounded bg-neutral-900/60 backdrop-blur-md px-2 py-1 text-[clamp(0.5rem,1.5vw,0.625rem)] font-medium text-white">
               {slide.discountPercent}% off
             </span>

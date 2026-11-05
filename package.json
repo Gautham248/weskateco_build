@@ -30,6 +30,15 @@
     "deploy": "node scripts/deploy.js --prod",
     "vercel": "node scripts/deploy.js"
   },
+  "browserslist": [
+    "chrome >= 99",
+    "edge >= 99",
+    "firefox >= 97",
+    "safari >= 15.4",
+    "ios_saf >= 15.4",
+    "samsung >= 18",
+    "android >= 99"
+  ],
   "dependencies": {
     "@fontsource/archivo": "^5.2.8",
     "@headlessui/react": "^2.2.0",
@@ -59,7 +68,7 @@
   },
   "devDependencies": {
     "@tailwindcss/container-queries": "^0.1.1",
-    "@tailwindcss/postcss": "^4.0.14",
+    "@tailwindcss/postcss": "^4.3.1",
     "@tailwindcss/typography": "^0.5.16",
     "@tiptap/core": "^3.31.3",
     "@types/jsdom": "^30.0.0",
@@ -73,7 +82,7 @@
     "postcss": "^8.5.3",
     "prettier": "3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "tailwindcss": "^4.0.14",
+    "tailwindcss": "^4.3.1",
     "tsx": "^4.21.0",
     "typescript": "5.8.2"
   },

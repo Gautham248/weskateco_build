@@ -169,5 +169,8 @@
   "footer.terms": "Terms of Service",
   "footer.refund": "Refund Policy",
   "footer.shipping": "Shipping Policy",
-  "footer.contact": "Contact Us"
+  "footer.contact": "Contact Us",
+
+  "unsupported_browser.title": "Your browser is out of date",
+  "unsupported_browser.body": "This site needs a newer browser to work properly. Please update Chrome, Safari or Firefox, or open this page on a newer device."
 }

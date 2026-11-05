@@ -186,5 +186,8 @@
   "footer.terms": "सेवा की शर्तें",
   "footer.refund": "रिफंड नीति",
   "footer.shipping": "शिपिंग नीति",
-  "footer.contact": "संपर्क करें"
+  "footer.contact": "संपर्क करें",
+
+  "unsupported_browser.title": "आपका ब्राउज़र पुराना है",
+  "unsupported_browser.body": "इस साइट को ठीक से चलाने के लिए नया ब्राउज़र चाहिए। कृपया Chrome, Safari या Firefox अपडेट करें, या यह पेज किसी नए डिवाइस पर खोलें।"
 }
