@@ -1,8 +1,8 @@
 import Prose from "components/prose";
 import Footer from "components/layout/footer";
-import { withCanonical } from "lib/seo/canonical";
+import { withPageMetadata } from "lib/seo/metadata";
 
-export const generateMetadata = withCanonical("/refund-policy", {
+export const generateMetadata = withPageMetadata("/refund-policy", {
   title: "Refund Policy",
   description:
     "Refund Policy for WESKATECO / Toucan Distribution Private Limited describing returns, replacements, non-returnable items, and refund procedures.",

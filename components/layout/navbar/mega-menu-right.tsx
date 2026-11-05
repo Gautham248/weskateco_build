@@ -62,8 +62,9 @@ export default function MegaMenuRight({
             src={shopImg1}
             alt="Shop Skateboards"
             fill
+            // Not priority: the mega menu is hidden until hovered
+            sizes="33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
-            priority
           />
         </Link>
 
@@ -91,8 +92,9 @@ export default function MegaMenuRight({
                 src={shopImg2}
                 alt="Newly Released"
                 fill
+                // Not priority: the mega menu is hidden until hovered
+                sizes="33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
-                priority
               />
             </div>
 

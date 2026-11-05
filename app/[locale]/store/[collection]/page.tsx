@@ -1,9 +1,17 @@
 import { defaultSort, sorting } from "lib/constants";
 import { createTranslator } from "lib/i18n";
+import {
+  documentTitle,
+  localeAlternates,
+  openGraph,
+  pageQuery,
+  SITE_NAME,
+  socialTitle,
+  summarize,
+} from "lib/seo/metadata";
 import { getCollection, getCollections, getProducts } from "lib/shopify";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { localeAlternates, pageQuery } from "lib/seo/canonical";
 import StoreCollectionClient from "./store-collection-client";
 
 export const dynamicParams = true;
@@ -22,19 +30,26 @@ export async function generateMetadata(props: {
 
   if (!collection) return notFound();
 
+  const title = collection.seo?.title || collection.title;
+  // A merchant-written SEO description is used as written
+  const description =
+    collection.seo?.description ||
+    summarize(
+      collection.description || `Shop ${collection.title} at ${SITE_NAME}.`,
+    );
+  const path = `/store/${collection.handle}`;
+  const query = pageQuery(searchParams?.page);
+
   return {
-    title: collection.seo?.title || collection.title,
-    description:
-      collection.seo?.description ||
-      collection.description ||
-      `${collection.title} products`,
+    title: documentTitle(title),
+    description,
     // Sort and filter params render the same collection, so they're dropped;
     // each page of results keeps its ?page=
-    alternates: localeAlternates(
-      `/store/${collection.handle}`,
-      params.locale,
-      pageQuery(searchParams?.page),
-    ),
+    alternates: localeAlternates(path, params.locale, query),
+    openGraph: openGraph(params.locale, path + query, {
+      title: socialTitle(title),
+      description,
+    }),
   };
 }
 

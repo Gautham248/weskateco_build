@@ -20,7 +20,7 @@ import {
   WearSection,
 } from "components/bearing-guide/sections";
 import { RelatedColumnsAndNote } from "components/bearing-guide/bits";
-import { withCanonical } from "lib/seo/canonical";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -28,7 +28,7 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withCanonical(
+export const generateMetadata = withPageMetadata(
   "/guides/bearing-guide",
   guideMetadata("Bearing Guide", BEARING_HERO.lede),
 );

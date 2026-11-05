@@ -8,7 +8,7 @@ import NoSkateparkSection from "components/school/no-skatepark-section";
 import OurImpactSection from "components/school/our-impact-section";
 import SafeStructuredSection from "components/school/safe-structured-section";
 import WhySchoolsChooseSection from "components/school/why-schools-choose";
-import { withCanonical } from "lib/seo/canonical";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -16,7 +16,7 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withCanonical("/school", {
+export const generateMetadata = withPageMetadata("/school", {
   title: "WeSkate School",
   description: "Learn skateboarding and surfskating with WeSkate School.",
   openGraph: {

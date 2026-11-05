@@ -4,7 +4,7 @@ import OurMissionSection from "components/skatepark/our-mission";
 import OurServicesSection from "components/skatepark/our-services";
 import SkateparkGallerySection from "components/skatepark/skatepark-gallery";
 import WhyChooseUsSection from "components/skatepark/why-choose-us";
-import { withCanonical } from "lib/seo/canonical";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -12,7 +12,7 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withCanonical("/skateparks", {
+export const generateMetadata = withPageMetadata("/skateparks", {
   title: "WB Skateparks",
   description:
     "From Bangalore and Kerala, WB Skateparks brings together riders and builders to create raw, purpose-built concrete skateparks.",

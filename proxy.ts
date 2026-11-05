@@ -7,6 +7,9 @@ const defaultLocale = "en";
 const ADMIN_LOGIN_PATH = "/admin/login";
 const ADMIN_API_PREFIX = "/admin/api/";
 
+// File-based Open Graph / Twitter images (app/**/opengraph-image.tsx).
+const SOCIAL_IMAGE_ROUTE = /\/(opengraph|twitter)-image(-[\w-]+)?$/;
+
 // Directories served from public/ — requests must bypass the locale rewrite.
 const PUBLIC_ASSET_PREFIXES = ["/fonts", "/hero", "/icons"];
 
@@ -99,10 +102,13 @@ export function proxy(request: NextRequest) {
   }
 
   // The default locale is served without a prefix, so /en/... is a duplicate
-  // of the clean URL — permanently redirect it to keep one indexable URL
+  // of the clean URL — permanently redirect it to keep one indexable URL.
+  // Social images are the exception: Next.js links them by their internal
+  // /en/... route, and link-preview crawlers may not follow a redirect.
   if (
-    pathname === `/${defaultLocale}` ||
-    pathname.startsWith(`/${defaultLocale}/`)
+    (pathname === `/${defaultLocale}` ||
+      pathname.startsWith(`/${defaultLocale}/`)) &&
+    !SOCIAL_IMAGE_ROUTE.test(pathname)
   ) {
     const url = request.nextUrl.clone();
     url.pathname = pathname.slice(defaultLocale.length + 1) || "/";

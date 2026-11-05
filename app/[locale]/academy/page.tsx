@@ -2,7 +2,7 @@ import AcademyHeroBanner from "components/academy/hero-banner";
 // import LovedByCommunity from "components/academy/loved-by-community";
 import PhilosophySection from "components/academy/philosophy-section";
 import Footer from "components/layout/footer";
-import { withCanonical } from "lib/seo/canonical";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -10,7 +10,7 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withCanonical("/academy", {
+export const generateMetadata = withPageMetadata("/academy", {
   title: "WeSkate Academy",
   description: "Learn skateboarding and surfskating with WeSkate Academy.",
   openGraph: {

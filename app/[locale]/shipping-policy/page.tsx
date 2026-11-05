@@ -1,9 +1,9 @@
 import Prose from "components/prose";
 import Footer from "components/layout/footer";
 import Link from "next/link";
-import { withCanonical } from "lib/seo/canonical";
+import { withPageMetadata } from "lib/seo/metadata";
 
-export const generateMetadata = withCanonical("/shipping-policy", {
+export const generateMetadata = withPageMetadata("/shipping-policy", {
   title: "Shipping Policy",
   description:
     "Shipping Policy for WeskateCo describing coverage, processing times, estimated delivery times, shipping charges, and tracking.",

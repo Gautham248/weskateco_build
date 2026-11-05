@@ -1,8 +1,8 @@
 import Prose from "components/prose";
 import Footer from "components/layout/footer";
-import { withCanonical } from "lib/seo/canonical";
+import { withPageMetadata } from "lib/seo/metadata";
 
-export const generateMetadata = withCanonical("/privacy-policy", {
+export const generateMetadata = withPageMetadata("/privacy-policy", {
   title: "Privacy Policy",
   description:
     "Privacy Policy for Weskateco / Toucan Distribution Pvt Ltd describing how we collect, use, and disclose your personal information.",

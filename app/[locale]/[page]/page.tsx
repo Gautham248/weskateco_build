@@ -3,7 +3,13 @@ import type { Metadata } from "next";
 import Prose from "components/prose";
 import { getPage } from "lib/shopify";
 import { notFound } from "next/navigation";
-import { localeAlternates } from "lib/seo/canonical";
+import {
+  documentTitle,
+  localeAlternates,
+  openGraph,
+  socialTitle,
+  summarize,
+} from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -19,15 +25,22 @@ export async function generateMetadata(props: {
 
   if (!page) return notFound();
 
+  const title = page.seo?.title || page.title;
+  // A merchant-written SEO description is used as written
+  const description = page.seo?.description || summarize(page.bodySummary);
+  const path = `/${page.handle}`;
+
   return {
-    title: page.seo?.title || page.title,
-    description: page.seo?.description || page.bodySummary,
-    alternates: localeAlternates(`/${page.handle}`, params.locale),
-    openGraph: {
+    title: documentTitle(title),
+    description,
+    alternates: localeAlternates(path, params.locale),
+    openGraph: openGraph(params.locale, path, {
+      type: "article",
+      title: socialTitle(title),
+      description,
       publishedTime: page.createdAt,
       modifiedTime: page.updatedAt,
-      type: "article",
-    },
+    }),
   };
 }
 

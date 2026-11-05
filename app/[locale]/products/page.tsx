@@ -2,7 +2,7 @@ import Footer from "components/layout/footer";
 import CollectionsGrid from "components/product/collections-grid";
 import { createTranslator } from "lib/i18n";
 import { getCollections } from "lib/shopify";
-import { withCanonical } from "lib/seo/canonical";
+import { withPageMetadata } from "lib/seo/metadata";
 
 export const dynamicParams = true;
 
@@ -10,7 +10,7 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withCanonical("/products", {
+export const generateMetadata = withPageMetadata("/products", {
   title: "Collections",
   description:
     "Browse skateboards, surfskates, completes, apparel, protection gear, portable ramps, and collections from the brands we carry.",
