@@ -11,8 +11,10 @@ export const hasShopify = Boolean(
 export const SHOPIFY_SKIP_REASON =
   "Needs Shopify: set SHOPIFY_STORE_DOMAIN/SHOPIFY_STOREFRONT_ACCESS_TOKEN in .env.local, or PLAYWRIGHT_BASE_URL";
 
-// A collection that should always have products
-export const COLLECTION = process.env.E2E_COLLECTION ?? "skateboards";
+// A collection that should always have products. Falls back on an empty
+// value as well as an unset one: an undefined CI secret or variable arrives
+// as "", which ?? would have kept, pointing every test at /store/.
+export const COLLECTION = process.env.E2E_COLLECTION || "skateboards";
 
 /** Path and query of the page's canonical URL (the host comes from the deploy env, so ignore it). */
 export async function canonicalPath(page: Page): Promise<string> {
