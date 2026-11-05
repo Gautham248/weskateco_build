@@ -270,7 +270,7 @@ body .guides-monochrome ::selection {
   text-align: center;
 }
 
-.unsupported-browser h1 {
+.unsupported-browser h2 {
   margin: 0 0 0.75rem;
   font-size: 1.5rem;
   font-weight: 600;
