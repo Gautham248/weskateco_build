@@ -3,7 +3,7 @@
 import { DragScrollArea } from "components/guides/drag-scroll-area";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
-import Link from "next/link";
+import Link from "components/localized-link";
 
 // 3-column griptape comparison. `warn` flags a caution cell.
 type Cell =

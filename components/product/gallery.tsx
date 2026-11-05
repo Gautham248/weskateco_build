@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
 import { useRef, useState } from "react";
@@ -9,6 +10,7 @@ export function Gallery({
 }: {
   images: { src: string; altText: string }[];
 }) {
+  const { t } = useTranslation();
   const [loadingStates, setLoadingStates] = useState<Record<number, boolean>>({
     0: true,
     1: true,
@@ -59,7 +61,7 @@ export function Gallery({
   const renderFallback = () => (
     <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#e5e5e5] px-6 text-center dark:bg-neutral-900">
       <span className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">
-        Image unavailable
+        {t("product.image_unavailable")}
       </span>
     </div>
   );
@@ -94,7 +96,7 @@ export function Gallery({
               className="h-full w-full object-contain"
               fill
               sizes="100vw"
-              alt={image.altText || "Product image"}
+              alt={image.altText || t("product.image_alt_fallback")}
               src={shopifyImageUrl(image.src, SHOPIFY_IMAGE_WIDTH.hero)}
               priority={idx === 0}
               onLoad={() => handleImageLoad(idx)}
@@ -137,7 +139,7 @@ export function Gallery({
               className="h-full w-full object-contain"
               fill
               sizes="(min-width: 1024px) 35vw, 100vw"
-              alt={image.altText || "Product image"}
+              alt={image.altText || t("product.image_alt_fallback")}
               src={shopifyImageUrl(image.src, SHOPIFY_IMAGE_WIDTH.hero)}
               priority={idx === 0}
               onLoad={() => handleImageLoad(idx)}

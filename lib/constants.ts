@@ -57,6 +57,13 @@ export const TAGS = {
  */
 export const ADMIN_SESSION_COOKIE = "admin_session";
 
+/**
+ * The shopper's storefront locale, set by proxy.ts on every page visit. Server
+ * actions never see the page URL, so cart creation reads this to open
+ * checkout in the language the shopper was browsing.
+ */
+export const LOCALE_COOKIE = "locale";
+
 export const HIDDEN_PRODUCT_TAG = "nextjs-frontend-hidden";
 export const DEFAULT_OPTION = "Default Title";
 export const SHOPIFY_GRAPHQL_API_ENDPOINT = "/api/2025-01/graphql.json";

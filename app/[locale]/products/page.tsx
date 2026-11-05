@@ -10,17 +10,20 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withPageMetadata("/products", {
-  title: "Collections",
-  description:
-    "Browse skateboards, surfskates, completes, apparel, protection gear, portable ramps, and collections from the brands we carry.",
+export const generateMetadata = withPageMetadata("/products", (locale) => {
+  const t = createTranslator(locale);
+
+  return {
+    title: t("collection.title"),
+    description: t("product.collections_meta_description"),
+  };
 });
 
 export default async function ProductsPage(props: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await props.params;
-  const collections = await getCollections();
+  const collections = await getCollections(locale);
   const visibleCollections = collections.filter(
     (collection) => collection.handle !== "",
   );

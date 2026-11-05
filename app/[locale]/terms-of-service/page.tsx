@@ -1,12 +1,21 @@
 import Prose from "components/prose";
 import Footer from "components/layout/footer";
+import { EnglishVersionNotice } from "components/legal/english-version-notice";
+import { createTranslator } from "lib/i18n";
 import { withPageMetadata } from "lib/seo/metadata";
+import { termsOfServiceHtmlHi } from "./content.hi";
 
-export const generateMetadata = withPageMetadata("/terms-of-service", {
-  title: "Terms of Service",
-  description:
-    "Terms of Service for Weskate Store / Toucan Distribution Private Limited.",
-});
+export const generateMetadata = withPageMetadata(
+  "/terms-of-service",
+  (locale) => {
+    const t = createTranslator(locale);
+
+    return {
+      title: t("legal.terms_title"),
+      description: t("legal.terms_description"),
+    };
+  },
+);
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "hi" }];
@@ -33,7 +42,7 @@ This website is operated by Toucan Distribution Private Limited. Throughout the 
 <h2>SECTION 2 - GENERAL CONDITIONS</h2>
 <p>We reserve the right to refuse Service to anyone for any reason at any time.</p>
 <p>You understand that your content (not including credit card information), may be transferred unencrypted and involve (a) transmissions over various networks; and (b) changes to conform and adapt to technical requirements of connecting networks or devices. Credit card information is always encrypted during transfer over networks.</p>
-<p>You agree not to reproduce, duplicate, copy, sell, resell or exploit any portion of the Service, use of the Service, or access to the Service or any contact on the website through which the Service is provided, without express written permission by us.</p>
+<p>You agree not to reproduce, duplicate, copy, sell, resell or exploit any portion of the Service, use of the Service, or access to the Service or any content on the website through which the Service is provided, without express written permission by us.</p>
 <p>The headings used in this agreement are included for convenience only and will not limit or otherwise affect these Terms.</p>
 
 <h2>SECTION 3 - ACCURACY, COMPLETENESS AND TIMELINESS OF INFORMATION</h2>
@@ -42,7 +51,7 @@ This website is operated by Toucan Distribution Private Limited. Throughout the 
 
 <h2>SECTION 4 - MODIFICATIONS TO THE SERVICE AND PRICES</h2>
 <p>Prices for our products are subject to change without notice.</p>
-<p>We reserve the right at any time to modify or discontinue the Service (or any part or content thereof) without notice at any time.</p>
+<p>We reserve the right at any time to modify or discontinue the Service (or any part or content thereof) without notice.</p>
 <p>We shall not be liable to you or to any third-party for any modification, price change, suspension or discontinuance of the Service.</p>
 
 <h2>SECTION 5 - PRODUCTS OR SERVICES (if applicable)</h2>
@@ -90,7 +99,7 @@ This website is operated by Toucan Distribution Private Limited. Throughout the 
 <p>In no case shall the Weskate Store, our directors, officers, employees, affiliates, agents, contractors, interns, suppliers, Service providers or licensors be liable for any injury, loss, claim, or any direct, indirect, incidental, punitive, special, or consequential damages of any kind, including, without limitation lost profits, lost revenue, lost savings, loss of data, replacement costs, or any similar damages, whether based in contract, tort (including negligence), strict liability or otherwise, arising from your use of any of the Service or any products procured using the Service, or for any other claim related in any way to your use of the Service or any product, including, but not limited to, any errors or omissions in any content, or any loss or damage of any kind incurred as a result of the use of the Service or any content (or product) posted, transmitted, or otherwise made available via the Service, even if advised of their possibility. Because some states or jurisdictions do not allow the exclusion or the limitation of liability for consequential or incidental damages, in such states or jurisdictions, our liability shall be limited to the maximum extent permitted by law.</p>
 
 <h2>SECTION 14 - INDEMNIFICATION</h2>
-<p>You agree to indemnify, defend and hold harmless the Weskate Store and our parent, subsidiaries, affiliates, partners, officers, directors, agents, contractors, licensors, Service providers, subcontractors, suppliers, interns and employees, harmless from any claim or demand, including reasonable attorneys’ fees, made by any third-party due to or arising out of your breach of these Terms of Service or the documents they incorporate by reference, or your violation of any law or the rights of a third-party.</p>
+<p>You agree to indemnify, defend and hold harmless the Weskate Store and our parent, subsidiaries, affiliates, partners, officers, directors, agents, contractors, licensors, Service providers, subcontractors, suppliers, interns and employees, from any claim or demand, including reasonable attorneys’ fees, made by any third-party due to or arising out of your breach of these Terms of Service or the documents they incorporate by reference, or your violation of any law or the rights of a third-party.</p>
 
 <h2>SECTION 15 - SEVERABILITY</h2>
 <p>In the event that any provision of these Terms of Service is determined to be unlawful, void or unenforceable, such provision shall nonetheless be enforceable to the fullest extent permitted by applicable law, and the unenforceable portion shall be deemed to be severed from these Terms of Service, such determination shall not affect the validity and enforceability of any other remaining provisions.</p>
@@ -120,14 +129,29 @@ This website is operated by Toucan Distribution Private Limited. Throughout the 
 </p>
 `;
 
-export default function TermsOfServicePage() {
+// The English text is the binding version; other languages are translations.
+const termsOfServiceHtmlByLocale: Record<string, string> = {
+  en: termsOfServiceHtml,
+  hi: termsOfServiceHtmlHi,
+};
+
+export default async function TermsOfServicePage(props: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await props.params;
+  const t = createTranslator(locale);
+
   return (
     <>
       <div className="mx-auto max-w-[1200px] px-4 py-12 md:py-16">
         <h1 className="mb-8 text-4xl font-extrabold tracking-tight md:text-5xl">
-          Terms of Service
+          {t("legal.terms_title")}
         </h1>
-        <Prose className="mb-8" html={termsOfServiceHtml} />
+        <EnglishVersionNotice locale={locale} englishPath="/terms-of-service" />
+        <Prose
+          className="mb-8"
+          html={termsOfServiceHtmlByLocale[locale] ?? termsOfServiceHtml}
+        />
       </div>
       <Footer />
     </>

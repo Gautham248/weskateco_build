@@ -4,7 +4,7 @@ import ContactDetails from "components/contact/contact-details";
 import Footer from "components/layout/footer";
 import EnquiryForm from "components/contact/enquiry-form";
 import { getDeflection } from "lib/contact/routes";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { useCallback, useState } from "react";
 
 // ---------------------------------------------------------------------------

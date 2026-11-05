@@ -2,7 +2,7 @@
 
 import { Dialog, Transition } from "@headlessui/react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 
@@ -14,7 +14,11 @@ import {
   PlusIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { getLocalizedPath } from "lib/i18n";
+import {
+  localeNames,
+  useLocalizedHref,
+} from "components/layout/language-switcher";
+import { getLocalizedPath, locales } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 
 // Import bottom images
@@ -47,6 +51,7 @@ export default function MobileMenu() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { t, locale } = useTranslation();
+  const localizedHref = useLocalizedHref();
   const [isOpen, setIsOpen] = useState(false);
 
   // Accordion states
@@ -81,16 +86,33 @@ export default function MobileMenu() {
   };
 
   const storeCategories = [
-    { name: "Skateboards", key: "skateboards", href: "/store/skateboards" },
-    { name: "Surfskate", key: "surfskates", href: "/store/surfskates" },
+    {
+      name: "Skateboards",
+      label: t("nav.skateboards"),
+      key: "skateboards",
+      href: "/store/skateboards",
+    },
+    {
+      name: "Surfskate",
+      label: t("nav.surfskate"),
+      key: "surfskates",
+      href: "/store/surfskates",
+    },
     {
       name: "Portable Ramps",
+      label: t("nav.portable_ramps"),
       key: "portable_ramps",
       href: "/store/portable-ramps",
     },
-    { name: "Apparel", key: "apparel", href: "/store/apparel-1" },
+    {
+      name: "Apparel",
+      label: t("nav.apparel"),
+      key: "apparel",
+      href: "/store/apparel-1",
+    },
     {
       name: "Protective Gear",
+      label: t("nav.protective_gear"),
       key: "protective_gear",
       href: "/store/protection-gears",
     },
@@ -102,6 +124,15 @@ export default function MobileMenu() {
     "Portable Ramps": [],
     Apparel: [],
     "Protective Gear": [],
+  };
+
+  // Display labels for the sub-item names above; the raw names drive the hrefs.
+  const subItemLabels: Record<string, string> = {
+    Completes: t("nav.completes"),
+    Decks: t("nav.decks"),
+    Wheels: t("nav.wheels"),
+    Trucks: t("nav.trucks"),
+    Accessories: t("nav.accessories"),
   };
 
   const getSubItemHref = (
@@ -117,7 +148,7 @@ export default function MobileMenu() {
     <>
       <button
         onClick={openMobileMenu}
-        aria-label="Open mobile menu"
+        aria-label={t("nav.open_mobile_menu")}
         className="flex h-7 w-7 items-center justify-center rounded-md transition-colors md:hidden text-current"
       >
         <Bars3Icon className="h-6 w-6" />
@@ -150,7 +181,7 @@ export default function MobileMenu() {
                 <button
                   className="flex h-11 w-11 items-center justify-start text-black dark:text-white"
                   onClick={closeMobileMenu}
-                  aria-label="Close mobile menu"
+                  aria-label={t("nav.close_mobile_menu")}
                 >
                   <XMarkIcon className="h-6 w-6" />
                 </button>
@@ -176,7 +207,7 @@ export default function MobileMenu() {
                     className="flex w-full items-center justify-between font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                   >
                     <span style={{ fontFamily: "'Clash Display', sans-serif" }}>
-                      STORE
+                      {t("nav.store")}
                     </span>
                     {isStoreExpanded ? (
                       <ChevronUpIcon className="h-4 w-4 stroke-[2.5]" />
@@ -206,19 +237,19 @@ export default function MobileMenu() {
                               className="flex w-full items-center justify-between font-medium text-[clamp(0.875rem,2vw,1rem)] text-neutral-800 dark:text-neutral-200 cursor-pointer"
                             >
                               {hasSub ? (
-                                <span>{category.name}</span>
+                                <span>{category.label}</span>
                               ) : (
                                 <Link
                                   href={getLocalizedPath(category.href, locale)}
                                   onClick={closeMobileMenu}
                                   className="w-full text-left"
                                 >
-                                  {category.name}
+                                  {category.label}
                                 </Link>
                               )}
                               {hasSub && (
                                 <button
-                                  aria-label="Toggle Section"
+                                  aria-label={t("nav.toggle_section")}
                                   className="p-1"
                                 >
                                   {isExpanded ? (
@@ -242,7 +273,7 @@ export default function MobileMenu() {
                                     onClick={closeMobileMenu}
                                     className="bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-semibold px-3 py-1.5 rounded-[6px] transition-colors active:bg-black active:text-white dark:active:bg-white dark:active:text-black"
                                   >
-                                    {subItem}
+                                    {subItemLabels[subItem] ?? subItem}
                                   </Link>
                                 ))}
                               </div>
@@ -262,7 +293,7 @@ export default function MobileMenu() {
                     className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                     style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
-                    ABOUT US
+                    {t("nav.about_us")}
                   </Link>
                 </div>
 
@@ -273,7 +304,7 @@ export default function MobileMenu() {
                     className="flex w-full items-center justify-between font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                   >
                     <span style={{ fontFamily: "'Clash Display', sans-serif" }}>
-                      GUIDES
+                      {t("nav.guides")}
                     </span>
                     {isGuidesExpanded ? (
                       <ChevronUpIcon className="h-4 w-4 stroke-[2.5]" />
@@ -295,35 +326,35 @@ export default function MobileMenu() {
                         onClick={closeMobileMenu}
                         className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
                       >
-                        Skateboard Buying Guide
+                        {t("nav.skateboard_buying_guide")}
                       </Link>
                       <Link
                         href={getLocalizedPath("/guides/deck-guide", locale)}
                         onClick={closeMobileMenu}
                         className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
                       >
-                        Deck Guide
+                        {t("nav.deck_guide")}
                       </Link>
                       <Link
                         href={getLocalizedPath("/guides/truck-guide", locale)}
                         onClick={closeMobileMenu}
                         className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
                       >
-                        Truck Guide
+                        {t("nav.truck_guide")}
                       </Link>
                       <Link
                         href={getLocalizedPath("/guides/wheels-guide", locale)}
                         onClick={closeMobileMenu}
                         className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
                       >
-                        Wheels Guide
+                        {t("nav.wheels_guide")}
                       </Link>
                       <Link
                         href={getLocalizedPath("/guides/bearing-guide", locale)}
                         onClick={closeMobileMenu}
                         className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
                       >
-                        Bearing Guide
+                        {t("nav.bearing_guide")}
                       </Link>
                       <Link
                         href={getLocalizedPath(
@@ -333,7 +364,7 @@ export default function MobileMenu() {
                         onClick={closeMobileMenu}
                         className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
                       >
-                        Griptape Guide
+                        {t("nav.griptape_guide")}
                       </Link>
                       <Link
                         href={getLocalizedPath(
@@ -343,7 +374,7 @@ export default function MobileMenu() {
                         onClick={closeMobileMenu}
                         className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
                       >
-                        Surfskate Guide
+                        {t("nav.surfskate_guide")}
                       </Link>
                     </div>
                   )}
@@ -357,7 +388,7 @@ export default function MobileMenu() {
                     className="flex w-full items-center justify-between font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                   >
                     <span style={{ fontFamily: "'Clash Display', sans-serif" }}>
-                      ACADEMY
+                      {t("nav.academy_upper")}
                     </span>
                     {isAcademyExpanded ? (
                       <ChevronUpIcon className="h-4 w-4 stroke-[2.5]" />
@@ -376,14 +407,14 @@ export default function MobileMenu() {
                         onClick={closeMobileMenu}
                         className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
                       >
-                        WeSkate Academy
+                        {t("academy.title")}
                       </Link>
                       <Link
                         href={getLocalizedPath("/school", locale)}
                         onClick={closeMobileMenu}
                         className="text-neutral-800 dark:text-neutral-200 text-sm font-medium py-1.5 hover:text-black dark:hover:text-white"
                       >
-                        WeSkate School
+                        {t("nav.weskate_school")}
                       </Link>
                     </div>
                   )}
@@ -412,8 +443,44 @@ export default function MobileMenu() {
                     className="block font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
                     style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
-                    SKATEPARKS
+                    {t("nav.skateparks_upper")}
                   </Link>
+                </div>
+
+                {/* LANGUAGE — both names in their own script. Plain links, not
+                    client navigations: the locale is the root layout's segment. */}
+                <div className="border-b border-neutral-100 dark:border-neutral-900 py-4">
+                  <p
+                    className="font-bold text-[clamp(0.938rem,2.5vw,1.125rem)] tracking-wider uppercase text-black dark:text-white"
+                    style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  >
+                    {t("nav.language")}
+                  </p>
+                  <div
+                    className="mt-3 flex gap-2"
+                    style={{ fontFamily: "Archivo, sans-serif" }}
+                  >
+                    {locales.map((option) => {
+                      const isCurrent = option === locale;
+
+                      return (
+                        <a
+                          key={option}
+                          href={localizedHref(option)}
+                          hrefLang={option}
+                          lang={option}
+                          aria-current={isCurrent ? "true" : undefined}
+                          className={`text-sm font-semibold px-4 py-2 rounded-[6px] transition-colors ${
+                            isCurrent
+                              ? "bg-black text-white dark:bg-white dark:text-black"
+                              : "bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200"
+                          }`}
+                        >
+                          {localeNames[option]}
+                        </a>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -428,7 +495,7 @@ export default function MobileMenu() {
                   >
                     <Image
                       src={shopImg1}
-                      alt="Shop Skateboards"
+                      alt={t("home.shop_skateboards")}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       sizes="(max-width: 768px) 60vw, 33vw"
@@ -443,7 +510,7 @@ export default function MobileMenu() {
                   >
                     <Image
                       src={shopImg2}
-                      alt="Newly Released"
+                      alt={t("nav.newly_released")}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       sizes="(max-width: 768px) 60vw, 33vw"
@@ -453,9 +520,9 @@ export default function MobileMenu() {
                       className="absolute bottom-3 left-3 z-10 text-white font-extrabold fluid-text-sm uppercase leading-tight tracking-wider"
                       style={{ fontFamily: "'Clash Display', sans-serif" }}
                     >
-                      Newly
+                      {t("nav.newly")}
                       <br />
-                      Released
+                      {t("nav.released")}
                     </div>
                   </Link>
                   <div className="w-4 shrink-0" />

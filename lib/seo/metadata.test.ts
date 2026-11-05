@@ -279,3 +279,43 @@ describe("withPageMetadata share images", () => {
     expect(metadata.openGraph).not.toHaveProperty("images");
   });
 });
+
+describe("withPageMetadata with translated fields", () => {
+  const params = (locale: string) => ({ params: Promise.resolve({ locale }) });
+  const generate = withPageMetadata("/refund-policy", (locale) =>
+    locale === "hi"
+      ? { title: "रिफ़ंड पॉलिसी", description: "रिटर्न और रिफ़ंड।" }
+      : { title: "Refund Policy", description: "Returns and refunds." },
+  );
+
+  it("uses each locale's own title and description", async () => {
+    const hindi = await generate(params("hi"));
+    expect(hindi).toMatchObject({
+      title: "रिफ़ंड पॉलिसी",
+      description: "रिटर्न और रिफ़ंड।",
+    });
+    expect(hindi.openGraph).toMatchObject({
+      title: `रिफ़ंड पॉलिसी | ${SITE_NAME}`,
+      description: "रिटर्न और रिफ़ंड।",
+      locale: "hi_IN",
+      url: "/hi/refund-policy",
+    });
+  });
+
+  it("links the same pair of URLs from both languages", async () => {
+    const english = await generate(params("en"));
+    const hindi = await generate(params("hi"));
+    expect(english.title).toBe("Refund Policy");
+    expect(english.alternates?.canonical).toBe("/refund-policy");
+    expect(hindi.alternates?.canonical).toBe("/hi/refund-policy");
+    expect(hindi.alternates?.languages).toEqual(english.alternates?.languages);
+  });
+
+  it("matches the fixed-object form for the same fields", async () => {
+    const fixed = withPageMetadata("/refund-policy", {
+      title: "Refund Policy",
+      description: "Returns and refunds.",
+    });
+    expect(await generate(params("en"))).toEqual(await fixed(params("en")));
+  });
+});

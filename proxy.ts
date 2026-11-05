@@ -1,9 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ADMIN_SESSION_COOKIE } from "./lib/constants";
+import { ADMIN_SESSION_COOKIE, LOCALE_COOKIE } from "./lib/constants";
 import { COUNTRY_COOKIE } from "./lib/gokwik/country";
 
 const locales = ["en", "hi"];
 const defaultLocale = "en";
+
+const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+/**
+ * Records the shopper's locale on a storefront page response. Server actions
+ * never see the page URL, so cart creation reads this cookie to open checkout
+ * in the language the shopper is browsing. Set only when it changes.
+ */
+function withLocaleCookie(
+  request: NextRequest,
+  response: NextResponse,
+  locale: string,
+) {
+  if (request.cookies.get(LOCALE_COOKIE)?.value !== locale) {
+    response.cookies.set(LOCALE_COOKIE, locale, {
+      path: "/",
+      maxAge: LOCALE_COOKIE_MAX_AGE,
+      sameSite: "lax",
+    });
+  }
+  return response;
+}
 
 const ADMIN_LOGIN_PATH = "/admin/login";
 const ADMIN_API_PREFIX = "/admin/api/";
@@ -147,7 +169,7 @@ function route(request: NextRequest): NextResponse {
     const locale = pathname.split("/")[1];
     const response = NextResponse.next();
     response.headers.set("x-locale", locale!);
-    return response;
+    return withLocaleCookie(request, response, locale!);
   }
 
   // No locale in path — rewrite (not redirect) to default locale
@@ -157,7 +179,7 @@ function route(request: NextRequest): NextResponse {
   url.pathname = `/${defaultLocale}${pathname}`;
   const response = NextResponse.rewrite(url);
   response.headers.set("x-locale", defaultLocale);
-  return response;
+  return withLocaleCookie(request, response, defaultLocale);
 }
 
 export const config = {

@@ -21,13 +21,15 @@ export async function generateStaticParams() {
   return [];
 }
 
-export const generateMetadata = withPageMetadata("/", {
-  // Leads with what shoppers search for; brand searches find the site anyway.
-  // absolute: skip the layout's "%s | site name" template, already included.
-  title: {
-    absolute: `Buy Skateboards & Surfskates Online in India | ${SITE_NAME}`,
-  },
-  description: `Born from busted decks and scraped knees. Shop skateboards, surfskates, protective gear and apparel at ${SITE_NAME}, with free shipping across India.`,
+export const generateMetadata = withPageMetadata("/", (locale) => {
+  const t = createTranslator(locale);
+
+  return {
+    // Leads with what shoppers search for; brand searches find the site anyway.
+    // absolute: skip the layout's "%s | site name" template, already included.
+    title: { absolute: t("home.meta_title").replace("{site}", SITE_NAME) },
+    description: t("home.meta_description").replace("{site}", SITE_NAME),
+  };
 });
 
 export default async function HomePage(props: {
@@ -68,7 +70,7 @@ export default async function HomePage(props: {
         locale={locale}
       /> */}
       <ShopNow locale={locale} />
-      <AcademySection />
+      <AcademySection locale={locale} />
       <TipsSection variant="page" />
       {/* <ConfiguratorCTA locale={locale} />
       <BrandsSection locale={locale} /> */}

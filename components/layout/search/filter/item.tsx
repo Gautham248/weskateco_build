@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import type { SortFilterItem } from "lib/constants";
 import { createUrl } from "lib/utils";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { ListItem, PathFilterItem } from ".";
 

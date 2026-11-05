@@ -3,7 +3,7 @@
 import { GreenArrowIcon } from "components/guides/icons";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { useState } from "react";
 import {
   BANDS,

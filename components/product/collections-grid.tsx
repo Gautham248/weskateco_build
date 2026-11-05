@@ -1,7 +1,7 @@
 import { getLocalizedPath } from "lib/i18n";
 import type { Collection } from "lib/shopify/types";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 
 const CLASH = { fontFamily: "'Clash Display', sans-serif" };
 

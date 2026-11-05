@@ -1,11 +1,17 @@
 import Prose from "components/prose";
 import Footer from "components/layout/footer";
+import { EnglishVersionNotice } from "components/legal/english-version-notice";
+import { createTranslator } from "lib/i18n";
 import { withPageMetadata } from "lib/seo/metadata";
+import { refundPolicyHtmlHi } from "./content.hi";
 
-export const generateMetadata = withPageMetadata("/refund-policy", {
-  title: "Refund Policy",
-  description:
-    "Refund Policy for WESKATECO / Toucan Distribution Private Limited describing returns, replacements, non-returnable items, and refund procedures.",
+export const generateMetadata = withPageMetadata("/refund-policy", (locale) => {
+  const t = createTranslator(locale);
+
+  return {
+    title: t("legal.refund_title"),
+    description: t("legal.refund_description"),
+  };
 });
 
 export async function generateStaticParams() {
@@ -40,7 +46,7 @@ const refundPolicyHtml = `
 <p>Notwithstanding the above, if the merchandise is being shipped into the European Union, you have the right to cancel or return your order within 14 days, for any reason and without a justification. As above, your item must be in the same condition that you received it, unworn or unused, with tags, and in its original packaging. You’ll also need the receipt or proof of purchase.</p>
 
 <h2>Refunds</h2>
-<p>We will notify you once we’ve received and inspected your return, and let you know if the refund was approved or not. If approved, you’ll be automatically refunded on your original payment method within 7 business days. Please remember it can take some time for your bank or credit card company to process and post the refund too.</p>
+<p>We will notify you once we’ve received and inspected your return, and let you know if the refund was approved or not. If approved, you’ll be automatically refunded on your original payment method within 7–10 business days. Please remember it can take some time for your bank or credit card company to process and post the refund too.</p>
 <p>If more than 15 business days have passed since we’ve approved your return, please contact us at <a href="mailto:info@weskateco.com">info@weskateco.com</a>.</p>
 
 <p>Thank you for shopping with WESKATECO, operated by Toucan Distribution Private Limited. We’re committed to your satisfaction, and we want to ensure a smooth and transparent return and refund experience for all our customers.</p>
@@ -67,7 +73,7 @@ const refundPolicyHtml = `
 <ul>
   <li>Refunds are processed only after the returned item passes quality inspection.</li>
   <li>Refunds will be credited to your original method of payment within 7–10 business days after approval.</li>
-  <li>In case of prepaid orders with COD return requests, we may ask for your bank details for a direct refund.</li>
+  <li>For Cash on Delivery (COD) orders, we may ask for your bank details to send your refund directly.</li>
 </ul>
 
 <h3>4. Replacements</h3>
@@ -89,7 +95,7 @@ const refundPolicyHtml = `
 <h3>6. Return Shipping</h3>
 <ul>
   <li>If the return is due to our error (e.g., wrong or defective product), return shipping will be free of cost.</li>
-  <li>For other cases, return shipping charges may be deducted from your refund or borne by the customer.</li>
+  <li>For other cases, the customer is responsible for return shipping.</li>
 </ul>
 
 <h3>7. Cancellation Policy</h3>
@@ -107,14 +113,29 @@ const refundPolicyHtml = `
 </p>
 `;
 
-export default function RefundPolicyPage() {
+// The English text is the binding version; other languages are translations.
+const refundPolicyHtmlByLocale: Record<string, string> = {
+  en: refundPolicyHtml,
+  hi: refundPolicyHtmlHi,
+};
+
+export default async function RefundPolicyPage(props: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await props.params;
+  const t = createTranslator(locale);
+
   return (
     <>
       <div className="mx-auto max-w-[1200px] px-4 py-12 md:py-16">
         <h1 className="mb-8 text-4xl font-extrabold tracking-tight md:text-5xl">
-          Refund Policy
+          {t("legal.refund_title")}
         </h1>
-        <Prose className="mb-8" html={refundPolicyHtml} />
+        <EnglishVersionNotice locale={locale} englishPath="/refund-policy" />
+        <Prose
+          className="mb-8"
+          html={refundPolicyHtmlByLocale[locale] ?? refundPolicyHtml}
+        />
       </div>
       <Footer />
     </>

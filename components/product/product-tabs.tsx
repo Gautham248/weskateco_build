@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Prose from "components/prose";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 
 interface ProductTabsProps {
   descriptionHtml?: string;
@@ -19,6 +20,7 @@ export default function ProductTabs({
   description,
   metafields,
 }: ProductTabsProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -28,7 +30,7 @@ export default function ProductTabs({
         className="flex w-full items-center justify-between py-4 text-left font-bold text-black dark:text-white uppercase tracking-wider text-[clamp(0.875rem,2vw,1.125rem)]"
         style={{ fontFamily: "'Clash Display', sans-serif" }}
       >
-        <span>Product Description</span>
+        <span>{t("product.product_description")}</span>
         <svg
           width="18"
           height="18"

@@ -14,7 +14,7 @@ import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import type { CartItem } from "lib/shopify/types";
 import { createUrl } from "lib/utils";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { usePathname } from "next/navigation";
 import { Fragment, useCallback, useState } from "react";
 import { useFormStatus } from "react-dom";
@@ -63,7 +63,7 @@ export default function CartModal() {
 
   return (
     <>
-      <button aria-label="Open cart" onClick={openCart}>
+      <button aria-label={t("cart.open")} onClick={openCart}>
         <OpenCart quantity={cart?.totalQuantity} />
       </button>
       <Transition show={isOpen}>
@@ -99,10 +99,10 @@ export default function CartModal() {
                     className="text-[32px] font-semibold uppercase tracking-[-1%] text-black dark:text-white flex items-baseline gap-1"
                     style={{ fontFamily: "'Clash Display', sans-serif" }}
                   >
-                    <span>YOUR CART</span>
+                    <span>{t("cart.your_cart_heading")}</span>
                   </p>
                   <button
-                    aria-label="Close cart"
+                    aria-label={t("cart.close")}
                     onClick={closeCart}
                     className="w-10 h-10 rounded-md bg-[#f2f2f2] dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 flex items-center justify-center transition-colors cursor-pointer"
                   >
@@ -163,7 +163,10 @@ export default function CartModal() {
                                   fontFamily: "'Clash Display', sans-serif",
                                 }}
                               >
-                                Custom Setups ({bundles.length})
+                                {t("cart.custom_setups_count").replace(
+                                  "{count}",
+                                  String(bundles.length),
+                                )}
                               </h4>
                               <ul className="space-y-4">
                                 {bundles.map(([bundleId, items]) => {
@@ -186,10 +189,11 @@ export default function CartModal() {
                                       <div className="flex items-center justify-between border-b border-blue-200 px-3 py-2 dark:border-blue-800">
                                         <div className="flex items-center gap-2">
                                           <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                                            🛹 Custom Setup
+                                            🛹 {t("cart.custom_setup")}
                                           </span>
                                           <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-600 dark:bg-blue-900 dark:text-blue-400">
-                                            {items.length} items
+                                            {items.length}{" "}
+                                            {t("cart.bundle_items")}
                                           </span>
                                         </div>
                                         <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
@@ -298,7 +302,7 @@ export default function CartModal() {
                                                         "Archivo, sans-serif",
                                                     }}
                                                   >
-                                                    Edit
+                                                    {t("cart.edit")}
                                                   </button>
                                                 </div>
                                               </div>
@@ -401,7 +405,7 @@ export default function CartModal() {
                                               />
                                             ) : (
                                               <div className="text-neutral-400 text-xs">
-                                                No Image
+                                                {t("product.no_image")}
                                               </div>
                                             )}
                                           </div>
@@ -469,7 +473,7 @@ export default function CartModal() {
                                                     "Archivo, sans-serif",
                                                 }}
                                               >
-                                                Edit
+                                                {t("cart.edit")}
                                               </button>
                                             </div>
                                           </div>

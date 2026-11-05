@@ -4,7 +4,7 @@ import { ROADS_CALLOUT, ROADS_SECTION, ROAD_TERMS } from "lib/wheel-guide/data";
 import { SectionHeader, Container, Section } from "components/guides/ui";
 import { getLocalizedPath } from "lib/i18n";
 import { useTranslation } from "lib/i18n/TranslationProvider";
-import Link from "next/link";
+import Link from "components/localized-link";
 
 export default function IndianRoadsSection() {
   const { locale } = useTranslation();

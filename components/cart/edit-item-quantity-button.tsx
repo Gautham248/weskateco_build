@@ -3,15 +3,20 @@
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { updateItemQuantity } from "components/cart/actions";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import type { CartItem } from "lib/shopify/types";
 import { useActionState } from "react";
 
 function SubmitButton({ type }: { type: "plus" | "minus" }) {
+  const { t } = useTranslation();
+
   return (
     <button
       type="submit"
       aria-label={
-        type === "plus" ? "Increase item quantity" : "Reduce item quantity"
+        type === "plus"
+          ? t("cart.increase_item_quantity")
+          : t("cart.reduce_item_quantity")
       }
       className={clsx(
         "flex h-7 w-7 items-center justify-center rounded-full transition-all duration-200 cursor-pointer",

@@ -237,6 +237,46 @@ describe("gallery", () => {
   });
 });
 
+describe("applyOverride in other languages", () => {
+  const hindi = product({
+    title: "टेस्ट डेक",
+    description: "हिंदी विवरण",
+    descriptionHtml: "<p>हिंदी विवरण</p>",
+    seo: { title: "टेस्ट डेक", description: "SEO विवरण" },
+  });
+  const edited = override({
+    title: "Edited English Title",
+    descriptionHtml: "<p>Edited English copy</p>",
+    coverImageUrl: "https://cdn.shopify.com/s/files/2.jpg",
+    images: [image("https://ik.imagekit.io/weskate/extra.jpg")],
+  });
+  const result = applyOverride(hindi, edited, { includeText: false });
+
+  it("keeps Shopify's translated title, description and SEO title", () => {
+    expect(result.title).toBe("टेस्ट डेक");
+    expect(result.description).toBe("हिंदी विवरण");
+    expect(result.descriptionHtml).toBe("<p>हिंदी विवरण</p>");
+    expect(result.seo).toEqual(hindi.seo);
+  });
+
+  it("still applies the photo overrides", () => {
+    expect(result.images.map((each) => each.url)).toEqual([
+      "https://cdn.shopify.com/s/files/1.jpg",
+      "https://cdn.shopify.com/s/files/2.jpg",
+      "https://ik.imagekit.io/weskate/extra.jpg",
+    ]);
+    expect(result.featuredImage.url).toBe(
+      "https://cdn.shopify.com/s/files/2.jpg",
+    );
+  });
+
+  it("applies the text overrides by default", () => {
+    const english = applyOverride(base, edited);
+    expect(english.title).toBe("Edited English Title");
+    expect(english.descriptionHtml).toBe("<p>Edited English copy</p>");
+  });
+});
+
 describe("getOverridesForHandles", () => {
   afterEach(() => {
     vi.unstubAllEnvs();

@@ -172,10 +172,13 @@ function openGraphTitle(title: Metadata["title"]): string | undefined {
  * See localeAlternates for the canonical. Pass `{ paginated: true }` for
  * listings that take a ?page= param. Open Graph reuses the title and
  * description, and any openGraph fields the page sets win.
+ *
+ * For translated pages, pass a function of the locale instead of a fixed
+ * object, e.g. `(locale) => ({ title: createTranslator(locale)("…") })`.
  */
 export function withPageMetadata(
   path: string,
-  metadata: Metadata,
+  pageMetadata: Metadata | ((locale: string) => Metadata),
   { paginated = false }: { paginated?: boolean } = {},
 ) {
   return async function generateMetadata(props: {
@@ -183,6 +186,8 @@ export function withPageMetadata(
     searchParams?: Promise<Record<string, string | string[] | undefined>>;
   }): Promise<Metadata> {
     const { locale } = await props.params;
+    const metadata =
+      typeof pageMetadata === "function" ? pageMetadata(locale) : pageMetadata;
     const query = paginated ? pageQuery((await props.searchParams)?.page) : "";
     const title = openGraphTitle(metadata.title);
     // Shortened here too: a page's own description is hand-written and can run

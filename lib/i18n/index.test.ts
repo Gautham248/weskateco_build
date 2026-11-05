@@ -6,7 +6,9 @@ import {
   getDictionary,
   getLocalizedField,
   getLocalizedPath,
+  getShopifyLanguage,
   getTranslation,
+  localizeHref,
 } from "./index";
 
 describe("getTranslation", () => {
@@ -70,4 +72,74 @@ describe("getLocalizedPath", () => {
   ])("maps %s in %s to %s", (path, locale, expected) => {
     expect(getLocalizedPath(path, locale)).toBe(expected);
   });
+});
+
+describe("localizeHref", () => {
+  it.each([
+    ["/academy", "/hi/academy"],
+    ["/", "/hi"],
+    ["/?q=deck", "/hi?q=deck"],
+    ["/#top", "/hi#top"],
+    [
+      "/store/skateboards?sort=price-asc",
+      "/hi/store/skateboards?sort=price-asc",
+    ],
+    ["/products/deck#reviews", "/hi/products/deck#reviews"],
+  ])("adds the Hindi prefix to %s", (href, expected) => {
+    expect(localizeHref(href, "hi")).toBe(expected);
+  });
+
+  it.each([
+    // Already localized, e.g. by getLocalizedPath
+    "/hi",
+    "/hi/store",
+    "/hi?q=deck",
+    "/en/store",
+    // Outside the storefront
+    "/account",
+    "/account/orders",
+    "/services/login_with_shop",
+    "/api/cart",
+    "/admin/products",
+    "/studio",
+    "/_next/static/chunk.js",
+    // Static files
+    "/icons/logo.png",
+    "/fonts/archivo.woff2",
+    "/hero/banner.jpg",
+    "/favicon.ico",
+    // Not internal paths
+    "https://instagram.com/weskateco",
+    "//cdn.shopify.com/image.jpg",
+    "mailto:info@weskateco.com",
+    "#top",
+    "?page=2",
+  ])("leaves %s alone", (href) => {
+    expect(localizeHref(href, "hi")).toBe(href);
+  });
+
+  it("doesn't mistake paths that merely start like a skipped prefix", () => {
+    expect(localizeHref("/accounts-help", "hi")).toBe("/hi/accounts-help");
+    expect(localizeHref("/history", "hi")).toBe("/hi/history");
+    expect(localizeHref("/apis", "hi")).toBe("/hi/apis");
+  });
+
+  it("leaves every English href unchanged", () => {
+    for (const href of ["/", "/academy", "/store?sort=price-asc", "/account"]) {
+      expect(localizeHref(href, "en")).toBe(href);
+    }
+  });
+});
+
+describe("getShopifyLanguage", () => {
+  it("asks Shopify for Hindi on Hindi pages", () => {
+    expect(getShopifyLanguage("hi")).toBe("HI");
+  });
+
+  it.each([undefined, "", "en", "fr", "HI"])(
+    "sends no language for %s, so Shopify answers in English",
+    (locale) => {
+      expect(getShopifyLanguage(locale)).toBeUndefined();
+    },
+  );
 });

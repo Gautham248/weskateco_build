@@ -7,6 +7,7 @@ import { editCartItemVariantAction } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
 import Price from "components/price";
 import { useModalHistory } from "lib/hooks/use-modal-history";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import { Product } from "lib/shopify/types";
 import Image from "next/image";
@@ -48,6 +49,7 @@ export function QuickBuySidebar({
   initialOptions,
   quantity,
 }: QuickBuySidebarProps) {
+  const { t } = useTranslation();
   const { updateLineVariant } = useCart();
   const [isUpdating, startUpdateTransition] = useTransition();
   const closePanel = useModalHistory(isOpen, onClose, "quick-buy-sidebar");
@@ -103,7 +105,7 @@ export function QuickBuySidebar({
         if (result) {
           toast.error(result);
         } else {
-          toast.success("Item updated successfully!", {
+          toast.success(t("product.item_updated"), {
             position: "top-right",
             style: {
               backgroundColor: "#ffffff",
@@ -117,7 +119,7 @@ export function QuickBuySidebar({
         }
       } catch (e) {
         console.error(e);
-        toast.error("Failed to update item");
+        toast.error(t("product.item_update_failed"));
       }
     });
   };
@@ -166,10 +168,12 @@ export function QuickBuySidebar({
                   className="text-[32px] font-semibold uppercase tracking-[-1%] text-black dark:text-white"
                   style={{ fontFamily: "'Clash Display', sans-serif" }}
                 >
-                  {isEdit ? "EDIT OPTIONS" : "SELECT"}
+                  {isEdit
+                    ? t("product.edit_options")
+                    : t("product.select_heading")}
                 </p>
                 <button
-                  aria-label="Close panel"
+                  aria-label={t("product.close_panel")}
                   onClick={closePanel}
                   className="w-10 h-10 rounded-md bg-[#f2f2f2] dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 flex items-center justify-center transition-colors"
                 >
@@ -194,7 +198,7 @@ export function QuickBuySidebar({
                   </div>
                 ) : (
                   <div className="relative aspect-square w-24 overflow-hidden rounded-lg bg-[#f4f4f4] dark:bg-neutral-900 flex-shrink-0 flex items-center justify-center text-neutral-400 text-xs">
-                    No Image
+                    {t("product.no_image")}
                   </div>
                 )}
 
@@ -255,7 +259,9 @@ export function QuickBuySidebar({
                   )}
                   style={{ fontFamily: "Archivo, sans-serif" }}
                 >
-                  {isUpdating ? "Updating..." : "Update Item"}
+                  {isUpdating
+                    ? t("product.updating")
+                    : t("product.update_item")}
                 </button>
               ) : (
                 <ProductActions

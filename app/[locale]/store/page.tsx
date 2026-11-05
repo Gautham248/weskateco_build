@@ -12,9 +12,13 @@ export async function generateStaticParams() {
 
 export const generateMetadata = withPageMetadata(
   "/store",
-  {
-    title: "Store",
-    description: `Shop skateboards, surfskates, protective gear and apparel at ${SITE_NAME}.`,
+  (locale) => {
+    const t = createTranslator(locale);
+
+    return {
+      title: t("store.store"),
+      description: t("store.meta_description").replace("{site}", SITE_NAME),
+    };
   },
   { paginated: true },
 );
@@ -44,7 +48,9 @@ export default async function StorePage(props: {
   }
 
   const [allProducts, allCollections] = await Promise.all([
-    getProducts({}),
+    getProducts({ locale }),
+    // English on purpose: the collection pills and filter labels group
+    // collections by their English titles (see CATEGORY_PREFIXES).
     getCollections(),
   ]);
 

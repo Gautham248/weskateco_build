@@ -12,7 +12,7 @@ import {
 import { productMatches } from "lib/filters/derive";
 import { createTranslator } from "lib/i18n";
 import { Collection, Product } from "lib/shopify/types";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
@@ -434,11 +434,11 @@ export default function StoreCollectionClient({
                   }}
                   className="flex items-center gap-1 text-sm font-medium text-black hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors mr-2"
                 >
-                  &lt; Previous
+                  {t("store.pagination_previous")}
                 </Link>
               ) : (
                 <span className="flex items-center gap-1 text-sm font-medium text-neutral-400 dark:text-neutral-700 cursor-not-allowed mr-2">
-                  &lt; Previous
+                  {t("store.pagination_previous")}
                 </span>
               )}
 
@@ -494,11 +494,11 @@ export default function StoreCollectionClient({
                   }}
                   className="flex items-center gap-1 text-sm font-medium text-black hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors ml-2"
                 >
-                  Next &gt;
+                  {t("store.pagination_next")}
                 </Link>
               ) : (
                 <span className="flex items-center gap-1 text-sm font-medium text-neutral-400 dark:text-neutral-700 cursor-not-allowed ml-2">
-                  Next &gt;
+                  {t("store.pagination_next")}
                 </span>
               )}
             </div>

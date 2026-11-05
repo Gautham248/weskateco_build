@@ -2,7 +2,7 @@ import schoolBanner from "components/icons/school/school_banner.png";
 import schoolBannerMobile from "components/icons/school/school_banner_mobile.png";
 import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 
 export default function SchoolHeroBanner({ locale }: { locale?: string }) {
   return (

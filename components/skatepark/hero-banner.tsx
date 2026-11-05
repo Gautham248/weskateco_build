@@ -2,7 +2,7 @@ import skateparkBanner from "components/icons/skatepark/skatepark_banner.jpg";
 import skateparkBannerMobile from "components/icons/skatepark/skatepark_banner_mobile.png";
 import { getLocalizedPath } from "lib/i18n";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 
 export default function SkateparkHeroBanner({ locale }: { locale?: string }) {
   return (

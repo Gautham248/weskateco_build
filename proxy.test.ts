@@ -1,4 +1,4 @@
-import { ADMIN_SESSION_COOKIE } from "lib/constants";
+import { ADMIN_SESSION_COOKIE, LOCALE_COOKIE } from "lib/constants";
 import { COUNTRY_COOKIE } from "lib/gokwik/country";
 import { NextRequest } from "next/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -202,5 +202,53 @@ describe("shopper country cookie", () => {
     const redirected = proxy(request("/en/store", { country: "US" }));
     expect(redirected.status).toBe(308);
     expect(redirected.headers.get("location")).toBe("https://weskate.co/store");
+  });
+});
+
+describe("shopper locale cookie", () => {
+  const localeCookie = (res: Response) =>
+    res.headers
+      .getSetCookie()
+      .find((cookie) => cookie.startsWith(`${LOCALE_COOKIE}=`));
+
+  it("records Hindi for a shopper browsing /hi", async () => {
+    const proxy = await loadProxy();
+    const cookie = localeCookie(proxy(request("/hi/store")));
+    expect(cookie).toMatch(/^locale=hi;/);
+    expect(cookie).toMatch(/Path=\//i);
+    expect(cookie).toMatch(/Max-Age=31536000/i);
+    expect(cookie).toMatch(/SameSite=lax/i);
+  });
+
+  it("switches back to English on an unprefixed page", async () => {
+    const proxy = await loadProxy();
+    const res = proxy(request("/store", { cookie: `${LOCALE_COOKIE}=hi` }));
+    expect(localeCookie(res)).toMatch(/^locale=en;/);
+    expect(rewriteOf(res)).toBe("https://weskate.co/en/store");
+  });
+
+  it("doesn't rewrite the cookie when the locale hasn't changed", async () => {
+    const proxy = await loadProxy();
+    const res = proxy(request("/hi", { cookie: `${LOCALE_COOKIE}=hi` }));
+    expect(localeCookie(res)).toBeUndefined();
+  });
+
+  it.each(["/api/cart", "/admin/login", "/icons/logo.png", "/en/store"])(
+    "isn't set outside storefront pages (%s)",
+    async (path) => {
+      const proxy = await loadProxy();
+      expect(localeCookie(proxy(request(path)))).toBeUndefined();
+    },
+  );
+
+  it("is set alongside the country cookie", async () => {
+    const proxy = await loadProxy();
+    const res = proxy(request("/hi/cart", { country: "IN" }));
+    expect(localeCookie(res)).toMatch(/^locale=hi;/);
+    expect(
+      res.headers
+        .getSetCookie()
+        .some((c) => c.startsWith(`${COUNTRY_COOKIE}=IN`)),
+    ).toBe(true);
   });
 });

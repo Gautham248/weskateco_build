@@ -1,15 +1,17 @@
 import academyImg from "components/icons/academy.png";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
+import { createTranslator } from "lib/i18n";
 
-export default function AcademySection() {
+export default function AcademySection({ locale }: { locale: string }) {
+  const t = createTranslator(locale);
   return (
     <section className="w-full bg-white py-6 md:py-10">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4 lg:px-15">
         <div className="relative h-auto aspect-square md:aspect-[16/9] w-full rounded-[16px] overflow-hidden bg-black select-none">
           <Image
             src={academyImg}
-            alt="Academy"
+            alt={t("nav.academy")}
             fill
             className="object-cover object-center"
             priority
@@ -83,7 +85,7 @@ export default function AcademySection() {
                 href="/academy"
                 className="group flex items-center gap-2 rounded-full bg-black px-4 py-2 md:px-6 md:py-3 text-white text-[clamp(0.625rem,2vw,0.875rem)] font-semibold uppercase hover:opacity-90 transition-opacity w-fit"
               >
-                KNOW MORE
+                {t("home.know_more")}
                 <svg
                   width="16"
                   height="16"

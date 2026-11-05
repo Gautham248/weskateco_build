@@ -4,7 +4,7 @@ import { createTranslator, getLocalizedPath } from "lib/i18n";
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import { Product } from "lib/shopify/types";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { useRef, useState, useTransition } from "react";
 import { QuickBuySidebar } from "./quick-buy-sidebar";
 import { SnapmintEmiBadge } from "./snapmint-emi-badge";
@@ -180,7 +180,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
           </div>
         ) : (
           <div className="flex h-full w-full items-center justify-center text-neutral-400">
-            No Image
+            {t("product.no_image")}
           </div>
         )}
 
@@ -225,7 +225,7 @@ export default function ProductCard({ product, locale }: ProductCardProps) {
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
               <span className="text-sm font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
-                Add to Cart
+                {t("product.add_to_cart_label")}
               </span>
             </div>
           </div>

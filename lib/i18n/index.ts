@@ -5,6 +5,8 @@ export const locales = ["en", "hi"] as const;
 export const defaultLocale = "en" as const;
 export type Locale = (typeof locales)[number];
 
+// Every key must exist in both files. Write Hindi following
+// locales/hindi-glossary.md.
 const dictionaries: Record<string, Record<string, string>> = { en, hi };
 
 /**
@@ -54,6 +56,69 @@ export function getLocalizedField(
     doc[field] ||
     ""
   );
+}
+
+/**
+ * The Storefront API `LanguageCode` to request for a locale, or undefined for
+ * the default locale (Shopify then answers in the store's primary language).
+ * Queries take it as `$language: LanguageCode = EN` with `@inContext`, so
+ * leaving it out keeps the English behaviour unchanged.
+ */
+export function getShopifyLanguage(locale?: string): string | undefined {
+  if (
+    !locale ||
+    locale === defaultLocale ||
+    !(locales as readonly string[]).includes(locale)
+  ) {
+    return undefined;
+  }
+  return locale.toUpperCase();
+}
+
+/**
+ * Paths that live outside the locale tree, mirroring the exclusions in
+ * proxy.ts: Shopify customer accounts, APIs, the admin panel, Sanity Studio
+ * and public assets. Prefixing them with a locale would 404.
+ */
+const UNLOCALIZED_PREFIXES = [
+  "/account",
+  "/services",
+  "/api",
+  "/admin",
+  "/studio",
+  "/_next",
+  "/fonts",
+  "/hero",
+  "/icons",
+];
+
+/**
+ * An internal href as it should be linked from a `locale` page: English is
+ * unchanged, other locales gain their /<locale> prefix. Leaves alone external
+ * URLs, hrefs already carrying a locale, and paths outside the locale tree, so
+ * it is safe to apply to every link (see components/localized-link.tsx).
+ */
+export function localizeHref(href: string, locale: string): string {
+  if (
+    locale === defaultLocale ||
+    !href.startsWith("/") ||
+    href.startsWith("//")
+  ) {
+    return href;
+  }
+
+  const path = href.split(/[?#]/)[0] || "/";
+
+  if (
+    locales.some((l) => path === `/${l}` || path.startsWith(`/${l}/`)) ||
+    UNLOCALIZED_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`)) ||
+    /\.[a-zA-Z0-9]+$/.test(path)
+  ) {
+    return href;
+  }
+
+  // "/" and "/?q=…" become "/hi" and "/hi?q=…", not "/hi/".
+  return path === "/" ? `/${locale}${href.slice(1)}` : `/${locale}${href}`;
 }
 
 /**

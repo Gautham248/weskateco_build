@@ -4,7 +4,7 @@ import type { FooterColumn } from "content/guides/bearings";
 import { renderRich } from "components/guides/rich";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { getLocalizedPath } from "lib/i18n";
-import Link from "next/link";
+import Link from "components/localized-link";
 import type { ReactNode } from "react";
 
 const CLASH = { fontFamily: "'Clash Display', sans-serif" };

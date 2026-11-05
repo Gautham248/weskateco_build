@@ -2,8 +2,9 @@
 
 import clsx from "clsx";
 import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import { ProductOption, ProductVariant } from "lib/shopify/types";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
@@ -29,6 +30,7 @@ export function VariantSelector({
   /** Needed to build locale-aware hrefs, e.g. the Size "Buying Guide" link. */
   locale: string;
 }) {
+  const { t } = useTranslation();
   const isQuickBuy = isQuickBuyProp ?? Boolean(onSelectOption);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -153,7 +155,7 @@ export function VariantSelector({
               )}
               style={{ fontFamily: "Archivo, sans-serif" }}
             >
-              Buying Guide
+              {t("nav.buying_guide")}
             </Link>
           )}
         </div>
@@ -207,7 +209,7 @@ export function VariantSelector({
                 key={value}
                 aria-disabled={!isAvailableForSale}
                 disabled={!isAvailableForSale}
-                title={`${option.name} ${value}${!isAvailableForSale ? " (Out of Stock)" : ""}`}
+                title={`${option.name} ${value}${!isAvailableForSale ? ` (${t("product.out_of_stock_title")})` : ""}`}
                 className={clsx(
                   "flex h-12 items-center justify-center transition-all duration-200 border-none",
                   isQuickBuy

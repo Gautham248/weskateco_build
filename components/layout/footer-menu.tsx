@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { Menu } from "lib/shopify/types";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 

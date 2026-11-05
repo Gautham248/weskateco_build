@@ -8,9 +8,10 @@ import { NewlyReleaseErrorBoundary } from "./newly-release-error-boundary";
 import clsx from "clsx";
 import type { NewlyReleasedSlide } from "lib/catalog/newly-released";
 import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -46,6 +47,7 @@ export default function NewlyReleaseContent({
   slides: NewlyReleasedSlide[];
   locale: string;
 }) {
+  const { t } = useTranslation();
   const { addCartItem } = useCart();
   const [, startTransition] = useTransition();
   const [pickerProduct, setPickerProduct] = useState<
@@ -102,16 +104,19 @@ export default function NewlyReleaseContent({
     // value to revert and logs that the update happened outside a transition.
     startTransition(async () => {
       addCartItem(variant, slide.product);
-      toast.success(`${slide.title} added to cart!`, {
-        position: "top-right",
-        style: {
-          backgroundColor: "#ffffff",
-          color: "#10b981",
-          borderColor: "#10b981",
-          position: "relative",
-          top: "60px",
+      toast.success(
+        t("home.added_to_cart_toast_excl").replace("{title}", slide.title),
+        {
+          position: "top-right",
+          style: {
+            backgroundColor: "#ffffff",
+            color: "#10b981",
+            borderColor: "#10b981",
+            position: "relative",
+            top: "60px",
+          },
         },
-      });
+      );
 
       const error = await addItem(null, variant.id);
 
@@ -277,8 +282,14 @@ export default function NewlyReleaseContent({
                           disabled={!slide.availableForSale}
                           aria-label={
                             slide.availableForSale
-                              ? `Add ${slide.title} to cart`
-                              : `${slide.title} is sold out`
+                              ? t("home.add_item_to_cart_aria").replace(
+                                  "{title}",
+                                  slide.title,
+                                )
+                              : t("home.item_sold_out_aria").replace(
+                                  "{title}",
+                                  slide.title,
+                                )
                           }
                           onClick={(e) => {
                             e.preventDefault();
@@ -296,8 +307,8 @@ export default function NewlyReleaseContent({
                             <AddToCartIcon />
                             <span className="text-xs font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
                               {slide.availableForSale
-                                ? "Add to Cart"
-                                : "Sold Out"}
+                                ? t("home.add_to_cart")
+                                : t("product.sold_out")}
                             </span>
                           </div>
                         </button>
@@ -435,7 +446,7 @@ export default function NewlyReleaseContent({
           {/* Carousel UI Actions */}
           <button
             type="button"
-            aria-label="Previous product"
+            aria-label={t("home.previous_product")}
             onClick={(e) => {
               e.stopPropagation();
               handlePrev();
@@ -459,7 +470,7 @@ export default function NewlyReleaseContent({
           </button>
           <button
             type="button"
-            aria-label="Next product"
+            aria-label={t("home.next_product")}
             onClick={(e) => {
               e.stopPropagation();
               handleNext();
@@ -487,7 +498,9 @@ export default function NewlyReleaseContent({
             type="button"
             disabled={!slides[slideIndex]?.availableForSale}
             aria-label={
-              slides[slideIndex]?.availableForSale ? "Add to cart" : "Sold out"
+              slides[slideIndex]?.availableForSale
+                ? t("home.add_to_cart_aria")
+                : t("home.sold_out_aria")
             }
             onClick={(e) => {
               e.preventDefault();
@@ -506,8 +519,8 @@ export default function NewlyReleaseContent({
               <AddToCartIcon />
               <span className="text-xs font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
                 {slides[slideIndex]?.availableForSale
-                  ? "Add to Cart"
-                  : "Sold Out"}
+                  ? t("home.add_to_cart")
+                  : t("product.sold_out")}
               </span>
             </div>
           </button>
@@ -520,7 +533,10 @@ export default function NewlyReleaseContent({
               <button
                 key={slide.handle}
                 type="button"
-                aria-label={`Show ${slide.title}`}
+                aria-label={t("home.show_item_aria").replace(
+                  "{title}",
+                  slide.title,
+                )}
                 onClick={(e) => {
                   e.stopPropagation();
                   setSlideIndex(idx);

@@ -9,7 +9,7 @@ import type { ShopNowSlide } from "lib/catalog/shop-now";
 import { createTranslator, getLocalizedPath } from "lib/i18n";
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { checkoutOneItem } from "lib/gokwik/checkout";
@@ -167,7 +167,9 @@ function ShopNowCard({
     // "An optimistic state update occurred outside a transition or action".
     startTransition(async () => {
       addCartItem(variant, slide.product);
-      toast.success(`${slide.title} added to cart.`);
+      toast.success(
+        t("home.added_to_cart_toast").replace("{title}", slide.title),
+      );
 
       const error = await addItem(null, variant.id);
 
@@ -221,7 +223,10 @@ function ShopNowCard({
         {slide.discountPercent ? (
           <div className="absolute right-3 top-3 z-20 flex items-center gap-1.5 [@media(hover:hover)]:opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
             <span className="rounded bg-neutral-900/60 backdrop-blur-md px-2 py-1 text-[clamp(0.5rem,1.5vw,0.625rem)] font-medium text-white">
-              {slide.discountPercent}% off
+              {t("home.percent_off").replace(
+                "{percent}",
+                String(slide.discountPercent),
+              )}
             </span>
           </div>
         ) : null}
@@ -253,7 +258,7 @@ function ShopNowCard({
           </div>
         ) : (
           <div className="flex h-full w-full items-center justify-center text-neutral-400">
-            No Image
+            {t("home.no_image")}
           </div>
         )}
 
@@ -304,7 +309,7 @@ function ShopNowCard({
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
             <span className="text-sm font-medium whitespace-nowrap text-white/90 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 delay-75">
-              Add to Cart
+              {t("home.add_to_cart")}
             </span>
           </div>
         </button>

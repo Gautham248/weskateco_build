@@ -1,9 +1,11 @@
 import { getNewlyReleased } from "lib/catalog/newly-released-feed";
+import { createTranslator } from "lib/i18n";
 import NewlyReleaseContent from "./newly-release-content";
 import { NewlyReleaseErrorBoundary } from "./newly-release-error-boundary";
 
 export default async function NewlyRelease({ locale }: { locale: string }) {
-  const slides = await getNewlyReleased();
+  const slides = await getNewlyReleased(locale);
+  const t = createTranslator(locale);
 
   if (slides.length === 0) {
     return null;
@@ -19,7 +21,7 @@ export default async function NewlyRelease({ locale }: { locale: string }) {
             letterSpacing: "-0.01em",
           }}
         >
-          NEWLY RELEASED
+          {t("home.newly_released")}
         </h2>
         <div className="mt-6 md:mt-10 h-auto aspect-[10/16] max-h-[560px] md:h-full md:aspect-auto md:flex-1 md:max-h-none">
           <div

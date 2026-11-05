@@ -1,9 +1,11 @@
 import { withOverrides } from "lib/catalog/overrides";
 import {
   HIDDEN_PRODUCT_TAG,
+  LOCALE_COOKIE,
   SHOPIFY_GRAPHQL_API_ENDPOINT,
   TAGS,
 } from "lib/constants";
+import { getShopifyLanguage } from "lib/i18n";
 import { isShopifyError } from "lib/type-guards";
 import { ensureStartsWith } from "lib/utils";
 import {
@@ -116,11 +118,19 @@ export async function shopifyFetch<T>({
   headers,
   query,
   variables,
+  locale,
 }: {
   headers?: HeadersInit;
   query: string;
   variables?: ExtractVariables<T>;
+  /**
+   * Storefront locale to answer in. Only pass it for queries that declare
+   * `$language: LanguageCode = EN` with `@inContext(language: $language)`.
+   */
+  locale?: string;
 }): Promise<{ status: number; body: T } | never> {
+  const language = getShopifyLanguage(locale);
+  const requestVariables = language ? { ...variables, language } : variables;
   const maxRetries = 2;
   let lastError: unknown;
 
@@ -139,7 +149,7 @@ export async function shopifyFetch<T>({
         },
         body: JSON.stringify({
           ...(query && { query }),
-          ...(variables && { variables }),
+          ...(requestVariables && { variables: requestVariables }),
         }),
         signal: AbortSignal.timeout(SHOPIFY_FETCH_TIMEOUT_MS),
       });
@@ -283,6 +293,13 @@ const reshapeProducts = (products: ShopifyProduct[]) => {
   return reshapedProducts;
 };
 
+/** The locale the shopper last browsed in, as recorded by proxy.ts. */
+async function shopperLocale(): Promise<string | undefined> {
+  return (await cookies()).get(LOCALE_COOKIE)?.value;
+}
+
+// The cart's language is fixed when it is created: Shopify opens its checkout
+// (and sends order emails) in it, so a cart started on /hi checks out in Hindi.
 export async function createCart(
   lineItems?: { merchandiseId: string; quantity: number }[],
 ): Promise<Cart> {
@@ -291,6 +308,7 @@ export async function createCart(
     variables: {
       lineItems: lineItems || [],
     },
+    locale: await shopperLocale(),
   });
 
   return reshapeCart(res.body.data.cartCreate.cart);
@@ -346,12 +364,19 @@ export async function updateCart(
 // caching it here intermittently returned stale "empty/missing cart" results,
 // which made adds create duplicate carts and refreshes empty the UI.
 // Reads the shopper's cart (the cartId cookie) unless given another cart's id.
-export async function getCart(id?: string): Promise<Cart | undefined> {
+// Line titles come back in `locale`, defaulting to the locale the shopper last
+// browsed in.
+export async function getCart(
+  id?: string,
+  locale?: string,
+): Promise<Cart | undefined> {
   const cartId = id ?? (await cookies()).get("cartId")?.value;
 
   if (!cartId) {
     return undefined;
   }
+
+  const cartLocale = locale ?? (await shopperLocale());
 
   // The connection to Shopify fails intermittently on some networks ("fetch
   // failed" from the HTTP layer). Retry reads with a short backoff so a
@@ -362,6 +387,7 @@ export async function getCart(id?: string): Promise<Cart | undefined> {
       const res = await shopifyFetch<ShopifyCartOperation>({
         query: getCartQuery,
         variables: { cartId },
+        locale: cartLocale,
       });
       if (!res.body.data.cart) {
         return undefined;
@@ -379,6 +405,7 @@ export async function getCart(id?: string): Promise<Cart | undefined> {
 
 export async function getCollection(
   handle: string,
+  locale?: string,
 ): Promise<Collection | undefined> {
   "use cache";
   cacheTag(TAGS.collections);
@@ -389,6 +416,7 @@ export async function getCollection(
     variables: {
       handle,
     },
+    locale,
   });
 
   return reshapeCollection(res.body.data.collection);
@@ -398,10 +426,12 @@ export async function getCollectionProducts({
   collection,
   reverse,
   sortKey,
+  locale,
 }: {
   collection: string;
   reverse?: boolean;
   sortKey?: string;
+  locale?: string;
 }): Promise<Product[]> {
   "use cache";
   cacheTag(TAGS.collections, TAGS.products);
@@ -421,6 +451,7 @@ export async function getCollectionProducts({
       reverse,
       sortKey: sortKey === "CREATED_AT" ? "CREATED" : sortKey,
     },
+    locale,
   });
 
   if (!res.body.data.collection) {
@@ -430,10 +461,11 @@ export async function getCollectionProducts({
 
   return withOverrides(
     reshapeProducts(removeEdgesAndNodes(res.body.data.collection.products)),
+    locale,
   );
 }
 
-export async function getCollections(): Promise<Collection[]> {
+export async function getCollections(locale?: string): Promise<Collection[]> {
   "use cache";
   cacheTag(TAGS.collections);
   cacheLife("days");
@@ -458,6 +490,7 @@ export async function getCollections(): Promise<Collection[]> {
 
   const res = await shopifyFetch<ShopifyCollectionsOperation>({
     query: getCollectionsQuery,
+    locale,
   });
   const shopifyCollections = removeEdgesAndNodes(res.body?.data?.collections);
   const collections = [
@@ -595,7 +628,10 @@ export async function getRawProduct(
   return reshapeProduct(res.body.data.product, false);
 }
 
-export async function getProduct(handle: string): Promise<Product | undefined> {
+export async function getProduct(
+  handle: string,
+  locale?: string,
+): Promise<Product | undefined> {
   "use cache";
   cacheTag(TAGS.products);
   cacheLife("days");
@@ -610,6 +646,7 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
     variables: {
       handle,
     },
+    locale,
   });
 
   const product = reshapeProduct(res.body.data.product, false);
@@ -618,7 +655,7 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
     return undefined;
   }
 
-  const [merged] = await withOverrides([product]);
+  const [merged] = await withOverrides([product], locale);
 
   return merged;
 }
@@ -644,9 +681,10 @@ export type ProductReadResult =
  */
 export async function readProductForPage(
   handle: string,
+  locale?: string,
 ): Promise<ProductReadResult> {
   try {
-    return { status: "ok", product: await getProduct(handle) };
+    return { status: "ok", product: await getProduct(handle, locale) };
   } catch (error) {
     console.error(
       `Could not read product "${handle}" from Shopify; the page will show the unavailable state:`,
@@ -659,6 +697,7 @@ export async function readProductForPage(
 
 export async function getProductRecommendations(
   productId: string,
+  locale?: string,
 ): Promise<Product[]> {
   "use cache";
   cacheTag(TAGS.products);
@@ -669,19 +708,25 @@ export async function getProductRecommendations(
     variables: {
       productId,
     },
+    locale,
   });
 
-  return withOverrides(reshapeProducts(res.body.data.productRecommendations));
+  return withOverrides(
+    reshapeProducts(res.body.data.productRecommendations),
+    locale,
+  );
 }
 
 export async function getProducts({
   query,
   reverse,
   sortKey,
+  locale,
 }: {
   query?: string;
   reverse?: boolean;
   sortKey?: string;
+  locale?: string;
 }): Promise<Product[]> {
   "use cache";
   cacheTag(TAGS.products);
@@ -694,10 +739,12 @@ export async function getProducts({
       reverse,
       sortKey,
     },
+    locale,
   });
 
   return withOverrides(
     reshapeProducts(removeEdgesAndNodes(res.body.data.products)),
+    locale,
   );
 }
 

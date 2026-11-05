@@ -3,8 +3,9 @@
 import shopImg1 from "components/icons/shop_image_1.jpg";
 import shopImg2 from "components/icons/shop_image_2.jpg";
 import { getLocalizedPath } from "lib/i18n";
+import { useTranslation } from "lib/i18n/TranslationProvider";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "components/localized-link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import MegaMenuSubItems, { hasSubItems } from "./mega-menu-sub-items";
@@ -18,6 +19,7 @@ export default function MegaMenuRight({
   onCollapse?: () => void;
   onLinkClick?: () => void;
 }) {
+  const { t } = useTranslation();
   const params = useParams();
   const locale = (params?.locale as string) || "en";
   const showPanel = hasSubItems(activeCategory);
@@ -60,7 +62,7 @@ export default function MegaMenuRight({
         >
           <Image
             src={shopImg1}
-            alt="Shop Skateboards"
+            alt={t("home.shop_skateboards")}
             fill
             // Not priority: the mega menu is hidden until hovered
             sizes="33vw"
@@ -90,7 +92,7 @@ export default function MegaMenuRight({
             >
               <Image
                 src={shopImg2}
-                alt="Newly Released"
+                alt={t("nav.newly_released")}
                 fill
                 // Not priority: the mega menu is hidden until hovered
                 sizes="33vw"
@@ -110,7 +112,7 @@ export default function MegaMenuRight({
                 className="text-white font-[700] text-xs xl:text-[0.95rem] 2xl:text-[1.25rem] uppercase leading-tight tracking-wide drop-shadow-md"
                 style={{ fontFamily: "'Clash Display', sans-serif" }}
               >
-                Newly <br /> Released
+                {t("nav.newly")} <br /> {t("nav.released")}
               </h3>
             </div>
           </div>
@@ -131,7 +133,7 @@ export default function MegaMenuRight({
                 fontFamily: "'Clash Display', sans-serif",
               }}
             >
-              Newly Released
+              {t("nav.newly_released")}
             </span>
           </div>
 
