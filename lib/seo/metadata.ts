@@ -62,20 +62,33 @@ const toChars = (text: string): string[] =>
  */
 export function summarize(text: string, maxLength = 160): string {
   const clean = text.replace(/\s+/g, " ").trim();
+  if (Array.from(clean).length <= maxLength) return clean;
+
   const chars = toChars(clean);
-  if (chars.length <= maxLength) return clean;
+  // The budget is characters, but the cut has to land between graphemes, and a
+  // Devanagari cluster or a ZWJ emoji is several characters wide. Count how
+  // many whole graphemes fit, so the result stays within the budget instead of
+  // overrunning it by the width of the clusters it contains.
+  let limit = 0;
+  let used = 0;
+  for (const grapheme of chars) {
+    const width = Array.from(grapheme).length;
+    if (used + width > maxLength) break;
+    used += width;
+    limit++;
+  }
 
   // The last sentence that ends within the limit (followed by a space, which
   // may sit just past the limit), if it keeps at least half the length
-  for (let i = maxLength - 1; i >= maxLength / 2; i--) {
+  for (let i = limit - 1; i >= limit / 2; i--) {
     if (SENTENCE_END.has(chars[i]!) && chars[i + 1] === " ") {
       return chars.slice(0, i + 1).join("");
     }
   }
 
   // Otherwise the last whole word, leaving room for the ellipsis
-  const lastSpace = chars.lastIndexOf(" ", maxLength - 1);
-  const words = chars.slice(0, lastSpace > 0 ? lastSpace : maxLength - 1);
+  const lastSpace = chars.lastIndexOf(" ", limit - 1);
+  const words = chars.slice(0, lastSpace > 0 ? lastSpace : limit - 1);
   return `${words.join("").replace(/[,;:.\s]+$/, "")}…`;
 }
 
