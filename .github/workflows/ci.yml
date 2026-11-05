@@ -124,8 +124,14 @@ jobs:
       - run: pnpm install --frozen-lockfile
         if: steps.guard.outputs.configured == 'true'
 
-      # Both projects are Chromium (Desktop Chrome and Pixel 7)
-      - run: pnpm exec playwright install --with-deps chromium
+      # Both projects are headless Chromium (Desktop Chrome and Pixel 7), so the
+      # headless shell is the only browser needed. No --with-deps: the runner
+      # image already ships every library Chromium needs, and the only extra
+      # packages it pulled were fallback fonts (CJK, Thai, Unifont) that took
+      # ~8 minutes from a slow apt mirror. No spec compares screenshots, so
+      # those fonts can't change a result. If a runner image update drops a
+      # library, apt-get install that one package instead of restoring this.
+      - run: pnpm exec playwright install chromium --only-shell
         if: steps.guard.outputs.configured == 'true'
 
       # playwright.config.ts builds and starts the app itself. CI is set by the
