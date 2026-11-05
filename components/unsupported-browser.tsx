@@ -10,7 +10,8 @@ export function UnsupportedBrowserMessage({ locale }: { locale: string }) {
 
   return (
     <div className="unsupported-browser" data-nosnippet>
-      <h1>{t("unsupported_browser.title")}</h1>
+      {/* Not an h1: this is in every page's markup, and each page has its own */}
+      <h2>{t("unsupported_browser.title")}</h2>
       <p>{t("unsupported_browser.body")}</p>
     </div>
   );
