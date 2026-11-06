@@ -72,6 +72,11 @@ pnpm dev
 
 Your app should now be running on [localhost:3000](http://localhost:3000/).
 
+If you use an AI coding assistant (Claude Code, OpenCode) on this repo, also
+install graphify, the Python tool that builds the codebase knowledge graph
+`AGENTS.md` relies on. Section 3.1 of
+[ADMIN_PANEL_ONBOARDING.md](ADMIN_PANEL_ONBOARDING.md) has the steps.
+
 ### Local databases
 
 The admin panel and the admin-managed storefront sections (hero, Newly Released,

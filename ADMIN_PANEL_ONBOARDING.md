@@ -40,6 +40,8 @@ and combines with live Shopify data.
   write-only in Vercel and cannot be pulled back — get them from a teammate or the
   team password manager.
 - _(Optional)_ the Vercel CLI, only if the team wants you to use `vercel env pull`.
+- **graphify**, if you use an AI coding assistant (Claude Code, OpenCode) on this
+  repo. It's a Python tool, not an npm package; section 3.1 installs it.
 
 ---
 
@@ -64,6 +66,52 @@ pnpm install
 > git checkout feat/shop-now-admin
 > git pull
 > ```
+
+### 3.1 Install graphify
+
+`AGENTS.md` has AI coding sessions query a knowledge graph of the codebase before
+they go searching through files. [graphify](https://github.com/Graphify-Labs/graphify)
+builds that graph. It's a Python command-line tool, so `pnpm install` doesn't
+install it; do this once per machine.
+
+1. Install [uv](https://docs.astral.sh/uv/), the Python tool installer. On macOS:
+
+   ```bash
+   brew install uv
+   ```
+
+2. Install graphify. The package is **`graphifyy`**, with two y's: the npm
+   package called `graphify` is an unrelated project. graphify needs Python 3.10+,
+   which uv downloads for you if you don't have it.
+
+   ```bash
+   uv tool install graphifyy==0.9.103
+   graphify --version
+   ```
+
+   The team is on 0.9.103; `uv tool upgrade graphifyy` updates it. If the second
+   command says `command not found`, run `uv tool update-shell` and open a new
+   terminal.
+
+3. Register graphify's skill with your coding assistant. For Claude Code this
+   writes `~/.claude/skills/graphify/` and a three-line `~/.claude/CLAUDE.md`
+   that only applies when you type `/graphify`.
+
+   ```bash
+   graphify install
+   ```
+
+4. From the repository root, install the git hooks that keep the graph current
+   after each commit, checkout, merge and rebase. They go in `.git/hooks`, so
+   every worktree of the repo shares them.
+
+   ```bash
+   graphify hook install
+   ```
+
+5. Build the graph: in your coding assistant, at the repository root, type
+   `/graphify .`. It writes to `graphify-out/`, which is gitignored. After that
+   the hooks keep it up to date, and `graphify update .` refreshes it by hand.
 
 ---
 
