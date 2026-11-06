@@ -11,8 +11,8 @@ import { migrateLocal, truncateAll } from "./local-db";
  * wipe anything else.
  */
 async function main() {
-  const db = await migrateLocal(LOCAL_TEST_DATABASE_URL);
-  await truncateAll(db);
+  await migrateLocal(LOCAL_TEST_DATABASE_URL);
+  await truncateAll(LOCAL_TEST_DATABASE_URL);
 
   console.log("Test database migrated and emptied.");
 }

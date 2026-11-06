@@ -72,11 +72,35 @@ export function requireLocalDevDatabase(): string {
 }
 
 /**
+ * Refuses any host but the local one. Called by everything below that writes,
+ * so the guarantee holds wherever they are called from rather than only at
+ * today's call sites.
+ */
+export function assertLocalDatabase(url: string): URL {
+  let parsed: URL;
+
+  try {
+    parsed = new URL(url);
+  } catch {
+    fail("Not a valid database connection string.");
+  }
+
+  if (parsed.hostname !== LOCAL_DB_HOST) {
+    fail(
+      `Refusing to touch ${parsed.hostname}: this only runs against the local ` +
+        `database (${LOCAL_DB_HOST}).`,
+    );
+  }
+
+  return parsed;
+}
+
+/**
  * Creates the database named in `url` if it doesn't exist yet, so a volume
  * made before that database was added still works.
  */
 export async function ensureDatabase(url: string): Promise<void> {
-  const target = new URL(url);
+  const target = assertLocalDatabase(url);
   const name = decodeURIComponent(target.pathname.slice(1));
 
   if (!/^[a-z_][a-z0-9_]*$/.test(name)) {
@@ -107,8 +131,16 @@ export async function migrateLocal(url: string): Promise<Database> {
   return db;
 }
 
-/** Empties every table, keeping the schema and migration history. */
-export async function truncateAll(db: Database): Promise<void> {
+/**
+ * Empties every table, keeping the schema and migration history. Takes the
+ * connection string rather than a client so it can check the host itself:
+ * handed a Database there is nothing left to check, and this is the one
+ * statement here that destroys data.
+ */
+export async function truncateAll(url: string): Promise<void> {
+  assertLocalDatabase(url);
+
+  const db = createDb(url);
   await db.execute(sql.raw(`TRUNCATE ${ALL_TABLES.join(", ")} CASCADE`));
 }
 

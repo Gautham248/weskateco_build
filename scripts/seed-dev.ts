@@ -52,9 +52,10 @@ const SHOP_NOW_HANDLES = [
 const OVERRIDDEN_HANDLE = "sphere-red-white-grafitti-mode";
 
 async function main() {
-  const db = createDb(requireLocalDevDatabase());
+  const url = requireLocalDevDatabase();
+  const db = createDb(url);
 
-  await truncateAll(db);
+  await truncateAll(url);
 
   const [admin] = await db
     .insert(adminUsers)
