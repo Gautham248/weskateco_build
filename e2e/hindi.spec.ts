@@ -127,6 +127,32 @@ test.describe("Hindi pages", () => {
     expect(await alternatePath(page, "en")).toBe(route);
   });
 
+  test("product options read in Hindi but stay English in the URL", async ({
+    page,
+  }) => {
+    await openHindiProduct(page);
+    const names = page.locator("main dl dt");
+    test.skip((await names.count()) === 0, "the product has no options");
+
+    // Every option name the dictionary translates, as Shopify writes it
+    const translated = Object.keys(english)
+      .filter((key) => key.startsWith("option."))
+      .map((key) => english[key]!.toLowerCase());
+    for (const name of await names.allTextContents()) {
+      expect(translated, `option "${name}" is shown in English`).not.toContain(
+        name.trim().toLowerCase(),
+      );
+    }
+
+    // The page writes the default options to the URL; they stay English so
+    // the variant lookup and the language switch keep working
+    await expect
+      .poll(() => [...new URL(page.url()).searchParams.keys()].length)
+      .toBeGreaterThan(0);
+    const params = [...new URL(page.url()).searchParams.entries()].flat();
+    expect(params.filter((part) => DEVANAGARI.test(part))).toEqual([]);
+  });
+
   test("English pages stay in English", async ({ page }) => {
     await page.goto("/store");
     await expect(page.locator("html")).toHaveAttribute("lang", "en");

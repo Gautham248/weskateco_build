@@ -1,6 +1,7 @@
 "use server";
 
-import { TAGS } from "lib/constants";
+import { LOCALE_COOKIE, TAGS } from "lib/constants";
+import { getTranslation } from "lib/i18n";
 import {
   addToCart,
   createCart,
@@ -12,6 +13,15 @@ import { updateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+/**
+ * An error to show the shopper, in the language they are browsing in (the
+ * `locale` cookie proxy.ts sets on every storefront page).
+ */
+async function errorMessage(key: string): Promise<string> {
+  const locale = (await cookies()).get(LOCALE_COOKIE)?.value ?? "en";
+  return getTranslation(locale, key);
+}
+
 /** Keep the Shopify cart link alive across browser restarts (30 days). */
 const CART_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
 
@@ -20,7 +30,7 @@ export async function addItem(
   selectedVariantId: string | undefined,
 ) {
   if (!selectedVariantId) {
-    return "Error adding item to cart";
+    return errorMessage("cart.error_add_item");
   }
 
   let cartId = (await cookies()).get("cartId")?.value;
@@ -39,7 +49,7 @@ export async function addItem(
         path: "/",
       });
     } catch (e) {
-      return "Error creating cart";
+      return errorMessage("cart.error_create_cart");
     }
   }
 
@@ -47,7 +57,7 @@ export async function addItem(
     await addToCart([{ merchandiseId: selectedVariantId, quantity: 1 }]);
     updateTag(TAGS.cart);
   } catch (e) {
-    return "Error adding item to cart";
+    return errorMessage("cart.error_add_item");
   }
 }
 
@@ -56,7 +66,7 @@ export async function removeItem(prevState: any, merchandiseId: string) {
     const cart = await getCart();
 
     if (!cart) {
-      return "Error fetching cart";
+      return errorMessage("cart.error_fetch_cart");
     }
 
     const lineItem = cart.lines.find(
@@ -67,10 +77,10 @@ export async function removeItem(prevState: any, merchandiseId: string) {
       await removeFromCart([lineItem.id]);
       updateTag(TAGS.cart);
     } else {
-      return "Item not found in cart";
+      return errorMessage("cart.error_item_not_found");
     }
   } catch (e) {
-    return "Error removing item from cart";
+    return errorMessage("cart.error_remove_item");
   }
 }
 
@@ -87,7 +97,7 @@ export async function updateItemQuantity(
     const cart = await getCart();
 
     if (!cart) {
-      return "Error fetching cart";
+      return errorMessage("cart.error_fetch_cart");
     }
 
     const lineItem = cart.lines.find(
@@ -114,7 +124,7 @@ export async function updateItemQuantity(
     updateTag(TAGS.cart);
   } catch (e) {
     console.error(e);
-    return "Error updating item quantity";
+    return errorMessage("cart.error_update_quantity");
   }
 }
 
@@ -155,7 +165,7 @@ export async function addConfiguratorBundle(
   }[],
 ) {
   if (!items || items.length === 0) {
-    return "No items to add";
+    return errorMessage("cart.error_no_items");
   }
 
   // addToCart requires an existing cart id — create one for fresh sessions
@@ -191,19 +201,19 @@ export async function addConfiguratorBundle(
     updateTag(TAGS.cart);
   } catch (e) {
     console.error("Error adding configurator bundle to cart:", e);
-    return "Error adding configurator bundle to cart";
+    return errorMessage("cart.error_add_bundle");
   }
 }
 
 export async function buyNowAction(selectedVariantId: string | undefined) {
   if (!selectedVariantId) {
-    return "Error adding item to cart";
+    return errorMessage("cart.error_add_item");
   }
   try {
     await addToCart([{ merchandiseId: selectedVariantId, quantity: 1 }]);
     updateTag(TAGS.cart);
   } catch (e) {
-    return "Error adding item to cart";
+    return errorMessage("cart.error_add_item");
   }
 
   const cart = await getCart();
@@ -223,7 +233,7 @@ export async function editCartItemVariantAction(payload: {
     const cart = await getCart();
 
     if (!cart) {
-      return "Error fetching cart";
+      return errorMessage("cart.error_fetch_cart");
     }
 
     await updateCart([
@@ -237,6 +247,6 @@ export async function editCartItemVariantAction(payload: {
     updateTag(TAGS.cart);
   } catch (e) {
     console.error(e);
-    return "Error updating item variant";
+    return errorMessage("cart.error_update_variant");
   }
 }

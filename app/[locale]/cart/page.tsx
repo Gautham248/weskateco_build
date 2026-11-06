@@ -11,6 +11,7 @@ import { QuickBuySidebar } from "components/product/quick-buy-sidebar";
 import { trackBeginCheckout, trackViewCart } from "lib/analytics";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { getLocalizedPath } from "lib/i18n";
+import { translateProductOption } from "lib/i18n/product-options";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import Image from "next/image";
@@ -206,10 +207,19 @@ function CartPageContent() {
                                   className="flex gap-1.5 items-baseline"
                                 >
                                   <span className="font-normal text-neutral-600 dark:text-neutral-400">
-                                    {opt.name}:
+                                    {translateProductOption(
+                                      t,
+                                      locale,
+                                      opt.name,
+                                    )}
+                                    :
                                   </span>
                                   <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-                                    {opt.value}
+                                    {translateProductOption(
+                                      t,
+                                      locale,
+                                      opt.value,
+                                    )}
                                   </span>
                                 </div>
                               ))}
@@ -307,10 +317,19 @@ function CartPageContent() {
                               {item.merchandise.selectedOptions.map((opt) => (
                                 <span key={opt.name}>
                                   <span className="font-normal text-black mr-1">
-                                    {opt.name}:
+                                    {translateProductOption(
+                                      t,
+                                      locale,
+                                      opt.name,
+                                    )}
+                                    :
                                   </span>
                                   <span className="font-bold text-black dark:text-white">
-                                    {opt.value}
+                                    {translateProductOption(
+                                      t,
+                                      locale,
+                                      opt.value,
+                                    )}
                                   </span>
                                 </span>
                               ))}

@@ -9,6 +9,7 @@ import { DEFAULT_OPTION } from "lib/constants";
 import { useGoKwikCheckout } from "lib/gokwik";
 import { useModalHistory } from "lib/hooks/use-modal-history";
 import { getLocalizedPath } from "lib/i18n";
+import { translateVariantTitle } from "lib/i18n/product-options";
 import { useTranslation } from "lib/i18n/TranslationProvider";
 import { SHOPIFY_IMAGE_WIDTH, shopifyImageUrl } from "lib/shopify/image-url";
 import type { CartItem } from "lib/shopify/types";
@@ -283,10 +284,12 @@ export default function CartModal() {
                                                         .title !==
                                                       DEFAULT_OPTION ? (
                                                         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                                          {
+                                                          {translateVariantTitle(
+                                                            t,
+                                                            locale,
                                                             item.merchandise
-                                                              .title
-                                                          }
+                                                              .title,
+                                                          )}
                                                         </p>
                                                       ) : null}
                                                     </div>
@@ -431,7 +434,11 @@ export default function CartModal() {
                                                   .vendor ||
                                                   (item.merchandise.title !==
                                                   DEFAULT_OPTION
-                                                    ? item.merchandise.title
+                                                    ? translateVariantTitle(
+                                                        t,
+                                                        locale,
+                                                        item.merchandise.title,
+                                                      )
                                                     : "")}
                                               </p>
                                             </div>

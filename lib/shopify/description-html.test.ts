@@ -98,6 +98,74 @@ describe("product description HTML", () => {
     });
   });
 
+  it("labels the table scroll region in the page's language", () => {
+    expect(
+      prepareProductDescriptionHtml("<table><tr><td>8</td></tr></table>", "hi"),
+    ).toContain('aria-label="स्क्रॉल होने वाली प्रोडक्ट स्पेसिफ़िकेशन"');
+  });
+
+  describe("artist credit", () => {
+    it("turns an English credit into the artist badge", () => {
+      const html = prepareProductDescriptionHtml(
+        "<p>Seven-ply maple.</p><p>Deck Artwork by <em><strong>LEFT</strong></em></p>",
+        "en",
+      );
+
+      expect(html).toContain("Deck Artwork by LEFT");
+      expect(html).toContain("bg-[#F4FFCD]");
+      expect(html).not.toContain("<strong>LEFT</strong>");
+    });
+
+    it("labels the badge in Hindi on Hindi pages", () => {
+      const html = prepareProductDescriptionHtml(
+        "<p>Deck Artwork by Anusha</p>",
+        "hi",
+      );
+
+      expect(html).toContain("डेक आर्टवर्क: Anusha");
+      expect(html).not.toContain("Deck Artwork by");
+    });
+
+    it("recognises the Hindi credit from a translated description", () => {
+      const html = prepareProductDescriptionHtml(
+        "<p>सात प्लाई मेपल।</p><p>डेक आर्टवर्क: <strong>MIA</strong><br></p>",
+        "hi",
+      );
+
+      expect(html).toContain("bg-[#F4FFCD]");
+      expect(html).toContain("डेक आर्टवर्क: MIA");
+      expect(html).not.toContain("<strong>MIA</strong>");
+    });
+
+    it("reads the credits as the store's Hindi writes them", () => {
+      for (const credit of [
+        '<p dir="ltr">डेक आर्टवर्क: <b><i>Anusha</i></b> द्वारा</p>',
+        '<p dir="ltr">डेक कलाकृति: <b><i>Anusha</i></b> द्वारा</p>',
+      ]) {
+        const html = prepareProductDescriptionHtml(credit, "hi");
+
+        expect(html).toContain("bg-[#F4FFCD]");
+        expect(html).toMatch(/डेक आर्टवर्क: Anusha\s*<\/span>/);
+        expect(html).not.toContain("द्वारा");
+      }
+    });
+
+    it("keeps द्वारा inside an artist's name", () => {
+      const html = prepareProductDescriptionHtml(
+        "<p>Deck Artwork by द्वारा Studio</p>",
+        "hi",
+      );
+
+      expect(html).toContain("डेक आर्टवर्क: द्वारा Studio");
+    });
+
+    it("leaves other mentions of artwork alone", () => {
+      const plain = "<p>The artwork sits under a clear coat.</p>";
+
+      expect(prepareProductDescriptionHtml(plain, "en")).toBe(plain);
+    });
+  });
+
   describe("passthrough", () => {
     it("leaves descriptions without product links or tables unchanged", () => {
       const plain = "<p>Plain description with <strong>markup</strong>.</p>";

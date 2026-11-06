@@ -78,11 +78,12 @@ type ExtractVariables<T> = T extends { variables: object }
 
 /**
  * True only for connection-establishment failures — a connect timeout, DNS
- * failure, or refused connection — where the request never reached Shopify.
- * Retrying those is safe even for cart mutations. Anything where a response
- * may already have started is deliberately not retried.
+ * failure, refused connection, or failed TLS handshake — where the request
+ * never reached Shopify. Retrying those is safe even for cart mutations.
+ * Anything where a response may already have started is deliberately not
+ * retried.
  */
-function isTransientConnectError(error: unknown): boolean {
+export function isTransientConnectError(error: unknown): boolean {
   const cause = (error as { cause?: unknown } | null)?.cause;
 
   if (cause && typeof cause === "object") {
@@ -94,6 +95,13 @@ function isTransientConnectError(error: unknown): boolean {
       code === "ENOTFOUND" ||
       code === "EAI_AGAIN"
     ) {
+      return true;
+    }
+
+    // OpenSSL's "ssl/tls alert handshake failure" (alert 40), which Shopify's
+    // edge sends now and then. Seen failing a CI build while every other
+    // request in the same build succeeded.
+    if (code?.startsWith("ERR_SSL_") && code.endsWith("HANDSHAKE_FAILURE")) {
       return true;
     }
 

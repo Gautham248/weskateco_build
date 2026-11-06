@@ -1,6 +1,6 @@
 import { defaultSort, sorting } from "lib/constants";
 import { getProducts, getCollections } from "lib/shopify";
-import { createTranslator } from "lib/i18n";
+import { createTranslator, defaultLocale } from "lib/i18n";
 import StoreCollectionClient from "./[collection]/store-collection-client";
 import { SITE_NAME, withPageMetadata } from "lib/seo/metadata";
 
@@ -47,12 +47,16 @@ export default async function StorePage(props: {
     });
   }
 
-  const [allProducts, allCollections] = await Promise.all([
-    getProducts({ locale }),
-    // English on purpose: the collection pills and filter labels group
-    // collections by their English titles (see CATEGORY_PREFIXES).
-    getCollections(),
-  ]);
+  const [allProducts, allCollections, localizedCollections] = await Promise.all(
+    [
+      getProducts({ locale }),
+      // English on purpose: the collection pills and filter labels group
+      // collections by their English titles (see CATEGORY_PREFIXES).
+      getCollections(),
+      // …and these are the titles the shopper reads
+      locale === defaultLocale ? undefined : getCollections(locale),
+    ],
+  );
 
   const t = createTranslator(locale);
 
@@ -61,6 +65,7 @@ export default async function StorePage(props: {
       initialCollectionHandle=""
       allProducts={allProducts}
       allCollections={allCollections}
+      localizedCollections={localizedCollections}
       locale={locale}
       noProductsText={t("collection.no_products")}
       initialFilters={initialFilters}
