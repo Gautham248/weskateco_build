@@ -3,6 +3,11 @@ name: CI
 on:
   pull_request:
     branches: [testing/commerce-deployment, main]
+    # `labeled` as well as the defaults, so adding run-e2e starts the
+    # end-to-end jobs without needing an empty commit
+    types: [opened, synchronize, reopened, labeled]
+    # Nothing here changes what the app serves
+    paths-ignore: ["**/*.md", "LICENSE", ".gitignore", ".gitattributes"]
   push:
     branches: [testing/commerce-deployment, main]
 
@@ -105,8 +110,15 @@ jobs:
         env:
           STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
           STOREFRONT_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
+          # On a pull request the suite runs only when it carries the label.
+          # A push to a release branch always runs it, so a merge is still
+          # checked even if the pull request never asked for it.
+          REQUESTED: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'run-e2e') }}
         run: |
-          if [ -z "$STORE_DOMAIN" ] || [ -z "$STOREFRONT_TOKEN" ]; then
+          if [ "$REQUESTED" != "true" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=End-to-end tests skipped::Add the run-e2e label to this pull request to run them. They take about three runner-minutes per shard, so they are opt-in; a push to ${{ github.event.repository.default_branch }} or testing/commerce-deployment always runs them."
+          elif [ -z "$STORE_DOMAIN" ] || [ -z "$STOREFRONT_TOKEN" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
             echo "::notice title=End-to-end tests skipped::Set repository secrets SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN to run them. Without a reachable store the suite fails rather than skipping, so the jobs don't start."
           else
