@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { LOCAL_TEST_DATABASE_URL } from "./lib/db/local";
 
 // Load the same env files Next.js reads so tests know whether Shopify is
 // configured. Only a missing file is ignored: swallowing everything would hide
@@ -28,11 +29,18 @@ export default defineConfig({
   globalSetup: "./e2e/global-setup.ts",
   fullyParallel: true,
   // A local dev server compiles pages on demand; more parallel tests than
-  // this overload it and pages time out
-  workers: useDevServer && !externalBaseUrl ? 2 : undefined,
+  // this overload it and pages time out. In CI, Playwright's default (half
+  // the cores) is 1 worker on a 2-core runner, which made the suite take ~10
+  // minutes. The tests spend most of their time waiting on Shopify and
+  // GoKwik timeouts rather than on CPU, so 3 workers share the cores well.
+  // Locally the default stays (4 workers on a typical laptop).
+  workers:
+    useDevServer && !externalBaseUrl ? 2 : process.env.CI ? 3 : undefined,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
+  // CI runs the suite in shards; each writes a blob report, and the
+  // e2e-report job merges them into one HTML report (see ci.yml)
+  reporter: process.env.CI ? [["github"], ["blob"]] : "list",
   // The dev server compiles routes on first hit, which can be slow
   timeout: 60_000,
   expect: { timeout: 15_000 },
@@ -56,9 +64,15 @@ export default defineConfig({
   webServer: externalBaseUrl
     ? undefined
     : {
+        // Reset the test database (migrated, every table empty) before the
+        // app builds, because prerendering already reads it. Needs the local
+        // containers running: `pnpm db:up`.
         command: useDevServer
-          ? `pnpm exec next dev --turbopack -p ${PORT}`
-          : `pnpm build && pnpm exec next start -p ${PORT}`,
+          ? `pnpm db:test:prepare && pnpm exec next dev --turbopack -p ${PORT}`
+          : `pnpm db:test:prepare && pnpm build && pnpm exec next start -p ${PORT}`,
+        // The suite's own database, never the dev one .env.local points at,
+        // so local runs see exactly what CI sees and can't touch your data
+        env: { DATABASE_URL: LOCAL_TEST_DATABASE_URL },
         url: `http://localhost:${PORT}/robots.txt`,
         // Off by default, so a run always tests a fresh build of the current
         // code rather than a server left over from an earlier run. Set

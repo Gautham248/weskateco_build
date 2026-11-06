@@ -91,11 +91,14 @@ jobs:
           echo "$changed" | tr '\n' '\0' \
             | xargs -0 pnpm exec prettier --check --ignore-unknown
 
-  e2e:
-    name: End-to-end
+  # Decides once whether the end-to-end jobs can run. Without a reachable
+  # store the suite fails rather than skipping, so it doesn't start at all.
+  e2e-guard:
+    name: End-to-end setup check
     runs-on: ubuntu-latest
-    # The suite builds the app and starts it before the first test
-    timeout-minutes: 45
+    timeout-minutes: 5
+    outputs:
+      configured: ${{ steps.guard.outputs.configured }}
     steps:
       - name: Check whether Shopify is configured
         id: guard
@@ -105,33 +108,57 @@ jobs:
         run: |
           if [ -z "$STORE_DOMAIN" ] || [ -z "$STOREFRONT_TOKEN" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::notice title=End-to-end tests skipped::Set repository secrets SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN to run them. Without a reachable store the suite fails rather than skipping, so the job stops here."
+            echo "::notice title=End-to-end tests skipped::Set repository secrets SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN to run them. Without a reachable store the suite fails rather than skipping, so the jobs don't start."
           else
             echo "configured=true" >> "$GITHUB_OUTPUT"
           fi
 
+  # The suite split three ways, each shard on its own runner. A 2-core runner
+  # is CPU-bound, so more workers on one runner barely helped (8:00 -> 6:56 of
+  # tests); separate runners each bring their own cores. Every shard repeats
+  # the install and build (~3 min), which is the cost of the shorter wall time.
+  e2e:
+    name: End-to-end (${{ matrix.shard }}/${{ strategy.job-total }})
+    needs: e2e-guard
+    if: needs.e2e-guard.outputs.configured == 'true'
+    runs-on: ubuntu-latest
+    # The suite builds the app and starts it before the first test
+    timeout-minutes: 30
+    strategy:
+      # Let every shard finish, so one failure doesn't hide the others
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    steps:
       - uses: actions/checkout@v7
-        if: steps.guard.outputs.configured == 'true'
       - uses: pnpm/action-setup@v6
-        if: steps.guard.outputs.configured == 'true'
         with:
           version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v7
-        if: steps.guard.outputs.configured == 'true'
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-        if: steps.guard.outputs.configured == 'true'
 
-      # Both projects are Chromium (Desktop Chrome and Pixel 7)
-      - run: pnpm exec playwright install --with-deps chromium
-        if: steps.guard.outputs.configured == 'true'
+      # Both projects are headless Chromium (Desktop Chrome and Pixel 7), so the
+      # headless shell is the only browser needed. No --with-deps: the runner
+      # image already ships every library Chromium needs, and the only extra
+      # packages it pulled were fallback fonts (CJK, Thai, Unifont) that took
+      # ~8 minutes from a slow apt mirror. No spec compares screenshots, so
+      # those fonts can't change a result. If a runner image update drops a
+      # library, apt-get install that one package instead of restoring this.
+      - run: pnpm exec playwright install chromium --only-shell
+
+      # The same docker-compose containers developers run locally. Playwright
+      # then migrates and empties the test database before it builds the app
+      # (playwright.config.ts), so the suite runs unseeded, as locally.
+      - name: Start the database
+        run: docker compose up -d --wait
 
       # playwright.config.ts builds and starts the app itself. CI is set by the
-      # runner, which turns on forbidOnly, two retries and the GitHub reporter.
+      # runner, which turns on forbidOnly, two retries, the GitHub reporter and
+      # the blob reporter the merge job below combines.
       - name: Run Playwright
-        if: steps.guard.outputs.configured == 'true'
         env:
           SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
           SHOPIFY_STOREFRONT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}
@@ -139,12 +166,51 @@ jobs:
           # string rather than being absent, which e2e/helpers.ts now falls
           # back on, so leaving it undefined selects the default collection.
           E2E_COLLECTION: ${{ vars.E2E_COLLECTION }}
-          # No admin variables: the app builds and serves without them, and
-          # the suite never opens an admin page.
-        run: pnpm exec playwright test
+          # DATABASE_URL comes from playwright.config.ts (the local test
+          # database). No other admin variables: the app builds and serves
+          # without them, and the suite never opens an admin page.
+        run: pnpm exec playwright test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+
+      # Uploaded whether or not the shard passed, so the merge job always has
+      # every shard's results
+      - name: Upload this shard's results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: blob-report-${{ matrix.shard }}
+          path: blob-report/
+          retention-days: 1
+
+  # Combines the shards into one HTML report, so a failure is read in one
+  # place rather than hunted for across three runs
+  e2e-report:
+    name: End-to-end report
+    needs: e2e
+    if: ${{ !cancelled() && (needs.e2e.result == 'success' || needs.e2e.result == 'failure') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: blob-report-*
+          path: all-blob-reports
+          merge-multiple: true
+
+      - name: Merge the shard reports
+        run: pnpm exec playwright merge-reports --reporter html ./all-blob-reports
 
       - name: Upload the report
-        if: ${{ failure() && steps.guard.outputs.configured == 'true' }}
+        if: needs.e2e.result == 'failure'
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report

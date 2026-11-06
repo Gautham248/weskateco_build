@@ -19,6 +19,12 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
+    "db:migrate:local": "tsx scripts/migrate-local.ts",
+    "db:seed": "tsx scripts/seed-dev.ts",
+    "db:test:prepare": "tsx scripts/prepare-test-db.ts",
+    "db:reset": "docker compose down -v && docker compose up -d --wait && pnpm db:migrate:local && pnpm db:seed",
     "deploy": "node scripts/deploy.js --prod",
     "vercel": "node scripts/deploy.js"
   },
