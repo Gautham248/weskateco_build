@@ -3,3 +3,4 @@
 
 # Explicitly declare files that should always use LF (like shell scripts)
 *.sh text eol=lf
+graphify-out/graph.json merge=graphify

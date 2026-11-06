@@ -40,6 +40,8 @@ and combines with live Shopify data.
   write-only in Vercel and cannot be pulled back — get them from a teammate or the
   team password manager.
 - _(Optional)_ the Vercel CLI, only if the team wants you to use `vercel env pull`.
+- **graphify**, if you use an AI coding assistant (Claude Code, OpenCode) on this
+  repo. It's a Python tool, not an npm package; section 3.1 installs it.
 
 ---
 
@@ -64,6 +66,52 @@ pnpm install
 > git checkout feat/shop-now-admin
 > git pull
 > ```
+
+### 3.1 Install graphify
+
+`AGENTS.md` has AI coding sessions query a knowledge graph of the codebase before
+they go searching through files. [graphify](https://github.com/Graphify-Labs/graphify)
+builds that graph. It's a Python command-line tool, so `pnpm install` doesn't
+install it; do this once per machine.
+
+1. Install [uv](https://docs.astral.sh/uv/), the Python tool installer. On macOS:
+
+   ```bash
+   brew install uv
+   ```
+
+2. Install graphify. The package is **`graphifyy`**, with two y's: the npm
+   package called `graphify` is an unrelated project. graphify needs Python 3.10+,
+   which uv downloads for you if you don't have it.
+
+   ```bash
+   uv tool install graphifyy==0.9.103
+   graphify --version
+   ```
+
+   The team is on 0.9.103; `uv tool upgrade graphifyy` updates it. If the second
+   command says `command not found`, run `uv tool update-shell` and open a new
+   terminal.
+
+3. Register graphify's skill with your coding assistant. For Claude Code this
+   writes `~/.claude/skills/graphify/` and a three-line `~/.claude/CLAUDE.md`
+   that only applies when you type `/graphify`.
+
+   ```bash
+   graphify install
+   ```
+
+4. From the repository root, install the git hooks that keep the graph current
+   after each commit, checkout, merge and rebase. They go in `.git/hooks`, so
+   every worktree of the repo shares them.
+
+   ```bash
+   graphify hook install
+   ```
+
+5. Build the graph: in your coding assistant, at the repository root, type
+   `/graphify .`. It writes to `graphify-out/`, which is gitignored. After that
+   the hooks keep it up to date, and `graphify update .` refreshes it by hand.
 
 ---
 
@@ -136,14 +184,72 @@ pnpm db:generate
 # ...then commit the generated .sql + meta snapshot, and migrate.
 ```
 
+`db:migrate` is the only one of these that writes to the database; `db:generate`
+only writes a migration file.
+
 > **Shared-database warning.** If you point `DATABASE_URL` at the production
 > database (which is what the team's `.env` files do today), your local admin edits
-> write to **production data**. For safe local development, create a **Neon branch**
-> of production and put its connection string in `DATABASE_URL` / `DATABASE_URL_UNPOOLED`
-> instead. The admin panel has no "staging" notion, so this is on you.
+> write to **production data**. Use the local database below instead. The admin
+> panel has no "staging" notion, so this is on you.
 
-`db:migrate` is the only step that writes to the database; `db:generate` only writes
-a migration file.
+### 5.1 Local databases (dev and test)
+
+`docker-compose.yml` runs Postgres 16 behind a local Neon HTTP proxy, so the app's
+Neon driver works against it unchanged. You need Docker running. The one server
+holds two separate databases (defined in `lib/db/local.ts`):
+
+| Database | Used by                     | Contents                                        |
+| -------- | --------------------------- | ----------------------------------------------- |
+| `dev`    | `pnpm dev`, the admin panel | Seed data, plus whatever you change in `/admin` |
+| `test`   | `pnpm test:e2e` (and CI)    | Empty and migrated, reset before every run      |
+
+**Set up the dev database:**
+
+1. Put this in `.env.local`:
+
+   ```bash
+   DATABASE_URL=postgres://postgres:postgres@db.localtest.me:5432/dev
+   ```
+
+   `db.localtest.me` resolves to `127.0.0.1` through public DNS, and
+   `lib/db/index.ts` sends that one host to the proxy on port 4444. To work
+   offline, add `127.0.0.1 db.localtest.me` to `/etc/hosts`.
+
+2. Start the containers, then create, migrate and seed the dev database:
+
+   ```bash
+   pnpm db:reset
+   ```
+
+**Run the end-to-end tests:** with the containers up (`pnpm db:up`), run
+`pnpm test:e2e`. Before it builds the app, `playwright.config.ts` runs
+`pnpm db:test:prepare`, which creates the test database if needed, migrates it
+and empties every table. It then starts the app with `DATABASE_URL` set to the
+test database, whatever `.env.local` says. So tests never see your dev data, and
+local runs match CI.
+
+| Command                 | What it does                                                         |
+| ----------------------- | -------------------------------------------------------------------- |
+| `pnpm db:up`            | Start the containers (data persists in the `db_data` volume)         |
+| `pnpm db:down`          | Stop them, keeping the data                                          |
+| `pnpm db:migrate:local` | Apply `lib/db/migrations` to the dev database                        |
+| `pnpm db:seed`          | Empty the dev database and load the seed (`scripts/seed-dev.ts`)     |
+| `pnpm db:reset`         | Delete the volume (both databases), then start, migrate and seed dev |
+| `pnpm db:test:prepare`  | Migrate and empty the test database (Playwright runs this for you)   |
+
+The seed adds an admin login (its username and password are at the top of
+`scripts/seed-dev.ts`), two hero slides, the Newly Released and Shop Now rows,
+four social posts and one product description override. It is offline and
+deterministic: products are referenced by handle and read live from Shopify.
+
+Guard rails: `db:migrate:local` and `db:seed` refuse to run unless `DATABASE_URL`
+is the local dev database, so they can't touch Neon or the test database.
+`db:test:prepare` always targets the local test database and ignores
+`DATABASE_URL`. `pnpm db:migrate` (drizzle-kit) is still how Neon is migrated.
+Postgres is also on host port `54320` for `psql` or a GUI client.
+
+CI's end-to-end job starts the same containers, and Playwright prepares the test
+database the same way, so CI also runs against an empty database.
 
 ---
 
@@ -289,8 +395,8 @@ components/home/<thing>-content.tsx   # storefront client component (if it needs
 
 To add a new admin feature, mirror those layers in order. The important behaviours:
 
-1. **Pure logic lives in `lib/catalog/`** and is tested by a `tsx` assertion script
-   (`scripts/test-<thing>.ts`), never by a browser.
+1. **Pure logic lives in `lib/catalog/`** and is tested by a Vitest file next to
+   it (`lib/catalog/<thing>.test.ts`), never by a browser.
 2. **Server actions** do `requireAdmin()`, validate with `zod`, persist, then
    `revalidateTag(TAGS.<thing>, "seconds")` so a save is visible immediately.
 3. **Resilience.** A database read failure must hide the section or fall back — it
@@ -330,19 +436,17 @@ To add a new admin feature, mirror those layers in order. The important behaviou
 ## 10. Testing and checks before you push
 
 ```bash
-npx tsc --noEmit              # types
-pnpm test                     # prettier --check
-pnpm test:overrides           # override logic
-pnpm test:auth                # session/secret validation
-pnpm test:newly-released      # carousel mapping + resilience
-pnpm test:shop-now            # Shop Now mapping
-pnpm test:admin-filters       # filter/facet logic
-pnpm test:admin-pagination    # pager windowing/clamping
-pnpm test:hero                # hero duration/url/rotation logic
-pnpm test:social-posts        # social post url/permalink validation
-npx tsx scripts/test-configurator.ts
-npx tsx scripts/test-filters.ts
+npx tsc --noEmit    # types
+pnpm test           # unit tests, then prettier --check
+pnpm test:unit      # just the unit tests (vitest run)
+pnpm test:watch     # the same, re-running as you edit
+pnpm test:e2e       # Playwright; needs `pnpm db:up` first
 ```
+
+The per-area scripts that used to be listed here are gone: they moved to
+Vitest, so their coverage now lives in `*.test.ts` files next to the code and
+all of it runs under `pnpm test:unit`. To run one area, pass a path --
+`pnpm test:unit lib/admin` or `pnpm test:unit lib/catalog/hero.test.ts`.
 
 A full `pnpm build` is the strongest local signal that a change is deployable —
 run it for anything that touches routes, server actions, or the `"use cache"`

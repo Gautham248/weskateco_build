@@ -1,5 +1,6 @@
 import { neon, neonConfig } from "@neondatabase/serverless";
 import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
+import { LOCAL_DB_HOST } from "./local";
 import * as schema from "./schema";
 
 export type Database = NeonHttpDatabase<typeof schema>;
@@ -64,6 +65,30 @@ async function retryingFetch(
 
 neonConfig.fetchFunction = retryingFetch;
 
+/**
+ * Neon's driver sends queries to https://<host>/sql. For the local
+ * docker-compose databases (lib/db/local.ts) they go instead to the local Neon
+ * proxy over plain http on port 4444.
+ */
+const LOCAL_PROXY_PORT = 4444;
+
+const neonDefaultEndpoint = neonConfig.fetchEndpoint;
+
+neonConfig.fetchEndpoint = (host, port, options) => {
+  if (host === LOCAL_DB_HOST) {
+    return `http://${host}:${LOCAL_PROXY_PORT}/sql`;
+  }
+
+  return typeof neonDefaultEndpoint === "function"
+    ? neonDefaultEndpoint(host, port, options)
+    : neonDefaultEndpoint;
+};
+
+/** A client for one connection string, for scripts that pick their database. */
+export function createDb(url: string): Database {
+  return drizzle(neon(url), { schema });
+}
+
 let cached: Database | undefined;
 
 /**
@@ -80,7 +105,7 @@ export function getDb(): Database {
         "DATABASE_URL is not set. The admin override layer cannot reach the database.",
       );
     }
-    cached = drizzle(neon(url), { schema });
+    cached = createDb(url);
   }
   return cached;
 }

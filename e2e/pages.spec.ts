@@ -47,8 +47,14 @@ const NOT_IN_SITEMAP = ["/cart", `/store/${COLLECTION}`];
 // Kept out of search results, so it declares no canonical URL
 const NO_CANONICAL = ["/cart"];
 
-// Links that leave the storefront or start an action rather than show a page
-const SKIPPED_LINK = /^\/(admin|studio|api)(\/|$)|^\/cart\/checkout/;
+// Links that leave the storefront or start an action rather than show a page.
+// /account and /services/* are reverse-proxied to the Shopify store
+// (SHOPIFY_ACCOUNT_PREFIXES in proxy.ts), so whether they answer depends on
+// reaching Shopify rather than on anything this repository serves: checking
+// them makes the suite fail whenever that hop is unavailable, as it is from
+// CI.
+const SKIPPED_LINK =
+  /^\/(admin|studio|api|account|services)(\/|$)|^\/cart\/checkout/;
 
 const localized = (path: string, locale: "en" | "hi") =>
   locale === "en" ? path : path === "/" ? "/hi" : `/hi${path}`;

@@ -1,0 +1,57 @@
+# Local development database: Postgres behind Neon's HTTP proxy.
+#
+# The app talks to Postgres through @neondatabase/serverless over HTTP
+# (lib/db/index.ts), which cannot open a plain TCP connection. The neon-proxy
+# container speaks that HTTP protocol and forwards to the postgres container.
+#
+#   pnpm db:up     start both containers and wait until healthy
+#   pnpm db:reset  wipe the data, migrate and seed the dev database
+#
+# The one Postgres server holds two databases (lib/db/local.ts):
+#   dev   yours: put its URL in .env.local and seed it with `pnpm db:seed`
+#         DATABASE_URL=postgres://postgres:postgres@db.localtest.me:5432/dev
+#   test  the e2e suite's, emptied and migrated before every Playwright run
+# db.localtest.me resolves to 127.0.0.1 via public DNS, and lib/db/index.ts
+# routes that one host to the proxy on port 4444. Offline, add
+# "127.0.0.1 db.localtest.me" to /etc/hosts.
+
+name: weskateco
+
+services:
+  postgres:
+    # Pinned by digest: same image as `postgres:16` at the time of writing
+    image: postgres:16@sha256:42df6755a4110ea9e324bfaefd02eb2f6afc0f0b9bc063c55c9f73dc29d25770
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      # Created on first start. The scripts create `test` (and `dev`, on a
+      # volume from before it existed) when they first need it.
+      POSTGRES_DB: dev
+    # Host port for psql or a GUI client. 5432 is left alone because other
+    # local projects commonly hold it. The app itself never uses this port.
+    ports:
+      - "54320:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  neon-proxy:
+    # Community image (github.com/TimoWilhelm/local-neon-http-proxy), pinned by
+    # digest so a change upstream can't arrive unreviewed
+    image: ghcr.io/timowilhelm/local-neon-http-proxy@sha256:cd2ae14edf2feafbc3330492de5c80506f77274c3bd013154cdef697bdeb768a
+    environment:
+      # Where the proxy reaches Postgres. Each query still runs in the database
+      # its own connection string names (dev or test), not this one.
+      PG_CONNECTION_STRING: postgres://postgres:postgres@postgres:5432/postgres
+    ports:
+      - "4444:4444"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  db_data:
