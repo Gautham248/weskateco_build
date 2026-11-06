@@ -8,11 +8,12 @@ import { Noto_Sans_Devanagari } from "next/font/google";
 import { GoogleAnalytics, MetaPixel } from "lib/analytics";
 import { GoKwikScript } from "lib/gokwik";
 import { GoKwikOrderWatcher } from "lib/gokwik/order-watcher";
-import { getDictionary } from "lib/i18n";
+import { getDictionary, locales, type Locale } from "lib/i18n";
 import { TranslationProvider } from "lib/i18n/TranslationProvider";
 import { SITE_NAME } from "lib/seo/metadata";
 import { getCart } from "lib/shopify";
 import { baseUrl, ensureStartsWith } from "lib/utils";
+import { notFound } from "next/navigation";
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
 import "../globals.css";
@@ -64,6 +65,16 @@ export default async function RootLayout(props: {
   params: Promise<{ locale: string }>;
 }) {
   const params = await props.params;
+
+  // [locale] matches any single segment, so a request for a file that isn't
+  // there -- /sw.js, /favicon-32.png -- arrives here as a locale and renders
+  // the home page with a 200. proxy.ts can't prevent it: it skips the locale
+  // rewrite for anything with an extension, which is what leaves the raw path
+  // as the segment. Anything that isn't a language we serve is a 404.
+  if (!locales.includes(params.locale as Locale)) {
+    notFound();
+  }
+
   const { children } = props;
   const cart = getCart(undefined, params.locale);
   const dictionary = getDictionary(params.locale);

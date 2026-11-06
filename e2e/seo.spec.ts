@@ -30,6 +30,20 @@ test.describe("robots and favicon", () => {
     expect(res.status()).toBe(200);
     expect(res.headers()["content-type"]).not.toContain("text/html");
   });
+
+  // [locale] matches any single segment, so a missing file used to arrive as a
+  // locale and render the home page: 200, the home page's own title, no
+  // noindex, and a canonical pointing at itself -- an indexable duplicate of
+  // the home page for every such URL.
+  for (const path of ["/sw.js", "/service-worker.js", "/favicon-32.png"]) {
+    test(`${path} is a 404, not a copy of the home page`, async ({
+      request,
+    }) => {
+      const res = await request.get(path);
+      expect(res.status(), `${path} should not resolve`).toBe(404);
+      expect(await res.text()).not.toContain('<html lang="' + path.slice(1));
+    });
+  }
 });
 
 test.describe("default locale redirect", () => {
