@@ -395,8 +395,8 @@ components/home/<thing>-content.tsx   # storefront client component (if it needs
 
 To add a new admin feature, mirror those layers in order. The important behaviours:
 
-1. **Pure logic lives in `lib/catalog/`** and is tested by a `tsx` assertion script
-   (`scripts/test-<thing>.ts`), never by a browser.
+1. **Pure logic lives in `lib/catalog/`** and is tested by a Vitest file next to
+   it (`lib/catalog/<thing>.test.ts`), never by a browser.
 2. **Server actions** do `requireAdmin()`, validate with `zod`, persist, then
    `revalidateTag(TAGS.<thing>, "seconds")` so a save is visible immediately.
 3. **Resilience.** A database read failure must hide the section or fall back — it
@@ -436,19 +436,17 @@ To add a new admin feature, mirror those layers in order. The important behaviou
 ## 10. Testing and checks before you push
 
 ```bash
-npx tsc --noEmit              # types
-pnpm test                     # prettier --check
-pnpm test:overrides           # override logic
-pnpm test:auth                # session/secret validation
-pnpm test:newly-released      # carousel mapping + resilience
-pnpm test:shop-now            # Shop Now mapping
-pnpm test:admin-filters       # filter/facet logic
-pnpm test:admin-pagination    # pager windowing/clamping
-pnpm test:hero                # hero duration/url/rotation logic
-pnpm test:social-posts        # social post url/permalink validation
-npx tsx scripts/test-configurator.ts
-npx tsx scripts/test-filters.ts
+npx tsc --noEmit    # types
+pnpm test           # unit tests, then prettier --check
+pnpm test:unit      # just the unit tests (vitest run)
+pnpm test:watch     # the same, re-running as you edit
+pnpm test:e2e       # Playwright; needs `pnpm db:up` first
 ```
+
+The per-area scripts that used to be listed here are gone: they moved to
+Vitest, so their coverage now lives in `*.test.ts` files next to the code and
+all of it runs under `pnpm test:unit`. To run one area, pass a path --
+`pnpm test:unit lib/admin` or `pnpm test:unit lib/catalog/hero.test.ts`.
 
 A full `pnpm build` is the strongest local signal that a change is deployable —
 run it for anything that touches routes, server actions, or the `"use cache"`
