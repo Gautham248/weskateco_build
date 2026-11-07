@@ -55,7 +55,7 @@ export default async function HomePage(props: {
           hero is visual only, so the heading isn't shown. */}
       <h1 className="sr-only">{t("home.hero_title")}</h1>
       <HeroBanner locale={locale} />
-      <RetreatBanner />
+      <RetreatBanner locale={locale} />
       <NewlyRelease locale={locale} />
       <AboutSection />
       <CategoryGrid locale={locale} />

@@ -1,9 +1,12 @@
 import Image from "next/image";
+import { createTranslator } from "lib/i18n";
 import retreatBanner from "components/icons/retreat_banner.webp";
 import retreatBannerMobile from "components/icons/retreat_banner_mobile.webp";
 
 // TEMPORARY: Girl's Flow Retreat banner + registration button. Remove after the event.
-export default function RetreatBanner() {
+export default function RetreatBanner({ locale }: { locale: string }) {
+  const t = createTranslator(locale);
+
   return (
     <section className="w-full bg-black px-4 py-8 md:px-8">
       <div className="mx-auto flex max-w-[1600px] flex-col items-center gap-6">
@@ -25,7 +28,7 @@ export default function RetreatBanner() {
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-base font-semibold text-black transition-all duration-300 hover:scale-105 hover:bg-neutral-200 active:scale-95"
         >
-          Click Here to Register
+          {t("home.retreat_register")}
         </a>
       </div>
     </section>
