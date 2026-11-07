@@ -26,7 +26,7 @@ export default function RetreatBanner({ locale }: { locale: string }) {
           href="https://payments.cashfree.com/forms/weskateco"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-base font-semibold text-black transition-all duration-300 hover:scale-105 hover:bg-neutral-200 active:scale-95"
+          className="inline-flex items-center justify-center rounded-full bg-[#CCFF02] px-8 py-4 text-base font-semibold text-black transition-all duration-300 hover:scale-105 hover:brightness-95 active:scale-95"
         >
           {t("home.retreat_register")}
         </a>
