@@ -1,4 +1,5 @@
 import HeroBanner from "components/home/hero-banner";
+import RetreatBanner from "components/home/retreat-banner";
 import NewlyRelease from "components/home/newly-release";
 import AboutSection from "components/home/about-section";
 import CategoryGrid from "components/home/category-grid";
@@ -54,6 +55,7 @@ export default async function HomePage(props: {
           hero is visual only, so the heading isn't shown. */}
       <h1 className="sr-only">{t("home.hero_title")}</h1>
       <HeroBanner locale={locale} />
+      <RetreatBanner />
       <NewlyRelease locale={locale} />
       <AboutSection />
       <CategoryGrid locale={locale} />
