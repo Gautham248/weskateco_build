@@ -69,6 +69,24 @@ export default {
         destination: "/hi/products/:handle",
         permanent: true,
       },
+      // Shopify's catch-all collection. No Shopify collection is called "all",
+      // so the /collections/:handle rule below would send this to a /store/all
+      // that doesn't exist -- these three have to stay above it.
+      {
+        source: "/collections/all",
+        destination: "/store",
+        permanent: true,
+      },
+      {
+        source: "/en/collections/all",
+        destination: "/store",
+        permanent: true,
+      },
+      {
+        source: "/hi/collections/all",
+        destination: "/hi/store",
+        permanent: true,
+      },
       // Collection pages moved from Shopify's /collections/<handle> to the
       // storefront's /store/<handle>. Shopify's spelling is still what search
       // engines have indexed -- /collections/sphere is the first result for
@@ -89,6 +107,26 @@ export default {
       {
         source: "/hi/collections/:handle",
         destination: "/hi/store/:handle",
+        permanent: true,
+      },
+      // Content pages moved from Shopify's /pages/<handle> to the storefront's
+      // /<handle>, which the [locale]/[page] catch-all serves from the same
+      // Shopify pages -- so the handles match 1:1, as with the collections
+      // above. Covers the /pages/wb-skateparks and /pages/about-us links still
+      // in lib/contact/routes.ts, and every other indexed /pages URL.
+      {
+        source: "/pages/:handle",
+        destination: "/:handle",
+        permanent: true,
+      },
+      {
+        source: "/en/pages/:handle",
+        destination: "/:handle",
+        permanent: true,
+      },
+      {
+        source: "/hi/pages/:handle",
+        destination: "/hi/:handle",
         permanent: true,
       },
     ];
