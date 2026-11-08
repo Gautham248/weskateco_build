@@ -69,6 +69,28 @@ export default {
         destination: "/hi/products/:handle",
         permanent: true,
       },
+      // Collection pages moved from Shopify's /collections/<handle> to the
+      // storefront's /store/<handle>. Shopify's spelling is still what search
+      // engines have indexed -- /collections/sphere is the first result for
+      // "sphere skateboards" -- and it 404s. The handles match on both sides
+      // because both read the same Shopify collections, so this maps 1:1.
+      // The /en and /hi forms are listed for the same reason as the product
+      // redirects above.
+      {
+        source: "/collections/:handle",
+        destination: "/store/:handle",
+        permanent: true,
+      },
+      {
+        source: "/en/collections/:handle",
+        destination: "/store/:handle",
+        permanent: true,
+      },
+      {
+        source: "/hi/collections/:handle",
+        destination: "/hi/store/:handle",
+        permanent: true,
+      },
     ];
   },
 };
